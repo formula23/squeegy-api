@@ -34,9 +34,9 @@ class Authenticate {
 	{
 		if ($this->auth->guest())
 		{
-			if ($request->ajax())
+			if ($request->ajax() || $request->wantsJson())
 			{
-				return response('Unauthorized.', 401);
+                return response()->json(['error'=>'Unauthorized. Please login.', 'status_code'=>401], 401);
 			}
 			else
 			{

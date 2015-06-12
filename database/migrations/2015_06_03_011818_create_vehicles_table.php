@@ -18,6 +18,7 @@ class CreateVehiclesTable extends Migration {
             $table->integer('user_id')->unsigned()->index();
             $table->string('year');
             $table->string('make');
+            $table->string('model')->nullable();
             $table->string('color');
             $table->string('type');
             $table->string('license_plate', 10);

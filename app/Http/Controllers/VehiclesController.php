@@ -2,14 +2,18 @@
 
 use App\OctaneLA\Transformers\VehicleTransformer;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
+use Illuminate\Support\Facades\Auth;
 use Response;
 use App\Vehicle;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\CreateVehicleRequest;
+use App\Http\Requests\UpdateVehicleRequest;
 
+/**
+ * Class VehiclesController
+ * @package App\Http\Controllers
+ */
 class VehiclesController extends ApiGuardController {
-
 
     /**
 	 * Display a listing of the resource.
@@ -18,98 +22,79 @@ class VehiclesController extends ApiGuardController {
 	 */
 	public function index()
 	{
-        $vehicles = Vehicle::all();
+        $vehicles = Auth::user()->vehicles;
 
-        return $this->response->withCollection($vehicles, new VehicleTransformer, 'vehicles');
+        return $this->response->withCollection($vehicles, new VehicleTransformer);
 
-	}
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
 	}
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param CreateVehicleRequest $request
      * @return Response
      */
-	public function store(Request $request)
+	public function store(CreateVehicleRequest $request)
 	{
-        if( ! $request->input('year') &&
-            ! $request->input('make') &&
-            ! $request->input('color'))
-        {
-            return $this->response->errorWrongArgs('Arguments missing');
-        }
+        $vehicle = new Vehicle($request->all());
 
-        $data = $request->all();
-        $data['user_id'] = 1;
-
-        $vehicle = Vehicle::create($data);
+        Auth::user()->vehicles()->save($vehicle);
 
         return $this->response->withItem($vehicle, new VehicleTransformer);
 
     }
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
+    /**
+     * Display the specified resource.
+     *
+     * @param Vehicle $vehicle
+     * @return Response
+     * @internal param int $id
+     */
+	public function show(Vehicle $vehicle)
 	{
-		$vehicle = Vehicle::find($id);
-
-        if ( ! $vehicle)
-        {
+        if (empty($vehicle->id)) {
             return $this->response->errorNotFound('Vehicle does not exist');
-
         }
 
         return $this->response->withItem($vehicle, new VehicleTransformer);
 
 	}
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param UpdateVehicleRequest $request
+     * @param Vehicle $vehicle -- Model route binding in RouteServiceProvider.php
+     * @return Response
+     */
+	public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
 	{
-		//
+        if (empty($vehicle->id)) {
+            return $this->response->errorNotFound('Vehicle does not exist');
+        }
+
+        $vehicle->update($request->all());
+
+        return $this->response->withItem($vehicle, new VehicleTransformer);
 	}
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Vehicle $vehicle
+     * @return Response
+     * @internal param int $id
+     */
+	public function destroy(Vehicle $vehicle)
 	{
-		//
-	}
+        if (empty($vehicle->id)) {
+            return $this->response->errorNotFound('Vehicle does not exist');
+        }
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
-	}
+        $vehicle->delete();
 
+        return response()->json(['success'=>'1']);
+	}
 
 }
