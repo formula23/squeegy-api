@@ -11,24 +11,16 @@
 |
 */
 
-//Route::get('/', 'WelcomeController@index');
-
 Route::group(['prefix' => 'api/v1'], function() {
 
     Route::resource('vehicles', 'VehiclesController');
+    Route::resource('locations', 'LocationsController');
+
+    Route::get('user', 'UserController@show');
+    Route::post('user', 'Auth\AuthController@postRegister');
+    Route::put('user', 'UserController@update');
+
+    Route::post('auth/login', 'Auth\AuthController@postLogin');
+    Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
 });
-
-//Route::controllers([
-//    'auth' => 'Auth\AuthController',
-//    'password' => 'Auth\PasswordController',
-//]);
-
-/*Route::get('/', 'WelcomeController@index');
-
-Route::get('home', 'HomeController@index');
-
-Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
-]);*/

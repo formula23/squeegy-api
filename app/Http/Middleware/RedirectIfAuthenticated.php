@@ -35,7 +35,15 @@ class RedirectIfAuthenticated {
 	{
 		if ($this->auth->check())
 		{
-			return new RedirectResponse(url('/home'));
+            if($request->wantsJson())
+            {
+                return response()->json(['error'=>'Already logged in.', 'status_code'=>422], 422);
+            }
+            else
+            {
+                return new RedirectResponse(url('/home'));
+            }
+
 		}
 
 		return $next($request);

@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use App\Vehicle;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -11,16 +12,21 @@ class VehiclesTableSeeder extends Seeder {
     {
         $faker = Faker::create();
 
-        foreach(range(1, 10) as $index)
+        foreach(range(1, 50) as $index)
         {
+            //get random user to assign to car
+            $user_ids = User::lists('id');
+
+            $vehicle_make = $faker->randomElement(['Honda','Mercedes','BMW', 'Infiniti']);
+            $vehicle_models = ['Honda'=>'Accord', 'Mercedes'=>'C300', 'BMW'=>'535i', 'Infiniti'=>'G37S'];
 
             Vehicle::create([
-                'user_id' => 1,
+                'user_id' => $user_ids[array_rand($user_ids)],
                 'year' => $faker->numberBetween(date('Y')-8, date('Y')),
-                'make' => $faker->randomElement(array ('Honda','Mercedes','BMW', 'Infiniti')),
+                'make' => $vehicle_make,
+                'model' => $vehicle_models[$vehicle_make],
                 'color' => $faker->randomElement(array ('Black','Gray','Blue', 'White', 'Red')),
                 'type' => $faker->randomElement(array ('Sedan', 'SUV')),
-//                'license_plate' => strtoupper($faker->randomDigit.$faker->randomLetter.$faker->randomLetter.$faker->randomLetter.$faker->randomNumber(3)),
                 'license_plate' => strtoupper(Str::quickRandom(7)),
             ]);
         }

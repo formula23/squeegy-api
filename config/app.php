@@ -39,7 +39,7 @@ return [
 	|
 	*/
 
-	'timezone' => 'UTC',
+	'timezone' => 'America/Los_Angeles',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -145,7 +145,6 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
         'Chrisbjr\ApiGuard\Providers\ApiGuardServiceProvider',
-
 	],
 
 	/*
@@ -193,7 +192,6 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
-
 	],
 
 ];

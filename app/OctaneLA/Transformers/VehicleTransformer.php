@@ -28,6 +28,7 @@ class VehicleTransformer extends TransformerAbstract {
         return [
             'year' => $vehicle->year,
             'make' => $vehicle->make,
+            'model' => $vehicle->model,
             'color' => $vehicle->color,
             'type' => $vehicle->type,
             'license_plate' => $vehicle->license_plate,
