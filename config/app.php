@@ -78,7 +78,7 @@ return [
 	|
 	*/
 
-	'key' => env('APP_KEY', 'SomeRandomString'),
+	'key' => env('APP_KEY', '8BdnYjFNghQdNK9yJXBx7potduorNB2e'),
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
 
@@ -144,6 +144,7 @@ return [
 		'App\Providers\ConfigServiceProvider',
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
+        'Chrisbjr\ApiGuard\Providers\ApiGuardServiceProvider',
 
 	],
 

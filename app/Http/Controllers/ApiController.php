@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Response;
 use \Illuminate\Http\Response as IlluminateResponse;
 
@@ -16,7 +17,7 @@ use \Illuminate\Http\Response as IlluminateResponse;
  * Class ApiController
  * @package App\Http\Controllers
  */
-class ApiController extends Controller {
+class ApiController extends ApiGuardController {
 
     /**
      * @var int

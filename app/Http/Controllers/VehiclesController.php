@@ -1,26 +1,14 @@
 <?php namespace App\Http\Controllers;
 
 use App\OctaneLA\Transformers\VehicleTransformer;
+use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Response;
 use App\Vehicle;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class VehiclesController extends ApiController {
-
-    /**
-     * @var App\OctaneLA\Transformers\VehicleTransformer
-     */
-    protected $vehicleTransformer;
-
-    function __construct(VehicleTransformer $vehicleTransformer)
-    {
-        $this->vehicleTransformer = $vehicleTransformer;
-
-//        $this->middleware('auth.basic');
-
-    }
+class VehiclesController extends ApiGuardController {
 
 
     /**
@@ -32,9 +20,7 @@ class VehiclesController extends ApiController {
 	{
         $vehicles = Vehicle::all();
 
-        return $this->respond([
-            'data' => $this->vehicleTransformer->transformCollection($vehicles->all())
-        ]);
+        return $this->response->withCollection($vehicles, new VehicleTransformer, 'vehicles');
 
 	}
 
@@ -48,18 +34,19 @@ class VehiclesController extends ApiController {
 		//
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return Response
+     */
 	public function store(Request $request)
 	{
         if( ! $request->input('year') &&
             ! $request->input('make') &&
             ! $request->input('color'))
         {
-            return $this->respondValidationError("Required parameters missing!");
+            return $this->response->errorWrongArgs('Arguments missing');
         }
 
         $data = $request->all();
@@ -67,7 +54,7 @@ class VehiclesController extends ApiController {
 
         $vehicle = Vehicle::create($data);
 
-        return $this->respondCreated($vehicle, 'Vehicle Created');
+        return $this->response->withItem($vehicle, new VehicleTransformer);
 
     }
 
@@ -83,13 +70,11 @@ class VehiclesController extends ApiController {
 
         if ( ! $vehicle)
         {
-            return $this->respondNotFound('Vehicle does not exist');
+            return $this->response->errorNotFound('Vehicle does not exist');
 
         }
 
-        return $this->respond([
-            'data' => $this->vehicleTransformer->transform($vehicle)
-        ]);
+        return $this->response->withItem($vehicle, new VehicleTransformer);
 
 	}
 

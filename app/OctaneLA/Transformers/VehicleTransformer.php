@@ -9,17 +9,34 @@
 namespace App\OctaneLA\Transformers;
 
 
-class VehicleTransformer extends Transformer {
+use App\Vehicle;
+use League\Fractal\TransformerAbstract;
+
+/**
+ * Class VehicleTransformer
+ * @package App\OctaneLA\Transformers
+ */
+class VehicleTransformer extends TransformerAbstract {
 
 
-    public function transform($vehicle)
+    /**
+     * @param Vehicle $vehicle
+     * @return array
+     */
+    public function transform(Vehicle $vehicle)
     {
         return [
-            'year' => $vehicle['year'],
-            'make' => $vehicle['make'],
-            'color' => $vehicle['color'],
-            'type' => $vehicle['type'],
-            'license_plate' => $vehicle['license_plate']
+            'year' => $vehicle->year,
+            'make' => $vehicle->make,
+            'color' => $vehicle->color,
+            'type' => $vehicle->type,
+            'license_plate' => $vehicle->license_plate,
+            'links' => [
+                [
+                    'rel' => 'self',
+                    'uri' => route('api.v1.vehicles.show', ['vehicles'=>$vehicle->id])
+                ]
+            ],
         ];
     }
 
