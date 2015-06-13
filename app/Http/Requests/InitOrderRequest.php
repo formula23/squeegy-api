@@ -28,7 +28,7 @@ class InitOrderRequest extends Request {
             'vehicle_id' => 'required',
             'price' => 'required',
 		];
-        
+
 	}
 
 }

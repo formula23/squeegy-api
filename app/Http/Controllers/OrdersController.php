@@ -10,13 +10,20 @@ use Illuminate\Http\Request;
  */
 class OrdersController extends ApiGuardController {
 
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
 	/**
 	 * Store a newly created resource in storage.
 	 * @param InitOrderRequest $request
 	 * @return Response
 	 */
-	public function initialize(InitOrderRequest $request)
+	public function store(InitOrderRequest $request)
 	{
 		dd($request);
 	}

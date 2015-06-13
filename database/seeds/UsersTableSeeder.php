@@ -23,14 +23,6 @@ class UsersTableSeeder extends \Illuminate\Database\Seeder {
             'phone'=>"310-600-4938"
         ]);
 
-        User::create([
-            'first_name'=>"Triet",
-            'last_name'=>"Luong",
-            'email'=>"triet.luong@gmail.com",
-            'password'=>bcrypt('12345678'),
-            'phone'=>"626-297-3353"
-        ]);
-
         foreach(range(1,10) as $index)
         {
             User::create([

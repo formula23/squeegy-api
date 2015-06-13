@@ -14,6 +14,14 @@ use App\Http\Requests\LocationRequest;
  */
 class LocationsController extends ApiGuardController {
 
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
 	/**
 	 * Display a listing of the resource.
 	 *

@@ -28,9 +28,9 @@ Route::group(['prefix' => 'api/v1'], function() {
 
     Route::get('orders', 'OrdersController@index');
     Route::get('orders/{orders}', 'OrdersController@show');
-    Route::post('order/', 'OrdersController@initialize');
-    Route::post('order/{orders}/enroute', 'OrdersController@enroute');
-    Route::post('order/{orders}/start', 'OrdersController@start');
-    Route::post('order/{orders}/end', 'OrdersController@end');
+    Route::post('orders/', 'OrdersController@store');
+    Route::post('orders/{orders}/enroute', 'OrdersController@enroute');
+    Route::post('orders/{orders}/start', 'OrdersController@start');
+    Route::post('orders/{orders}/stop', 'OrdersController@stop');
 
 });

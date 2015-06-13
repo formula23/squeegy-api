@@ -9,6 +9,13 @@ use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends ApiGuardController {
 
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     /**
      * Display the specified resource.
