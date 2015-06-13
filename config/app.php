@@ -145,6 +145,7 @@ return [
 		'App\Providers\EventServiceProvider',
 		'App\Providers\RouteServiceProvider',
         'Chrisbjr\ApiGuard\Providers\ApiGuardServiceProvider',
+        'Aloha\Twilio\Support\Laravel\ServiceProvider',
 	],
 
 	/*
@@ -192,6 +193,7 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
+        'Twilio'    => 'Aloha\Twilio\Support\Laravel\Facade',
 	],
 
 ];

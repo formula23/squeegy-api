@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use Aloha\Twilio\Twilio;
 use App\OctaneLA\Transformers\VehicleTransformer;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Support\Facades\Auth;
@@ -16,12 +17,18 @@ use App\Http\Requests\UpdateVehicleRequest;
 class VehiclesController extends ApiGuardController {
 
     /**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
+     * Display a listing of the resource.
+     *
+     * @param Twilio $twilio
+     * @return Response
+     */
+	public function index(Twilio $twilio)
 	{
+
+        $twilio->message('+13106004938', '');
+
+        dd($twilio);
+
         $vehicles = Auth::user()->vehicles;
 
         return $this->response->withCollection($vehicles, new VehicleTransformer);

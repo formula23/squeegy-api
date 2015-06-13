@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use Aloha\Twilio\Twilio;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -33,6 +34,12 @@ class AppServiceProvider extends ServiceProvider {
         if ($this->app->environment() == 'local') {
             $this->app->register('Laracasts\Generators\GeneratorsServiceProvider');
         }
+
+        $this->app->bind('\Aloha\Twilio\Twilio', function() {
+            $twilio_config = \Config::get('twilio.twilio.connections.twilio');
+            return new Twilio($twilio_config['sid'], $twilio_config['token'], $twilio_config['from'], $twilio_config['ssl_verify']);
+        });
+
 	}
 
 }

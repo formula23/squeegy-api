@@ -24,3 +24,5 @@ Route::group(['prefix' => 'api/v1'], function() {
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
 });
+
+Route::get('send', 'SendController@index');
