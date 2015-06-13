@@ -26,6 +26,7 @@ class VehicleTransformer extends TransformerAbstract {
     public function transform(Vehicle $vehicle)
     {
         return [
+            'id' => $vehicle->id,
             'year' => $vehicle->year,
             'make' => $vehicle->make,
             'model' => $vehicle->model,

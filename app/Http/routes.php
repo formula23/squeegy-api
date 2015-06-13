@@ -23,6 +23,14 @@ Route::group(['prefix' => 'api/v1'], function() {
     Route::post('auth/login', 'Auth\AuthController@postLogin');
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
-});
+    Route::get('services', ['as'=>'api.v1.services.index', 'uses'=>'ServicesController@index']);
+    Route::get('services/{services}', ['as'=>'api.v1.services.show', 'uses'=>'ServicesController@show']);
 
-Route::get('send', 'SendController@index');
+    Route::get('orders', 'OrdersController@index');
+    Route::get('orders/{orders}', 'OrdersController@show');
+    Route::post('order/', 'OrdersController@initialize');
+    Route::post('order/{orders}/enroute', 'OrdersController@enroute');
+    Route::post('order/{orders}/start', 'OrdersController@start');
+    Route::post('order/{orders}/end', 'OrdersController@end');
+
+});

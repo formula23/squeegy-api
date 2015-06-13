@@ -34,6 +34,11 @@ class RouteServiceProvider extends ServiceProvider {
             return \App\Location::where('user_id', \Auth::id())->find($id);
         });
 
+        $router->bind('orders', function($id) {
+            return \App\Order::where('user_id', \Auth::id())->find($id);
+        });
+
+        $router->model('services', 'App\Service');
 	}
 
 	/**

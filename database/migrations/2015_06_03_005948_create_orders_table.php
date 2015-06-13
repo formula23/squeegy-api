@@ -19,8 +19,9 @@ class CreateOrdersTable extends Migration {
             $table->integer('location_id')->unsigned()->index();
             $table->integer('washer_id')->unsigned()->index();
             $table->integer('service_id')->unsigned()->index();
+            $table->integer('vehicle_id')->unsigned()->index();
             $table->string('job_number')->index();
-            $table->enum('status', array('requested', 'processing', 'completed', 'cancelled'))->index()->default('requested');
+            $table->enum('status', array('requested', 'declined', 'enroute', 'start', 'in-process', 'completed', 'cancelled'))->index()->default('requested');
             $table->text('instructions');
             $table->timestamp('en_route_at');
             $table->timestamp('start_at');
