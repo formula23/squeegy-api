@@ -1,6 +1,7 @@
 <?php namespace App\Providers;
 
 use Aloha\Twilio\Twilio;
+use Aws\Sns\SnsClient;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -38,6 +39,15 @@ class AppServiceProvider extends ServiceProvider {
         $this->app->bind('\Aloha\Twilio\Twilio', function() {
             $twilio_config = \Config::get('twilio.twilio.connections.twilio');
             return new Twilio($twilio_config['sid'], $twilio_config['token'], $twilio_config['from'], $twilio_config['ssl_verify']);
+        });
+
+        $this->app->bind('\Aws\Sns\SnsClient', function() {
+            $aws_config = \Config::get('aws');
+            return SnsClient::factory(array(
+                'key' => $aws_config['key'],
+                'secret' => $aws_config['secret'],
+                'region'  => $aws_config['region']
+            ));
         });
 
 	}

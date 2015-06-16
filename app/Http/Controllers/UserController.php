@@ -6,6 +6,7 @@ use App\OctaneLA\Transformers\UserTransformer;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
+use Aws\Sns\SnsClient;
 
 class UserController extends ApiGuardController {
 
@@ -35,9 +36,18 @@ class UserController extends ApiGuardController {
      * @param UpdateUserRequest $request
      * @return Response
      */
-	public function update(UpdateUserRequest $request)
+	public function update(UpdateUserRequest $request, SnsClient $sns_client)
 	{
-        $request->user()->update($request->all());
+        $data = $request->all();
+
+        $endpoint_arn = $sns_client->createPlatformEndpoint([
+            'PlatformApplicationArn' => \Config::get('aws.sns_arn'),
+            'Token' => $data['push_token'],
+        ]);
+
+        $data['push_token'] = $endpoint_arn->get('EndpointArn');
+
+        $request->user()->update($data);
 
         return $this->response->withItem($request->user(), new UserTransformer());
 	}

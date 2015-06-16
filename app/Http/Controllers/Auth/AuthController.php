@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\OctaneLA\Transformers\UserTransformer;
 use App\User;
+use Cartalyst\Stripe\Stripe;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;

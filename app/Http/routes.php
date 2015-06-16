@@ -13,6 +13,8 @@
 
 Route::group(['prefix' => 'api/v1'], function() {
 
+    Route::get('test', 'TestController@index');
+
     Route::resource('vehicles', 'VehiclesController');
     Route::resource('locations', 'LocationsController');
 
