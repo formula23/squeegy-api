@@ -62,11 +62,12 @@ class OrdersController extends ApiGuardController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show(Order $order)
 	{
-        dd($id);
-		$order = \Auth::user()->orders()->where('id', '=', $id)->get()->toArray();
-        dd($order);
+        if(empty($order->id)) {
+            return $this->response->errorNotFound();
+        }
+        return $this->response->withItem($order, new OrderTransformer);
 	}
 
     /**

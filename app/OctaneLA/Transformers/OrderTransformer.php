@@ -25,6 +25,7 @@ class OrderTransformer extends TransformerAbstract {
     public function transform(Order $order)
     {
         return [
+            'id' =>$order->id,
             'job_number' => $order->job_number,
             'status' => $order->status,
             'location' => $order->location,
