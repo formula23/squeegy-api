@@ -29,6 +29,7 @@ Route::group(['prefix' => 'api/v1'], function() {
     Route::get('orders/', 'OrdersController@index'); //all orders for a user
     Route::get('orders/{orders}', ['as'=>'api.v1.orders.show', 'uses'=>'OrdersController@show']);
     Route::post('orders/', 'OrdersController@store');
+    Route::put('orders/{orders}', 'OrdersController@update');
 
 //    Route::post('orders/{orders}/enroute', 'OrdersController@enroute');
 //    Route::post('orders/{orders}/start', 'OrdersController@start');

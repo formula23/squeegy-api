@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
-use App\Http\Requests\InitOrderRequest;
+use App\Http\Requests\CreateOrderRequest;
+use App\Http\Requests\UpdateOrderRequest;
 use App\OctaneLA\Transformers\OrderTransformer;
 use App\Order;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
@@ -18,7 +19,9 @@ class OrdersController extends ApiGuardController {
     public function __construct()
     {
         parent::__construct();
+
         $this->middleware('auth');
+
     }
 
 	/**
@@ -26,7 +29,7 @@ class OrdersController extends ApiGuardController {
 	 * @param InitOrderRequest $request
 	 * @return Response
 	 */
-	public function store(InitOrderRequest $request)
+	public function store(CreateOrderRequest $request)
 	{
         $data = $request->all();
 
@@ -56,6 +59,17 @@ class OrdersController extends ApiGuardController {
 
 	}
 
+    public function update(Order $order, UpdateOrderRequest $request)
+    {
+        if(empty($order->id)) {
+            return $this->response->errorNotFound();
+        }
+//dd($request->all());
+        $order->update($request->all());
+
+        return $this->response->withItem($order, new OrderTransformer);
+    }
+
 	/**
 	 * Display the specified resource.
 	 *
@@ -69,28 +83,4 @@ class OrdersController extends ApiGuardController {
         }
         return $this->response->withItem($order, new OrderTransformer);
 	}
-
-    /**
-     * @param $id
-     */
-    public function enroute($id)
-    {
-
-    }
-
-    /**
-     * @param $id
-     */
-    public function start($id)
-    {
-
-    }
-
-    /**
-     * @param $id
-     */
-    public function stop($id)
-    {
-
-    }
 }

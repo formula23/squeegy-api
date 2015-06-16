@@ -4,7 +4,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model {
 
-    protected $fillable = ['user_id', 'washer_id', 'service_id', 'vehicle_id', 'job_number', 'location', 'lead_time', 'instructions', 'status'];
+    protected $fillable = [
+        'user_id',
+        'washer_id',
+        'service_id',
+        'vehicle_id',
+        'job_number',
+        'status',
+        'lead_time',
+        'location',
+        'instructions',
+        'en_route_at',
+        'start_at',
+        'end_at',
+        'number_photos',
+        'price',
+        'discount_code',
+        'rating',
+        'rating_comment',
+        ];
 
     protected $attributes = array(
         'status' => 'decline'

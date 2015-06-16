@@ -2,7 +2,7 @@
 
 use App\Http\Requests\Request;
 
-class InitOrderRequest extends Request {
+class CreateOrderRequest extends Request {
 
 	/**
 	 * Determine if the user is authorized to make this request.

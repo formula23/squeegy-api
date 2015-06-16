@@ -22,7 +22,7 @@ class UserTransformer extends TransformerAbstract {
             'email' => $user->email,
             'phone' => $user->phone,
             'photo' => $user->photo,
-            'stripe_id' => $user->stripe_id,
+            'stripe_token' => $user->stripe_token,
             'push_token' => $user->push_token,
             'facebook_id' => $user->facebook_id,
         ];
