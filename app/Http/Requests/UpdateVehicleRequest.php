@@ -23,11 +23,11 @@ class UpdateVehicleRequest extends Request {
 	public function rules()
 	{
         return [
-            'year' => 'required|digits:4',
-            'make' => 'required',
-            'color' => 'required',
-            'type' => 'required',
-            'license_plate' => 'required',
+            'year' => 'sometimes|required|digits:4',
+            'make' => 'sometimes|required',
+            'color' => 'sometimes|required',
+            'type' => 'sometimes|required',
+            'license_plate' => 'sometimes|required',
         ];
 	}
 

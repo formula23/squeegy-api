@@ -22,10 +22,10 @@ class UpdateUserRequest extends Request {
 	public function rules()
 	{
 		return [
-            'first_name' => 'required|min:2',
-            'last_name' => 'required|min:2',
-            'email' => 'required|email|unique:users,email,'.$this->user()->id,
-            'phone' => 'required'
+            'first_name' => 'sometimes|required|min:2',
+            'last_name' => 'sometimes|required|min:2',
+            'email' => 'sometimes|required|email|unique:users,email,'.$this->user()->id,
+            'phone' => 'sometimes|required'
 		];
 	}
 
