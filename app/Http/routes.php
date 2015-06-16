@@ -26,11 +26,12 @@ Route::group(['prefix' => 'api/v1'], function() {
     Route::get('services', ['as'=>'api.v1.services.index', 'uses'=>'ServicesController@index']);
     Route::get('services/{services}', ['as'=>'api.v1.services.show', 'uses'=>'ServicesController@show']);
 
-    Route::get('orders', 'OrdersController@index');
-    Route::get('orders/{orders}', 'OrdersController@show');
+    Route::get('orders/', 'OrdersController@index'); //all orders for a user
+    Route::get('orders/{orders}', ['as'=>'api.v1.orders.show', 'uses'=>'OrdersController@show']);
     Route::post('orders/', 'OrdersController@store');
-    Route::post('orders/{orders}/enroute', 'OrdersController@enroute');
-    Route::post('orders/{orders}/start', 'OrdersController@start');
-    Route::post('orders/{orders}/stop', 'OrdersController@stop');
+
+//    Route::post('orders/{orders}/enroute', 'OrdersController@enroute');
+//    Route::post('orders/{orders}/start', 'OrdersController@start');
+//    Route::post('orders/{orders}/stop', 'OrdersController@stop');
 
 });

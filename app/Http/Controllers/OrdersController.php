@@ -1,6 +1,8 @@
 <?php namespace App\Http\Controllers;
 
 use App\Http\Requests\InitOrderRequest;
+use App\OctaneLA\Transformers\OrderTransformer;
+use App\Order;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
 
@@ -15,6 +17,7 @@ class OrdersController extends ApiGuardController {
      */
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('auth');
     }
 
@@ -25,7 +28,32 @@ class OrdersController extends ApiGuardController {
 	 */
 	public function store(InitOrderRequest $request)
 	{
-		dd($request);
+        $data = $request->all();
+
+        //TO-DO:
+        //does current user have any washes in progress.. - accept, enroute, start, in-progress,
+
+
+
+        //does the vehicle being sent belong to this user
+        if( ! \Auth::user()->vehicles()->where('id', '=', $data['vehicle_id'])->get()->count()) {
+            return $this->response->errorWrongArgs('Vehicle id invalid');
+        }
+
+        $data["job_number"] = strtoupper(substr( md5(rand()), 0, 6));
+
+        $order = new Order($data);
+
+        $myOrder = new \App\OctaneLA\Orders($order);
+
+        $order->price = $myOrder->getPrice();
+        $order->status = $myOrder->areWeOpen() ? "accept" : "decline" ;
+        $order->lead_time = $myOrder->getLeadTime();
+
+        \Auth::user()->orders()->save($order);
+
+        return $this->response->withItem($order, new OrderTransformer);
+
 	}
 
 	/**
@@ -36,7 +64,9 @@ class OrdersController extends ApiGuardController {
 	 */
 	public function show($id)
 	{
-		//
+        dd($id);
+		$order = \Auth::user()->orders()->where('id', '=', $id)->get()->toArray();
+        dd($order);
 	}
 
     /**

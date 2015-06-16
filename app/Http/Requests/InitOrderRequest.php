@@ -22,11 +22,9 @@ class InitOrderRequest extends Request {
 	public function rules()
 	{
 		return [
-			'location' => 'required',
-            'washer_id' => 'required',
             'service_id' => 'required',
             'vehicle_id' => 'required',
-            'price' => 'required',
+            'location' => 'required',
 		];
 
 	}

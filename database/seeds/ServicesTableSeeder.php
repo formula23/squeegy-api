@@ -10,15 +10,15 @@ class ServicesTableSeeder extends Seeder {
 
         Service::create([
             'name' => 'Basic',
-            'price' => '19',
-            'details' => 'This is the basic wash',
-            'time' => '20',
+            'price' => '2400',
+            'details' => 'This is the basic wash.',
+            'time' => '25',
         ]);
 
         Service::create([
-            'name' => 'Full Monty',
-            'price' => '29',
-            'details' => 'This is the fully monty wash.. inside and out.',
+            'name' => 'Extreme',
+            'price' => '3400',
+            'details' => 'This is the extreme wash.. inside and out...',
             'time' => '45',
         ]);
     }

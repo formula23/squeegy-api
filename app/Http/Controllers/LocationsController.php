@@ -19,6 +19,7 @@ class LocationsController extends ApiGuardController {
      */
     public function __construct()
     {
+        parent::__construct();
         $this->middleware('auth');
     }
 
@@ -41,7 +42,7 @@ class LocationsController extends ApiGuardController {
      * @param Location $location
      * @return Response
      */
-	public function store(LocationRequest $request, Location $location)
+	public function store(LocationRequest $request)
 	{
         $location = new Location($request->all());
 

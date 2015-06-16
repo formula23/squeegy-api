@@ -8,7 +8,8 @@
 		"laravel/framework": "5.0.*",
 		"doctrine/dbal": "~2.5",
         "chrisbjr/api-guard": "~2.0",
-		"aloha/twilio": "2.0.0-RC2"
+		"aloha/twilio": "2.0.0-RC2",
+		"cartalyst/stripe": "^1.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",

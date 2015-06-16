@@ -27,14 +27,14 @@ class DatabaseSeeder extends Seeder {
         User::truncate();
         Vehicle::truncate();
         Washer::truncate();
-        Location::truncate();
+//        Location::truncate();
         Service::truncate();
 
 		$this->call('UsersTableSeeder');
 		$this->call('VehiclesTableSeeder');
 		$this->call('WashersTableSeeder');
 		$this->call('ServicesTableSeeder');
-		$this->call('LocationsTableSeeder');
+//		$this->call('LocationsTableSeeder');
 
         $this->call('ApiKeysTableSeeder');
 

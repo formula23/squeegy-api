@@ -16,21 +16,22 @@ class CreateOrdersTable extends Migration {
 		{
 			$table->increments('id');
             $table->integer('user_id')->unsigned()->index();
-            $table->integer('location_id')->unsigned()->index();
-            $table->integer('washer_id')->unsigned()->index();
+            $table->integer('washer_id')->unsigned()->nullable()->index();
             $table->integer('service_id')->unsigned()->index();
             $table->integer('vehicle_id')->unsigned()->index();
-            $table->string('job_number')->index();
-            $table->enum('status', array('requested', 'declined', 'enroute', 'start', 'in-process', 'completed', 'cancelled'))->index()->default('requested');
-            $table->text('instructions');
-            $table->timestamp('en_route_at');
-            $table->timestamp('start_at');
-            $table->timestamp('end_at');
-            $table->string('number_photos');
-            $table->float('price');
-            $table->string('discount_code');
-            $table->string('rating');
-            $table->text('rating_comment');
+            $table->string('job_number')->index()->nullable();
+            $table->enum('status', array('decline', 'accept', 'confirm', 'cancel', 'enroute', 'start', 'in-progress', 'done'))->index()->default('decline');
+            $table->integer('lead_time')->unsigned()->nullable();
+            $table->text('location');
+            $table->text('instructions')->nullable();
+            $table->timestamp('en_route_at')->nullable();
+            $table->timestamp('start_at')->nullable();
+            $table->timestamp('end_at')->nullable();
+            $table->string('number_photos')->nullable();
+            $table->integer('price')->nullable()->unsigned();
+            $table->string('discount_code')->nullable();
+            $table->string('rating')->nullable();
+            $table->text('rating_comment')->nullable();
 
 			$table->timestamps();
 		});

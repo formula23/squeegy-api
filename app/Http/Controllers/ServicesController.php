@@ -14,6 +14,15 @@ use Illuminate\Http\Request;
 class ServicesController extends ApiGuardController {
 
     /**
+     *
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware('auth');
+    }
+
+    /**
      * Get all services
      */
     public function index()

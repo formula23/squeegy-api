@@ -27,7 +27,7 @@ class UpdateVehicleRequest extends Request {
             'make' => 'required',
             'color' => 'required',
             'type' => 'required',
-            'license_plate' => 'required|min:7|max:7',
+            'license_plate' => 'required',
         ];
 	}
 

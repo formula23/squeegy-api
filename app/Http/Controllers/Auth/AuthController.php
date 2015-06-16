@@ -46,8 +46,8 @@ class AuthController extends Controller {
         $this->response = new EllipseResponse(new Manager);
 
         $this->middleware('auth.api');
-		$this->middleware('guest', ['except' => ['getLogout']]);
-        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
+//		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
+//        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
 	}
 
     /**
