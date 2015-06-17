@@ -26,7 +26,9 @@ Route::group(['prefix' => 'api/v1'], function() {
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
     Route::get('services', ['as'=>'api.v1.services.index', 'uses'=>'ServicesController@index']);
+    Route::get('services/coords', 'ServicesController@coords');
     Route::get('services/{services}', ['as'=>'api.v1.services.show', 'uses'=>'ServicesController@show']);
+
 
     Route::get('orders/', 'OrdersController@index'); //all orders for a user
     Route::get('orders/{orders}', ['as'=>'api.v1.orders.show', 'uses'=>'OrdersController@show']);

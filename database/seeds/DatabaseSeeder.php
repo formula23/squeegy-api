@@ -1,5 +1,6 @@
 <?php
 
+use App\ServiceCoords;
 use App\Vehicle;
 use App\Washer;
 use App\User;
@@ -29,12 +30,13 @@ class DatabaseSeeder extends Seeder {
         Washer::truncate();
 //        Location::truncate();
         Service::truncate();
+        ServiceCoords::truncate();
 
 		$this->call('UsersTableSeeder');
 		$this->call('VehiclesTableSeeder');
 		$this->call('WashersTableSeeder');
 		$this->call('ServicesTableSeeder');
-//		$this->call('LocationsTableSeeder');
+		$this->call('ServiceCoordsTableSeeder');
 
         $this->call('ApiKeysTableSeeder');
 

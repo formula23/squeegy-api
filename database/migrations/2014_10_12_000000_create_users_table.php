@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration {
 			$table->string('password', 60);
             $table->string('phone');
             $table->string('photo')->nullable();
-            $table->string('stripe_token')->nullable();
+            $table->string('stripe_customer_id')->nullable();
             $table->string('push_token')->nullable();
             $table->string('facebook_id')->nullable();
 

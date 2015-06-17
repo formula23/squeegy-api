@@ -4,7 +4,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\OctaneLA\Transformers\UserTransformer;
 use App\User;
-use Cartalyst\Stripe\Stripe;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
@@ -12,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use League\Fractal\Manager;
 use EllipseSynergie\ApiResponse\Laravel\Response as EllipseResponse;
+use Stripe\Stripe;
+use Stripe\Charge as Stripe_Charge;
+use Stripe\Customer as Stripe_Customer;
 
 
 /**
@@ -77,7 +79,9 @@ class AuthController extends Controller {
      */
     public function postRegister(Request $request)
     {
-        $validator = $this->registrar->validator($request->all());
+        $data = $request->all();
+
+        $validator = $this->registrar->validator($data);
 
         if ($validator->fails())
         {
@@ -86,7 +90,14 @@ class AuthController extends Controller {
             );
         }
 
-        $this->auth->login($this->registrar->create($request->all()));
+        Stripe::setApiKey(\Config::get('stripe.api_key'));
+        $customer = Stripe_Customer::create([
+            "email" => $data['email'],
+        ]);
+
+        $data['stripe_customer_id'] = $customer->id;
+
+        $this->auth->login($this->registrar->create($data));
 
         return $this->response->withItem($this->auth->user(), new UserTransformer());
     }

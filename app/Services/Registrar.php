@@ -20,6 +20,7 @@ class Registrar implements RegistrarContract {
 			'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:8',
             'phone' => 'required',
+            'stripe_customer_id' => 'required',
 		]);
 	}
 
@@ -37,6 +38,7 @@ class Registrar implements RegistrarContract {
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
             'phone' => $data['phone'],
+            'stripe_customer_id' => $data['stripe_customer_id'],
 		]);
 	}
 

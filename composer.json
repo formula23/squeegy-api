@@ -9,7 +9,7 @@
 		"doctrine/dbal": "~2.5",
         "chrisbjr/api-guard": "~2.0",
 		"aloha/twilio": "2.0.0-RC2",
-		"cartalyst/stripe": "^1.0",
+        "stripe/stripe-php": "2.*",
         "aws/aws-sdk-php-laravel": "~2.0"
 	},
 	"require-dev": {

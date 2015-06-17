@@ -66,7 +66,7 @@ class OrdersController extends ApiGuardController {
             return $this->response->errorNotFound();
         }
 
-        if( ! empty($request->status))
+        if($request->status)
         {
             switch($request->status)
             {
@@ -79,17 +79,60 @@ class OrdersController extends ApiGuardController {
                         'TargetArn' => $request->user()->push_token,
                         'MessageStructure' => 'json',
                         'Message' => json_encode([
-                            'aps' => [
-                                'alert' => 'A washer is on his way...',
-                                'sound' => 'default',
-                                'badge' => 1
-                            ],
-                            'order_id' => $order->id,
+                            'default' => 'A washer is on his way...',
+                            env('APNS') => json_encode([
+                                'aps' => [
+                                    'alert' => 'A washer is on his way...',
+                                    'sound' => 'default',
+                                    'badge' => 1
+                                ],
+                                'order_id' => $order->id,
+                            ])
                         ]),
                     ]);
                     break;
-                case "start":
-                    // in-progess
+                case "in-progress":
+
+                    $sns_client->publish([
+                        'TargetArn' => $request->user()->push_token,
+                        'MessageStructure' => 'json',
+                        'Message' => json_encode([
+                            'default' => 'The washer has started washing your car...',
+                            env('APNS') => json_encode([
+                                'aps' => [
+                                    'alert' => 'The washer has started washing your car...',
+                                    'sound' => 'default',
+                                    'badge' => 1
+                                ],
+                                'order_id' => $order->id,
+                            ])
+                        ]),
+                    ]);
+
+                    break;
+
+                case "done":
+
+                    //charge the credit card...
+
+
+                    //send push notification...
+                    $sns_client->publish([
+                        'TargetArn' => $request->user()->push_token,
+                        'MessageStructure' => 'json',
+                        'Message' => json_encode([
+                            'default' => 'We are done washing your car',
+                            env('APNS') => json_encode([
+                                'aps' => [
+                                    'alert' => 'We are done washing your car',
+                                    'sound' => 'default',
+                                    'badge' => 1
+                                ],
+                                'order_id' => $order->id,
+                            ])
+                        ]),
+                    ]);
+
                     break;
             }
         }
