@@ -6,4 +6,9 @@ class ServiceCoord extends Model {
 
 	protected $fillable = ['lat', 'lng'];
 
+    protected $casts = [
+        'lat' => 'float',
+        'lng' => 'float',
+    ];
+
 }
