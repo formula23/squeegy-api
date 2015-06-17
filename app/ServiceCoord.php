@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceCoords extends Model {
+class ServiceCoord extends Model {
 
 	protected $fillable = ['lat', 'lng'];
 

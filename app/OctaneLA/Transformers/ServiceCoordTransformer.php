@@ -9,14 +9,14 @@
 namespace App\OctaneLA\Transformers;
 
 
-use App\ServiceCoords;
+use App\ServiceCoord;
 use League\Fractal\TransformerAbstract;
 
 class ServiceCoordTransformer extends TransformerAbstract {
 
-    public function transform(ServiceCoords $service_coords)
+    public function transform(ServiceCoord $service_coord)
     {
-        return [$service_coords->lat, $service_coords->lng];
+        return [$service_coord->lat, $service_coord->lng];
     }
 
 }
