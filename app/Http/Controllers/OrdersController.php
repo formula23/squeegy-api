@@ -4,6 +4,7 @@ use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\OctaneLA\Transformers\OrderTransformer;
 use App\Order;
+use Aws\Sns\SnsClient;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
 
@@ -59,12 +60,40 @@ class OrdersController extends ApiGuardController {
 
 	}
 
-    public function update(Order $order, UpdateOrderRequest $request)
+    public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client)
     {
         if(empty($order->id)) {
             return $this->response->errorNotFound();
         }
-//dd($request->all());
+
+        if( ! empty($request->status))
+        {
+            switch($request->status)
+            {
+                case "confirm":
+                    //send SMS to workers...
+                    break;
+                case "enroute":
+                    //send push notification to app
+                    $sns_client->publish([
+                        'TargetArn' => $request->user()->push_token,
+                        'MessageStructure' => 'json',
+                        'Message' => json_encode([
+                            'aps' => [
+                                'alert' => 'A washer is on his way...',
+                                'sound' => 'default',
+                                'badge' => 1
+                            ],
+                            'order_id' => $order->id,
+                        ]),
+                    ]);
+                    break;
+                case "start":
+                    // in-progess
+                    break;
+            }
+        }
+
         $order->update($request->all());
 
         return $this->response->withItem($order, new OrderTransformer);
