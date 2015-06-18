@@ -17,8 +17,9 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
 
         return [
             'open' => $data['open'],
+            'description' => $data['description'],
             'time' => $data['time'],
-            'max' => $data['max'],
+            'time_label' => $data['time_label'],
         ];
 
     }

@@ -8,7 +8,7 @@ use App\OctaneLA\Transformers\ServiceCoordTransformer;
 use App\Service;
 use App\ServiceCoord;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
-use Illuminate\Http\Request;
+use Request;
 use Carbon\Carbon;
 
 /**
@@ -57,8 +57,8 @@ class ServicesController extends ApiGuardController {
     {
         $order = new Orders();
 
-        $time = $order->getLeadTime();
-        
+//        $time = $order->getLeadTime();
+
         $data = [
             'open' => $order->open(),
             'description' => 'Closed due to high-demand',
