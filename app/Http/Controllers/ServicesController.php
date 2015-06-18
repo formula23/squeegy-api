@@ -60,7 +60,7 @@ class ServicesController extends ApiGuardController {
 //        $time = $order->getLeadTime();
 
         $data = [
-            'open' => $order->open(),
+            'accept' => (int)$order->open(),
             'description' => 'Closed due to high-demand',
             'time' => '3',
             'time_label' => 'hours',

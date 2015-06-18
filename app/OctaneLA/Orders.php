@@ -34,8 +34,8 @@ class Orders {
     public function open()
     {
         $curr_hr = Carbon\Carbon::now()->hour;
-        if($curr_hr >= \Config::get('squeegy.operating_hours.open') && $curr_hr < \Config::get('squeegy.operating_hours.close')) return true;
-        return false;
+        if($curr_hr >= \Config::get('squeegy.operating_hours.open') && $curr_hr < \Config::get('squeegy.operating_hours.close')) return 1;
+        return 0;
     }
 
     /**
