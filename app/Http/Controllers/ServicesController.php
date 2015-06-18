@@ -62,9 +62,8 @@ class ServicesController extends ApiGuardController {
 
         $data = [
             'open' => $order->open(),
-            'time' => $order->getLeadTime(),
-            'time_label' => '',
-            'max' => \Config::get('squeegy.operating_hours.max_lead_time'),
+            'time' => '3',
+            'time_label' => 'hours',
         ];
 
         return $this->response->withItem($data, new ServiceAvailabilityTransformer);
