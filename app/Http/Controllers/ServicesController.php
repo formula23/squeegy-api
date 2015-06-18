@@ -62,6 +62,7 @@ class ServicesController extends ApiGuardController {
 
         $data = [
             'open' => $order->open(),
+            'description' => 'Closed due to high-demand',
             'time' => '3',
             'time_label' => 'hours',
         ];
