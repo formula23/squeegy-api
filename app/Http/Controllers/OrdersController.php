@@ -7,6 +7,9 @@ use App\Order;
 use Aws\Sns\SnsClient;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
+use Stripe\Stripe;
+use Stripe\Customer as StripeCustomer;
+use Aloha\Twilio\Twilio;
 
 /**
  * Class OrdersController
@@ -36,8 +39,9 @@ class OrdersController extends ApiGuardController {
 
         //TO-DO:
         //does current user have any washes in progress.. - accept, enroute, start, in-progress,
-
-
+        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','in-progress'])->get()->count()) {
+            return $this->response->errorUnwillingToProcess('User already has an incomplete order.');
+        }
 
         //does the vehicle being sent belong to this user
         if( ! \Auth::user()->vehicles()->where('id', '=', $data['vehicle_id'])->get()->count()) {
@@ -48,10 +52,9 @@ class OrdersController extends ApiGuardController {
 
         $order = new Order($data);
 
-        $myOrder = new \App\OctaneLA\Orders($order);
+        $myOrder = new \App\OctaneLA\Orders();
 
-        $order->price = $myOrder->getPrice();
-        $order->status = $myOrder->areWeOpen() ? "accept" : "decline" ;
+        $order->price = $myOrder->getPrice($order);
         $order->lead_time = $myOrder->getLeadTime();
 
         \Auth::user()->orders()->save($order);
@@ -60,7 +63,7 @@ class OrdersController extends ApiGuardController {
 
 	}
 
-    public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client)
+    public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client, Twilio $twilio)
     {
         if(empty($order->id)) {
             return $this->response->errorNotFound();
@@ -71,7 +74,31 @@ class OrdersController extends ApiGuardController {
             switch($request->status)
             {
                 case "confirm":
+
+                    $worker_msg = "Squeegy: New Order#".$order->id;
+
                     //send SMS to workers...
+                    $twilio->message('+13104332997', $worker_msg);
+//                    $twilio->message('+16266951460', $worker_msg);
+                    $twilio->message('+13106004938', $worker_msg);
+
+                    //send push notification to app
+                    $sns_client->publish([
+                        'TargetArn' => $request->user()->push_token,
+                        'MessageStructure' => 'json',
+                        'Message' => json_encode([
+                            'default' => 'Hang tight, we will be on our way soon!',
+                            env('APNS') => json_encode([
+                                'aps' => [
+                                    'alert' => 'Hang tight, we will be on our way soon!',
+                                    'sound' => 'default',
+                                    'badge' => 1
+                                ],
+                                'order_id' => $order->id,
+                            ])
+                        ]),
+                    ]);
+
                     break;
                 case "enroute":
                     //send push notification to app
@@ -79,10 +106,10 @@ class OrdersController extends ApiGuardController {
                         'TargetArn' => $request->user()->push_token,
                         'MessageStructure' => 'json',
                         'Message' => json_encode([
-                            'default' => 'A washer is on his way...',
+                            'default' => 'Sergio Lopez is on his way...',
                             env('APNS') => json_encode([
                                 'aps' => [
-                                    'alert' => 'A washer is on his way...',
+                                    'alert' => 'Sergio Lopez is on his way...',
                                     'sound' => 'default',
                                     'badge' => 1
                                 ],
@@ -97,10 +124,10 @@ class OrdersController extends ApiGuardController {
                         'TargetArn' => $request->user()->push_token,
                         'MessageStructure' => 'json',
                         'Message' => json_encode([
-                            'default' => 'The washer has started washing your car...',
+                            'default' => 'Sergio has started washing your car...',
                             env('APNS') => json_encode([
                                 'aps' => [
-                                    'alert' => 'The washer has started washing your car...',
+                                    'alert' => 'Sergio has started washing your car...',
                                     'sound' => 'default',
                                     'badge' => 1
                                 ],
@@ -114,6 +141,10 @@ class OrdersController extends ApiGuardController {
                 case "done":
 
                     //charge the credit card...
+                    Stripe::setApiKey(\Config::get('stripe.api_key'));
+                    $stripe_customer = StripeCustomer::retrieve($request->user()->stripe_customer_id);
+
+
 
 
                     //send push notification...
@@ -121,10 +152,10 @@ class OrdersController extends ApiGuardController {
                         'TargetArn' => $request->user()->push_token,
                         'MessageStructure' => 'json',
                         'Message' => json_encode([
-                            'default' => 'We are done washing your car',
+                            'default' => 'We are done washing your car. Your credit card has been charged.',
                             env('APNS') => json_encode([
                                 'aps' => [
-                                    'alert' => 'We are done washing your car',
+                                    'alert' => 'We are done washing your car. Your credit card has been charged.',
                                     'sound' => 'default',
                                     'badge' => 1
                                 ],

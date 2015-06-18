@@ -27,7 +27,6 @@ class VehiclesController extends ApiGuardController {
     /**
      * Display a listing of the resource.
      *
-     * @param Twilio $twilio
      * @return Response
      */
 	public function index()

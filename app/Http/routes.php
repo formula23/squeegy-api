@@ -27,6 +27,7 @@ Route::group(['prefix' => 'api/v1'], function() {
 
     Route::get('services', ['as'=>'api.v1.services.index', 'uses'=>'ServicesController@index']);
     Route::get('services/coords', 'ServicesController@coords');
+    Route::get('services/availability', 'ServicesController@availability');
     Route::get('services/{services}', ['as'=>'api.v1.services.show', 'uses'=>'ServicesController@show']);
 
 

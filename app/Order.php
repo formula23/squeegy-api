@@ -25,7 +25,7 @@ class Order extends Model {
         ];
 
     protected $attributes = array(
-        'status' => 'decline'
+        'status' => 'pending'
     );
 
     public function getLocationAttribute($value)

@@ -7,6 +7,7 @@ class ServicesTableSeeder extends Seeder {
 
     public function run()
     {
+        Service::truncate();
 
         Service::create([
             'name' => 'Basic',

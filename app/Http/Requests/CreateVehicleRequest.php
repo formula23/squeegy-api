@@ -26,7 +26,6 @@ class CreateVehicleRequest extends Request {
             'make' => 'required',
             'color' => 'required',
             'type' => 'required',
-            'license_plate' => 'required',
 		];
 	}
 

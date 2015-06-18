@@ -1,28 +1,21 @@
 <?php namespace App\Http\Controllers;
 
 use App\Http\Requests;
-
+use App\OctaneLA\Orders;
+use App\OctaneLA\Transformers\ServiceAvailabilityTransformer;
 use App\OctaneLA\Transformers\ServiceTransformer;
 use App\OctaneLA\Transformers\ServiceCoordTransformer;
 use App\Service;
 use App\ServiceCoord;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 /**
  * Class ServicesController
  * @package App\Http\Controllers
  */
 class ServicesController extends ApiGuardController {
-
-    /**
-     *
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->middleware('auth', ['except' => ['coords']]);
-    }
 
     /**
      * Get all services
@@ -59,5 +52,23 @@ class ServicesController extends ApiGuardController {
 
         return $this->response->withCollection($service_coords, new ServiceCoordTransformer);
     }
+
+    public function availability()
+    {
+        $order = new Orders();
+
+        $time = $order->getLeadTime();
+        dd($time);
+
+        $data = [
+            'open' => $order->open(),
+            'time' => $order->getLeadTime(),
+            'time_label' => '',
+            'max' => \Config::get('squeegy.operating_hours.max_lead_time'),
+        ];
+
+        return $this->response->withItem($data, new ServiceAvailabilityTransformer);
+    }
+
 
 }

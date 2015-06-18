@@ -10,6 +10,9 @@ class VehiclesTableSeeder extends Seeder {
 
     public function run()
     {
+
+        Vehicle::truncate();
+
         $faker = Faker::create();
 
         foreach(range(1, 50) as $index)

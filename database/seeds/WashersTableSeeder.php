@@ -8,6 +8,8 @@ class WashersTableSeeder extends Seeder {
 
     public function run()
     {
+        Washer::truncate();
+
         $faker = Faker::create();
 
         foreach(range(1, 5) as $index)

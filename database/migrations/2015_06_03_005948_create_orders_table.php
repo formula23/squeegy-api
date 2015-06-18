@@ -20,7 +20,7 @@ class CreateOrdersTable extends Migration {
             $table->integer('service_id')->unsigned()->index();
             $table->integer('vehicle_id')->unsigned()->index();
             $table->string('job_number')->index()->nullable();
-            $table->enum('status', array('decline', 'accept', 'confirm', 'cancel', 'enroute', 'start', 'in-progress', 'done'))->index()->default('decline');
+            $table->enum('status', array('pending', 'confirm', 'cancel', 'enroute', 'in-progress', 'done'))->index()->default('pending');
             $table->integer('lead_time')->unsigned()->nullable();
             $table->text('location');
             $table->text('instructions')->nullable();

@@ -16,10 +16,6 @@ use Carbon;
 class Orders {
 
     /**
-     * @var Order
-     */
-    protected $order;
-    /**
      * @var int
      */
     protected $base_lead_time = 30;
@@ -33,31 +29,26 @@ class Orders {
     protected $suv_surcharge_multiplier = 2;
 
     /**
-     * @param Order $order
-     */
-    public function __construct(Order $order)
-    {
-        $this->order = $order;
-    }
-
-    /**
      * @return bool
      */
-    public function areWeOpen()
+    public function open()
     {
-        $curr_time = Carbon\Carbon::now()->hour;
-        if($curr_time >= \Config::get('squeegy.operating_hours.open') && $curr_time <= \Config::get('squeegy.operating_hours.close')) return true;
+        $curr_hr = Carbon\Carbon::now()->hour;
+        if($curr_hr >= \Config::get('squeegy.operating_hours.open') && $curr_hr < \Config::get('squeegy.operating_hours.close')) return true;
         return false;
     }
 
     /**
+     * @param Order $order
      * @return int
      */
-    public function getPrice()
+    public function getPrice(Order $order)
     {
-        $base_price = $this->order->service->price;
+        return $order->service->price;
 
-        switch($this->order->vehicle->type)
+        $base_price = $order->service->price;
+
+        switch($order->vehicle->type)
         {
             case "SUV":
                 $base_price += $this->suv_surcharge;

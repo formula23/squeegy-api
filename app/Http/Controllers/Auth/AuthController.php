@@ -92,10 +92,15 @@ class AuthController extends Controller {
 
         Stripe::setApiKey(\Config::get('stripe.api_key'));
         $customer = Stripe_Customer::create([
+            "description" => $data["first_name"]." ".$data["last_name"],
             "email" => $data['email'],
         ]);
 
         $data['stripe_customer_id'] = $customer->id;
+
+        if( ! $data['stripe_customer_id']) {
+            return $this->response->errorInternalError("Unable to create account.");
+        }
 
         $this->auth->login($this->registrar->create($data));
 
