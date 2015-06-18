@@ -16,7 +16,7 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
     public function transform(array $data) {
 
         return [
-            'open' => $data['open'],
+            'accept' => (int)$data['accept'],
             'description' => $data['description'],
             'time' => $data['time'],
             'time_label' => $data['time_label'],
