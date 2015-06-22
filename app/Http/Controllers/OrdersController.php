@@ -81,10 +81,12 @@ class OrdersController extends ApiGuardController {
         $request_data = $request->all();
 
         if(isset($request_data['promo_code'])) { //calculate promo
-            if($request_data['promo_code'] == "1234") {
+            if($request_data['promo_code'] == "1234" && ! $order->promo_code) {
                 $request_data['price'] = $order->price - 500;
             }
         }
+
+        $push_message = '';
 
         if(isset($request_data['status']))
         {
@@ -92,8 +94,6 @@ class OrdersController extends ApiGuardController {
                 ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']]) {
                 return $this->response->errorWrongArgs('Unable to change status. Requested Status: '.$request_data['status'].' - Current Status: '.$order->status);
             }
-
-            $push_message = '';
 
             switch($request_data['status'])
             {
