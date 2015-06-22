@@ -20,6 +20,8 @@ class Order extends Model {
         'end_at',
         'number_photos',
         'price',
+        'discount',
+        'charged',
         'promo_code',
         'rating',
         'rating_comment',

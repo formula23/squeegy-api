@@ -139,8 +139,6 @@ class AuthController extends Controller {
         }
 
 
-
-
         return $this->response->withItem($this->auth->user(), new UserTransformer());
     }
 
