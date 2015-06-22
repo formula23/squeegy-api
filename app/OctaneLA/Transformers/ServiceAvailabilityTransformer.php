@@ -8,10 +8,14 @@
 
 namespace App\OctaneLA\Transformers;
 
-
+use App\Service;
 use League\Fractal\TransformerAbstract;
 
 class ServiceAvailabilityTransformer extends TransformerAbstract {
+
+    protected $defaultIncludes = [
+        'services'
+    ];
 
     public function transform(array $data) {
 
@@ -22,6 +26,12 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
             'time_label' => $data['time_label'],
         ];
 
+    }
+
+    public function includeServices()
+    {
+        $services = Service::all();
+        return $this->collection($services, new ServiceTransformer);
     }
 
 }

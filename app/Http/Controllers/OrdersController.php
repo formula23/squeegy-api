@@ -47,6 +47,7 @@ class OrdersController extends ApiGuardController {
 	 */
 	public function store(CreateOrderRequest $request)
 	{
+
         $data = $request->all();
 
         //TO-DO:
@@ -196,12 +197,7 @@ class OrdersController extends ApiGuardController {
         }
 
 
-
         return $this->response->withItem($order, new OrderTransformer);
-    }
-
-    public function confirm() {
-        dd("confirm");
     }
 
 	/**

@@ -7,10 +7,20 @@ abstract class Request extends FormRequest {
 
 	public function forbiddenResponse()
     {
-        if ($this->ajax() || $this->wantsJson()) {
-            return new JsonResponse(['Forbidden'], 403);
-        }
+        return new JsonResponse(['error'=>['message'=>'Not authorized for this request. Forbidden.']], 403);
+    }
 
-        return parent::forbiddenResponse();
+    protected function getValidatorInstance()
+    {
+        $validator = parent::getValidatorInstance();
+        $validator->addImplicitExtension('gt', function($attribute, $value, $parameters) {
+
+            if($value > $parameters[0]) {
+                return true;
+            }
+            return false;
+        });
+
+        return $validator;
     }
 }

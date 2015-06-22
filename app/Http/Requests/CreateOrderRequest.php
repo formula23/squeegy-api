@@ -11,7 +11,7 @@ class CreateOrderRequest extends Request {
 	 */
 	public function authorize()
 	{
-		return true;
+        return \Auth::user()->is('customer');
 	}
 
 	/**
@@ -22,11 +22,19 @@ class CreateOrderRequest extends Request {
 	public function rules()
 	{
 		return [
-            'service_id' => 'required',
-            'vehicle_id' => 'required',
+            'service_id' => 'gt:0',
+            'vehicle_id' => 'gt:0',
             'location' => 'required',
 		];
 
 	}
+
+    public function messages()
+    {
+        return [
+            'service_id.gt' => 'Service Id required',
+            'vehicle_id.gt' => 'Vehicle Id required',
+        ];
+    }
 
 }

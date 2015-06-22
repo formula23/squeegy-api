@@ -31,7 +31,7 @@ class UserController extends ApiGuardController {
      */
 	public function show(Request $request)
 	{
-        return $this->response->withItem($request->user(), new UserTransformer());
+        return $this->response->withItem($request->user(), new UserTransformer);
 	}
 
     /**

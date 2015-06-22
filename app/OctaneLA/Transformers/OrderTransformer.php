@@ -8,6 +8,7 @@
 
 namespace App\OctaneLA\Transformers;
 
+use App\OctaneLA\Orders;
 use App\Order;
 use League\Fractal\TransformerAbstract;
 
@@ -31,6 +32,7 @@ class OrderTransformer extends TransformerAbstract {
             'location' => $order->location,
             'instructions' => $order->instructions,
             'price' => $order->price,
+            'eta' => $order->eta,
             'links' => [
                 [
                     'rel' => 'self',

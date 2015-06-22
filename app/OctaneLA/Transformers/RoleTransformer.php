@@ -1,0 +1,27 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: danschultz
+ * Date: 6/22/15
+ * Time: 11:36
+ */
+
+namespace App\OctaneLA\Transformers;
+
+use Bican\Roles\Models\Role;
+use League\Fractal\TransformerAbstract;
+
+class RoleTransformer extends TransformerAbstract {
+
+    public function transform(Role $role)
+    {
+        return [
+            'id' => $role->id,
+            'name' => $role->name,
+            'slug' => $role->slug,
+            'description' => $role->description,
+            'level' => $role->level,
+        ];
+    }
+
+}

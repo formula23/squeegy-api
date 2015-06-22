@@ -125,6 +125,8 @@ class AuthController extends Controller {
         //send SMS phone verification
         $twilio->message($data['phone'], "Squeegy verification code: ".\Config::get('squeegy.sms_verification'));
 
+
+
         return $this->response->withItem($this->auth->user(), new UserTransformer());
     }
 
