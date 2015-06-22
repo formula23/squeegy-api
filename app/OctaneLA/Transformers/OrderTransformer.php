@@ -26,13 +26,14 @@ class OrderTransformer extends TransformerAbstract {
     public function transform(Order $order)
     {
         return [
-            'id' =>$order->id,
+            'id' => (string)$order->id,
             'job_number' => $order->job_number,
             'status' => $order->status,
             'location' => $order->location,
             'instructions' => $order->instructions,
             'price' => $order->price,
             'eta' => $order->eta,
+            'completed_time' => ($order->end_at) ? strtotime($order->end_at) : null,
             'links' => [
                 [
                     'rel' => 'self',
