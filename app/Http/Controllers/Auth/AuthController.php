@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Auth;
 
+use Aloha\Twilio\Twilio;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\OctaneLA\Transformers\UserTransformer;
@@ -77,7 +78,7 @@ class AuthController extends Controller {
      * @param Request $request
      * @return mixed
      */
-    public function postRegister(Request $request)
+    public function postRegister(Request $request, Twilio $twilio)
     {
         $data = $request->all();
 
@@ -90,19 +91,27 @@ class AuthController extends Controller {
             );
         }
 
-        Stripe::setApiKey(\Config::get('stripe.api_key'));
-        $customer = Stripe_Customer::create([
-            "description" => $data["first_name"]." ".$data["last_name"],
-            "email" => $data['email'],
-        ]);
+        try {
 
-        $data['stripe_customer_id'] = $customer->id;
+            Stripe::setApiKey(\Config::get('stripe.api_key'));
+            $customer = Stripe_Customer::create([
+                "description" => $data["name"],
+                "email" => $data['email'],
+            ]);
 
-        if( ! $data['stripe_customer_id']) {
-            return $this->response->errorInternalError("Unable to create account.");
+        } catch (\Exception $e) {
+            return $this->response->errorInternalError('Unable to create account');
         }
 
+        $data['phone'] = "+1".$data["phone"];
+        $data['stripe_customer_id'] = $customer->id;
+
         $this->auth->login($this->registrar->create($data));
+
+        $this->auth->user()->attachRole(3);
+
+        //send SMS phone verification
+        $twilio->message($data['phone'], "Squeegy verification code: ".\Config::get('squeegy.sms_verification'));
 
         return $this->response->withItem($this->auth->user(), new UserTransformer());
     }

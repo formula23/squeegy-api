@@ -18,10 +18,10 @@ class CreateVehiclesTable extends Migration {
             $table->integer('user_id')->unsigned()->index();
             $table->string('year');
             $table->string('make');
-            $table->string('model')->nullable();
+            $table->string('model');
             $table->string('color');
-            $table->string('type');
-            $table->string('license_plate', 10);
+            $table->string('type')->nullable();
+            $table->string('license_plate', 10)->nullable();
 
 			$table->timestamps();
 		});

@@ -25,8 +25,8 @@ class UpdateVehicleRequest extends Request {
         return [
             'year' => 'sometimes|required|digits:4',
             'make' => 'sometimes|required',
+            'model' => 'sometimes|required',
             'color' => 'sometimes|required',
-            'type' => 'sometimes|required',
             'license_plate' => 'sometimes|required',
         ];
 	}

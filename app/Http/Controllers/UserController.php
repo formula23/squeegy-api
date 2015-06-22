@@ -57,18 +57,35 @@ class UserController extends ApiGuardController {
                 }
                 $data['push_token'] = $endpoint_arn->get('EndpointArn');
             } catch (ValidationException $e) {
-                return $this->response->errorInternalError($e->getMessage());
+                return $this->response->errorWrongArgs($e->getMessage());
             } catch (\ErrorException $e) {
                 return $this->response->errorInternalError($e->getMessage());
             }
 
         }
 
+        /**
+         * Update Stripe Customer Object
+         */
+
+        Stripe::setApiKey(\Config::get('stripe.api_key'));
+
+        try {
+            $customer = StripeCustomer::retrieve($request->user()->stripe_customer_id);
+            if( ! empty($data['email'])) $customer->email = $data['email'];
+            if( ! empty($data['name'])) $customer->description = $data['name'];
+            $customer->save();
+        }
+        catch (\Exception $e) {
+            return $this->response->errorInternalError('Unable to update Stripe customer');
+        }
+
+        /**
+         * stripe_token passed, add card to customer
+         */
         if(isset($data['stripe_token'])) {
 
             try {
-                Stripe::setApiKey(\Config::get('stripe.api_key'));
-                $customer = StripeCustomer::retrieve($request->user()->stripe_customer_id);
                 $customer_card = $customer->sources->create([
                     "source" => $data['stripe_token']
                 ]);
@@ -77,10 +94,14 @@ class UserController extends ApiGuardController {
                 $customer->save();
 
             } catch (InvalidRequest $e) {
-                return $this->response->errorInternalError($e->getMessage());
+                return $this->response->errorWrongArgs($e->getMessage());
             } catch (\ErrorException $e) {
                 return $this->response->errorInternalError($e->getMessage());
             }
+        }
+
+        if( ! empty($data["phone"])) {
+            $data["phone"] = "+1".$data["phone"];
         }
 
         $request->user()->update($data);

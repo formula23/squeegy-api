@@ -35,7 +35,12 @@ class RouteServiceProvider extends ServiceProvider {
         });
 
         $router->bind('orders', function($id) {
-            return \App\Order::where('user_id', \Auth::id())->find($id);
+
+            $user = \App\Order::find($id)->user()->get();
+            dd($user);
+
+            $foreign_key = (\Auth::user()->is('customer')) ? "user_id" : "washer_id" ;
+            return \App\Order::where($foreign_key, \Auth::id())->find($id);
         });
 
         $router->model('services', 'App\Service');

@@ -11,16 +11,16 @@ class DatabaseSeeder extends Seeder {
 	 */
 	public function run()
 	{
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
+//        DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
 
-//		$this->call('UsersTableSeeder');
-//		$this->call('VehiclesTableSeeder');
-		$this->call('WashersTableSeeder');
+        $this->call('RolesTableSeeder');
+
+		$this->call('UsersTableSeeder');
 		$this->call('ServicesTableSeeder');
 		$this->call('ServiceCoordsTableSeeder');
         $this->call('ApiKeysTableSeeder');
 
-        DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // enable foreign key constraints
+//        DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // enable foreign key constraints
 	}
 
 }

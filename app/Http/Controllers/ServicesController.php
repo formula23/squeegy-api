@@ -55,16 +55,19 @@ class ServicesController extends ApiGuardController {
 
     public function availability()
     {
-        $order = new Orders();
+        $data = ['accept'=>Orders::open(), 'description'=>'', 'time'=>0, 'time_label'=>''];
 
-//        $time = $order->getLeadTime();
+        if( ! Orders::open()) $data['description'] = 'You have reached us after hours.';
 
-        $data = [
-            'accept' => (int)$order->open(),
-            'description' => 'Closed due to high-demand',
-            'time' => '3',
-            'time_label' => 'hours',
-        ];
+        $lead_time = Orders::getLeadTime();
+        if( ! $lead_time) {
+            $data['accept'] = 0;
+            $data['description'] = 'Due to high-demand, we cannot take your request.';
+        }
+
+        $lead_time_arr = Orders::formatLeadTime($lead_time);
+
+        $data = array_merge($data, $lead_time_arr);
 
         return $this->response->withItem($data, new ServiceAvailabilityTransformer);
     }

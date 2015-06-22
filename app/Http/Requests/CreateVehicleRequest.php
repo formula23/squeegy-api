@@ -24,8 +24,8 @@ class CreateVehicleRequest extends Request {
 		return [
             'year' => 'required|digits:4',
             'make' => 'required',
+            'model' => 'required',
             'color' => 'required',
-            'type' => 'required',
 		];
 	}
 

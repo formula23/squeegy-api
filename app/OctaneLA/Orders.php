@@ -7,7 +7,7 @@
  */
 
 use App\Order;
-use Carbon;
+use Carbon\Carbon;
 
 /**
  * Class Orders
@@ -15,25 +15,23 @@ use Carbon;
  */
 class Orders {
 
-    /**
-     * @var int
-     */
-    protected $base_lead_time = 30;
-    /**
-     * @var int
-     */
-    protected $suv_surcharge = 500;
-    /**
-     * @var int
-     */
-    protected $suv_surcharge_multiplier = 2;
+    const CLOSING_THRESHOLD = 20;
+    const BASE_LEAD_TIME = 30;
+    const SUV_SURCHARGE = 500;
+    const SUV_SURCHARGE_MULTIPLIER = 2;
+
+    private static $order_status_time_map = [
+        'confirm' => 60,
+        'enroute' => 40,
+        'start' => 20,
+    ];
 
     /**
      * @return bool
      */
-    public function open()
+    public static function open()
     {
-        $curr_hr = Carbon\Carbon::now()->hour;
+        $curr_hr = Carbon::now()->hour;
         if($curr_hr >= \Config::get('squeegy.operating_hours.open') && $curr_hr < \Config::get('squeegy.operating_hours.close')) return true;
         return false;
     }
@@ -42,7 +40,7 @@ class Orders {
      * @param Order $order
      * @return int
      */
-    public function getPrice(Order $order)
+    public static function getPrice(Order $order)
     {
         return $order->service->price;
 
@@ -51,12 +49,12 @@ class Orders {
         switch($order->vehicle->type)
         {
             case "SUV":
-                $base_price += $this->suv_surcharge;
+                $base_price += self::SUV_SURCHARGE;
                 break;
             case "SUV+":
             case "Truck":
             case "Van":
-                $base_price += $this->suv_surcharge * $this->suv_surcharge_multiplier;
+                $base_price += self::SUV_SURCHARGE * self::SUV_SURCHARGE_MULTIPLIER;
                 break;
         }
 
@@ -64,15 +62,59 @@ class Orders {
     }
 
     /**
+     * Get the lead time to perform next order based on operating hours and open order status
+     * Return time in minutes
+     *
      * @return int
      */
-    public function getLeadTime()
+    public static function getLeadTime()
     {
-        //how many in order Q
-        $this->base_lead_time;
-        $orders = Order::where('status', 'accept')->get();
+        if(self::remainingBusinessTime() < self::CLOSING_THRESHOLD) {
+            return 0;
+        }
 
-        return $this->base_lead_time * ($orders->count() ? $orders->count() : 1);
+        $orders = Order::whereIn('status', ['confirm','enroute','start'])->get();
+        if( ! $orders->count()) {
+            return self::BASE_LEAD_TIME;
+        }
+
+        $leadtime = self::BASE_LEAD_TIME;
+        foreach($orders as $order) {
+            $leadtime += self::$order_status_time_map[$order->status];
+        }
+
+        if(self::remainingBusinessTime() < $leadtime) {
+            return 0;
+        }
+
+        return $leadtime;
+    }
+
+    public static function formatLeadTime($leadtime)
+    {
+        if($leadtime < 60) {
+            return [
+                'time'=>(string)$leadtime,
+                'time_label'=>'mins'
+            ];
+        }
+
+        $t = $leadtime/60;
+
+        return [
+            'time' => (string)(is_float($t) ? floor($t)."+" : $t ),
+            'time_label'=>'hr'
+        ];
+    }
+
+    /**
+     * Get the remaining business hours in minutes
+     *
+     * @return int
+     */
+    public static function remainingBusinessTime()
+    {
+        return Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'),0,0)->diffInMinutes();
     }
 
 }

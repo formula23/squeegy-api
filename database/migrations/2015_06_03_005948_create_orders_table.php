@@ -20,13 +20,15 @@ class CreateOrdersTable extends Migration {
             $table->integer('service_id')->unsigned()->index();
             $table->integer('vehicle_id')->unsigned()->index();
             $table->string('job_number')->index()->nullable();
-            $table->enum('status', array('pending', 'confirm', 'cancel', 'enroute', 'in-progress', 'done'))->index()->default('pending');
+            $table->enum('status', array('request', 'confirm', 'cancel', 'enroute', 'start', 'done'))->index()->default('request');
             $table->integer('lead_time')->unsigned()->nullable();
             $table->text('location');
             $table->text('instructions')->nullable();
-            $table->timestamp('en_route_at')->nullable();
+            $table->timestamp('confirm_at')->nullable();
+            $table->timestamp('enroute_at')->nullable();
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
+            $table->timestamp('cancel_at')->nullable();
             $table->string('number_photos')->nullable();
             $table->integer('price')->nullable()->unsigned();
             $table->string('discount_code')->nullable();

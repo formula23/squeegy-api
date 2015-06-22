@@ -1,14 +1,19 @@
 <?php namespace App;
 
+use Bican\Roles\Contracts\HasRoleAndPermissionContract;
+
+use Bican\Roles\Traits\HasRoleAndPermission;
+//use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
+
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract {
 
-	use Authenticatable, CanResetPassword;
+	use Authenticatable, CanResetPassword, HasRoleAndPermission;
 
 	/**
 	 * The database table used by the model.
@@ -22,7 +27,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['first_name', 'last_name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id'];
+	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -47,5 +52,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function orders()
     {
         return $this->hasMany('App\Order');
+    }
+
+    public function jobs()
+    {
+        return $this->hasMany('App\Order', 'washer_id');
     }
 }

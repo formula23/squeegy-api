@@ -14,7 +14,8 @@ class Order extends Model {
         'lead_time',
         'location',
         'instructions',
-        'en_route_at',
+        'confirm_at',
+        'enroute_at',
         'start_at',
         'end_at',
         'number_photos',
@@ -25,7 +26,7 @@ class Order extends Model {
         ];
 
     protected $attributes = array(
-        'status' => 'pending'
+        'status' => 'request'
     );
 
     public function getLocationAttribute($value)
@@ -50,7 +51,7 @@ class Order extends Model {
 
     public function washer()
     {
-        return $this->belongsTo('App\Washer');
+        return $this->belongsTo('App\User', 'washer_id');
     }
 
     public function vehicle()
