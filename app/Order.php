@@ -11,7 +11,7 @@ class Order extends Model {
         'vehicle_id',
         'job_number',
         'status',
-        'lead_time',
+        'eta',
         'location',
         'instructions',
         'confirm_at',
@@ -20,7 +20,7 @@ class Order extends Model {
         'end_at',
         'number_photos',
         'price',
-        'discount_code',
+        'promo_code',
         'rating',
         'rating_comment',
         ];

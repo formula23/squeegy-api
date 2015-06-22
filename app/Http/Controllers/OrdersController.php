@@ -5,6 +5,7 @@ use App\Http\Requests\UpdateOrderRequest;
 use App\OctaneLA\Orders;
 use App\OctaneLA\Transformers\OrderTransformer;
 use App\Order;
+use App\Service;
 use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
@@ -47,7 +48,6 @@ class OrdersController extends ApiGuardController {
 	 */
 	public function store(CreateOrderRequest $request)
 	{
-
         $data = $request->all();
 
         //TO-DO:
@@ -60,6 +60,9 @@ class OrdersController extends ApiGuardController {
         if( ! $request->user()->vehicles()->where('id', '=', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs('Vehicle id invalid');
         }
+
+        $data['price'] = Service::find($data['service_id'])->price;
+        $data['eta'] = Orders::getLeadTime();
 
         $order = new Order($data);
 
@@ -77,14 +80,19 @@ class OrdersController extends ApiGuardController {
 
         $request_data = $request->all();
 
-        if($request_data['status'])
+        if(isset($request_data['promo_code'])) { //calculate promo
+            if($request_data['promo_code'] == "1234") {
+                $request_data['price'] = $order->price - 500;
+            }
+        }
+
+        if(isset($request_data['status']))
         {
             if($this->order_seq[$request_data['status']]!== 100 &&
                 ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']]) {
                 return $this->response->errorWrongArgs('Unable to change status. Requested Status: '.$request_data['status'].' - Current Status: '.$order->status);
             }
 
-            $worker_msg = '';
             $push_message = '';
 
             switch($request_data['status'])
@@ -114,6 +122,8 @@ class OrdersController extends ApiGuardController {
                     $request_data['confirm_at'] = Carbon::now();
 
                     $worker_msg = "Squeegy: New Order#".$order->id;
+                    if($worker_msg) $twilio->message('+13106004938', $worker_msg);
+
                     $push_message = "Hang tight, we will be on our way soon!";
 
                     break;
@@ -169,12 +179,12 @@ class OrdersController extends ApiGuardController {
                     break;
             }
 
-            $order->update($request_data);
+        }
 
-            if($worker_msg) $twilio->message('+13106004938', $worker_msg);
+        $order->update($request_data);
 
-            if($push_message) {
-                //send push notification to app
+        if($push_message) {
+            //send push notification to app
 //                $sns_client->publish([
 //                    'TargetArn' => $request->user()->push_token,
 //                    'MessageStructure' => 'json',
@@ -190,11 +200,8 @@ class OrdersController extends ApiGuardController {
 //                        ])
 //                    ]),
 //                ]);
-            }
-
-
-
         }
+
 
 
         return $this->response->withItem($order, new OrderTransformer);

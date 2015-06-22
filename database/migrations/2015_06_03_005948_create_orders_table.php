@@ -31,7 +31,7 @@ class CreateOrdersTable extends Migration {
             $table->timestamp('cancel_at')->nullable();
             $table->string('number_photos')->nullable();
             $table->integer('price')->nullable()->unsigned();
-            $table->string('discount_code')->nullable();
+            $table->string('promo_code')->nullable();
             $table->string('rating')->nullable();
             $table->text('rating_comment')->nullable();
 

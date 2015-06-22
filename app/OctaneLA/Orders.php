@@ -90,6 +90,15 @@ class Orders {
         return $leadtime;
     }
 
+    public static function formatConfirmEta($leadtime) {
+
+        if($leadtime < 60) {
+            return $leadtime." minutes";
+        }
+        $hrs = floor($leadtime/60);
+        return $hrs." ".str_plural("hour", $hrs)." ".($leadtime % 60)." mins";
+    }
+
     public static function formatLeadTime($leadtime)
     {
         if($leadtime < 60) {

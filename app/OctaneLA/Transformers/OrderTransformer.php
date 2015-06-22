@@ -32,7 +32,7 @@ class OrderTransformer extends TransformerAbstract {
             'location' => $order->location,
             'instructions' => $order->instructions,
             'price' => $order->price,
-            'eta' => $order->eta,
+            'eta' => Orders::formatConfirmEta($order->eta),
             'completed_time' => ($order->end_at) ? strtotime($order->end_at) : null,
             'links' => [
                 [

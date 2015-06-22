@@ -5,10 +5,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\OctaneLA\Transformers\UserTransformer;
 use App\User;
+use Aws\Ecs\Exception\EcsException;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 use League\Fractal\Manager;
 use EllipseSynergie\ApiResponse\Laravel\Response as EllipseResponse;
@@ -118,12 +120,24 @@ class AuthController extends Controller {
         $data['phone'] = "+1".$data["phone"];
         $data['stripe_customer_id'] = $customer->id;
 
-        $this->auth->login($this->registrar->create($data));
+        try {
 
-        $this->auth->user()->attachRole(3);
+            $this->auth->login($this->registrar->create($data));
 
-        //send SMS phone verification
-        $twilio->message($data['phone'], "Squeegy verification code: ".\Config::get('squeegy.sms_verification'));
+            $this->auth->user()->attachRole(3);
+
+            //send email
+            Mail::send('emails.welcome', ['key' => 'value'], function ($message) use ($data) {
+                $message->to($data['email'], $data['name'])->subject('Welcome to Squeegy!');
+            });
+
+            //send SMS phone verification
+            $twilio->message($data['phone'], "Squeegy verification code: " . \Config::get('squeegy.sms_verification'));
+
+        } catch(\Exception $e) {
+            return $this->response->errorInternalError($e->getMessage());
+        }
+
 
 
 
