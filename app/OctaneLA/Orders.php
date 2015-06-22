@@ -112,7 +112,7 @@ class Orders {
 
         return [
             'time' => (string)(is_float($t) ? floor($t)."+" : $t ),
-            'time_label'=>'hr'
+            'time_label'=>'hour'
         ];
     }
 

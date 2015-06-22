@@ -24,12 +24,12 @@ class UserTransformer extends TransformerAbstract {
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
-            'photo' => $user->photo,
         ];
     }
 
     public function includeRoles(User $user)
     {
+        dd($user->getRoles());
         return $this->collection($user->getRoles(), new RoleTransformer);
     }
 
