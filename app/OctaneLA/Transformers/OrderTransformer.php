@@ -32,7 +32,7 @@ class OrderTransformer extends TransformerAbstract {
             'location' => $order->location,
             'instructions' => $order->instructions,
             'subtotal' => (int)$order->price,
-            'discount' => (int)(($order->discount)? $order->discount : null ),
+            'discount' => (($order->discount)? $order->discount : null ),
             'total' => (int)($order->price - (int)$order->discount),
             'eta' => Orders::formatConfirmEta($order->eta),
             'completed_time' => ($order->end_at) ? strtotime($order->end_at) : null,
