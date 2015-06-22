@@ -86,9 +86,7 @@ class AuthController extends Controller {
 
         if ($validator->fails())
         {
-            $this->throwValidationException(
-                $request, $validator
-            );
+            return $this->response->errorWrongArgs($validator->errors()->getMessages());
         }
 
         try {
