@@ -80,7 +80,7 @@ class AuthController extends Controller {
      */
     public function postRegister(Request $request, Twilio $twilio)
     {
-        $data = $request->alls();
+        $data = $request->all();
 
         $validator = $this->registrar->validator($data);
 
