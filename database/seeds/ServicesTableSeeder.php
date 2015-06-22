@@ -10,14 +10,14 @@ class ServicesTableSeeder extends Seeder {
         Service::truncate();
 
         Service::create([
-            'name' => 'Basic',
+            'name' => 'Exterior',
             'price' => '2400',
             'details' => 'This is the basic wash.',
             'time' => '25',
         ]);
 
         Service::create([
-            'name' => 'Extreme',
+            'name' => 'Full',
             'price' => '3400',
             'details' => 'This is the extreme wash.. inside and out...',
             'time' => '45',
