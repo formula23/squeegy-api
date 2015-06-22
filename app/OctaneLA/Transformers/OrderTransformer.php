@@ -31,7 +31,9 @@ class OrderTransformer extends TransformerAbstract {
             'status' => $order->status,
             'location' => $order->location,
             'instructions' => $order->instructions,
-            'price' => $order->price,
+            'subtotal' => (int)$order->price,
+            'discount' => (int)(($order->discount)? $order->discount : null ),
+            'total' => (int)($order->price - (int)$order->discount),
             'eta' => Orders::formatConfirmEta($order->eta),
             'completed_time' => ($order->end_at) ? strtotime($order->end_at) : null,
             'links' => [

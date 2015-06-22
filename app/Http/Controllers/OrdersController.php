@@ -81,8 +81,9 @@ class OrdersController extends ApiGuardController {
         $request_data = $request->all();
 
         if(isset($request_data['promo_code'])) { //calculate promo
-            if($request_data['promo_code'] == "1234" && ! $order->promo_code) {
-                $request_data['price'] = $order->price - 500;
+            if($request_data['promo_code'] == "1234" && ! $order->discount) {
+                $request_data['discount'] = 500;
+                $request_data['price'] = $order->price;
             }
         }
 
@@ -160,14 +161,16 @@ class OrdersController extends ApiGuardController {
                     $push_message = 'We are done washing your car. Your credit card has been charged.';
 
                     try {
+                        $charged = $order->price - (int)$order->discount;
+
                         //charge the credit card...
                         Stripe::setApiKey(\Config::get('stripe.api_key'));
                         $charge = StripeCharge::create([
-                            "amount" => $order->price,
+                            "amount" => $charged,
                             "currency" => "usd",
                             "customer" => $request->user()->stripe_customer_id,
                         ]);
-
+                        $request_data["charged"] = $charged;
                         $request_data["stripe_charge_id"] = $charge->id;
 
                     } catch (InvalidRequest $e) {
