@@ -42,7 +42,12 @@ class Handler extends ExceptionHandler {
         {
             return response()->json(['error' => ['http_code'=>404, 'message' => 'Not Found']], 404);
         }
-        return response()->json(['error' => ['http_code'=>500, 'message' => $e->getMessage()]], 500);
+
+        $resp = ['error' => ['http_code'=>500, 'message' => $e->getMessage()]];
+        if(config('app.debug')) {
+            $resp['error']['trace'] = $e->getTrace();
+        }
+        return response()->json($resp, 500);
 	}
 
 }
