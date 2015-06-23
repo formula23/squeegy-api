@@ -179,7 +179,7 @@ class OrdersController extends ApiGuardController {
                         $charge = StripeCharge::create([
                             "amount" => $charged,
                             "currency" => "usd",
-                            "customer" => $order->user->stripe_customer_id,
+                            "customer" => $order->customer->stripe_customer_id,
                         ]);
                         $request_data["charged"] = $charged;
                         $request_data["stripe_charge_id"] = $charge->id;
@@ -193,7 +193,7 @@ class OrdersController extends ApiGuardController {
 //                    try {
                         //send email
                         $email_content = [
-                            'name' => $order->user->name,
+                            'name' => $order->customer->name,
                         ];
 
                         Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
@@ -213,7 +213,7 @@ class OrdersController extends ApiGuardController {
 
         if($push_message) {
                 $sns_client->publish([
-                    'TargetArn' => $order->user->push_token,
+                    'TargetArn' => $order->customer->push_token,
                     'MessageStructure' => 'json',
                     'Message' => json_encode([
                         'default' => $push_message,

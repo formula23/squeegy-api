@@ -41,24 +41,19 @@ class Order extends Model {
         $this->attributes['location'] = json_encode($value);
     }
 
-    public function user()
-    {
-        return $this->customer();
-    }
-
     public function customer()
     {
-        return $this->belongsTo('App\User');
-    }
-
-    public function service()
-    {
-        return $this->belongsTo('App\Service');
+        return $this->belongsTo('App\User', 'user_id');
     }
 
     public function worker()
     {
         return $this->belongsTo('App\User', 'worker_id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo('App\Service');
     }
 
     public function vehicle()
