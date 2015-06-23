@@ -10,6 +10,7 @@ use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Stripe\Stripe;
 use Stripe\Charge as StripeCharge;
 use Aloha\Twilio\Twilio;
@@ -194,12 +195,13 @@ class OrdersController extends ApiGuardController {
                         $email_content = [
                             'name' => $order->user->name,
                         ];
+
                         Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
                             $message->to($order->user->name, $order->user->email)->subject(config('squeegy.emails.receipt.subject'));
                         });
 
                     } catch (\Exception $e) {
-
+                        return $this->response->errorInternalError($e->getMessage());
                     }
 
                     break;
