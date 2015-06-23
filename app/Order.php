@@ -6,7 +6,7 @@ class Order extends Model {
 
     protected $fillable = [
         'user_id',
-        'washer_id',
+        'worker_id',
         'service_id',
         'vehicle_id',
         'job_number',
