@@ -18,7 +18,7 @@ class Order extends Model {
         'enroute_at',
         'start_at',
         'end_at',
-        'number_photos',
+        'photo_count',
         'price',
         'discount',
         'charged',

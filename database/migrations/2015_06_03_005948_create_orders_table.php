@@ -29,7 +29,7 @@ class CreateOrdersTable extends Migration {
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
             $table->timestamp('cancel_at')->nullable();
-            $table->string('number_photos')->nullable();
+            $table->string('photo_count')->nullable();
             $table->integer('price')->nullable()->unsigned();
             $table->integer('discount')->nullable()->unsigned();
             $table->integer('charged')->nullable()->unsigned();

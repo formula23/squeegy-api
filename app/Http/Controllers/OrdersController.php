@@ -11,7 +11,6 @@ use Carbon\Carbon;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
-use Stripe\Customer as StripeCustomer;
 use Stripe\Charge as StripeCharge;
 use Aloha\Twilio\Twilio;
 
@@ -38,10 +37,21 @@ class OrdersController extends ApiGuardController {
         parent::__construct();
 
         $this->middleware('auth');
+        $this->middleware('worker', ['only' => 'index']);
 
     }
 
+    public function index(Request $request)
+    {
+        $orders = Order::query();
 
+        if($request->input('status')) {
+            $orders->where('status','=',$request->input('status'));
+        }
+//        Order::where()
+        dd($orders->get());
+        //get orders based on filters
+    }
 
 	/**
 	 * Store a newly created resource in storage.
@@ -136,7 +146,7 @@ class OrdersController extends ApiGuardController {
                     $request_data['worker_id'] = \Auth::user()->id;
                     $request_data['enroute_at'] = Carbon::now();
 
-                    $push_message = "Hang tight, we will be on our way soon!";
+                    $push_message = 'Hang tight! '.$order->worker->name.' is their way!';
 
                     break;
                 case "start":
@@ -147,7 +157,7 @@ class OrdersController extends ApiGuardController {
 
                     $request_data['start_at'] = Carbon::now();
 
-                    $push_message = 'Sergio has started washing your car...';
+                    $push_message = $order->worker->name.' has started washing your car.';
 
                     break;
 
@@ -177,6 +187,19 @@ class OrdersController extends ApiGuardController {
                         return $this->response->errorWrongArgs($e->getMessage());
                     } catch(\Exception $e) {
                         return $this->response->errorInternalError($e->getMessage());
+                    }
+
+                    try {
+                        //send email
+                        $email_content = [
+                            'name' => $order->user->name,
+                        ];
+                        Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
+                            $message->to($order->user->name, $order->user->email)->subject(config('squeegy.emails.receipt.subject'));
+                        });
+
+                    } catch (\Exception $e) {
+
                     }
 
                     break;

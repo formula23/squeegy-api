@@ -127,8 +127,11 @@ class AuthController extends Controller {
             $this->auth->user()->attachRole(3);
 
             //send email
-            Mail::send('emails.welcome', ['key' => 'value'], function ($message) use ($data) {
-                $message->to($data['email'], $data['name'])->subject('Welcome to Squeegy!');
+            $email_content = [
+                'name' => $data['name'],
+            ];
+            Mail::send('emails.welcome', $email_content, function ($message) use ($data) {
+                $message->to($data['email'], $data['name'])->subject(config('squeegy.emails.welcome.subject'));
             });
 
             //send SMS phone verification
