@@ -190,7 +190,7 @@ class OrdersController extends ApiGuardController {
                         return $this->response->errorInternalError($e->getMessage());
                     }
 
-                    try {
+//                    try {
                         //send email
                         $email_content = [
                             'name' => $order->user->name,
@@ -200,9 +200,9 @@ class OrdersController extends ApiGuardController {
                             $message->to($order->customer->email, $order->customer->name)->subject(config('squeegy.emails.receipt.subject'));
                         });
 
-                    } catch (\Exception $e) {
-                        return $this->response->errorInternalError($e->getMessage());
-                    }
+//                    } catch (\Exception $e) {
+//                        return $this->response->errorInternalError($e->getMessage());
+//                    }
 
                     break;
             }
