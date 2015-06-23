@@ -1,4 +1,4 @@
-@extends('template')
+@extends('emails.template')
 
 @section('content')
     Thanks for using squeegy. Here is your receipt.
