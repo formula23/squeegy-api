@@ -29,6 +29,7 @@ class Order extends Model {
         'price',
         'discount',
         'charged',
+        'stripe_charge_id',
         'promo_code',
         'rating',
         'rating_comment',

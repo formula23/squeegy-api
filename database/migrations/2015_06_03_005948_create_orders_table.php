@@ -33,6 +33,7 @@ class CreateOrdersTable extends Migration {
             $table->integer('price')->nullable()->unsigned();
             $table->integer('discount')->nullable()->unsigned();
             $table->integer('charged')->nullable()->unsigned();
+            $table->string('stripe_charge_id')->nullable();
             $table->string('promo_code')->nullable();
             $table->string('rating')->nullable();
             $table->text('rating_comment')->nullable();
