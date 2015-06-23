@@ -142,13 +142,13 @@ class OrdersController extends ApiGuardController {
                     //charge credit card
                     $charged=1000;
                     Stripe::setApiKey(config('stripe.api_key'));
-                    $charge = StripeCharge::create([
-                        "amount" => $charged,
-                        "currency" => "usd",
-                        "customer" => $order->customer->stripe_customer_id,
-                    ]);
+//                    $charge = StripeCharge::create([
+//                        "amount" => $charged,
+//                        "currency" => "usd",
+//                        "customer" => $order->customer->stripe_customer_id,
+//                    ]);
                     $request_data["charged"] = $charged;
-                    $request_data["stripe_charge_id"] = $charge->id;
+//                    $request_data["stripe_charge_id"] = $charge->id;
 
                     $request_data['cancel_at'] = Carbon::now();
 
