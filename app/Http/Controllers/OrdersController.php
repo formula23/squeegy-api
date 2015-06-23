@@ -130,10 +130,10 @@ class OrdersController extends ApiGuardController {
                     break;
                 case "enroute":
 
-                    if( ! $request->user()->is('washer')) {
+                    if( ! $request->user()->is('worker')) {
                         return $this->response->errorUnauthorized();
                     }
-                    $request_data['washer_id'] = \Auth::user()->id;
+                    $request_data['worker_id'] = \Auth::user()->id;
                     $request_data['enroute_at'] = Carbon::now();
 
                     $push_message = "Hang tight, we will be on our way soon!";
@@ -141,7 +141,7 @@ class OrdersController extends ApiGuardController {
                     break;
                 case "start":
 
-                    if( ! $request->user()->is('washer')) {
+                    if( ! $request->user()->is('worker')) {
                         return $this->response->errorUnauthorized();
                     }
 
@@ -153,7 +153,7 @@ class OrdersController extends ApiGuardController {
 
                 case "done":
 
-                    if( ! $request->user()->is('washer')) {
+                    if( ! $request->user()->is('worker')) {
                         return $this->response->errorUnauthorized();
                     }
 
