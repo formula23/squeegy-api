@@ -146,7 +146,7 @@ class OrdersController extends ApiGuardController {
                     $request_data['worker_id'] = \Auth::user()->id;
                     $request_data['enroute_at'] = Carbon::now();
 
-                    $push_message = 'Hang tight! '.$order->worker->name.' is their way!';
+                    $push_message = 'Hang tight! '.\Auth::user()->name.' is their way!';
 
                     break;
                 case "start":
