@@ -32,7 +32,7 @@ class Orders {
     public static function open()
     {
         $curr_hr = Carbon::now()->hour;
-        if($curr_hr >= \Config::get('squeegy.operating_hours.open') && $curr_hr < \Config::get('squeegy.operating_hours.close')) return true;
+        if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
         return false;
     }
 
@@ -67,7 +67,7 @@ class Orders {
      *
      * @return int
      */
-    public static function getLeadTime()
+    public static function getLeadTime(Order $order = null)
     {
         if(self::remainingBusinessTime() < self::CLOSING_THRESHOLD) {
             return 0;

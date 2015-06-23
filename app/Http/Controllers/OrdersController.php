@@ -21,6 +21,9 @@ use Aloha\Twilio\Twilio;
  */
 class OrdersController extends ApiGuardController {
 
+    /**
+     * @var array
+     */
     protected $order_seq = [
         'cancel' => 100,
         'request' => 1,
@@ -38,25 +41,37 @@ class OrdersController extends ApiGuardController {
         parent::__construct();
 
         $this->middleware('auth');
-        $this->middleware('worker', ['only' => 'index']);
+        $this->middleware('is.worker', ['only' => 'index']);
 
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     public function index(Request $request)
     {
         $orders = Order::query();
 
         if($request->input('status')) {
-            $orders->where('status','=',$request->input('status'));
+            $filters = explode(',', $request->input('status'));
+            $where_method = (is_array($filters)) ? 'whereIn' : 'where' ;
+            $orders->{$where_method}('status', $filters);
+            if(is_array($filters)) {
+                foreach($filters as $filter) {
+                    $orders->orderBy($filter.'_at');
+                }
+            } else {
+                $orders->orderBy($filters.'_at');
+            }
         }
-//        Order::where()
-        dd($orders->get());
-        //get orders based on filters
+
+        return $this->response->withCollection($orders->get(), new OrderTransformer());
     }
 
 	/**
 	 * Store a newly created resource in storage.
-	 * @param InitOrderRequest $request
+	 * @param CreateOrderRequest $request
 	 * @return Response
 	 */
 	public function store(CreateOrderRequest $request)
@@ -85,6 +100,13 @@ class OrdersController extends ApiGuardController {
 
 	}
 
+    /**
+     * @param Order $order
+     * @param UpdateOrderRequest $request
+     * @param SnsClient $sns_client
+     * @param Twilio $twilio
+     * @return mixed
+     */
     public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client, Twilio $twilio)
     {
         if(empty($order->id)) {
@@ -168,7 +190,7 @@ class OrdersController extends ApiGuardController {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $request_data['end_at'] = Carbon::now();
+                    $request_data['done_at'] = Carbon::now();
                     $push_message = 'We are done washing your car. Your credit card has been charged.';
 
                     try {
@@ -190,19 +212,14 @@ class OrdersController extends ApiGuardController {
                         return $this->response->errorInternalError($e->getMessage());
                     }
 
-//                    try {
-                        //send email
-                        $email_content = [
-                            'name' => $order->customer->name,
-                        ];
+                    //send email
+                    $email_content = [
+                        'name' => $order->customer->name,
+                    ];
 
-                        Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
-                            $message->to($order->customer->email, $order->customer->name)->subject(config('squeegy.emails.receipt.subject'));
-                        });
-
-//                    } catch (\Exception $e) {
-//                        return $this->response->errorInternalError($e->getMessage());
-//                    }
+                    Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
+                        $message->to($order->customer->email, $order->customer->name)->subject(config('squeegy.emails.receipt.subject'));
+                    });
 
                     break;
             }
@@ -228,8 +245,6 @@ class OrdersController extends ApiGuardController {
                     ]),
                 ]);
         }
-
-
 
         return $this->response->withItem($order, new OrderTransformer);
     }

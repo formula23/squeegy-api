@@ -28,6 +28,7 @@ class Kernel extends HttpKernel {
         'auth.api' => 'App\Http\Middleware\ApiAuthenticate',
 		'guest' => 'App\Http\Middleware\RedirectIfAuthenticated',
         'csrf' => 'App\Http\Middleware\VerifyCsrfToken',
+        'is.worker' => 'App\Http\Middleware\IsWorker',
 	];
 
 }

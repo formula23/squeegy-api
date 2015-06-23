@@ -11,6 +11,10 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+/**
+ * Class User
+ * @package App
+ */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, HasRoleAndPermissionContract {
 
 	use Authenticatable, CanResetPassword, HasRoleAndPermission;
@@ -54,6 +58,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Order');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function jobs()
     {
         return $this->hasMany('App\Order', 'worker_id');
