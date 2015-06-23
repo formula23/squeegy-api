@@ -65,15 +65,24 @@ class Orders {
      * Get the lead time to perform next order based on operating hours and open order status
      * Return time in minutes
      *
+     * @param Order $order
      * @return int
      */
     public static function getLeadTime(Order $order = null)
     {
-        if(self::remainingBusinessTime() < self::CLOSING_THRESHOLD) {
+        if(self::remainingBusinessTime() < self::CLOSING_THRESHOLD && ! $order) {
             return 0;
         }
 
-        $orders = Order::whereIn('status', ['confirm','enroute','start'])->get();
+        $orders_in_q = Order::query();
+        $orders_in_q->whereIn('status', ['confirm','enroute','start']);
+
+        if($order && $order->confirm_at) {
+            $orders_in_q->where('confirm_at', '<', $order->confirm_at);
+        }
+
+        $orders = $orders_in_q->get();
+
         if( ! $orders->count()) {
             return self::BASE_LEAD_TIME;
         }

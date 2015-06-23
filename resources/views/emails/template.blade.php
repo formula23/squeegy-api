@@ -7,8 +7,6 @@
 </head>
 <body>
 
-<h1>Welcome to Squeegy!</h1>
-
 @yield('content')
 
 </body>

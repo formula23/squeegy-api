@@ -228,7 +228,7 @@ class OrdersController extends ApiGuardController {
 
         $order->update($request_data);
 
-        if($push_message) {
+        if($push_message && $order->customer->push_token) {
                 $sns_client->publish([
                     'TargetArn' => $order->customer->push_token,
                     'MessageStructure' => 'json',
@@ -249,12 +249,13 @@ class OrdersController extends ApiGuardController {
         return $this->response->withItem($order, new OrderTransformer);
     }
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
+    /**
+     * Display the specified resource.
+     *
+     * @param Order $order
+     * @return Response
+     * @internal param int $id
+     */
 	public function show(Order $order)
     {
         if (empty($order->id)) {
