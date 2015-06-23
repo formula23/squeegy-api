@@ -187,9 +187,8 @@ class OrdersController extends ApiGuardController {
         $order->update($request_data);
 
         if($push_message) {
-            //send push notification to app
                 $sns_client->publish([
-                    'TargetArn' => $order->user()->push_token,
+                    'TargetArn' => $order->user->push_token,
                     'MessageStructure' => 'json',
                     'Message' => json_encode([
                         'default' => $push_message,

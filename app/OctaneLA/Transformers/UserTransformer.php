@@ -13,7 +13,7 @@ use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract {
 
-    protected $defaultIncludes = [
+    protected $availableIncludes = [
         'roles',
     ];
 
