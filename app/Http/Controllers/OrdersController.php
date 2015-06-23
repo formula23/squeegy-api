@@ -125,8 +125,6 @@ class OrdersController extends ApiGuardController {
                     $worker_msg = "Squeegy: New Order#".$order->id;
                     if($worker_msg) $twilio->message('+13106004938', $worker_msg);
 
-                    $push_message = "Hang tight, we will be on our way soon!";
-
                     break;
                 case "enroute":
 
