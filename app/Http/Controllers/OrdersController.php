@@ -41,6 +41,8 @@ class OrdersController extends ApiGuardController {
 
     }
 
+
+
 	/**
 	 * Store a newly created resource in storage.
 	 * @param InitOrderRequest $request

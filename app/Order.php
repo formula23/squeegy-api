@@ -51,9 +51,9 @@ class Order extends Model {
         return $this->belongsTo('App\Service');
     }
 
-    public function washer()
+    public function worker()
     {
-        return $this->belongsTo('App\User', 'washer_id');
+        return $this->belongsTo('App\User', 'worker_id');
     }
 
     public function vehicle()

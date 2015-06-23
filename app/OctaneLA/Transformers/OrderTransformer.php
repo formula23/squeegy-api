@@ -16,11 +16,8 @@ class OrderTransformer extends TransformerAbstract {
 
     protected $defaultIncludes = [
         'vehicle',
-        'service'
-    ];
-
-    protected $availableIncludes = [
-        'washer',
+        'service',
+        'worker'
     ];
 
     public function transform(Order $order)
@@ -51,11 +48,11 @@ class OrderTransformer extends TransformerAbstract {
         return $this->item($service, new ServiceTransformer);
     }
 
-    public function includeWasher(Order $order)
+    public function includeWorker(Order $order)
     {
-        $washer = $order->washer;
-        if(!$washer) $washer = new \App\Washer;
-        return $this->item($washer, new WasherTransformer);
+        $worker = $order->worker;
+        if(!$worker) $worker = new \App\User;
+        return $this->item($worker, new UserTransformer);
     }
 
     public function includeVehicle(Order $order)

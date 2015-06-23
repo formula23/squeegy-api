@@ -16,7 +16,7 @@ class CreateOrdersTable extends Migration {
 		{
 			$table->increments('id');
             $table->integer('user_id')->unsigned()->index();
-            $table->integer('washer_id')->unsigned()->nullable()->index();
+            $table->integer('worker_id')->unsigned()->nullable()->index();
             $table->integer('service_id')->unsigned()->index();
             $table->integer('vehicle_id')->unsigned()->index();
             $table->string('job_number')->index()->nullable();
