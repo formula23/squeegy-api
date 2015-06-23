@@ -168,7 +168,7 @@ class OrdersController extends ApiGuardController {
                         $charge = StripeCharge::create([
                             "amount" => $charged,
                             "currency" => "usd",
-                            "customer" => $request->user()->stripe_customer_id,
+                            "customer" => $order->user->stripe_customer_id,
                         ]);
                         $request_data["charged"] = $charged;
                         $request_data["stripe_charge_id"] = $charge->id;
@@ -198,7 +198,7 @@ class OrdersController extends ApiGuardController {
                                 'sound' => 'default',
                                 'badge' => 1
                             ],
-                            'order_id' => (string) $order->id,
+                            'order_id' => (string)$order->id,
                         ])
                     ]),
                 ]);
