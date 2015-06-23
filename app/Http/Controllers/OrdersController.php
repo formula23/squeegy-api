@@ -198,7 +198,7 @@ class OrdersController extends ApiGuardController {
                                 'sound' => 'default',
                                 'badge' => 1
                             ],
-                            'order_id' => $order->id,
+                            'order_id' => (string)$order->id,
                         ])
                     ]),
                 ]);
