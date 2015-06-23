@@ -26,12 +26,7 @@ class RouteServiceProvider extends ServiceProvider {
 		parent::boot($router);
 
         $router->bind('vehicles', function($id) {
-
             return \App\Vehicle::where('user_id', \Auth::id())->find($id);
-        });
-
-        $router->bind('locations', function($id) {
-            return \App\Location::where('user_id', \Auth::id())->find($id);
         });
 
         $router->bind('orders', function($id) {

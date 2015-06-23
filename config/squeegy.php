@@ -13,6 +13,9 @@ return [
         ],
         'receipt' => [
             'subject' => 'Your Squeegy Receipt',
+        ],
+        'cancel' => [
+            'subject' => 'Your Squeegy Order has been cancelled',
         ]
     ]
 ];

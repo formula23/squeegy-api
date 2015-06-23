@@ -152,6 +152,15 @@ class OrdersController extends ApiGuardController {
 
                     $request_data['cancel_at'] = Carbon::now();
 
+                    //send email
+                    $email_content = [
+                        'name' => $order->customer->name,
+                    ];
+
+                    Mail::send('emails.cancellation', $email_content, function ($message) use ($order) {
+                        $message->to($order->customer->email, $order->customer->name)->subject(config('squeegy.emails.cancel.subject'));
+                    });
+
                     break;
                 case "confirm":
 
@@ -202,7 +211,7 @@ class OrdersController extends ApiGuardController {
                     }
 
                     $request_data['done_at'] = Carbon::now();
-                    $push_message = 'We are done washing your car. Your credit card has been charged.';
+
 
                     try {
                         $charged = $order->price - (int)$order->discount;
@@ -222,6 +231,8 @@ class OrdersController extends ApiGuardController {
                     } catch(\Exception $e) {
                         return $this->response->errorInternalError($e->getMessage());
                     }
+
+                    $push_message = $order->worker->name.' is done washing your car. Your credit card has been charged for $'.number_format($charged/100, 0);
 
                     //send email
                     $email_content = [
