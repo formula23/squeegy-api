@@ -197,7 +197,7 @@ class OrdersController extends ApiGuardController {
                         ];
 
                         Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
-                            $message->to($order->user->name, $order->user->email)->subject(config('squeegy.emails.receipt.subject'));
+                            $message->to($order->customer->email, $order->customer->name)->subject(config('squeegy.emails.receipt.subject'));
                         });
 
                     } catch (\Exception $e) {
