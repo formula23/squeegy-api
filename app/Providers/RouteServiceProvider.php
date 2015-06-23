@@ -37,8 +37,7 @@ class RouteServiceProvider extends ServiceProvider {
         $router->bind('orders', function($id) {
             $order = \App\Order::query()->where('id', $id);
             if(\Auth::user()->is('customer')) $order->where('user_id', \Auth::id());
-
-            return $order->get();
+            return $order->get()->first();
         });
 
         $router->model('services', 'App\Service');
