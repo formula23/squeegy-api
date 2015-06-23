@@ -133,7 +133,7 @@ class OrdersController extends ApiGuardController {
                     if( ! $request->user()->is('washer')) {
                         return $this->response->errorUnauthorized();
                     }
-
+                    $request_data['washer_id'] = \Auth::user()->id;
                     $request_data['enroute_at'] = Carbon::now();
 
                     $push_message = "Hang tight, we will be on our way soon!";
@@ -188,21 +188,21 @@ class OrdersController extends ApiGuardController {
 
         if($push_message) {
             //send push notification to app
-//                $sns_client->publish([
-//                    'TargetArn' => $request->user()->push_token,
-//                    'MessageStructure' => 'json',
-//                    'Message' => json_encode([
-//                        'default' => $push_message,
-//                        env('APNS') => json_encode([
-//                            'aps' => [
-//                                'alert' => $push_message,
-//                                'sound' => 'default',
-//                                'badge' => 1
-//                            ],
-//                            'order_id' => $order->id,
-//                        ])
-//                    ]),
-//                ]);
+                $sns_client->publish([
+                    'TargetArn' => $request->user()->push_token,
+                    'MessageStructure' => 'json',
+                    'Message' => json_encode([
+                        'default' => $push_message,
+                        env('APNS') => json_encode([
+                            'aps' => [
+                                'alert' => $push_message,
+                                'sound' => 'default',
+                                'badge' => 1
+                            ],
+                            'order_id' => $order->id,
+                        ])
+                    ]),
+                ]);
         }
 
 
