@@ -12,14 +12,14 @@ class ServicesTableSeeder extends Seeder {
         Service::create([
             'name' => 'Exterior',
             'price' => '2400',
-            'details' => 'This is the basic wash.',
+            'details' => '["Exterior Wash", "Wheels & Tire Dressing", "Exterior Windows"]',
             'time' => '25',
         ]);
 
         Service::create([
             'name' => 'Full',
             'price' => '3400',
-            'details' => 'This is the extreme wash.. inside and out...',
+            'details' => '["Exterior Wash", "Wheels & Tire Dressing", "Int/Ext Windows", "Floor & Seat Vacuum", "Dash Wipe Down"]',
             'time' => '45',
         ]);
     }
