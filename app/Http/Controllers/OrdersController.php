@@ -109,6 +109,7 @@ class OrdersController extends ApiGuardController {
      */
     public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client, Twilio $twilio)
     {
+
         if(empty($order->id)) {
             return $this->response->errorNotFound();
         }
