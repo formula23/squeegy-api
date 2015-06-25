@@ -42,7 +42,6 @@ class OrdersController extends ApiGuardController {
 
         $this->middleware('auth');
         $this->middleware('is.worker', ['only' => 'index']);
-
     }
 
     /**
@@ -116,12 +115,7 @@ class OrdersController extends ApiGuardController {
 
         $request_data = $request->all();
 
-        if(isset($request_data['promo_code'])) { //calculate promo
-            if($request_data['promo_code'] == "1234" && ! $order->discount) {
-                $request_data['discount'] = 500;
-                $request_data['price'] = $order->price;
-            }
-        }
+        $request_data = $this->applyPromoCode($order, $request_data);
 
         $push_message = '';
 
@@ -140,16 +134,27 @@ class OrdersController extends ApiGuardController {
                         return $this->response->errorWrongArgs('Cannot cancel order any more. Order status:'.$order->status);
                     }
 
-                    //charge credit card
-                    $charged=1000;
-                    Stripe::setApiKey(config('stripe.api_key'));
-                    $charge = StripeCharge::create([
-                        "amount" => $charged,
-                        "currency" => "usd",
-                        "customer" => $order->customer->stripe_customer_id,
-                    ]);
-                    $request_data["charged"] = $charged;
-                    $request_data["stripe_charge_id"] = $charge->id;
+                    try {
+
+                        //charge credit card
+                        $charged=config('squeegy.cancellation_fee');
+                        Stripe::setApiKey(config('stripe.api_key'));
+                        $charge = StripeCharge::create([
+                            "amount" => $charged,
+                            "currency" => "usd",
+                            "customer" => $order->customer->stripe_customer_id,
+                        ]);
+
+                        $request_data["charged"] = $charged;
+                        $request_data["stripe_charge_id"] = $charge->id;
+
+                    } catch (InvalidRequest $e) {
+                        return $this->response->errorWrongArgs($e->getMessage());
+                    } catch(\Exception $e) {
+                        return $this->response->errorInternalError($e->getMessage());
+                    }
+
+
 
                     $request_data['cancel_at'] = Carbon::now();
 
@@ -286,4 +291,22 @@ class OrdersController extends ApiGuardController {
         }
         return $this->response->withItem($order, new OrderTransformer);
     }
+
+    /**
+     * @param Order $order
+     * @param $request_data
+     * @return mixed
+     */
+    protected function applyPromoCode(Order $order, $request_data)
+    {
+        if (isset($request_data['promo_code'])) { //calculate promo
+            if ($request_data['promo_code'] == "1234" && !$order->discount) {
+                $request_data['discount'] = 500;
+                return $request_data;
+            }
+            return $request_data;
+        }
+        return $request_data;
+    }
+
 }

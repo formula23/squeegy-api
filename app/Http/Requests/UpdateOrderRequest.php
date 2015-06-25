@@ -31,7 +31,6 @@ class UpdateOrderRequest extends Request {
             'photo_count' => 'required|sometimes',
             'discount_code' => 'required|sometimes',
             'rating' => 'required|sometimes',
-            'rating_comment' => 'required|sometimes',
 		];
 	}
 
