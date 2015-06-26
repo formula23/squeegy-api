@@ -71,9 +71,12 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
-        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order && ! env('APP_DEV')) {
-            return 0;
+        if( ! env('APP_DEV')) {
+            if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
+                return 0;
+            }
         }
+
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
