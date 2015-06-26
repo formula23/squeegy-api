@@ -3,6 +3,8 @@
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
+
+
 class EventServiceProvider extends ServiceProvider {
 
 	/**
@@ -14,6 +16,34 @@ class EventServiceProvider extends ServiceProvider {
 		'event.name' => [
 			'EventListener',
 		],
+
+        'App\Events\UserRegistered' => [
+            'App\Handlers\Events\SendWelcomeEmail',
+            'App\Handlers\Events\SendSMSVerification',
+        ],
+
+        'App\Events\OrderCancelled' => [
+            'App\Handlers\Events\ChargeCancelFee',
+            'App\Handlers\Events\SendCancelEmail',
+        ],
+
+        'App\Events\OrderConfirmed' => [
+            'App\Handlers\Events\NotifyWorkerNewOrder',
+        ],
+
+        'App\Events\OrderEnroute' => [
+            'App\Handlers\Events\NotifyCustomerEnroute',
+        ],
+
+        'App\Events\OrderStart' => [
+            'App\Handlers\Events\NotifyCustomerStart',
+        ],
+
+        'App\Events\OrderDone' => [
+            'App\Handlers\Events\ChargeOrder',
+            'App\Handlers\Events\NotifyCustomerDone',
+            'App\Handlers\Events\SendReceiptEmail',
+        ],
 	];
 
 	/**

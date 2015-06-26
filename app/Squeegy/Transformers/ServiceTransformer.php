@@ -6,7 +6,7 @@
  * Time: 00:25
  */
 
-namespace App\OctaneLA\Transformers;
+namespace App\Squeegy\Transformers;
 
 use App\Service;
 use League\Fractal\TransformerAbstract;

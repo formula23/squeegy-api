@@ -1,13 +1,7 @@
 <?php namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
-use Aws\Sns\SnsClient;
-use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
-use Illuminate\Http\Request;
-
-class TestController extends ApiGuardController {
+class TestController extends Controller {
 
 	/**
 	 * Display a listing of the resource.

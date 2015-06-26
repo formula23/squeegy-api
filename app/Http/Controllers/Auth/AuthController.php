@@ -1,11 +1,11 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use Aloha\Twilio\Twilio;
+use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
-use App\OctaneLA\Transformers\UserTransformer;
+use App\Squeegy\Transformers\UserTransformer;
 use App\User;
-use Aws\Ecs\Exception\EcsException;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
@@ -17,6 +17,7 @@ use EllipseSynergie\ApiResponse\Laravel\Response as EllipseResponse;
 use Stripe\Stripe;
 use Stripe\Charge as Stripe_Charge;
 use Stripe\Customer as Stripe_Customer;
+use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 
 
 /**
@@ -47,9 +48,9 @@ class AuthController extends Controller {
 	 */
 	public function __construct(Guard $auth, Registrar $registrar)
 	{
+        parent::__construct();
 		$this->auth = $auth;
 		$this->registrar = $registrar;
-        $this->response = new EllipseResponse(new Manager);
 
         $this->middleware('auth.api');
 //		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
@@ -78,9 +79,10 @@ class AuthController extends Controller {
 
     /**
      * @param Request $request
+     * @param Twilio $twilio
      * @return mixed
      */
-    public function postRegister(Request $request, Twilio $twilio)
+    public function postRegister(Request $request)
     {
         $data = $request->all();
 
@@ -126,21 +128,11 @@ class AuthController extends Controller {
 
             $this->auth->user()->attachRole(3);
 
-            //send email
-            $email_content = [
-                'name' => $data['name'],
-            ];
-            Mail::send('emails.welcome', $email_content, function ($message) use ($data) {
-                $message->to($data['email'], $data['name'])->subject(config('squeegy.emails.welcome.subject'));
-            });
-
-            //send SMS phone verification
-            $twilio->message($data['phone'], "Squeegy verification code: " . \Config::get('squeegy.sms_verification'));
+            \Event::fire(new UserRegistered());
 
         } catch(\Exception $e) {
             return $this->response->errorInternalError($e->getMessage());
         }
-
 
         return $this->response->withItem($this->auth->user(), new UserTransformer());
     }

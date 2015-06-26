@@ -16,9 +16,13 @@ class CreateOrdersTable extends Migration {
 		{
 			$table->increments('id');
             $table->integer('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->integer('worker_id')->unsigned()->nullable()->index();
+            $table->foreign('worker_id')->references('id')->on('users');
             $table->integer('service_id')->unsigned()->index();
+            $table->foreign('service_id')->references('id')->on('services');
             $table->integer('vehicle_id')->unsigned()->index();
+            $table->foreign('vehicle_id')->references('id')->on('vehicles');
             $table->string('job_number')->index()->nullable();
             $table->enum('status', array('request', 'confirm', 'cancel', 'enroute', 'start', 'done'))->index()->default('request');
             $table->integer('eta')->unsigned()->nullable();

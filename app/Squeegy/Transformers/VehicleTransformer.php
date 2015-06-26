@@ -6,7 +6,7 @@
  * Time: 10:56
  */
 
-namespace App\OctaneLA\Transformers;
+namespace App\Squeegy\Transformers;
 
 
 use App\Vehicle;
@@ -14,7 +14,7 @@ use League\Fractal\TransformerAbstract;
 
 /**
  * Class VehicleTransformer
- * @package App\OctaneLA\Transformers
+ * @package App\Squeegy\Transformers
  */
 class VehicleTransformer extends TransformerAbstract {
 

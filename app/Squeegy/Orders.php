@@ -1,4 +1,4 @@
-<?php namespace App\OctaneLA;
+<?php namespace App\Squeegy;
 /**
  * Created by PhpStorm.
  * User: danschultz
@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 /**
  * Class Orders
- * @package App\OctaneLA
+ * @package App\Squeegy
  */
 class Orders {
 
@@ -35,6 +35,23 @@ class Orders {
         $curr_hr = Carbon::now()->hour;
         if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
         return false;
+    }
+
+    public static function availability() {
+
+        $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>''];
+
+        if( ! self::open()) $data['description'] = trans('messages.service.closed');
+
+        $data['lead_time'] = self::getLeadTime();
+        if( ! $data['lead_time']) {
+            $data['accept'] = 0;
+            $data['description'] = trans('messages.service.highdemand');
+        }
+
+        $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
+
+        return array_merge($data, $lead_time_arr);
     }
 
     /**

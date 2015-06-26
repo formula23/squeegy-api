@@ -1,21 +1,20 @@
 <?php namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use App\OctaneLA\Orders;
-use App\OctaneLA\Transformers\ServiceAvailabilityTransformer;
-use App\OctaneLA\Transformers\ServiceTransformer;
-use App\OctaneLA\Transformers\ServiceCoordTransformer;
+use App\Squeegy\Orders;
+use App\Squeegy\Transformers\ServiceAvailabilityTransformer;
+use App\Squeegy\Transformers\ServiceTransformer;
+use App\Squeegy\Transformers\ServiceCoordTransformer;
 use App\Service;
 use App\ServiceCoord;
-use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
 use Request;
-use Carbon\Carbon;
+use Lang;
 
 /**
  * Class ServicesController
  * @package App\Http\Controllers
  */
-class ServicesController extends ApiGuardController {
+class ServicesController extends Controller {
 
     /**
      * Get all services
@@ -30,7 +29,6 @@ class ServicesController extends ApiGuardController {
     /**
      * Display the specified resource.
      *
-     * @param  int $id
      * @param Service $service
      * @return Response
      */
@@ -55,21 +53,23 @@ class ServicesController extends ApiGuardController {
 
     public function availability()
     {
-        $data = ['accept'=>Orders::open(), 'description'=>'', 'time'=>0, 'time_label'=>''];
+        $availability = Orders::availability();
 
-        if( ! Orders::open()) $data['description'] = 'You have reached us after hours.';
+//        $data = ['accept'=>Orders::open(), 'description'=>'', 'time'=>0, 'time_label'=>''];
+//
+//        if( ! Orders::open()) $data['description'] = Lang::get('messages.service.closed');
+//
+//        $lead_time = Orders::getLeadTime();
+//        if( ! $lead_time) {
+//            $data['accept'] = 0;
+//            $data['description'] = Lang::get('messages.service.highdemand');
+//        }
+//
+//        $lead_time_arr = Orders::formatLeadTime($lead_time);
+//
+//        $data = array_merge($data, $lead_time_arr);
 
-        $lead_time = Orders::getLeadTime();
-        if( ! $lead_time) {
-            $data['accept'] = 0;
-            $data['description'] = 'Due to high-demand, we cannot take your request.';
-        }
-
-        $lead_time_arr = Orders::formatLeadTime($lead_time);
-
-        $data = array_merge($data, $lead_time_arr);
-
-        return $this->response->withItem($data, new ServiceAvailabilityTransformer);
+        return $this->response->withItem($availability, new ServiceAvailabilityTransformer);
     }
 
 

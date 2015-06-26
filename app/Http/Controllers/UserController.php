@@ -1,9 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\OctaneLA\Transformers\UserTransformer;
-use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
+use App\Squeegy\Transformers\UserTransformer;
 use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
@@ -12,7 +10,7 @@ use Stripe\Error\InvalidRequest;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 
-class UserController extends ApiGuardController {
+class UserController extends Controller {
 
     /**
      *
@@ -38,6 +36,7 @@ class UserController extends ApiGuardController {
      * Update the specified resource in storage.
      *
      * @param UpdateUserRequest $request
+     * @param SnsClient $sns_client
      * @return Response
      */
 	public function update(UpdateUserRequest $request, SnsClient $sns_client)

@@ -6,7 +6,7 @@
  * Time: 11:36
  */
 
-namespace App\OctaneLA\Transformers;
+namespace App\Squeegy\Transformers;
 
 use Bican\Roles\Models\Role;
 use League\Fractal\TransformerAbstract;

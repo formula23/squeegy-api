@@ -7,6 +7,8 @@ class ServicesTableSeeder extends Seeder {
 
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
+
         Service::truncate();
 
         Service::create([
@@ -22,6 +24,8 @@ class ServicesTableSeeder extends Seeder {
             'details' => '["Exterior Wash", "Wheels & Tire Dressing", "Int/Ext Windows", "Floor & Seat Vacuum", "Dash Wipe Down"]',
             'time' => '45',
         ]);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // enable foreign key constraints
     }
 
 }

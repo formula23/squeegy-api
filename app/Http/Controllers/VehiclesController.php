@@ -1,7 +1,6 @@
 <?php namespace App\Http\Controllers;
 
-use App\OctaneLA\Transformers\VehicleTransformer;
-use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
+use App\Squeegy\Transformers\VehicleTransformer;
 use Illuminate\Support\Facades\Auth;
 use Response;
 use App\Vehicle;
@@ -13,7 +12,7 @@ use App\Http\Requests\UpdateVehicleRequest;
  * Class VehiclesController
  * @package App\Http\Controllers
  */
-class VehiclesController extends ApiGuardController {
+class VehiclesController extends Controller {
 
     /**
      *

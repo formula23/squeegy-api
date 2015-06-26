@@ -10,6 +10,7 @@ class VehiclesTableSeeder extends Seeder {
 
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
 
         Vehicle::truncate();
 
@@ -33,6 +34,8 @@ class VehiclesTableSeeder extends Seeder {
                 'license_plate' => strtoupper(Str::quickRandom(7)),
             ]);
         }
+
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // enable foreign key constraints
     }
 
 }

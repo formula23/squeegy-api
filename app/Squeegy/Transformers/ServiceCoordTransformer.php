@@ -6,7 +6,7 @@
  * Time: 00:28
  */
 
-namespace App\OctaneLA\Transformers;
+namespace App\Squeegy\Transformers;
 
 
 use App\ServiceCoord;

@@ -3,6 +3,7 @@
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
 
 class RouteServiceProvider extends ServiceProvider {
 
@@ -26,12 +27,12 @@ class RouteServiceProvider extends ServiceProvider {
 		parent::boot($router);
 
         $router->bind('vehicles', function($id) {
-            return \App\Vehicle::where('user_id', \Auth::id())->find($id);
+            return \App\Vehicle::where('user_id', Auth::id())->find($id);
         });
 
         $router->bind('orders', function($id) {
             $order = \App\Order::query()->where('id', $id);
-            if(\Auth::user()->is('customer')) $order->where('user_id', \Auth::id());
+            if(Auth::user() && Auth::user()->is('customer')) $order->where('user_id', Auth::id());
             return $order->get()->first();
         });
 

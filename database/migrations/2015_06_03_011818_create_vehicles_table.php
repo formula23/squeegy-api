@@ -16,6 +16,7 @@ class CreateVehiclesTable extends Migration {
 		{
 			$table->increments('id');
             $table->integer('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->string('year');
             $table->string('make');
             $table->string('model');

@@ -6,9 +6,9 @@
  * Time: 00:25
  */
 
-namespace App\OctaneLA\Transformers;
+namespace App\Squeegy\Transformers;
 
-use App\OctaneLA\Orders;
+use App\Squeegy\Orders;
 use App\Order;
 use League\Fractal\TransformerAbstract;
 
@@ -17,7 +17,8 @@ class OrderTransformer extends TransformerAbstract {
     protected $defaultIncludes = [
         'vehicle',
         'service',
-        'worker'
+        'worker',
+        'customer',
     ];
 
     public function transform(Order $order)
@@ -41,6 +42,10 @@ class OrderTransformer extends TransformerAbstract {
                 ]
             ],
         ];
+    }
+
+    public function includeCustomer(Order $order) {
+        return $this->item($order->customer, new UserTransformer);
     }
 
     public function includeService(Order $order)
