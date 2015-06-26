@@ -30,7 +30,7 @@ class PushNotification {
 
         if( ! $order->customer->push_token) return;
 
-        self::$sns_client = \App::make('\Aws\Sns\SnsClient');
+        self::$sns_client = \App::make('Aws\Sns\SnsClient');
 
         self::$sns_client->publish([
             'TargetArn' => $order->customer->push_token,
