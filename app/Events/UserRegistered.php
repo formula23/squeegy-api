@@ -2,7 +2,6 @@
 
 use App\Events\Event;
 use App\User;
-use Aloha\Twilio\Twilio;
 use Illuminate\Queue\SerializesModels;
 
 class UserRegistered extends Event {
@@ -19,7 +18,7 @@ class UserRegistered extends Event {
      */
 	public function __construct()
 	{
-        $this->twilio = \App::make('Twilio');
+        $this->twilio = \App::make('Aloha\Twilio\Twilio');
 	}
 
 }
