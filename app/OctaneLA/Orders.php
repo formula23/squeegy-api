@@ -71,7 +71,7 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
-        if(self::remainingBusinessTime() < self::CLOSING_THRESHOLD && ! $order) {
+        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order && ! env('APP_DEV')) {
             return 0;
         }
 
