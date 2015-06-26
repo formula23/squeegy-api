@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class Orders {
 
     const CLOSING_THRESHOLD = 20;
-    const BASE_LEAD_TIME = 30;
+    const BASE_LEAD_TIME = 15;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
 
@@ -31,6 +31,7 @@ class Orders {
      */
     public static function open()
     {
+        if(env('APP_DEV')) return true;
         $curr_hr = Carbon::now()->hour;
         if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
         return false;
