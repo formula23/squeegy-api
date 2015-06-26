@@ -71,10 +71,9 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
-        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order && !env('APP_DEV')) {
+        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
             return 0;
         }
-
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
@@ -94,7 +93,7 @@ class Orders {
             $leadtime += self::$order_status_time_map[$order->status];
         }
 
-        if(self::remainingBusinessTime() < $leadtime && !env('APP_DEV')) {
+        if(self::remainingBusinessTime() < $leadtime) {
             return 0;
         }
 
@@ -134,6 +133,7 @@ class Orders {
      */
     public static function remainingBusinessTime()
     {
+        if(env('APP_DEV')) return 1000;
         return Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'),0,0)->diffInMinutes();
     }
 
