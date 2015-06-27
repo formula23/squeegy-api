@@ -47,7 +47,7 @@ class Payments {
         if($amt) $params['amount'] = $amt;
 
         $charge = StripeCharge::retrieve($charge_id);
-        $capt_charge = $charge->capture();
+        $capt_charge = $charge->capture($params);
 
         return $capt_charge;
     }
