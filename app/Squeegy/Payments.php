@@ -41,7 +41,9 @@ class Payments {
     {
         if(!$charge_id) return;
 
-        $charge = StripeCharge::capture([
+        $stripe_charge = new StripeCharge();
+
+        $charge = $stripe_charge->capture([
             'id' => $charge_id,
             'statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>'']),
         ]);
