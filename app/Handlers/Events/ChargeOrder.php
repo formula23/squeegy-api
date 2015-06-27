@@ -25,10 +25,6 @@ class ChargeOrder {
 	 */
 	public function handle(OrderDone $event)
 	{
-        if($event->order->charged && $event->order->stripe_charge_id) {
-            return;
-        }
-
         $order_amount = $event->order->price - (int)$event->order->discount;
 
         $payments = new Payments($event->order->customer->stripe_customer_id);
