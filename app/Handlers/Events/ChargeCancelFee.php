@@ -6,6 +6,7 @@ use App\Squeegy\Payments;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
+use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Charge as StripeCharge;
 
@@ -29,6 +30,8 @@ class ChargeCancelFee {
 	 */
 	public function handle(OrderCancelled $event)
 	{
+        if(Auth::user()->is('worker')) return; //If worker cancelled do not charge the card.
+
         $cancel_fee = config('squeegy.cancellation_fee');
 
         $payments = new Payments($event->order->customer->stripe_customer_id);

@@ -18,6 +18,7 @@ return [
             'enroute' => 'Hang tight! :worker_name is on the way!',
             'start' => ':worker_name started washing your car.',
             'done' => ':worker_name is done washing your car. Your credit card has been charged $:charge_amount',
+            'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
     ],
     'service' => [
