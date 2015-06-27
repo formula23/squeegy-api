@@ -15,6 +15,8 @@ class Payments {
 
     protected $customer_id;
 
+    protected $amt;
+
     public function __construct($customer_id)
     {
         Stripe::setApiKey(config('stripe.api_key'));
@@ -22,14 +24,26 @@ class Payments {
         $this->customer_id = $customer_id;
     }
 
-    public function charge($amt=0)
+    public function auth($amt=0)
     {
         if($amt===0) return;
 
         $charge = StripeCharge::create([
-            "amount" => $amt,
-            "currency" => "usd",
-            "customer" => $this->customer_id,
+            'amount' => $amt,
+            'currency' => 'usd',
+            'customer' => $this->customer_id,
+            'capture' => false,
+        ]);
+        return $charge;
+    }
+
+    public function capture($charge_id)
+    {
+        if(!$charge_id) return;
+
+        $charge = StripeCharge::capture([
+            'id' => $charge_id,
+            'statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>'']),
         ]);
 
         return $charge;

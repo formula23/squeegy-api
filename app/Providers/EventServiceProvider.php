@@ -28,6 +28,7 @@ class EventServiceProvider extends ServiceProvider {
         ],
 
         'App\Events\OrderConfirmed' => [
+            'App\Handlers\Events\AuthOrder',
             'App\Handlers\Events\NotifyWorkerNewOrder',
         ],
 

@@ -13,6 +13,7 @@ return [
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
         'new_order_worker' => 'Squeegy: New Order# :order_id',
         'same_status' => 'This order is already in the \':status\' state.',
+        'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'push_notice' => [
             'enroute' => 'Hang tight! :worker_name is on the way!',
             'start' => ':worker_name started washing your car.',

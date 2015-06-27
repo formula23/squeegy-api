@@ -156,7 +156,6 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    $request_data['price'] = Orders::getPrice($order);
                     $request_data['lead_time'] = Orders::getLeadTime();
                     $request_data["job_number"] = strtoupper(substr( md5(rand()), 0, 6));
                     $request_data['confirm_at'] = Carbon::now();
