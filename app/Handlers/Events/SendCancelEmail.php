@@ -1,10 +1,9 @@
 <?php namespace App\Handlers\Events;
 
 use App\Events\OrderCancelled;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
-
 use Mail;
 
 class SendCancelEmail {
@@ -28,7 +27,7 @@ class SendCancelEmail {
 	public function handle(OrderCancelled $event)
 	{
         if(Auth::user()->is('worker')) return; //If worker cancelled do not charge the card.
-        
+
         $email_content = [
             'name' => $event->order->customer->name,
         ];

@@ -1,14 +1,11 @@
 <?php namespace App\Handlers\Events;
 
 use App\Events\OrderCancelled;
-
+use Illuminate\Support\Facades\Auth;
 use App\Squeegy\Payments;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
-use Illuminate\Support\Facades\Auth;
-use Stripe\Stripe;
-use Stripe\Charge as StripeCharge;
 
 class ChargeCancelFee {
 
