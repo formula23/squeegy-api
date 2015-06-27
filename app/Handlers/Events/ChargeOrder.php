@@ -33,7 +33,7 @@ class ChargeOrder {
 
         $payments = new Payments($event->order->customer->stripe_customer_id);
 
-        $charge = $payments->charge($order_amount);
+        $charge = $payments->capture($event->order->stripe_charge_id);
 
         $event->order->charged = $order_amount;
         $event->order->stripe_charge_id = $charge->id;
