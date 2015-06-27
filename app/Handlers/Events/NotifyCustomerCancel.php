@@ -1,7 +1,6 @@
 <?php namespace App\Handlers\Events;
 
-use App\Events\OrderCancelled;
-
+use App\Events\OrderCancelledByWorker;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 use App\Squeegy\PushNotification;
@@ -24,7 +23,7 @@ class NotifyCustomerCancel {
 	 * @param  OrderCancelled  $event
 	 * @return void
 	 */
-	public function handle(OrderCancelled $event)
+	public function handle(OrderCancelledByWorker $event)
 	{
         $push_message = trans('messages.order.push_notice.cancel');
 
