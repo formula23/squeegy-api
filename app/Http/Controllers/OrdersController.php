@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Aloha\Twilio\Twilio;
 use Event;
+use Illuminate\Support\Facades\Auth;
 /**
  * Class OrdersController
  * @package App\Http\Controllers
@@ -143,7 +144,7 @@ class OrdersController extends Controller {
                     } else {
                         Event::fire(new OrderCancelled($order));
                     }
-                    
+
                     break;
                 case "confirm":
 
