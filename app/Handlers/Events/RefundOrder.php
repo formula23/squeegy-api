@@ -28,6 +28,7 @@ class RefundOrder {
         $payments = new Payments($event->order->customer->stripe_customer_id);
         $charge = $payments->refund($event->order->stripe_charge_id);
 
+        $event->order->charged -= $charge->amount;
         $event->order->refund = $charge->amount;
         $event->order->stripe_charge_id = $charge->id;
         $event->order->save();
