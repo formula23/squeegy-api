@@ -47,14 +47,26 @@ class Payments {
         if($amt) $params['amount'] = $amt;
 
         $charge = StripeCharge::retrieve($charge_id);
-        $capt_charge = $charge->capture($params);
-
-        return $capt_charge;
+        return $charge->capture($params);
     }
 
     public function cancel($charge_id, $amt=0)
     {
         return $this->capture($charge_id, $amt);
+    }
+
+    public function refund($charge_id, $amt=0)
+    {
+        if(!$charge_id) {
+            throw new \Exception('No charge_id supplied');
+        }
+
+        $params = [];
+        if($amt) {
+            $params['amount'] = $amt;
+        }
+        $charge = StripeCharge::retrieve($charge_id);
+        return $charge->refund($params);
     }
 
 }

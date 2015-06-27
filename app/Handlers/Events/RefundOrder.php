@@ -1,12 +1,11 @@
 <?php namespace App\Handlers\Events;
 
-use App\Events\OrderCancelled;
+use App\Events\OrderCancelledByWorker;
 use App\Squeegy\Payments;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
-
-class ChargeCancelFee {
+class RefundOrder {
 
 	/**
 	 * Create the event handler.
@@ -21,21 +20,17 @@ class ChargeCancelFee {
 	/**
 	 * Handle the event.
 	 *
-	 * @param  OrderCancelled  $event
+	 * @param  OrderCancelledByWorker  $event
 	 * @return void
 	 */
-	public function handle(OrderCancelled $event)
+	public function handle(OrderCancelledByWorker $event)
 	{
-        $cancel_fee = config('squeegy.cancellation_fee');
-
         $payments = new Payments($event->order->customer->stripe_customer_id);
+        $charge = $payments->refund($event->order->stripe_charge_id);
 
-        $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
-
-        $event->order->charged = $cancel_fee;
+        $event->order->refund = $charge->amount;
         $event->order->stripe_charge_id = $charge->id;
         $event->order->save();
-
 	}
 
 }

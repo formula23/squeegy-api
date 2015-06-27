@@ -23,9 +23,13 @@ class EventServiceProvider extends ServiceProvider {
         ],
 
         'App\Events\OrderCancelled' => [
-            'App\Handlers\Events\NotifyCustomerCancel',
             'App\Handlers\Events\ChargeCancelFee',
             'App\Handlers\Events\SendCancelEmail',
+        ],
+
+        'App\Events\OrderCancelledByWorker' => [
+            'App\Handlers\Events\RefundOrder',
+            'App\Handlers\Events\NotifyCustomerCancel',
         ],
 
         'App\Events\OrderConfirmed' => [

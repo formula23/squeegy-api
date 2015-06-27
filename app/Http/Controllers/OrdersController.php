@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Events\OrderCancelled;
+use App\Events\OrderCancelledByWorker;
 use App\Events\OrderConfirmed;
 use App\Events\OrderDone;
 use App\Events\OrderEnroute;
@@ -8,16 +9,12 @@ use App\Events\OrderStart;
 use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Squeegy\Orders;
-use App\Squeegy\PushNotification;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
 use App\Service;
 use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Stripe\Stripe;
-use Stripe\Charge as StripeCharge;
 use Aloha\Twilio\Twilio;
 use Event;
 /**
@@ -141,8 +138,12 @@ class OrdersController extends Controller {
 
                     $request_data['cancel_at'] = Carbon::now();
 
-                    Event::fire(new OrderCancelled($order));
-
+                    if(Auth::user()->is('worker')) {
+                        Event::fire(new OrderCancelledByWorker($order));
+                    } else {
+                        Event::fire(new OrderCancelled($order));
+                    }
+                    
                     break;
                 case "confirm":
 
