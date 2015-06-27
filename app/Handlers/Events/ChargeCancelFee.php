@@ -33,7 +33,7 @@ class ChargeCancelFee {
 
         $payments = new Payments($event->order->customer->stripe_customer_id);
 
-        $charge = $payments->charge($cancel_fee);
+        $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
 
         $event->order->charged = $cancel_fee;
         $event->order->stripe_charge_id = $charge->id;

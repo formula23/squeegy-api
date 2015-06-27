@@ -37,16 +37,24 @@ class Payments {
         return $charge;
     }
 
-    public function capture($charge_id)
+    public function capture($charge_id, $amt=0)
     {
-        if(!$charge_id) return;
+        if(!$charge_id) {
+            throw new \Exception('No charge_id supplied');
+        }
+
+        $params = ['statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>''])];
+        if($amt) $params['amount'] = $amt;
 
         $charge = StripeCharge::retrieve($charge_id);
-        $capt_charge = $charge->capture([
-            'statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>'']),
-        ]);
+        $capt_charge = $charge->capture();
 
         return $capt_charge;
+    }
+
+    public function cancel($charge_id, $amt=0)
+    {
+        return $this->capture($charge_id, $amt);
     }
 
 }
