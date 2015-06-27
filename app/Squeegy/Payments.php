@@ -41,14 +41,12 @@ class Payments {
     {
         if(!$charge_id) return;
 
-        $stripe_charge = new StripeCharge();
-
-        $charge = $stripe_charge->capture([
-            'id' => $charge_id,
+        $charge = StripeCharge::retrieve($charge_id);
+        $capt_charge = $charge->capture([
             'statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>'']),
         ]);
 
-        return $charge;
+        return $capt_charge;
     }
 
 }
