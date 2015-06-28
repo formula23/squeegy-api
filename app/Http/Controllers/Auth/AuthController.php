@@ -36,8 +36,6 @@ class AuthController extends Controller {
 	|
 	*/
 
-    public $manager;
-    public $response;
 
 	/**
 	 * Create a new authentication controller instance.
@@ -144,9 +142,9 @@ class AuthController extends Controller {
     {
         $this->auth->logout();
 
-        return Response::json([
+        return $this->response->withArray([
             'message' => 'Success',
             'status_code' => 200
-        ], 200);
+        ]);
     }
 }
