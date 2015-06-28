@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use Aloha\Twilio\Twilio;
 use App\Http\Requests;
 use App\Squeegy\Transformers\UserTransformer;
 use Guzzle\Service\Exception\ValidationException;
@@ -39,7 +40,7 @@ class UserController extends Controller {
      * @param SnsClient $sns_client
      * @return Response
      */
-	public function update(UpdateUserRequest $request, SnsClient $sns_client)
+	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio)
 	{
         $data = $request->all();
 
@@ -101,6 +102,11 @@ class UserController extends Controller {
 
         if( ! empty($data["phone"])) {
             $data["phone"] = "+1".$data["phone"];
+
+            if($data["phone"] != $request->user()->phone) {
+                $twilio->message($request->user()->phone, "Squeegy verification code: " . config('squeegy.sms_verification'));
+            }
+
         }
 
         $request->user()->update($data);
