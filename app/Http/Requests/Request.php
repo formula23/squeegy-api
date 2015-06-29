@@ -26,10 +26,10 @@ abstract class Request extends FormRequest {
 
     public function response(array $errors)
     {
-        $error = "";
+        $err_msg = "";
         foreach($errors as $error) {
-            $error .= $error.'\n';
+            $err_msg .= implode(", ", $error);
         }
-        throw new \Exception($error);
+        throw new \Exception($err_msg);
     }
 }
