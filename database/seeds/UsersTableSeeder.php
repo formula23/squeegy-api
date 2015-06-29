@@ -24,7 +24,7 @@ class UsersTableSeeder extends \Illuminate\Database\Seeder {
             'name'=>"Dan Schultz",
             'email'=>"dschultz@octanela.com",
             'password'=>bcrypt('12345678'),
-            'phone'=>"+13106004938"
+            'phone'=>"3106004938"
         ]);
 
         $user->attachRole(2);
@@ -33,7 +33,7 @@ class UsersTableSeeder extends \Illuminate\Database\Seeder {
             'name'=>"Andrew Davis",
             'email'=>"adavis@octanela.com",
             'password'=>bcrypt('12345678'),
-            'phone'=>"+13104332997"
+            'phone'=>"3104332997"
         ]);
 
         $user->attachRole(2);
