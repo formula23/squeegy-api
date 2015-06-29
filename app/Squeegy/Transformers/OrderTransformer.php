@@ -33,6 +33,7 @@ class OrderTransformer extends TransformerAbstract {
             'discount' => (($order->discount)? $order->discount : null ),
             'total' => (int)($order->price - (int)$order->discount),
             'eta' => Orders::formatConfirmEta(Orders::getLeadTime($order)),
+            'eta_seconds' => (Orders::getLeadTime($order)*60),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'links' => [
