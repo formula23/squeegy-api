@@ -7,6 +7,9 @@
  */
 
 return [
+    'profile' => [
+        'phone_verify' => 'Squeegy verification code: :verify_code',
+    ],
     'order' => [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'You already have an order pending.',

@@ -1,24 +1,20 @@
 <?php namespace App\Http\Controllers\Auth;
 
-use Aloha\Twilio\Twilio;
-use App\Events\UserRegistered;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateUserRequest;
-use App\Squeegy\Transformers\UserTransformer;
-use App\User;
+use App\Squeegy\Payments;
+use Exception;
+
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Response;
-use League\Fractal\Manager;
-use EllipseSynergie\ApiResponse\Laravel\Response as EllipseResponse;
+use Aloha\Twilio\Twilio;
 use Stripe\Stripe;
-use Stripe\Charge as Stripe_Charge;
-use Stripe\Customer as Stripe_Customer;
-use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
-use Exception;
+use Stripe\Customer as StripeCustomer;
+
+use App\Events\UserRegistered;
+use App\Http\Controllers\Controller;
+use App\Squeegy\Transformers\UserTransformer;
+
 
 
 /**
@@ -27,23 +23,12 @@ use Exception;
  */
 class AuthController extends Controller {
 
-	/*
-	|--------------------------------------------------------------------------
-	| Registration & Login Controller
-	|--------------------------------------------------------------------------
-	|
-	| This controller handles the registration of new users, as well as the
-	| authentication of existing users.
-	|
-	*/
-
-
 	/**
 	 * Create a new authentication controller instance.
 	 *
 	 * @param  \Illuminate\Contracts\Auth\Guard  $auth
 	 * @param  \Illuminate\Contracts\Auth\Registrar  $registrar
-	 * @return void
+     *
 	 */
 	public function __construct(Guard $auth, Registrar $registrar)
 	{
@@ -52,8 +37,6 @@ class AuthController extends Controller {
 		$this->registrar = $registrar;
 
         $this->middleware('auth.api');
-//		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
-//        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
 	}
 
     /**
@@ -87,33 +70,28 @@ class AuthController extends Controller {
 
         $validator = $this->registrar->validator($data);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->response->errorWrongArgs($validator->errors()->getMessages());
         }
 
         try {
 
             Stripe::setApiKey(\Config::get('stripe.api_key'));
-            $customer = Stripe_Customer::create([
+            $customer = StripeCustomer::create([
                 "description" => $data["name"],
                 "email" => $data['email'],
             ]);
 
         } catch (Exception $e) {}
 
-        if(isset($data['stripe_token'])) {
+        if( ! empty($data['stripe_token'])) {
 
             try {
-                $customer->sources->create([
-                    "source" => $data['stripe_token']
-                ]);
-
+                $customer->sources->create(["source" => $data['stripe_token']]);
                 $data['stripe_customer_id'] = $customer->id;
 
             } catch (Exception $e) {}
         }
-
 
         try {
 
