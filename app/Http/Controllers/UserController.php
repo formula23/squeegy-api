@@ -101,9 +101,8 @@ class UserController extends Controller {
         }
 
         if( ! empty($data["phone"])) {
-            $data["phone"] = "+1".$data["phone"];
 
-            if($data["phone"] != $request->user()->phone) {
+            if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
                 $twilio->message($data["phone"], "Squeegy verification code: " . config('squeegy.sms_verification'));
             }
 
