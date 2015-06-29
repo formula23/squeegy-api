@@ -23,4 +23,9 @@ abstract class Request extends FormRequest {
 
         return $validator;
     }
+
+    public function response(array $errors)
+    {
+        return new JsonResponse($errors, 422);
+    }
 }
