@@ -39,7 +39,7 @@ class OrderTransformer extends TransformerAbstract {
             'links' => [
                 [
                     'rel' => 'self',
-                    'uri' => route('api.v1.orders.show', ['orders'=>$order->id])
+                    'uri' => route('v1.orders.show', ['orders'=>$order->id])
                 ]
             ],
         ];

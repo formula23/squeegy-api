@@ -11,9 +11,9 @@
 |
 */
 
-Route::group(['prefix' => 'v1'], function() {
+Route::group(['prefix' => 'api/v1'], function() {
 
-    Route::resource('vehicles', 'VehiclesController', ['as'=>'api']);
+    Route::resource('vehicles', 'VehiclesController');
 
     Route::get('user', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
@@ -22,15 +22,15 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('auth/login', 'Auth\AuthController@postLogin');
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
-    Route::get('services', ['as'=>'api.v1.services.index', 'uses'=>'ServicesController@index']);
+    Route::get('services', ['as'=>'v1.services.index', 'uses'=>'ServicesController@index']);
     Route::get('services/coords', 'ServicesController@coords');
     Route::get('services/availability', 'ServicesController@availability');
-    Route::get('services/{services}', ['as'=>'api.v1.services.show', 'uses'=>'ServicesController@show']);
+    Route::get('services/{services}', ['as'=>'v1.services.show', 'uses'=>'ServicesController@show']);
 
     Route::get('orders', 'OrdersController@index');
     Route::post('orders', 'OrdersController@store');
 
     Route::put('orders/{orders}', 'OrdersController@update');    
-    Route::get('orders/{orders}', ['as'=>'api.v1.orders.show', 'uses'=>'OrdersController@show']);    
+    Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
 
 });

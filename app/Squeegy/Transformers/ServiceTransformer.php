@@ -24,7 +24,7 @@ class ServiceTransformer extends TransformerAbstract {
             'links' => [
                 [
                     'rel' => 'self',
-                    'uri' => route('api.v1.services.show', ['service'=>$service->id])
+                    'uri' => route('v1.services.show', ['service'=>$service->id])
                 ]
             ],
         ];
