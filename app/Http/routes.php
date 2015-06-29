@@ -13,7 +13,7 @@
 
 Route::group(['prefix' => 'v1'], function() {
 
-    Route::resource('vehicles', 'VehiclesController');
+    Route::resource('vehicles', 'VehiclesController', ['as'=>'api']);
 
     Route::get('user', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
