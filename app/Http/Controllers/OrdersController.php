@@ -120,8 +120,6 @@ class OrdersController extends Controller {
 
         $request_data = $this->applyPromoCode($order, $request_data);
 
-        $push_message = '';
-
         if(isset($request_data['status']))
         {
             if($this->order_seq[$order->status]===$this->order_seq[$request_data['status']]) {

@@ -18,6 +18,7 @@ use Stripe\Stripe;
 use Stripe\Charge as Stripe_Charge;
 use Stripe\Customer as Stripe_Customer;
 use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
+use Exception;
 
 
 /**
@@ -99,9 +100,7 @@ class AuthController extends Controller {
                 "email" => $data['email'],
             ]);
 
-        } catch (\Exception $e) {
-            return $this->response->errorInternalError('Unable to create account');
-        }
+        } catch (Exception $e) {}
 
         if(isset($data['stripe_token'])) {
 
@@ -110,15 +109,11 @@ class AuthController extends Controller {
                     "source" => $data['stripe_token']
                 ]);
 
-            } catch (InvalidRequest $e) {
-                return $this->response->errorWrongArgs($e->getMessage());
-            } catch (\ErrorException $e) {
-                return $this->response->errorInternalError($e->getMessage());
-            }
+                $data['stripe_customer_id'] = $customer->id;
+
+            } catch (Exception $e) {}
         }
 
-        $data['phone'] = "+1".$data["phone"];
-        $data['stripe_customer_id'] = $customer->id;
 
         try {
 
@@ -128,7 +123,7 @@ class AuthController extends Controller {
 
             \Event::fire(new UserRegistered());
 
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             return $this->response->errorInternalError($e->getMessage());
         }
 

@@ -11,7 +11,7 @@ return [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'You already have an order pending.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
-        'new_order_worker' => 'Squeegy: New Order# :order_id',
+        'new_order_worker' => 'New Order# :order_id - :customer_name :customer_phone',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'push_notice' => [

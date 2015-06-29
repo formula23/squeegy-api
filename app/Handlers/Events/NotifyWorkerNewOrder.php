@@ -2,6 +2,7 @@
 
 use App\Events\OrderConfirmed;
 
+use App\User;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
@@ -29,7 +30,16 @@ class NotifyWorkerNewOrder {
 	 */
 	public function handle(OrderConfirmed $event)
 	{
-        $event->twilio->message('+13106004938', trans('messages.order.new_order_worker', ['order_id' => $event->order->id]));
+        $workers = User::workers()->get();
+
+        foreach($workers as $worker) {
+            $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
+                'order_id' => $event->order->id,
+                'customer_name' => $event->order->customer->name,
+                'customer_phone' => $event->order->customer->phone,
+            ]));
+        }
+
 	}
 
 }

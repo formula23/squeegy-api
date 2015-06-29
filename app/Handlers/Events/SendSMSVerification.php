@@ -26,8 +26,9 @@ class SendSMSVerification {
      */
 	public function handle(UserRegistered $event)
 	{
-        $event->twilio->message(Auth::user()->phone, "Squeegy verification code: " . config('squeegy.sms_verification'));
-
+        try {
+            $event->twilio->message(Auth::user()->phone, "Squeegy verification code: " . config('squeegy.sms_verification'));
+        } catch(\Exception $e) {}
 	}
 
 }

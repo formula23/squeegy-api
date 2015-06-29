@@ -35,7 +35,7 @@ class Registrar implements RegistrarContract {
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
             'phone' => $data['phone'],
-            'stripe_customer_id' => $data['stripe_customer_id'],
+            'stripe_customer_id' => (isset($data['stripe_customer_id']) ? $data['stripe_customer_id']:null),
 		]);
 	}
 

@@ -65,4 +65,26 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return $this->hasMany('App\Order', 'worker_id');
     }
+
+    public function scopeWorkers($query)
+    {
+        return $query->whereHas('roles', function ($q) {
+            $q->where('name', 'Worker');
+        });
+    }
+
+    public function scopeCustomers($query)
+    {
+        return $query->whereHas('customers', function ($q) {
+            $q->where('name', 'Customer');
+        });
+    }
+
+    public function setPhoneAttribute($value)
+    {
+        $this->attributes['phone'] = "+1".$value;
+    }
+
+
+
 }

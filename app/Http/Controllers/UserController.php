@@ -115,14 +115,4 @@ class UserController extends Controller {
         return $this->response->withItem($request->user(), new UserTransformer());
 	}
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @return Response
-	 */
-	public function destroy()
-	{
-		//
-	}
-
 }
