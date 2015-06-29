@@ -79,6 +79,13 @@ class Orders {
         return $base_price;
     }
 
+    public static function getCurrentEta(Order $order)
+    {
+        $dt = Carbon::now();
+        $time_passed = $dt->diffInMinutes(new Carbon($order->confirm_at));
+        return max(($order->eta - $time_passed), 20);
+    }
+
     /**
      * Get the lead time to perform next order based on operating hours and open order status
      * Return time in minutes
