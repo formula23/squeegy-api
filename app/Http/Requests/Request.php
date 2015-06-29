@@ -26,6 +26,6 @@ abstract class Request extends FormRequest {
 
     public function response(array $errors)
     {
-        return new JsonResponse($errors, 422);
+        return new JsonResponse(['error' => ['http_code'=>400, 'message' => $errors]], 400);
     }
 }
