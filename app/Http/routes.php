@@ -11,9 +11,7 @@
 |
 */
 
-Route::group(['prefix' => 'api/v1'], function() {
-
-    Route::get('test', 'TestController@index');
+Route::group(['prefix' => 'v1'], function() {
 
     Route::resource('vehicles', 'VehiclesController');
 
