@@ -218,6 +218,7 @@ class OrdersController extends Controller {
         if (empty($order->id)) {
             return $this->response->errorNotFound();
         }
+
         return $this->response->withItem($order, new OrderTransformer);
     }
 
