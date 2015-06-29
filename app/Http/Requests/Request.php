@@ -26,7 +26,6 @@ abstract class Request extends FormRequest {
 
     public function response(array $errors)
     {
-        throw new \Exception("ERRRORRRR!!");
-//        return new JsonResponse(['error' => ['http_code'=>400, 'message' => $errors]], 400);
+        throw new \Exception(implode('\n', $errors));
     }
 }
