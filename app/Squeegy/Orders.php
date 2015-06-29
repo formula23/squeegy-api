@@ -83,7 +83,7 @@ class Orders {
     {
         $dt = Carbon::now();
         $time_passed = $dt->diffInMinutes(new Carbon($order->confirm_at));
-        return max(($order->eta - $time_passed), 20);
+        return max(($order->eta - $time_passed), self::BASE_LEAD_TIME);
     }
 
     /**
