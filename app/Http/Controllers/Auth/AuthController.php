@@ -24,16 +24,14 @@ use Bugsnag;
  */
 class AuthController extends Controller {
 
-	/*
-	|--------------------------------------------------------------------------
-	| Registration & Login Controller
-	|--------------------------------------------------------------------------
-	|
-	| This controller handles the registration of new users, as well as the
-	| authentication of existing users.
-	|
-	*/
-
+    protected $apiMethods = [
+        'postLogin' => [
+            'logged' => false,
+        ],
+        'postRegister' => [
+            'logged' => false,
+        ]
+    ];
 
 	/**
 	 * Create a new authentication controller instance.
@@ -49,6 +47,7 @@ class AuthController extends Controller {
 		$this->registrar = $registrar;
 
         $this->middleware('auth.api');
+
 //		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
 //        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
 	}
