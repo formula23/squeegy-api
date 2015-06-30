@@ -18,9 +18,9 @@ return [
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'push_notice' => [
-            'enroute' => 'Hang tight! :worker_name is on the way!',
+            'enroute' => 'Hang tight! :worker_name is on the way.',
             'start' => ':worker_name started washing your car.',
-            'done' => ':worker_name is done washing your car. Your credit card has been charged $:charge_amount',
+            'done' => ':worker_name is done washing your car. Your credit card has been charged $:charge_amount and your emailed.',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
     ],
