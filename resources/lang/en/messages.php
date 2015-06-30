@@ -25,8 +25,8 @@ return [
         ],
     ],
     'service' => [
-        'closed' => 'You have reached us after hours.\nPlease try again.',
-        'highdemand' => 'Due to high-demand, we can\'t take your order request at the moment.\nPlease Try again.',
+        'closed' => "We wash from 10am - 5pm.\nPlease try again later.",
+        'highdemand' => "We are experiencing high-demand.\nPlease try again later.",
     ],
     'emails' => [
         'welcome' => [
