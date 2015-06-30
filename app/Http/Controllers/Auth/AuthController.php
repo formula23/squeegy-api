@@ -15,6 +15,7 @@ use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Squeegy\Transformers\UserTransformer;
 
+use Bugsnag;
 
 
 /**
@@ -45,7 +46,6 @@ class AuthController extends Controller {
      */
     public function postLogin(Request $request)
     {
-
         $this->validate($request, [
             'email' => 'required|email', 'password' => 'required'
         ]);
