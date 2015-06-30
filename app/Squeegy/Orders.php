@@ -45,7 +45,7 @@ class Orders {
      */
     public static function availability() {
 
-        $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>''];
+        $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         if( ! self::open()) $data['description'] = trans('messages.service.closed');
 
