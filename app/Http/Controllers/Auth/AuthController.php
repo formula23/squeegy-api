@@ -1,24 +1,21 @@
 <?php namespace App\Http\Controllers\Auth;
 
-use Aloha\Twilio\Twilio;
-use App\Events\UserRegistered;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateUserRequest;
-use App\Squeegy\Transformers\UserTransformer;
-use App\User;
+use App\Squeegy\Payments;
+use Exception;
+
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Response;
-use League\Fractal\Manager;
-use EllipseSynergie\ApiResponse\Laravel\Response as EllipseResponse;
+use Aloha\Twilio\Twilio;
 use Stripe\Stripe;
-use Stripe\Charge as Stripe_Charge;
-use Stripe\Customer as Stripe_Customer;
-use Chrisbjr\ApiGuard\Http\Controllers\ApiGuardController;
-use Exception;
+use Stripe\Customer as StripeCustomer;
+
+use App\Events\UserRegistered;
+use App\Http\Controllers\Controller;
+use App\Squeegy\Transformers\UserTransformer;
+
+use Bugsnag;
 
 
 /**
@@ -62,7 +59,6 @@ class AuthController extends Controller {
      */
     public function postLogin(Request $request)
     {
-
         $this->validate($request, [
             'email' => 'required|email', 'password' => 'required'
         ]);

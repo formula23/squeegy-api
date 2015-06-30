@@ -147,6 +147,7 @@ return [
         'Chrisbjr\ApiGuard\Providers\ApiGuardServiceProvider',
         'Aloha\Twilio\Support\Laravel\ServiceProvider',
         'Bican\Roles\RolesServiceProvider',
+        'Bugsnag\BugsnagLaravel\BugsnagLaravelServiceProvider',
 	],
 
 	/*
@@ -195,6 +196,7 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
         'Twilio'    => 'Aloha\Twilio\Support\Laravel\Facade',
+        'Bugsnag'   => 'Bugsnag\BugsnagLaravel\BugsnagFacade',
 	],
 
 ];
