@@ -92,7 +92,7 @@ class AuthController extends Controller {
         try {
 
             Stripe::setApiKey(\Config::get('stripe.api_key'));
-            $customer = Stripe_Customer::create([
+            $customer = StripeCustomer::create([
                 "description" => $data["name"],
                 "email" => $data['email'],
             ]);
