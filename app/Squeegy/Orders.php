@@ -153,12 +153,12 @@ class Orders {
      */
     public static function formatLeadTime($leadtime)
     {
-        if($leadtime < 60) {
+//        if($leadtime < 60) {
             return [
                 'time'=>(string)$leadtime,
                 'time_label'=>'mins'
             ];
-        }
+//        }
 
 //        $t = $leadtime/60;
 //
