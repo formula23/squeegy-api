@@ -92,7 +92,7 @@ class Orders {
     public static function getCurrentEta(Order $order)
     {
         $dt = Carbon::now();
-        $time_passed = $dt->diffInMinutes(new Carbon($order->confirm_at));
+        $time_passed = $dt->diffInSeconds(new Carbon($order->confirm_at));
         return max(($order->eta - $time_passed), self::BASE_LEAD_TIME);
     }
 
