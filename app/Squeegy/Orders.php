@@ -163,7 +163,7 @@ class Orders {
         $t = $leadtime/60;
 
         return [
-            'time' => (string)(is_float($t) ? floor($t).":".($leadtime % 60) : $t ),
+            'time' => (string)(is_float($t) ? floor($t)."h".($leadtime % 60) : $t ),
             'time_label'=>'hour'
         ];
     }
