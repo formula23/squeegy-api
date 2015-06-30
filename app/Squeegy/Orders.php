@@ -160,12 +160,12 @@ class Orders {
             ];
         }
 
-        $t = $leadtime/60;
-
-        return [
-            'time' => (string)(is_float($t) ? floor($t)."h".($leadtime % 60) : $t ),
-            'time_label'=>'hour'
-        ];
+//        $t = $leadtime/60;
+//
+//        return [
+//            'time' => (string)(is_float($t) ? floor($t)."h".($leadtime % 60) : $t ),
+//            'time_label'=>'hour'
+//        ];
     }
 
     /**
