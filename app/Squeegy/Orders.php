@@ -20,6 +20,9 @@ class Orders {
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
 
+    /**
+     * @var array
+     */
     private static $order_status_time_map = [
         'confirm' => 60,
         'enroute' => 40,
@@ -37,6 +40,9 @@ class Orders {
         return false;
     }
 
+    /**
+     * @return array
+     */
     public static function availability() {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>''];
@@ -79,6 +85,10 @@ class Orders {
         return $base_price;
     }
 
+    /**
+     * @param Order $order
+     * @return mixed
+     */
     public static function getCurrentEta(Order $order)
     {
         $dt = Carbon::now();
@@ -124,6 +134,10 @@ class Orders {
         return $leadtime;
     }
 
+    /**
+     * @param $leadtime
+     * @return string
+     */
     public static function formatConfirmEta($leadtime) {
 
         if($leadtime < 60) {
@@ -133,6 +147,10 @@ class Orders {
         return $hrs." ".str_plural("hour", $hrs)." ".($leadtime % 60)." mins";
     }
 
+    /**
+     * @param $leadtime
+     * @return array
+     */
     public static function formatLeadTime($leadtime)
     {
         if($leadtime < 60) {
