@@ -6,6 +6,10 @@ return [
         "close" => 22,
         "max_lead_time" => 120,
     ],
+    'service_area' => [
+        33.994093,
+        -118.452264
+    ],
     "sms_verification" => "6538",
     "cancellation_fee" => 1000,
     'emails' => [
