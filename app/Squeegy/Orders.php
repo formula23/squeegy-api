@@ -24,9 +24,9 @@ class Orders {
      * @var array
      */
     private static $order_status_time_map = [
-        'confirm' => 60,
-        'enroute' => 40,
-        'start' => 20,
+        'confirm' => 50,
+        'enroute' => 30,
+        'start' => 15,
     ];
 
     /**
@@ -119,10 +119,10 @@ class Orders {
         $orders = $orders_in_q->get();
 
         if( ! $orders->count()) {
-            return self::BASE_LEAD_TIME;
+            return static::BASE_LEAD_TIME;
         }
 
-        $leadtime = self::BASE_LEAD_TIME;
+        $leadtime = 0;
         foreach($orders as $order) {
             $leadtime += self::$order_status_time_map[$order->status];
         }
