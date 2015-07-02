@@ -19,7 +19,7 @@ class Payments {
 
     public function __construct($customer_id)
     {
-        Stripe::setApiKey(config('stripe.api_key'));
+        Stripe::setApiKey(config('services.stripe.secret'));
 
         $this->customer_id = $customer_id;
     }

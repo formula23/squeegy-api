@@ -67,7 +67,7 @@ class UserController extends Controller {
          * Create or Update Stripe Customer Object
          */
 
-        Stripe::setApiKey(\Config::get('stripe.api_key'));
+        Stripe::setApiKey(\Config::get('services.stripe.secret'));
 
         if( ! $request->user()->stripe_customer_id) {
 

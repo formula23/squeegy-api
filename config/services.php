@@ -20,7 +20,7 @@ return [
 	],
 
 	'mandrill' => [
-		'secret' => '',
+		'secret' => env('MANDRILL_SECRET', ''),
 	],
 
 	'ses' => [
@@ -31,7 +31,7 @@ return [
 
 	'stripe' => [
 		'model'  => 'App\User',
-		'secret' => '',
+		'secret' => env('STRIPE_API_KEY', ''),
 	],
 
 ];
