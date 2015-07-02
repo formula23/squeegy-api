@@ -23,7 +23,7 @@ class UsersTableSeeder extends \Illuminate\Database\Seeder {
         $user = User::create([
             'name'=>"Dan Schultz",
             'email'=>"dschultz@octanela.com",
-            'password'=>bcrypt('12345678'),
+            'password'=>'12345678',
             'phone'=>"3106004938"
         ]);
 
@@ -32,7 +32,7 @@ class UsersTableSeeder extends \Illuminate\Database\Seeder {
         $user = User::create([
             'name'=>"Andrew Davis",
             'email'=>"adavis@octanela.com",
-            'password'=>bcrypt('12345678'),
+            'password'=>'12345678',
             'phone'=>"3104332997"
         ]);
 
