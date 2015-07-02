@@ -11,7 +11,14 @@
 |
 */
 
-Route::group(['prefix' => 'api/v1'], function() {
+use Illuminate\Http\Response;
+
+Route::get('email', function() {
+//    return view('emails.welcome');
+    return View::make('emails.welcome');
+});
+
+Route::group(['prefix' => 'v1'], function() {
 
     Route::resource('vehicles', 'VehiclesController');
 

@@ -36,7 +36,7 @@ class VehicleTransformer extends TransformerAbstract {
             'links' => [
                 [
                     'rel' => 'self',
-                    'uri' => route('api.v1.vehicles.show', ['vehicles'=>$vehicle->id])
+                    'uri' => route('v1.vehicles.show', ['vehicles'=>$vehicle->id])
                 ]
             ],
         ];
