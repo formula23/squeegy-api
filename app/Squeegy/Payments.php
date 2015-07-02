@@ -35,7 +35,7 @@ class Payments {
                 'customer' => $this->customer_id,
                 'capture' => false,
             ]);
-        } catch(Stripe\Error\Card $e) {
+        } catch(\Stripe\Error\Card $e) {
             throw new \Exception(trans('messages.order.invalid_card'));
         }
 
@@ -54,7 +54,7 @@ class Payments {
             if($amt) $params['amount'] = $amt;
 
             $charge = StripeCharge::retrieve($charge_id);
-        } catch(Stripe\Error\Card $e) {
+        } catch(\Stripe\Error\Card $e) {
             throw new \Exception(trans('messages.order.invalid_card'));
         }
 
