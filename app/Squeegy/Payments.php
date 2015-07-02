@@ -43,10 +43,15 @@ class Payments {
             throw new \Exception('No charge_id supplied');
         }
 
-        $params = ['statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>''])];
-        if($amt) $params['amount'] = $amt;
+        try {
+            $params = ['statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>''])];
+            if($amt) $params['amount'] = $amt;
 
-        $charge = StripeCharge::retrieve($charge_id);
+            $charge = StripeCharge::retrieve($charge_id);
+        } catch(Stripe\Error\Card $e) {
+            throw new \Exception(trans('messages.order.invalid_card'));
+        }
+
         return $charge->capture($params);
     }
 

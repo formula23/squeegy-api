@@ -17,6 +17,7 @@ return [
         'new_order_worker' => 'New Order# :order_id - :customer_name :customer_phone',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
+        'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
             'enroute' => 'Hang tight! :worker_name is on the way.',
             'start' => ':worker_name started washing your car.',
