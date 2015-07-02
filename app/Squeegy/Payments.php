@@ -28,12 +28,18 @@ class Payments {
     {
         if($amt===0) return;
 
-        $charge = StripeCharge::create([
-            'amount' => $amt,
-            'currency' => 'usd',
-            'customer' => $this->customer_id,
-            'capture' => false,
-        ]);
+        try {
+            $charge = StripeCharge::create([
+                'amount' => $amt,
+                'currency' => 'usd',
+                'customer' => $this->customer_id,
+                'capture' => false,
+            ]);
+        } catch(Stripe\Error\Card $e) {
+            throw new \Exception(trans('messages.order.invalid_card'));
+        }
+
+
         return $charge;
     }
 
