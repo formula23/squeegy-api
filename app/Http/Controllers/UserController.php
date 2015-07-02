@@ -7,7 +7,6 @@ use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
-use Stripe\Error\InvalidRequest;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;

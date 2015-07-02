@@ -26,10 +26,10 @@ class AuthController extends Controller {
 
     protected $apiMethods = [
         'postLogin' => [
-            'logged' => false,
+            'logged' => true,
         ],
         'postRegister' => [
-            'logged' => false,
+            'logged' => true,
         ]
     ];
 
