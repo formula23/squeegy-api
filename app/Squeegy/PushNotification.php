@@ -30,23 +30,28 @@ class PushNotification {
 
         if( ! $order->customer->push_token) return;
 
-        self::$sns_client = \App::make('Aws\Sns\SnsClient');
+        try {
+            self::$sns_client = \App::make('Aws\Sns\SnsClient');
 
-        self::$sns_client->publish([
-            'TargetArn' => $order->customer->push_token,
-            'MessageStructure' => 'json',
-            'Message' => json_encode([
-                'default' => $message,
-                env('APNS') => json_encode([
-                    'aps' => [
-                        'alert' => $message,
-                        'sound' => 'default',
-                        'badge' => 1
-                    ],
-                    'order_id' => (string)$order->id,
-                ])
-            ]),
-        ]);
+            self::$sns_client->publish([
+                'TargetArn' => $order->customer->push_token,
+                'MessageStructure' => 'json',
+                'Message' => json_encode([
+                    'default' => $message,
+                    env('APNS') => json_encode([
+                        'aps' => [
+                            'alert' => $message,
+                            'sound' => 'default',
+                            'badge' => 1
+                        ],
+                        'order_id' => (string)$order->id,
+                    ])
+                ]),
+            ]);
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+        }
+
 
         return;
     }

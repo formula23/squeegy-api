@@ -29,9 +29,14 @@ class SendCancelEmail {
             'name' => $event->order->customer->name,
         ];
 
-        Mail::send('emails.cancellation', $email_content, function ($message) use ($event) {
-            $message->to($event->order->customer->email, $event->order->customer->name)->subject(trans('messages.emails.cancel.subject'));
-        });
+        try {
+            Mail::send('emails.cancellation', $email_content, function ($message) use ($event) {
+                $message->to($event->order->customer->email, $event->order->customer->name)->subject(trans('messages.emails.cancel.subject'));
+            });
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+        }
+
 	}
 
 }

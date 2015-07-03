@@ -25,13 +25,19 @@ class RefundOrder {
 	 */
 	public function handle(OrderCancelledByWorker $event)
 	{
-        $payments = new Payments($event->order->customer->stripe_customer_id);
-        $charge = $payments->refund($event->order->stripe_charge_id);
+        try {
+            $payments = new Payments($event->order->customer->stripe_customer_id);
+            $charge = $payments->refund($event->order->stripe_charge_id);
 
-        $event->order->charged -= $charge->amount;
-        $event->order->refund = $charge->amount;
-        $event->order->stripe_charge_id = $charge->id;
-        $event->order->save();
+            $event->order->charged -= $charge->amount;
+            $event->order->refund = $charge->amount;
+            $event->order->stripe_charge_id = $charge->id;
+            $event->order->save();
+
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+        }
+
 	}
 
 }

@@ -30,15 +30,20 @@ class NotifyWorkerNewOrder {
 	 */
 	public function handle(OrderConfirmed $event)
 	{
-        $workers = User::workers()->get();
+        try {
+            $workers = User::workers()->get();
 
-        foreach($workers as $worker) {
-            $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
-                'order_id' => $event->order->id,
-                'customer_name' => $event->order->customer->name,
-                'customer_phone' => $event->order->customer->phone,
-            ]));
+            foreach($workers as $worker) {
+                $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
+                    'order_id' => $event->order->id,
+                    'customer_name' => $event->order->customer->name,
+                    'customer_phone' => $event->order->customer->phone,
+                ]));
+            }
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
+
 
 	}
 

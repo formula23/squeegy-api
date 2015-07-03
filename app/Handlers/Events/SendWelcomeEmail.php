@@ -32,7 +32,9 @@ class SendWelcomeEmail {
             Mail::send('emails.welcome', [], function ($message) {
                 $message->to(Auth::user()->email, Auth::user()->name)->subject(config('squeegy.emails.welcome.subject'));
             });
-        } catch(\Exception $e) {}
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+        }
 	}
 
 }

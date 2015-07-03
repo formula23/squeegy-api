@@ -31,9 +31,14 @@ class SendReceiptEmail {
             'name' => $event->order->customer->name,
         ];
 
-        Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
-            $message->to($order->customer->email, $order->customer->name)->subject(trans('messages.emails.receipt.subject'));
-        });
+        try {
+            Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
+                $message->to($order->customer->email, $order->customer->name)->subject(trans('messages.emails.receipt.subject'));
+            });
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+        }
+
 	}
 
 }

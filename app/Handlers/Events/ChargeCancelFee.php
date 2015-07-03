@@ -41,9 +41,8 @@ class ChargeCancelFee {
             $event->order->stripe_charge_id = $charge->id;
             $event->order->charged = $cancel_fee;
             $event->order->save();
-            
-        } catch(\Exception $e) {
 
+        } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 
