@@ -37,14 +37,17 @@ class ChargeCancelFee {
             } else {
                 $charge = $payments->refund($event->order->stripe_charge_id);
             }
+
+            $event->order->stripe_charge_id = $charge->id;
+            $event->order->charged = $cancel_fee;
+            $event->order->save();
+            
         } catch(\Exception $e) {
 
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 
-        $event->order->charged = $cancel_fee;
-        $event->order->stripe_charge_id = $charge->id;
-        $event->order->save();
+
 
 	}
 
