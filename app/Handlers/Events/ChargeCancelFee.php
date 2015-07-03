@@ -28,13 +28,17 @@ class ChargeCancelFee {
 	public function handle(OrderCancelled $event)
 	{
         $cancel_fee = min(config('squeegy.cancellation_fee'), $event->order->charged);
+        $cancel_fee=1000;
+        try{
+            $payments = new Payments($event->order->customer->stripe_customer_id);
 
-        $payments = new Payments($event->order->customer->stripe_customer_id);
-
-        if(Orders::getCurrentEta($event->order) < 1800) {
-            $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
-        } else {
-            $charge = $payments->refund($event->order->stripe_charge_id);
+            if(Orders::getCurrentEta($event->order) < 1800) {
+                $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
+            } else {
+                $charge = $payments->refund($event->order->stripe_charge_id);
+            }
+        } catch(\Exception $e) {
+            Bugsnag::notifyException(new Exception($e->getMessage()));
         }
 
         $event->order->charged = $cancel_fee;
