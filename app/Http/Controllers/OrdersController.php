@@ -231,7 +231,7 @@ class OrdersController extends Controller {
     {
         if (isset($request_data['promo_code'])) { //calculate promo
             if ($request_data['promo_code'] == "1234" && !$order->discount) {
-                $request_data['discount'] = 500;
+                $request_data['discount'] = ($order->service_id==1 ? 2300 : 3300);
                 return $request_data;
             }
             return $request_data;
