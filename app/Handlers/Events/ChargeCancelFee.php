@@ -27,7 +27,7 @@ class ChargeCancelFee {
 	 */
 	public function handle(OrderCancelled $event)
 	{
-        $cancel_fee = config('squeegy.cancellation_fee');
+        $cancel_fee = min(config('squeegy.cancellation_fee'), $event->order->charged);
 
         $payments = new Payments($event->order->customer->stripe_customer_id);
 
