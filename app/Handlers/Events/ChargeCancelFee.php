@@ -3,6 +3,7 @@
 use App\Events\OrderCancelled;
 use App\Squeegy\Orders;
 use App\Squeegy\Payments;
+use Bugsnag\BugsnagLaravel\BugsnagFacade;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
@@ -38,7 +39,8 @@ class ChargeCancelFee {
                 $charge = $payments->refund($event->order->stripe_charge_id);
             }
         } catch(\Exception $e) {
-            Bugsnag::notifyException(new Exception($e->getMessage()));
+
+            \Bugsnag::notifyException(new Exception($e->getMessage()));
         }
 
         $event->order->charged = $cancel_fee;
