@@ -131,11 +131,13 @@ class OrdersController extends Controller {
                 return $this->response->errorWrongArgs(trans('messages.order.status_change_not_allowed', ['request_status'=>$request_data['status'], 'current_status'=>$order->status]));
             }
 
-            switch($request_data['status'])
+            $order->status = $request_data['status'];
+
+            $order->{$order->status."_at"} = Carbon::now();
+
+            switch($order->status)
             {
                 case "cancel":
-
-                    $request_data['cancel_at'] = Carbon::now();
 
                     if(Auth::user()->is('worker')) {
                         Event::fire(new OrderCancelledByWorker($order));
@@ -156,9 +158,8 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    $request_data['lead_time'] = Orders::getLeadTime();
-                    $request_data["job_number"] = strtoupper(substr( md5(rand()), 0, 6));
-                    $request_data['confirm_at'] = Carbon::now();
+                    $order->lead_time = Orders::getLeadTime();
+                    $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
                     Event::fire(new OrderConfirmed($order));
 
@@ -168,8 +169,8 @@ class OrdersController extends Controller {
                     if( ! $request->user()->is('worker')) {
                         return $this->response->errorUnauthorized();
                     }
-                    $request_data['worker_id'] = $request->user()->id;
-                    $request_data['enroute_at'] = Carbon::now();
+
+                    $order->worker_id = $request->user()->id;
 
                     Event::fire(new OrderEnroute($order));
 
@@ -179,8 +180,6 @@ class OrdersController extends Controller {
                     if( ! $request->user()->is('worker')) {
                         return $this->response->errorUnauthorized();
                     }
-
-                    $request_data['start_at'] = Carbon::now();
 
                     Event::fire(new OrderStart($order));
 
@@ -192,8 +191,6 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $request_data['done_at'] = Carbon::now();
-
                     Event::fire(new OrderDone($order));
 
                     break;
@@ -201,7 +198,7 @@ class OrdersController extends Controller {
 
         }
 
-        $order->update($request_data);
+        $order->save();
 
         return $this->response->withItem($order, new OrderTransformer);
     }
