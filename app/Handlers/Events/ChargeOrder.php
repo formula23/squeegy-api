@@ -35,7 +35,7 @@ class ChargeOrder {
             $event->order->charged = $order_amount;
             $event->order->stripe_charge_id = $charge->id;
             $event->order->save();
-            
+
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }

@@ -61,7 +61,7 @@ class SendReceiptEmail {
                     'VEHICLE' => $vehicle->year." ".$vehicle->make." ".$vehicle->model." (".$vehicle->color.")",
                     'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
                     'LICENSE_PLATE' => $vehicle->license_plate,
-                    'ADDRESS' => $location['address1'].", ".$location['city'].", ".$location['state']." ".$location['zip'],
+                    'ADDRESS' => $location['street'].", ".$location['city'].", ".$location['state']." ".$location['zip'],
                     'CC_TYPE' => $default_card->brand,
                     'CC_LAST4' => $default_card->last4,
                 ];
