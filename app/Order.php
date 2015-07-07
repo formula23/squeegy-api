@@ -42,6 +42,14 @@ class Order extends Model {
         'status' => 'request'
     );
 
+
+    protected $dates = [
+        'confirm_at',
+        'enroute_at',
+        'start_at',
+        'done_at',
+    ];
+
     /**
      * @param $value
      * @return mixed

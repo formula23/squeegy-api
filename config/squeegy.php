@@ -13,14 +13,11 @@ return [
     "sms_verification" => "6538",
     "cancellation_fee" => 1000,
     'emails' => [
-        'welcome' => [
-            'subject' => 'Welcome to Squeegy!',
-        ],
+        'bcc' => 'team@squeegyapp.com',
+        'from' => 'team@squeegyapp.com',
+        'from_name' => 'Team Squeegy',
         'receipt' => [
-            'subject' => 'Your Squeegy Receipt',
-        ],
-        'cancel' => [
-            'subject' => 'Your Squeegy Order has been cancelled',
+            'photo_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders/',
         ]
     ]
 ];

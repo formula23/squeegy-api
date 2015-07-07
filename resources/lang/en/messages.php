@@ -34,7 +34,7 @@ return [
             'subject' => 'Welcome to Squeegy!',
         ],
         'receipt' => [
-            'subject' => 'Your Squeegy Receipt',
+            'subject' => 'Squeegy Order# :job_number - Receipt',
         ],
         'cancel' => [
             'subject' => 'Your Squeegy Order has been cancelled',
