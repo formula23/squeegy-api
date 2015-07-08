@@ -30,6 +30,6 @@ abstract class Request extends FormRequest {
         foreach($errors as $error) {
             $err_msg .= implode(", ", $error);
         }
-        throw new \Exception($err_msg);
+        return new JsonResponse(['error'=>['message'=>$errors]], 400);
     }
 }
