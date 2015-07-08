@@ -43,7 +43,7 @@ class SendWelcomeEmail {
                 $message->from(config('squeegy.emails.from'), config('squeegy.emails.from_name'));
                 $message->bcc(config('squeegy.emails.bcc'));
 
-                $message->to(Auth::user()->email, Auth::user()->name)->subject(config('squeegy.emails.welcome.subject'));
+                $message->to(Auth::user()->email, Auth::user()->name)->subject(trans('messages.emails.welcome.subject'));
             });
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
