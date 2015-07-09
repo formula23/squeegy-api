@@ -3,7 +3,7 @@
 return [
     "operating_hours" => [
         "open" => 10,
-        "close" => 22,
+        "close" => 17,
         "max_lead_time" => 120,
     ],
     'service_area' => [
