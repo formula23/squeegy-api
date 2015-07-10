@@ -25,6 +25,8 @@ class Order extends Model {
         'enroute_at',
         'start_at',
         'done_at',
+        'cancel_at',
+        'cancel_reason',
         'photo_count',
         'price',
         'discount',
@@ -48,6 +50,7 @@ class Order extends Model {
         'enroute_at',
         'start_at',
         'done_at',
+        'cancel_at',
     ];
 
     /**

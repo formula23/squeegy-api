@@ -24,6 +24,12 @@ return [
             'done' => ':worker_name is done washing your car. Your credit card has been charged $:charge_amount and your emailed.',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
+        'cancel_reason' => [
+            '1' => 'Customer not here',
+            '2' => 'Unable to contact',
+            '3' => 'Customer declined work',
+            '4' => 'Location not accessible',
+        ]
     ],
     'service' => [
         'closed' => "We wash from ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12)."pm.\nPlease try again later.",

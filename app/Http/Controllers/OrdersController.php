@@ -139,6 +139,9 @@ class OrdersController extends Controller {
             {
                 case "cancel":
 
+                    if ( ! empty($request_data['cancel_reason']))
+                        $order->cancel_reason = $request_data['cancel_reason'];
+
                     if(Auth::user()->is('worker')) {
                         Event::fire(new OrderCancelledByWorker($order));
                     } else {

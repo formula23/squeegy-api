@@ -1,13 +1,11 @@
 <?php namespace App\Handlers\Events;
 
-use App\Events\OrderCancelled;
-use App\Squeegy\Orders;
+use App\Events\OrderCancelledByWorker;
 use App\Squeegy\Payments;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
-
-class ChargeCancelFee {
+class ChargeCancelFeeWorker {
 
 	/**
 	 * Create the event handler.
@@ -22,21 +20,16 @@ class ChargeCancelFee {
 	/**
 	 * Handle the event.
 	 *
-	 * @param  OrderCancelled  $event
+	 * @param  OrderCancelledByWorker  $event
 	 * @return void
 	 */
-	public function handle(OrderCancelled $event)
+	public function handle(OrderCancelledByWorker $event)
 	{
         $cancel_fee = min(config('squeegy.cancellation_fee'), $event->order->charged);
 
         try{
             $payments = new Payments($event->order->customer->stripe_customer_id);
-
-            if(Orders::getCurrentEta($event->order) < 1800) {
-                $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
-            } else {
-                $charge = $payments->refund($event->order->stripe_charge_id);
-            }
+            $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
 
             $event->order->stripe_charge_id = $charge->id;
             $event->order->charged = $cancel_fee;
@@ -45,9 +38,6 @@ class ChargeCancelFee {
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
-
-
-
 	}
 
 }
