@@ -44,7 +44,7 @@ class DiscountsTableSeeder extends Seeder
             'description' => 'Beta',
             'discount_type' => 'pct',
             'amount' => '50',
-            'code' => 'BETATEST',
+            'code' => 'BETA50',
             'scope' => 'system',
             'frequency_rate' => 0,
             'new_customer' => 0,
