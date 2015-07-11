@@ -66,6 +66,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Order', 'worker_id');
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
     public function scopeWorkers($query)
     {
         return $query->whereHas('roles', function ($q) {
@@ -73,6 +77,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         });
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
     public function scopeCustomers($query)
     {
         return $query->whereHas('customers', function ($q) {
@@ -80,14 +88,38 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         });
     }
 
+    /**
+     * @param $value
+     */
     public function setPhoneAttribute($value)
     {
         $this->attributes['phone'] = "+1".$value;
     }
 
+    /**
+     * @param $password
+     */
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = \Hash::make($password);
     }
 
+    /**
+     * @return bool
+     */
+    public function firstOrder()
+    {
+        $prev_orders = $this->orders()->whereNotIn('orders.status', ['cancel','request'])->get();
+        if($prev_orders->count()) return false;
+        else return true;
+    }
+
+    /**
+     * @param Discount $discount
+     * @return bool
+     */
+    public function discountEligible(Discount $discount)
+    {
+        return ($discount->frequency_rate && $this->orders()->where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count() < $discount->frequency_rate);
+    }
 }

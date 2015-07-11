@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Discount;
 use App\Events\OrderCancelled;
 use App\Events\OrderCancelledByWorker;
 use App\Events\OrderConfirmed;
@@ -118,7 +119,10 @@ class OrdersController extends Controller {
 
         $request_data = $request->all();
 
-        $this->applyPromoCode($order, $request_data);
+        $promo_code = $this->applyPromoCode($order, $request_data);
+        if( ! $promo_code) {
+            return $this->response->errorWrongArgs('No Discount Available');
+        }
 
         if(isset($request_data['status']))
         {
@@ -230,12 +234,35 @@ class OrdersController extends Controller {
     protected function applyPromoCode(Order $order, $request_data)
     {
         if (isset($request_data['promo_code'])) { //calculate promo
-            if ($request_data['promo_code'] == "1234" && !$order->discount) {
-                $order->promo_code = $request_data['promo_code'];
-                $order->discount = ($order->service_id==1 ? 2300 : 3300);
+
+            $discount = Discount::where('code', $request_data['promo_code'])->active()->get()->first();
+
+            if($discount === null) return false;
+
+            if( $discount->new_customer && ! $order->customer->firstOrder() ) return false;
+
+            if( $discount->user_id && ($order->user_id != $discount->user_id) ) return false;
+
+            if($discount->scope == "system") {
+                if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return false;
+            } else {
+                if ( ! $order->customer->discountEligible($discount)) return false;
             }
+
+            //calculate discount
+
+            $order->discount_id = $discount->id;
+            $order->promo_code = $request_data['promo_code'];
+
+            if( $discount->discount_type=='amt' ) {
+                $order->discount = $discount->amount * 100;
+            } else {
+                $order->discount = (int) ($order->price * ($discount->amount / 100));
+            }
+
         }
-        return;
+
+        return true;
     }
 
 }
