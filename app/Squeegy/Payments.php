@@ -31,7 +31,7 @@ class Payments {
         try {
             $charge = StripeCharge::create([
                 'amount' => $amt,
-                'currency' => 'usbb',
+                'currency' => 'usd',
                 'customer' => $this->customer_id,
                 'capture' => false,
             ]);

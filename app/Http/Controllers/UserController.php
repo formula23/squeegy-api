@@ -88,9 +88,14 @@ class UserController extends Controller {
          */
         if( ! empty($data['stripe_token'])) {
 
-            $customer_card = $customer->sources->create([
-                "source" => $data['stripe_token']
-            ]);
+            try {
+                $customer_card = $customer->sources->create([
+                    "source" => $data['stripe_token']
+                ]);
+            } catch(\Exception $e) {
+                return $this->response->errorWrongArgs($e->getMessage());
+            }
+
 
             $customer->default_source = $customer_card->id;
         }
