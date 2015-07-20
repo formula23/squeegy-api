@@ -31,12 +31,12 @@ class Payments {
         try {
             $charge = StripeCharge::create([
                 'amount' => $amt,
-                'currency' => 'usd',
+                'currency' => 'usbb',
                 'customer' => $this->customer_id,
                 'capture' => false,
             ]);
-        } catch(\Stripe\Error\Card $e) {
-            throw new \Exception(trans('messages.order.invalid_card'));
+        } catch(\Exception $e) {
+            throw new \Exception(trans('messages.order.invalid_card'), 400);
         }
 
 
@@ -54,8 +54,8 @@ class Payments {
             if($amt) $params['amount'] = $amt;
 
             $charge = StripeCharge::retrieve($charge_id);
-        } catch(\Stripe\Error\Card $e) {
-            throw new \Exception(trans('messages.order.invalid_card'));
+        } catch(\Exception $e) {
+            throw new \Exception(trans('messages.order.invalid_card'), 400);
         }
 
         return $charge->capture($params);
