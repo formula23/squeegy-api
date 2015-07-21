@@ -21,7 +21,7 @@ return [
         'push_notice' => [
             'enroute' => 'Hang tight! :worker_name is on the way.',
             'start' => ':worker_name started washing your car.',
-            'done' => ':worker_name is done washing your car. Your credit card has been charged $:charge_amount and your emailed.',
+            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt.',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
         'cancel_reason' => [
@@ -29,7 +29,10 @@ return [
             '2' => 'Unable to contact',
             '3' => 'Customer declined work',
             '4' => 'Location not accessible',
-        ]
+        ],
+        'discount' => [
+            'unavailable' => 'Invalid Promo Code',
+        ],
     ],
     'service' => [
         'closed' => "We wash from ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12)."pm.\nPlease try again later.",

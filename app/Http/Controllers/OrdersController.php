@@ -121,7 +121,7 @@ class OrdersController extends Controller {
 
         $promo_code = $this->applyPromoCode($order, $request_data);
         if( ! $promo_code) {
-            return $this->response->errorWrongArgs('No Discount Available');
+            return $this->response->errorWrongArgs(trans('order.discount.unavailable'));
         }
 
         if(isset($request_data['status']))
