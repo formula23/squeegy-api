@@ -12,16 +12,16 @@ class ServicesTableSeeder extends Seeder {
         Service::truncate();
 
         Service::create([
-            'name' => 'Exterior',
+            'name' => 'Express',
             'price' => '2400',
-            'details' => '["Exterior Wash", "Wheels & Tire Dressing", "Exterior Windows"]',
+            'details' => '["- Exterior Wash and Dry", "- 100% Hand Wash", "- Light Wheel Wipe Down", "- Clean Exterior Windows", "- Clean & Dress Tires"]',
             'time' => '25',
         ]);
 
         Service::create([
-            'name' => 'Full',
+            'name' => 'Classic',
             'price' => '3400',
-            'details' => '["Exterior Wash", "Wheels & Tire Dressing", "Int/Ext Windows", "Floor & Seat Vacuum", "Dash Wipe Down"]',
+            'details' => '["- Express Wash +", "- Interior Floor Vacuum", "- Interior Seat Vacuum", "- Clean Windows In & Out", "- Dash Wipe Down"]',
             'time' => '45',
         ]);
 
