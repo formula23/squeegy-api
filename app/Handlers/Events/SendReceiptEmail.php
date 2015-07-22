@@ -47,6 +47,7 @@ class SendReceiptEmail {
                 $default_card = $stripe_customer->sources->retrieve($stripe_customer->default_source);
                 
                 $mergevars = [
+                    'ORDER_ID' => $order->id,
                     'ORDER_DATE' => $order->done_at->format('m/d/Y'),
                     'ORDER_TIME' => $order->done_at->format('g:i a'),
                     'ORDER_NUMBER' => $order->job_number,
