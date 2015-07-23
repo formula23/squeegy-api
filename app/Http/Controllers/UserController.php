@@ -115,4 +115,17 @@ class UserController extends Controller {
         return $this->response->withItem($request->user(), new UserTransformer());
 	}
 
+    public function phoneVerify(Twilio $twilio)
+    {
+        try {
+            $twilio->message(\Auth::user()->phone, trans('messages.profile.phone_verify', ['verify_code' => config('squeegy.sms_verification')]));
+        } catch (\Services_Twilio_RestException $e) {
+            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+            return $this->response->errorWrongArgs("Unable to send SMS.");
+        }
+
+        return $this->response->withItem(\Auth::user(), new UserTransformer());
+    }
+
+
 }
