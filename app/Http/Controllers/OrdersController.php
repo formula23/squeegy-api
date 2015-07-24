@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Discount;
+use App\Events\BadRating;
 use App\Events\OrderCancelled;
 use App\Events\OrderCancelledByWorker;
 use App\Events\OrderConfirmed;
@@ -122,6 +123,13 @@ class OrdersController extends Controller {
         $promo_code = $this->applyPromoCode($order, $request_data);
         if( ! $promo_code) {
             return $this->response->errorWrongArgs(trans('order.discount.unavailable'));
+        }
+
+        if(isset($request_data['rating']) && $request_data['rating'] < 4)
+        {
+            $order->rating = $request_data['rating'];
+            $order->rating_comment = $request_data['rating_comment'];
+            Event::fire(new BadRating($order));
         }
 
         if(isset($request_data['status']))
