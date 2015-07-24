@@ -47,6 +47,9 @@ return [
         ],
         'cancel' => [
             'subject' => 'Your Squeegy Order has been cancelled',
+        ],
+        'bad_rating' => [
+            'subject' => 'Squeegy Bad Rating!',
         ]
     ]
 ];

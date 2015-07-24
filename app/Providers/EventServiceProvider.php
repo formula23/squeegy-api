@@ -49,6 +49,10 @@ class EventServiceProvider extends ServiceProvider {
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',
         ],
+
+        'App\Events\BadRating' => [
+            'App\Handlers\Events\EmailSupport',
+        ]
 	];
 
 	/**

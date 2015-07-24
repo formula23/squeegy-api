@@ -13,6 +13,7 @@ return [
     "sms_verification" => "6538",
     "cancellation_fee" => 1000,
     'emails' => [
+        'support' => 'feedback@squeegyapp.com',
         'bcc' => 'team@squeegyapp.com',
         'from' => 'team@squeegyapp.com',
         'from_name' => 'Team Squeegy',
