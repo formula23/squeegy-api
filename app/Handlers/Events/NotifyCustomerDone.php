@@ -25,7 +25,7 @@ class NotifyCustomerDone {
 	 */
 	public function handle(OrderDone $event)
 	{
-        $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 0)]);
+        $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 2)]);
 
         PushNotification::send($event->order, $push_message);
 
