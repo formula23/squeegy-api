@@ -105,7 +105,11 @@ class UserController extends Controller {
         if( ! empty($data["phone"])) {
 
             if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
-                $twilio->message($data["phone"], trans('messages.profile.phone_verify', ['verify_code'=>config('squeegy.sms_verification')]));
+                try {
+                    $twilio->message($data["phone"], trans('messages.profile.phone_verify', ['verify_code'=>config('squeegy.sms_verification')]));
+                } catch(\Services_Twilio_RestException $e) {
+                    return $this->response->errorWrongArgs("Please enter a valid phone number.");
+                }
             }
 
         }

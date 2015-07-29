@@ -29,7 +29,7 @@ class SendSMSVerification {
         try {
             $event->twilio->message(Auth::user()->phone, "Squeegy verification code: " . config('squeegy.sms_verification'));
         } catch(\Exception $e) {
-            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+//            \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 	}
 
