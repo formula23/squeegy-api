@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class Orders {
 
     const CLOSING_THRESHOLD = 20;
-    const BASE_LEAD_TIME = 15;
+    const BASE_LEAD_TIME = 20;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
 
@@ -25,8 +25,8 @@ class Orders {
      */
     private static $order_status_time_map = [
         'confirm' => 50,
-        'enroute' => 30,
-        'start' => 15,
+        'enroute' => 40,
+        'start' => 30,
     ];
 
     /**
@@ -93,7 +93,7 @@ class Orders {
     {
         $dt = Carbon::now();
         $time_passed = $dt->diffInSeconds(new Carbon($order->confirm_at));
-        return max(($order->eta*60 - $time_passed), 0);
+        return max(($order->eta * 60 - $time_passed), 0);
     }
 
     /**
@@ -105,6 +105,10 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
+        if($order && self::remainingBusinessTime() <= 0) {
+            return 0;
+        }
+
         if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
             return 0;
         }
@@ -117,12 +121,12 @@ class Orders {
         }
 
         $orders = $orders_in_q->get();
-
+//dd($orders->count());
         if( ! $orders->count()) {
             return static::BASE_LEAD_TIME;
         }
 
-        $leadtime = 0;
+        $leadtime = 10;
         foreach($orders as $order) {
             $leadtime += self::$order_status_time_map[$order->status];
         }
