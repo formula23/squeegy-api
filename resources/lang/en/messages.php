@@ -35,7 +35,7 @@ return [
         ],
     ],
     'service' => [
-        'closed' => "We wash from ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12)."pm\nMonday - Friday\nPlease try again later.",
+        'closed' => "We wash from ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12)."pm\nMonday - Friday",
         'highdemand' => "We are experiencing high-demand.\nPlease try again later.",
     ],
     'emails' => [
