@@ -35,7 +35,7 @@ class Orders {
     public static function open()
     {
         if(env('APP_DEV')) return true;
-        if(Carbon::now()->isWeekend()) return false;
+        if(env('OPERATING_WKND') && Carbon::now()->isWeekend()) return false;
         $curr_hr = Carbon::now()->hour;
         if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
         return false;
