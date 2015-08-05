@@ -45,4 +45,10 @@ class Discount extends Model {
     {
         return $this->belongsTo('App\User', 'user_id');
     }
+
+    public function discount_regions()
+    {
+        return $this->hasMany('App\DiscountRegion')->select(['id', 'postal_code']);
+    }
+
 }

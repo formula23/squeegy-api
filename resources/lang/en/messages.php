@@ -32,6 +32,8 @@ return [
         ],
         'discount' => [
             'unavailable' => 'Invalid Promo Code',
+            'new_customer' => 'Promotion only available for new customers',
+            'out_of_region' => 'Promotion not available in your area',
         ],
     ],
     'service' => [
