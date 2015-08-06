@@ -120,14 +120,14 @@ class OrdersController extends Controller {
 
         $request_data = $request->all();
 
-        $promo_code = $this->applyPromoCode($order, $request_data);
-        if( ! $promo_code) {
-            return $this->response->errorWrongArgs(trans('messages.order.discount.unavailable'));
-        }
-//        $promo_code_msg = $this->applyPromoCode($order, $request_data);
-//        if($promo_code_msg) {
-//            return $this->response->errorWrongArgs($promo_code_msg);
+//        $promo_code = $this->applyPromoCode($order, $request_data);
+//        if( ! $promo_code) {
+//            return $this->response->errorWrongArgs(trans('messages.order.discount.unavailable'));
 //        }
+        $promo_code_msg = $this->applyPromoCode($order, $request_data);
+        if($promo_code_msg) {
+            return $this->response->errorWrongArgs($promo_code_msg);
+        }
 
         if(isset($request_data['rating']) && $request_data['rating'] < 4)
         {
