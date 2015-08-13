@@ -129,11 +129,14 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs($promo_code_msg);
         }
 
-        if(isset($request_data['rating']) && $request_data['rating'] < 4)
+        if(isset($request_data['rating']))
         {
             $order->rating = $request_data['rating'];
             $order->rating_comment = $request_data['rating_comment'];
-            Event::fire(new BadRating($order));
+
+            if($request_data['rating'] < 4) {
+                Event::fire(new BadRating($order));
+            }
         }
 
         if(isset($request_data['status']))

@@ -27,13 +27,14 @@ class AuthOrder {
 	{
 		//auth customer card
         $order_amount = $event->order->price - (int)$event->order->discount;
-
-        $payments = new Payments($event->order->customer->stripe_customer_id);
-
-        $charge = $payments->auth($order_amount);
-
         $event->order->charged = $order_amount;
-        $event->order->stripe_charge_id = $charge->id;
+
+        if($order_amount) {
+            $payments = new Payments($event->order->customer->stripe_customer_id);
+            $charge = $payments->auth($order_amount);
+            $event->order->stripe_charge_id = $charge->id;
+        }
+
         $event->order->save();
 	}
 
