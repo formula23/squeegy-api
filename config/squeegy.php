@@ -3,7 +3,7 @@
 return [
     "operating_hours" => [
         "open" => env('OPERATING_HR_OPEN', 10),
-        "close" => env('OPERATING_HR_CLOSE', 17),
+        "close" => env('OPERATING_HR_CLOSE', 18),
         "max_lead_time" => 120,
     ],
     'service_area' => [
