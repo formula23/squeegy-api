@@ -110,9 +110,9 @@ class Orders {
             return 0;
         }
 
-        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
-            return 0;
-        }
+//        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
+//            return 0;
+//        }
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
