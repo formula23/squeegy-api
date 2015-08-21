@@ -37,7 +37,7 @@ return [
         ],
     ],
     'service' => [
-        'closed' => "Squeegy is available ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12)."pm",
+        'closed' => "Car washes are available ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12)."pm",
         'highdemand' => "We are experiencing high-demand.\nPlease try again later.",
     ],
     'emails' => [
