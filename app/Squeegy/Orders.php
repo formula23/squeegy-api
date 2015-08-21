@@ -48,7 +48,10 @@ class Orders {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
-        if( ! self::open()) $data['description'] = trans('messages.service.closed');
+        if( ! self::open()) {
+            $next_day = (Carbon::now()->hour >= env('OPERATING_HR_CLOSE') && Carbon::now()->hour <= 23 ? Carbon::now()->addDay()->format('l') : Carbon::now()->format('l') );
+            $data['description'] = trans('messages.service.closed', ['next_day' => $next_day]);
+        }
 
         $data['lead_time'] = self::getLeadTime();
         if( ! $data['lead_time']) {
