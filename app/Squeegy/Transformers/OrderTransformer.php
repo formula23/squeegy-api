@@ -37,10 +37,10 @@ class OrderTransformer extends TransformerAbstract {
             'eta_seconds' => Orders::getCurrentEta($order),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
-            'order_datetime' => date("m/d/Y H:i:s", strtotime($order->confirm_at)),
-            'enroute_datetime' => date("m/d/Y H:i:s", strtotime($order->enroute_at)),
-            'start_datetime' => date("m/d/Y H:i:s", strtotime($order->start_at)),
-            'done_datetime' => date("m/d/Y H:i:s", strtotime($order->done_at)),
+            'order_datetime' => $order->confirm_at ? date("m/d/Y H:i:s", strtotime($order->confirm_at)) : "",
+            'enroute_datetime' => $order->enroute_at ? date("m/d/Y H:i:s", strtotime($order->enroute_at)) : "",
+            'start_datetime' => $order->start_at ? date("m/d/Y H:i:s", strtotime($order->start_at)) : "",
+            'done_datetime' => $order->done_at ? date("m/d/Y H:i:s", strtotime($order->done_at)) : "",
             'links' => [
                 [
                     'rel' => 'self',
