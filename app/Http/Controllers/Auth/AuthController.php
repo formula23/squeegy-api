@@ -117,7 +117,9 @@ class AuthController extends Controller {
 
             $this->auth->user()->attachRole(3);
 
-            \Event::fire(new UserRegistered());
+            if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
+                \Event::fire(new UserRegistered());
+            }
 
         } catch(Exception $e) {
             return $this->response->errorInternalError($e->getMessage());

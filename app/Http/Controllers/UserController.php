@@ -7,6 +7,7 @@ use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
+use App\Events\UserRegistered;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -43,6 +44,10 @@ class UserController extends Controller {
 	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio)
 	{
         $data = $request->all();
+
+        if(isset($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $request->user()->email)) {
+            \Event::fire(new UserRegistered());
+        }
 
         if(isset($data['push_token'])) {
 
