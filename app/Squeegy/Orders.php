@@ -109,9 +109,9 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
-        if($order && self::remainingBusinessTime() <= 0) {
-            return 0;
-        }
+//        if($order && self::remainingBusinessTime() <= 0) {
+//            return 0;
+//        }
 
 //        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
 //            return 0;
@@ -135,9 +135,9 @@ class Orders {
             $leadtime += self::$order_status_time_map[$order->status];
         }
 
-        if(self::remainingBusinessTime() < $leadtime) {
-            return 0;
-        }
+//        if(self::remainingBusinessTime() < $leadtime) {
+//            return 0;
+//        }
 
         return $leadtime;
     }
