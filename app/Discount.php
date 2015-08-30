@@ -51,4 +51,9 @@ class Discount extends Model {
         return $this->hasMany('App\DiscountRegion')->select(['id', 'postal_code']);
     }
 
+    public function discount_codes()
+    {
+        return $this->hasMany('App\DiscountCode')->select(['id', 'postal_code   ']);
+    }
+
 }
