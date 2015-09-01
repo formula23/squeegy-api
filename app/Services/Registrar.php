@@ -31,10 +31,10 @@ class Registrar implements RegistrarContract {
 	public function create(array $data)
 	{
 		return User::create([
-			'name' => $data['name'],
+			'name' => ! empty($data['name']) ? $data['name'] : '',
 			'email' => $data['email'],
 			'password' => $data['password'],
-            'phone' => $data['phone'],
+            'phone' => ! empty($data['phone']) ? $data['phone'] : '',
             'stripe_customer_id' => (isset($data['stripe_customer_id']) ? $data['stripe_customer_id']:null),
 		]);
 	}
