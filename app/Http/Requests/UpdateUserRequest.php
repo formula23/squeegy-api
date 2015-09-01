@@ -22,8 +22,7 @@ class UpdateUserRequest extends Request {
 	public function rules()
 	{
 		return [
-            'first_name' => 'sometimes|required|min:2',
-            'last_name' => 'required|sometimes|min:2',
+            'name' => 'sometimes|required|min:2',
             'email' => 'sometimes|required|email|unique:users,email,'.$this->user()->id,
             'phone' => 'sometimes|required|digits:10',
             'push_token' => 'sometimes|required',

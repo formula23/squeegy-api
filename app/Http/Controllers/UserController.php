@@ -7,6 +7,7 @@ use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
+use App\Events\UserRegistered;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -114,7 +115,13 @@ class UserController extends Controller {
 
         }
 
+        $original_email = $request->user()->email;
+
         $request->user()->update($data);
+
+        if( ! empty($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
+            \Event::fire(new UserRegistered());
+        }
 
         return $this->response->withItem($request->user(), new UserTransformer());
 	}
