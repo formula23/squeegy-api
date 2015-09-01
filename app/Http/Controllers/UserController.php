@@ -45,10 +45,6 @@ class UserController extends Controller {
 	{
         $data = $request->all();
 
-        if(isset($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $request->user()->email)) {
-            \Event::fire(new UserRegistered());
-        }
-
         if(isset($data['push_token'])) {
 
             try {
@@ -106,6 +102,10 @@ class UserController extends Controller {
         }
 
         $customer->save();
+
+        if(isset($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $data['email'])) {
+            \Event::fire(new UserRegistered());
+        }
 
         if( ! empty($data["phone"])) {
 
