@@ -103,10 +103,6 @@ class UserController extends Controller {
 
         $customer->save();
 
-        if(isset($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $data['email'])) {
-            \Event::fire(new UserRegistered());
-        }
-
         if( ! empty($data["phone"])) {
 
             if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
@@ -119,7 +115,13 @@ class UserController extends Controller {
 
         }
 
+        $original_email = $request->user()->email;
+
         $request->user()->update($data);
+
+        if( ! empty($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
+            \Event::fire(new UserRegistered());
+        }
 
         return $this->response->withItem($request->user(), new UserTransformer());
 	}
