@@ -93,7 +93,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = "+1".$value;
+        $this->attributes['phone'] = ( ! empty($value) ? "+1".$value : "" );
     }
 
     /**
