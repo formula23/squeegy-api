@@ -28,8 +28,8 @@ class AddIsActiveAppVersionToUsers extends Migration {
 	{
 		Schema::table('users', function(Blueprint $table)
 		{
-			$table->removeColumn('is_active');
-			$table->removeColumn('app_version');
+			$table->dropColumn('is_active');
+			$table->dropColumn('app_version');
 		});
 	}
 
