@@ -50,7 +50,7 @@ class Orders {
 
         if( ! env('OPERATING_OPEN')) {
             $data['accept'] = 0;
-            $data['description'] = "In observance of Labor Day\nwe\'ll be back Tuesday 9am - 7pm";
+            $data['description'] = "Sorry we missed you\nWe'll be back Tuesday 9am - 7pm";
             return $data;
         }
 
