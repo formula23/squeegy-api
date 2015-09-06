@@ -48,6 +48,11 @@ class Orders {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
+        if( ! env('OPERATING_OPEN')) {
+            $data['accept'] = 0;
+            $data['description'] = 'Sorry we missed you!\nIn observance of Labor Day we\'ll be back Tuesday 9am - 7pm';
+        }
+
         if( ! self::open()) {
             $next_day = (Carbon::now()->hour >= env('OPERATING_HR_CLOSE') && Carbon::now()->hour <= 23 || !env('OPERATING_WKND') ? Carbon::now()->addDay()->format('l') : Carbon::now()->format('l') );
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day]);
