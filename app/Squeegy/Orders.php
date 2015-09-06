@@ -51,6 +51,7 @@ class Orders {
         if( ! env('OPERATING_OPEN')) {
             $data['accept'] = 0;
             $data['description'] = 'Sorry we missed you!\nIn observance of Labor Day we\'ll be back Tuesday 9am - 7pm';
+            return $data;
         }
 
         if( ! self::open()) {
