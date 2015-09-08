@@ -29,7 +29,7 @@ class NotifyCustomerEnroute {
 
         $push_message = trans('messages.order.push_notice.enroute', ['worker_name'=>Auth::user()->name]);
 
-        PushNotification::send($event->order, $push_message);
+        PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id);
 	}
 
 }
