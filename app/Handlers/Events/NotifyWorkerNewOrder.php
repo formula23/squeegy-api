@@ -31,7 +31,10 @@ class NotifyWorkerNewOrder {
 	public function handle(OrderConfirmed $event)
 	{
         try {
-            $workers = User::workers()->get();
+
+            $worker_qry = User::workers()->where('is_active', 1);
+
+            $workers = $worker_qry->get();
 
             foreach($workers as $worker) {
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
