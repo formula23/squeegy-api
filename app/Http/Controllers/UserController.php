@@ -138,9 +138,4 @@ class UserController extends Controller {
         return $this->response->withItem(\Auth::user(), new UserTransformer());
     }
 
-    public function send_push()
-    {
-
-    }
-
 }
