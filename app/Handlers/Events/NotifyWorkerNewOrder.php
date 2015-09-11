@@ -32,7 +32,7 @@ class NotifyWorkerNewOrder {
 	{
         try {
 
-            $worker_qry = User::workers()->where('is_active', 1);
+            $worker_qry = User::workers();
 
             $workers = $worker_qry->get();
 
