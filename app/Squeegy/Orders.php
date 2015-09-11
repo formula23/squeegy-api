@@ -191,7 +191,7 @@ class Orders {
 
         $order_index = ($pending_orders > $available_workers) ? $pending_orders : $pending_orders - 1 ;
 
-        return $completion_times[$order_index] + self::TRAVEL_TIME;
+        return $completion_times[$pending_orders] + self::TRAVEL_TIME;
     }
 
     /**
