@@ -10,10 +10,13 @@ class NotifyController extends Controller {
 
 	public function push(Request $request)
     {
+        if(!$request->input('user_id')) return;
 
-        $users = User::where('app_version', '>=', '1.3')->where('is_active', 1)->whereNotNull('push_token')->get();
+//        $users = User::where('app_version', '>=', '1.3')->where('is_active', 1)->whereNotNull('push_token')->get();
+        $users = User::whereIn('id', explode(",",$request->input('user_id')))->get();
 
         foreach($users as $user) {
+            if(empty($user->push_token)) continue;
             PushNotification::send($user->push_token, $request->input('message'), 0);
         }
 
