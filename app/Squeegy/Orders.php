@@ -190,8 +190,10 @@ class Orders {
 //exit;
 
         $order_index = ($pending_orders > $available_workers && $pending_orders > 0) ? $pending_orders : $pending_orders - 1 ;
-        if($order_index < 0) $order_index = 0;
         
+        if($order_index < 0) $order_index = 0;
+        if($order_index > count($completion_times)) $order_index = count($completion_times) - 1;
+
         return $completion_times[$order_index] + self::TRAVEL_TIME;
     }
 
