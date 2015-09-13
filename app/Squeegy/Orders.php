@@ -37,7 +37,8 @@ class Orders {
     public static function open()
     {
 //        if(env('APP_DEV')) return true;
-        if(! env('OPERATING_WKND') && Carbon::now()->isWeekend()) return false;
+//        if(! env('OPERATING_WKND') && Carbon::now()->isWeekend()) return false;
+        if(Carbon::now()->dayOfWeek == 0) return false;
         $curr_hr = Carbon::now()->hour;
         if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
         return false;
@@ -63,7 +64,7 @@ class Orders {
             $curr_hr = Carbon::now()->hour;
 
             $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? Carbon::now()->addDay()->format('l') : Carbon::now()->format('l') );
-            
+
             if($day_of_week == 6 && $curr_hr > env('OPERATING_HR_CLOSE') ||
                 $day_of_week == 0) {
                 $next_day = "Monday";
