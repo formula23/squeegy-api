@@ -34,6 +34,10 @@ class NotifyWorkerNewOrder {
 
             $worker_qry = User::workers();
 
+            if(app()->environment('local')) {
+                $worker_qry->where('id', 1);
+            }
+
             $workers = $worker_qry->get();
 
             foreach($workers as $worker) {
@@ -41,6 +45,8 @@ class NotifyWorkerNewOrder {
                     'order_id' => $event->order->id,
                     'customer_name' => $event->order->customer->name,
                     'customer_phone' => $event->order->customer->phone,
+                    'customer_address' => "\n\n".$event->order->location['street'].", ".$event->order->location['city']." ".$event->order->location['zip'],
+                    'customer_address_lnk' => "\n\ncomgooglemaps://?q=".$event->order->location['lat'].",".$event->order->location['lon']."&views=traffic",
                 ]));
             }
         } catch(\Exception $e) {
