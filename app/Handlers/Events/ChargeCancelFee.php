@@ -35,6 +35,7 @@ class ChargeCancelFee {
 
                 if(Orders::getCurrentEta($event->order) < 1800) {
                     $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
+                    $event->order->charged = $cancel_fee;
                 } else {
                     $charge = $payments->refund($event->order->stripe_charge_id);
                 }
@@ -42,7 +43,6 @@ class ChargeCancelFee {
                 $event->order->stripe_charge_id = $charge->id;
             }
 
-            $event->order->charged = $cancel_fee;
             $event->order->save();
 
         } catch(\Exception $e) {

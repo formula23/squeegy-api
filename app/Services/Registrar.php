@@ -15,10 +15,10 @@ class Registrar implements RegistrarContract {
 	public function validator(array $data)
 	{
 		return Validator::make($data, [
-			'name' => 'required|max:255',
+//			'name' => 'required|max:255',
 			'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:8',
-            'phone' => 'required|digits:10',
+//            'phone' => 'required|digits:10',
 		]);
 	}
 
@@ -31,11 +31,12 @@ class Registrar implements RegistrarContract {
 	public function create(array $data)
 	{
 		return User::create([
-			'name' => $data['name'],
+			'name' => ! empty($data['name']) ? $data['name'] : '',
 			'email' => $data['email'],
 			'password' => $data['password'],
-            'phone' => $data['phone'],
+            'phone' => ! empty($data['phone']) ? $data['phone'] : '',
             'stripe_customer_id' => (isset($data['stripe_customer_id']) ? $data['stripe_customer_id']:null),
+            'push_token' => ! empty($data['push_token']) ? $data['push_token'] : '',
 		]);
 	}
 

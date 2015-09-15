@@ -31,7 +31,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id'];
+	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id', 'is_active', 'app_version'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -93,7 +93,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = "+1".$value;
+        $this->attributes['phone'] = ( ! empty($value) ? "+1".$value : "" );
     }
 
     /**

@@ -41,4 +41,6 @@ Route::group(['prefix' => 'v1'], function() {
     Route::put('orders/{orders}', 'OrdersController@update');    
     Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
 
+    Route::post('notify/push', 'NotifyController@push');
+
 });

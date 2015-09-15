@@ -7,6 +7,7 @@
  */
 
 use App\Order;
+use App\User;
 use Carbon\Carbon;
 
 /**
@@ -19,6 +20,7 @@ class Orders {
     const BASE_LEAD_TIME = 20;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
+    const TRAVEL_TIME = 20;
 
     /**
      * @var array
@@ -34,8 +36,9 @@ class Orders {
      */
     public static function open()
     {
-        if(env('APP_DEV')) return true;
-        if(! env('OPERATING_WKND') && Carbon::now()->isWeekend()) return false;
+//        if(env('APP_DEV')) return true;
+//        if(! env('OPERATING_WKND') && Carbon::now()->isWeekend()) return false;
+        if(Carbon::now()->dayOfWeek == 0) return false;
         $curr_hr = Carbon::now()->hour;
         if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
         return false;
@@ -48,8 +51,25 @@ class Orders {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
+        if( ! env('OPERATING_OPEN')) {
+            $data['accept'] = 0;
+            $data['description'] = "Sorry we missed you!\nWe'll be back Tuesday 9am - 7pm";
+            return $data;
+        }
+
+
         if( ! self::open()) {
-            $next_day = (Carbon::now()->hour >= env('OPERATING_HR_CLOSE') && Carbon::now()->hour <= 23 ? Carbon::now()->addDay()->format('l') : Carbon::now()->format('l') );
+
+            $day_of_week = Carbon::now()->dayOfWeek;
+            $curr_hr = Carbon::now()->hour;
+
+            $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? Carbon::now()->addDay()->format('l') : Carbon::now()->format('l') );
+
+            if($day_of_week == 6 && $curr_hr > env('OPERATING_HR_CLOSE') ||
+                $day_of_week == 0) {
+                $next_day = "Monday";
+            }
+
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day]);
         }
 
@@ -109,37 +129,84 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
-//        if($order && self::remainingBusinessTime() <= 0) {
-//            return 0;
-//        }
 
-//        if((self::remainingBusinessTime() < self::CLOSING_THRESHOLD) && ! $order) {
-//            return 0;
-//        }
+        //get available workers
+        $available_workers = User::workers()
+            ->select('users.*')
+            ->where('users.is_active',1)
+            ->leftJoin(\DB::raw("(select * from orders where orders.status in ('confirm', 'enroute', 'start')) AS orders"), 'users.id', '=', 'orders.worker_id')
+            ->whereNull('orders.status')
+            ->get()
+            ->count();
+
+        //jobs in Q
+        $pending_orders = Order::where('status', 'confirm')->count();
+//        print $orders_in_q;
+//dd($available_workers);
+        if($available_workers - $pending_orders > 0) {
+            return static::TRAVEL_TIME;
+        }
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
 
-        if($order && $order->confirm_at) {
-            $orders_in_q->where('confirm_at', '<', $order->confirm_at);
+        $open_orders = $orders_in_q->get();
+
+        $orders_assessed=[];
+        $completion_times=[];
+
+//        $testdate = Carbon::create(2015,9,9,18);
+
+        foreach(['start', 'enroute', 'confirm'] as $status) {
+            foreach($open_orders as $orders) {
+
+                if( ! empty($orders->{$status."_at"}) && ! in_array($orders->id, $orders_assessed)) {
+
+                    $service_time = $orders->service->time;
+
+                    $mins_elapsed = $orders->{$orders->status."_at"}->diffInMinutes();
+
+//                    print $status." == ".$orders->service->name." | ".$orders->id."<br/>";
+//                    print "mins elapsed: ".$mins_elapsed."<br/>";
+//                    print "service time: ".$service_time."<br/>";
+
+                    if($orders->status == "start") {
+//                        print "should be done: ".max(0, $service_time - $mins_elapsed)."<br/>";
+                        $complete_time = max(0, ($service_time - $mins_elapsed));
+                    }
+
+                    if($orders->status == "enroute") {
+//                        print "alloted travel time:".self::TRAVEL_TIME."<br/>";
+//                        print "elapsed travel time:".$mins_elapsed."<br/>";
+//                        print "should be done: ".(max(0, self::TRAVEL_TIME - $mins_elapsed) + $service_time)."<br/>";
+                        $complete_time = max(0, (self::TRAVEL_TIME - $mins_elapsed) + $service_time);
+                    }
+
+                    if($orders->status == "confirm") {
+                        $complete_time = max(0, ($orders->eta - $mins_elapsed) + $service_time);
+//                        print "should be done: ".$complete_time."<br/>";
+                    }
+
+                    $completion_times[] = $complete_time;
+
+                    $orders_assessed[] = $orders->id;
+                }
+//print "<br/>";
+            }
         }
 
-        $orders = $orders_in_q->get();
-//dd($orders->count());
-        if( ! $orders->count()) {
-            return static::BASE_LEAD_TIME;
-        }
+        sort($completion_times);
 
-        $leadtime = 10;
-        foreach($orders as $order) {
-            $leadtime += self::$order_status_time_map[$order->status];
-        }
+//        print "ETA: ".($completion_times[$pending_orders] + self::TRAVEL_TIME);
+//        dd($completion_times);
+//exit;
 
-//        if(self::remainingBusinessTime() < $leadtime) {
-//            return 0;
-//        }
+        $order_index = ($pending_orders > $available_workers && $pending_orders > 0) ? $pending_orders : $pending_orders - 1 ;
 
-        return $leadtime;
+        if($order_index < 0) $order_index = 0;
+        if($order_index > count($completion_times)) $order_index = count($completion_times) - 1;
+
+        return $completion_times[$order_index] + self::TRAVEL_TIME;
     }
 
     /**
