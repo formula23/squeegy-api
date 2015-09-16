@@ -17,12 +17,12 @@ class NotifyController extends Controller {
 
         } else {
             //anonymous users
-//            $users = User::where('app_version', '>=', '1.3')
-//                ->where('is_active', 1)
-//                ->whereNotNull('push_token')
-//                ->where('push_token', '!=', '')
-//                ->where('email', 'like', '%squeegyapp-tmp.com%')
-//                ->get();
+            $users = User::where('app_version', '>=', '1.3')
+                ->where('is_active', 1)
+                ->whereNotNull('push_token')
+                ->where('push_token', '!=', '')
+                ->where('email', 'like', '%squeegyapp-tmp.com%')
+                ->get();
         }
 
         print "user count:".$users->count()."\n";
