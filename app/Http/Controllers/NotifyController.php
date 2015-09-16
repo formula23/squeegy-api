@@ -28,8 +28,8 @@ class NotifyController extends Controller {
                 ->where('users.is_active', 1)
                 ->whereNotNull('push_token')
                 ->where('push_token', '!=', '')
-                ->where('users.name', '!=', '')
-                ->where('orders.status', 'in', ['done'])
+                ->where('email', 'not like', '%squeegyapp-tmp.com%')
+                ->whereIn('orders.status', ['done'])
                 ->where('orders.done_at', '<', '2015-09-16')
                 ->groupBy('users.id')
                 ->get();
