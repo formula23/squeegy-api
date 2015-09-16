@@ -17,14 +17,24 @@ class NotifyController extends Controller {
 
         } else {
             //anonymous users
-            $users = User::where('app_version', '>=', '1.3')
-                ->where('is_active', 1)
+//            $users = User::where('app_version', '>=', '1.3')
+//                ->where('is_active', 1)
+//                ->whereNotNull('push_token')
+//                ->where('push_token', '!=', '')
+//                ->where('email', 'like', '%squeegyapp-tmp.com%')
+//                ->get();
+            $users = User::join('orders', 'users.id', '=', 'orders.user_id')
+                ->where('app_version', '>=', '1.3')
+                ->where('users.is_active', 1)
                 ->whereNotNull('push_token')
                 ->where('push_token', '!=', '')
-                ->where('email', 'like', '%squeegyapp-tmp.com%')
+                ->where('users.name', '!=', '')
+                ->where('orders.status', 'in', ['done'])
+                ->where('orders.done_at', '<', '2015-09-16')
+                ->groupBy('users.id')
                 ->get();
         }
-
+dd($users);
         print "user count:".$users->count()."\n";
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
