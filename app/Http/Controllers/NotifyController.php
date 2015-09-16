@@ -23,7 +23,7 @@ class NotifyController extends Controller {
 //                ->where('push_token', '!=', '')
 //                ->where('email', 'like', '%squeegyapp-tmp.com%')
 //                ->get();
-            $users = User::join('orders', 'users.id', '=', 'orders.user_id')
+            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
                 ->where('app_version', '>=', '1.3')
                 ->where('users.is_active', 1)
                 ->whereNotNull('push_token')
@@ -31,9 +31,10 @@ class NotifyController extends Controller {
                 ->where('email', 'not like', '%squeegyapp-tmp.com%')
                 ->whereIn('orders.status', ['done'])
                 ->where('orders.done_at', '<', '2015-09-16')
-                ->groupBy('users.id')
-                ->get();
+                ->groupBy('users.id');
+            $users = $user_qry->get();
         }
+        print $user_qry->toSql();
 dd($users);
         print "user count:".$users->count()."\n";
         print "sent message:\n\n";
