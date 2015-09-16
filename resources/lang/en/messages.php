@@ -34,6 +34,7 @@ return [
             'unavailable' => 'Invalid Promo Code',
             'new_customer' => 'Promotion only available for new customers',
             'out_of_region' => 'Promotion not available in your area',
+            'invalid_service' => 'Promotion not available for the :service_name wash',
         ],
     ],
     'service' => [
