@@ -14,7 +14,7 @@ class AddOneTimeUseToDiscounts extends Migration {
 	{
 		Schema::table('discounts', function(Blueprint $table)
 		{
-            $table->tinyInteger('one_time_use')->after('frequency_rate')->unsigned()->default(0);
+            $table->tinyInteger('single_use_code')->after('frequency_rate')->unsigned()->default(0);
 		});
 	}
 
@@ -27,7 +27,7 @@ class AddOneTimeUseToDiscounts extends Migration {
 	{
 		Schema::table('discounts', function(Blueprint $table)
 		{
-			$table->dropColumn('one_time_use');
+			$table->dropColumn('single_use_code');
 		});
 	}
 

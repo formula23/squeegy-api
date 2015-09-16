@@ -250,24 +250,23 @@ class OrdersController extends Controller {
     {
         if (isset($request_data['promo_code'])) { //calculate promo
 
-            $discount = Discount::where('code', $request_data['promo_code'])->active()->get()->first();
+            $discount = Discount::validate_code($request_data['promo_code'], $order);
 
-//            if($discount === null) return false;
             if($discount === null) return trans('messages.order.discount.unavailable');
 
-//            if( $discount->new_customer && ! $order->customer->firstOrder() ) return false;
             if($discount->new_customer && ! $order->customer->firstOrder()) return trans('messages.order.discount.new_customer');
 
-//            if( $discount->user_id && ($order->user_id != $discount->user_id) ) return false;
             if($discount->user_id && ($order->user_id != $discount->user_id)) return trans('messages.order.discount.unavailable');
 
-            if($discount->discount_regions->count() && ! in_array($order['location']['zip'], $discount->discount_regions->lists('postal_code'))) return trans('messages.order.discount.out_of_region');
+            if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
+
+            if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
 
             if($discount->scope == "system") {
-//                if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return false;
+
                 if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return trans('messages.order.discount.unavailable');
             } else {
-//                if ( ! $order->customer->discountEligible($discount)) return false;
+
                 if ( ! $order->customer->discountEligible($discount)) return trans('messages.order.discount.unavailable');
             }
 

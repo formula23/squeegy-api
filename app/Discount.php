@@ -1,5 +1,6 @@
 <?php namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -35,7 +36,7 @@ class Discount extends Model {
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', 1);
+        return $query->where('discounts.is_active', 1);
     }
 
     /**
@@ -46,14 +47,94 @@ class Discount extends Model {
         return $this->belongsTo('App\User', 'user_id');
     }
 
-    public function discount_regions()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
     {
-        return $this->hasMany('App\DiscountRegion')->select(['id', 'postal_code']);
+        return $this->belongsToMany('App\User');
     }
 
-    public function discount_codes()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function services()
     {
-        return $this->hasMany('App\DiscountCode')->select(['id', 'postal_code   ']);
+        return $this->belongsToMany('App\Service');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function regions()
+    {
+        return $this->hasMany('App\DiscountRegion');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function codes()
+    {
+        return $this->hasMany('App\DiscountCode');
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    static public function has_regions($id)
+    {
+        return self::findOrFail($id)->regions->count();
+    }
+
+    /**
+     * @param $code
+     * @param Order $order
+     * @return mixed
+     */
+    static public function validate_code($code, Order $order)
+    {
+//        $discount_qry = self::leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')->active();
+        $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'frequency_rate', 'single_use_code')
+            ->leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')
+            ->leftJoin('discount_user', 'discounts.id', '=', 'discount_user.discount_id')
+            ->active();
+
+        $discount_qry->where(function($q) use ($order) {
+            $q->whereNull('discount_user.user_id')
+                ->orWhere('discount_user.user_id', $order->user_id);
+        });
+
+        $discount_qry->where(function($q) {
+            $q->whereNull('start_at')
+                ->orWhere('start_at', '<=', Carbon::now());
+        });
+
+        $discount_qry->where(function($q) {
+            $q->whereNull('end_at')
+                ->orWhere('end_at', '>=', Carbon::now());
+        });
+
+        $discount_qry->where(function($q) use ($code) {
+            $q->where('discounts.code', $code)
+                ->orWhere('discount_codes.code', $code);
+        });
+
+        $discount_qry->where(function($q) {
+            $q->where('discount_codes.is_active', 1)
+                ->orWhereNull('discount_codes.is_active');
+        });
+
+        $discount_qry->with(['regions' => function($q) use ($order) {
+            $q->where('postal_code', $order['location']['zip']);
+        }]);
+
+        $discount_qry->groupBy('discounts.id');
+
+//        dd($discount_qry::lists('discounts.id','discounts.name'));
+
+        return $discount_qry->get()->first();
     }
 
 }

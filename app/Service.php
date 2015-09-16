@@ -11,4 +11,9 @@ class Service extends Model {
         return json_decode($value, true);
     }
 
+    public function discounts()
+    {
+        return $this->belongsToMany('App\Discount');
+    }
+
 }
