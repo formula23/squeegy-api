@@ -34,8 +34,7 @@ class NotifyController extends Controller {
                 ->groupBy('users.id');
             $users = $user_qry->get();
         }
-        print $user_qry->toSql();
-dd($users);
+        
         print "user count:".$users->count()."\n";
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
