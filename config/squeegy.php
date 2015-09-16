@@ -20,5 +20,13 @@ return [
         'receipt' => [
             'photo_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders/',
         ]
-    ]
+    ],
+    'order_seq' => [
+        'cancel' => 100,
+        'request' => 1,
+        'confirm' => 2,
+        'enroute' => 3,
+        'start' => 4,
+        'done' => 5,
+    ],
 ];

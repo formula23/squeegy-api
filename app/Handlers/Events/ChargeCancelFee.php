@@ -33,12 +33,15 @@ class ChargeCancelFee {
             if($event->order->stripe_charge_id) {
                 $payments = new Payments($event->order->customer->stripe_customer_id);
 
-                if(Orders::getCurrentEta($event->order) < 1800) {
-                    $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
-                    $event->order->charged = $cancel_fee;
-                } else {
-                    $charge = $payments->refund($event->order->stripe_charge_id);
-                }
+                //always refund full amount
+                $charge = $payments->refund($event->order->stripe_charge_id);
+
+//                if($event->order->status != 'confirm') {
+//                    $charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
+//                    $event->order->charged = $cancel_fee;
+//                } else {
+//                    $charge = $payments->refund($event->order->stripe_charge_id);
+//                }
 
                 $event->order->stripe_charge_id = $charge->id;
             }
