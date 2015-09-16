@@ -101,4 +101,13 @@ class Order extends Model {
     {
         return $this->belongsTo('App\Vehicle');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function discount_record()
+    {
+        return $this->belongsTo('App\Discount', 'discount_id');
+    }
+
 }

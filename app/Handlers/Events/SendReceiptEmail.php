@@ -58,6 +58,7 @@ class SendReceiptEmail {
                     'PROMO' => $order->promo_code,
                     'DISCOUNT_AMOUNT' => number_format($order->discount/100, 2),
                     'CHARGED' => number_format($order->charged/100, 2),
+                    'SHOW_CHARGE' => ($order->charged ? true : false),
                     'CUSTOMER_NAME' => $customer->name,
                     'VEHICLE' => $vehicle->year." ".$vehicle->make." ".$vehicle->model." (".$vehicle->color.")",
                     'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
