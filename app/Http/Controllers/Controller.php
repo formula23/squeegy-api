@@ -58,6 +58,7 @@ abstract class Controller extends ApiGuardController {
             // We should check if key authentication is enabled for this method
             $keyAuthentication = true;
 
+/*
             if (isset($apiMethods[$method]['keyAuthentication']) && $apiMethods[$method]['keyAuthentication'] === false) {
                 $keyAuthentication = false;
             }
@@ -98,6 +99,7 @@ abstract class Controller extends ApiGuardController {
                     }
                 }
             }
+*/
 
             $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
 
