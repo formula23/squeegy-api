@@ -39,7 +39,7 @@ class ChargeOrder {
 
             $event->order->save();
 
-            if($event->order->discount_record->single_use_code) {
+            if($event->order->discount_record && $event->order->discount_record->single_use_code) {
                 $discount_code = DiscountCode::where('discount_id', $event->order->discount_id)->where('code', $event->order->promo_code)->get()->first();
                 $discount_code->is_active = 0;
                 $discount_code->save();

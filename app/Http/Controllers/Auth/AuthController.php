@@ -69,7 +69,7 @@ class AuthController extends Controller {
             return $this->response->withItem($this->auth->user(), new UserTransformer());
         }
 
-        return $this->response->errorUnauthorized('Unauthorized.');
+        return $this->response->errorUnauthorized('Unauthorized to login.');
     }
 
     /**

@@ -32,9 +32,11 @@ class Authenticate {
 	 */
 	public function handle($request, Closure $next)
 	{
-		if ($this->auth->guest())
+
+		if ($this->auth->guest())	
 		{
-            return response()->json(['error'=>'Unauthorized. Please login.', 'status_code'=>401], 401);
+    		\Bugsnag::notifyException(new \Exception("Unauthorized. Please login..."));
+            return response()->json(['error'=>'Unauthorized. Please login...', 'status_code'=>401], 401);
 		}
 
 		return $next($request);
