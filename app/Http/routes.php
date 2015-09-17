@@ -20,6 +20,8 @@ Route::get('email', function() {
 
 Route::group(['prefix' => 'v1'], function() {
 
+    Route::get('version', 'VersionController@index');
+
     Route::resource('vehicles', 'VehiclesController');
 
     Route::get('user', 'UserController@show');
