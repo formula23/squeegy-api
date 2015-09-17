@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use App\Squeegy\Payments;
+use App\User;
 use Exception;
 
 use Illuminate\Contracts\Auth\Guard;
@@ -8,6 +9,7 @@ use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
 
 use Aloha\Twilio\Twilio;
+use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 
@@ -66,6 +68,20 @@ class AuthController extends Controller {
 
         if ($this->auth->attempt($credentials, $request->has('remember')))
         {
+            return $this->response->withItem($this->auth->user(), new UserTransformer());
+        }
+
+        \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
+
+        //if login attempt failed -- check to see if the user record based on password is an anon user
+        $anon_user_rec = User::where('email', $credentials['password']."@squeegyapp-tmp.com")->get()->first();
+        $user_rec = User::where('email', $credentials['email'])->get()->first();
+
+        if( ! preg_match('/squeegyapp-tmp.com$/', $credentials['email']) && $anon_user_rec && !$user_rec) {
+            $anon_user_rec->email = $credentials['email'];
+            $anon_user_rec->save();
+            //manual login
+            Auth::login($anon_user_rec);
             return $this->response->withItem($this->auth->user(), new UserTransformer());
         }
 
