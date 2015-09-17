@@ -36,6 +36,8 @@ class Orders {
      */
     public static function open()
     {
+        if( ! env('OPERATING_OPEN')) return false;
+
         $now = Carbon::now();
 
 //        $now = Carbon::create(2015,9,16,19,30,0);
@@ -65,7 +67,7 @@ class Orders {
 
         if( ! self::open()) {
 
-            if( ! env('OPERATING_OPEN')) {
+            if(env('MAINTENANCE')) {
                 $data['accept'] = 0;
                 $data['description'] = "Squeegy is currently closed for scheduled maintenance.";
                 return $data;
