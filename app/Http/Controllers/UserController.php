@@ -103,7 +103,9 @@ class UserController extends Controller {
 
         $customer->save();
 
-        if( ! empty($data["phone"]) && ! empty($request->user()->phone)) {
+// && ! empty($request->user()->phone) -- removed 9/17
+
+        if( ! empty($data["phone"])) {
 
             if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
                 try {
