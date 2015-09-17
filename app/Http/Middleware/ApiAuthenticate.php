@@ -17,6 +17,7 @@ class ApiAuthenticate {
 	 * @param  \Closure  $next
 	 * @return mixed
 	 */
+/*
 	public function handle($request, Closure $next)
 	{
         $key = $request->header(Config::get('apiguard.keyName', 'X-Authorization'));
@@ -47,5 +48,6 @@ class ApiAuthenticate {
 
 		return $next($request);
 	}
+*/
 
 }
