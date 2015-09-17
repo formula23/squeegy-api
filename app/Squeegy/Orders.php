@@ -36,12 +36,24 @@ class Orders {
      */
     public static function open()
     {
+        $now = Carbon::now();
+
+//        $now = Carbon::create(2015,9,16,19,30,0);
+
+        if($now->dayOfWeek == 0) return false;
+
+        $open_time = Carbon::createFromTime(config('squeegy.operating_hours.open'), 0, 0);
+        $close_time = Carbon::createFromTime(config('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE', 0), 0);
+
+//        $open_time = Carbon::create(2015,9,16,9,0,0);
+//        $close_time = Carbon::create(2015,9,16,18,15,0);
+
+        if($now >= $open_time && $now <= $close_time) return true;
+        return false;
+
 //        if(env('APP_DEV')) return true;
 //        if(! env('OPERATING_WKND') && Carbon::now()->isWeekend()) return false;
-        if(Carbon::now()->dayOfWeek == 0) return false;
-        $curr_hr = Carbon::now()->hour;
-        if($curr_hr >= config('squeegy.operating_hours.open') && $curr_hr < config('squeegy.operating_hours.close')) return true;
-        return false;
+
     }
 
     /**
@@ -51,22 +63,20 @@ class Orders {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
-        if( ! env('OPERATING_OPEN')) {
-            $data['accept'] = 0;
-            $data['description'] = "Sorry we missed you!\nWe'll be back Tuesday 9am - 7pm";
-            return $data;
-        }
-
-
         if( ! self::open()) {
 
-            $day_of_week = Carbon::now()->dayOfWeek;
-            $curr_hr = Carbon::now()->hour;
+//            $now = Carbon::create(2015,9,16,19,30,0);
+//            $open_time = Carbon::create(2015,9,16,9,0,0);
+//            $close_time = Carbon::create(2015,9,16,18,15,0);
 
-            $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? Carbon::now()->addDay()->format('l') : Carbon::now()->format('l') );
+            $now = Carbon::now();
 
-            if($day_of_week == 6 && $curr_hr > env('OPERATING_HR_CLOSE') ||
-                $day_of_week == 0) {
+            $day_of_week = $now->dayOfWeek;
+            $curr_hr = $now->hour;
+
+            $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? $now->addDay()->format('l') : $now->format('l') );
+
+            if($day_of_week == 6 && $curr_hr > env('OPERATING_HR_CLOSE') || $day_of_week == 0) {
                 $next_day = "Monday";
             }
 
