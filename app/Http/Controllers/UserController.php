@@ -94,7 +94,8 @@ class UserController extends Controller {
                     "source" => $data['stripe_token']
                 ]);
             } catch(\Exception $e) {
-                return $this->response->errorWrongArgs($e->getMessage());
+                \Bugsnag::notifyException($e);
+//                return $this->response->errorWrongArgs($e->getMessage());
             }
 
 
