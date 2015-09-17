@@ -36,7 +36,7 @@ class Orders {
      */
     public static function open()
     {
-        if( ! env('OPERATING_OPEN')) return false;
+        if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
 
