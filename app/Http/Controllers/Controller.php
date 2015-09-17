@@ -56,48 +56,48 @@ abstract class Controller extends ApiGuardController {
             $method = last($routeArray);
 
             // We should check if key authentication is enabled for this method
-//            $keyAuthentication = true;
-//
-//            if (isset($apiMethods[$method]['keyAuthentication']) && $apiMethods[$method]['keyAuthentication'] === false) {
-//                $keyAuthentication = false;
-//            }
-//
-//            if ($keyAuthentication === true) {
-//
-//                $key = $request->header(Config::get('apiguard.keyName', 'X-Authorization'));
-//
-//                if (empty($key)) {
-//                    // Try getting the key from elsewhere
-//                    $key = Input::get(Config::get('apiguard.keyName', 'X-Authorization'));
-//                }
-//
-//                if (empty($key)) {
-//                    // It's still empty!
-//                    return $this->response->errorUnauthorized('No API Key');
-//                }
-//
-//                $apiKeyModel = App::make(Config::get('apiguard.model', 'Chrisbjr\ApiGuard\Models\ApiKey'));
-//
-//                if ( ! $apiKeyModel instanceof ApiKeyRepository) {
-//                    Log::error('[Chrisbjr/ApiGuard] You ApiKey model should be an instance of ApiKeyRepository.');
-//                    $exception = new Exception("You ApiKey model should be an instance of ApiKeyRepository.");
-//                    throw($exception);
-//                }
-//
-//                $this->apiKey = $apiKeyModel->getByKey($key);
-//
-//                if (empty($this->apiKey)) {
-//                    return $this->response->errorUnauthorized('Api Key Invalid');
-//                }
-//
-//                // API key exists
-//                // Check level of API
-//                if ( ! empty($apiMethods[$method]['level'])) {
-//                    if ($this->apiKey->level < $apiMethods[$method]['level']) {
-//                        return $this->response->errorForbidden();
-//                    }
-//                }
-//            }
+            $keyAuthentication = true;
+
+            if (isset($apiMethods[$method]['keyAuthentication']) && $apiMethods[$method]['keyAuthentication'] === false) {
+                $keyAuthentication = false;
+            }
+
+            if ($keyAuthentication === true) {
+
+                $key = $request->header(Config::get('apiguard.keyName', 'X-Authorization'));
+
+                if (empty($key)) {
+                    // Try getting the key from elsewhere
+                    $key = Input::get(Config::get('apiguard.keyName', 'X-Authorization'));
+                }
+
+                if (empty($key)) {
+                    // It's still empty!
+                    return $this->response->errorUnauthorized('No API Key');
+                }
+
+                $apiKeyModel = App::make(Config::get('apiguard.model', 'Chrisbjr\ApiGuard\Models\ApiKey'));
+
+                if ( ! $apiKeyModel instanceof ApiKeyRepository) {
+                    Log::error('[Chrisbjr/ApiGuard] You ApiKey model should be an instance of ApiKeyRepository.');
+                    $exception = new Exception("You ApiKey model should be an instance of ApiKeyRepository.");
+                    throw($exception);
+                }
+
+                $this->apiKey = $apiKeyModel->getByKey($key);
+
+                if (empty($this->apiKey)) {
+                    return $this->response->errorUnauthorized('Api Key Invalid');
+                }
+
+                // API key exists
+                // Check level of API
+                if ( ! empty($apiMethods[$method]['level'])) {
+                    if ($this->apiKey->level < $apiMethods[$method]['level']) {
+                        return $this->response->errorForbidden();
+                    }
+                }
+            }
 
             $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
 
