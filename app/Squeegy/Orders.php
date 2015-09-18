@@ -224,7 +224,9 @@ class Orders {
         if($order_index < 0) $order_index = 0;
         if($order_index > count($completion_times)) $order_index = count($completion_times) - 1;
 
-        return $completion_times[$order_index] + self::TRAVEL_TIME;
+
+//        return $completion_times[$order_index] + self::TRAVEL_TIME;
+        return self::TRAVEL_TIME;
     }
 
     /**

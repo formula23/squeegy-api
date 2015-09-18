@@ -25,7 +25,7 @@ class NotifyController extends Controller {
 //                ->get();
 
             $user_qry = User::where('app_version', '1.3')->where('push_token', '!=', '');
-            
+
 //            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
 //                ->where('app_version', '>=', '1.3')
 //                ->where('users.is_active', 1)
