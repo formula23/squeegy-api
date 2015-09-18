@@ -14,7 +14,7 @@ return [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'You already have an order pending.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
-        'new_order_worker' => 'New Order# :order_id - :customer_name :customer_phone :customer_address :customer_address_lnk',
+        'new_order_worker' => ':order_service Order #:order_id - :customer_name :customer_phone :eta :vehicle :customer_address :customer_address_lnk',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'invalid_card' => 'Please enter a valid credit card.',

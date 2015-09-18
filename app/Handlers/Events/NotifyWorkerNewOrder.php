@@ -40,9 +40,14 @@ class NotifyWorkerNewOrder {
 
             $workers = $worker_qry->get();
 
+            $vehicle = $event->order->vehicle;
+
             foreach($workers as $worker) {
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
+                    'order_service' => $event->order->service->name,
                     'order_id' => $event->order->id,
+                    'eta' => "\nQuoted ETA: ".$event->order->eta,
+                    'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model,
                     'customer_name' => $event->order->customer->name,
                     'customer_phone' => $event->order->customer->phone,
                     'customer_address' => "\n\n".$event->order->location['street'].", ".$event->order->location['city']." ".$event->order->location['zip'],
