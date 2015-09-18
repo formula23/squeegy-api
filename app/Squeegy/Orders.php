@@ -224,9 +224,13 @@ class Orders {
         if($order_index < 0) $order_index = 0;
         if($order_index > count($completion_times)) $order_index = count($completion_times) - 1;
 
+        try {
+            return array_pop($completion_times) + self::TRAVEL_TIME;
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+            return self::TRAVEL_TIME;
+        }
 
-//        return $completion_times[$order_index] + self::TRAVEL_TIME;
-        return self::TRAVEL_TIME;
     }
 
     /**
