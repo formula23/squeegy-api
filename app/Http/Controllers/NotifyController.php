@@ -23,15 +23,18 @@ class NotifyController extends Controller {
 //                ->where('push_token', '!=', '')
 //                ->where('email', 'like', '%squeegyapp-tmp.com%')
 //                ->get();
-            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
-                ->where('app_version', '>=', '1.3')
-                ->where('users.is_active', 1)
-                ->whereNotNull('push_token')
-                ->where('push_token', '!=', '')
-                ->where('email', 'not like', '%squeegyapp-tmp.com%')
-                ->whereIn('orders.status', ['done'])
-                ->where('orders.done_at', '<', '2015-09-16')
-                ->groupBy('users.id');
+
+            $user_qry = User::where('app_version', '1.3')->where('push_token', '!=', '');
+            
+//            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
+//                ->where('app_version', '>=', '1.3')
+//                ->where('users.is_active', 1)
+//                ->whereNotNull('push_token')
+//                ->where('push_token', '!=', '')
+//                ->where('email', 'not like', '%squeegyapp-tmp.com%')
+//                ->whereIn('orders.status', ['done'])
+//                ->where('orders.done_at', '<', '2015-09-16')
+//                ->groupBy('users.id');
             $users = $user_qry->get();
         }
         
