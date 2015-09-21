@@ -19,7 +19,7 @@ return [
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
-            'enroute' => 'Hang tight! :worker_name is on the way.',
+            'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',
             'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt.',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',

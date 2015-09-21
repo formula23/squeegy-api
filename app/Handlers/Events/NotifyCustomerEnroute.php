@@ -2,6 +2,7 @@
 
 use App\Events\OrderEnroute;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 use App\Squeegy\PushNotification;
@@ -26,8 +27,13 @@ class NotifyCustomerEnroute {
 	 */
 	public function handle(OrderEnroute $event)
 	{
+        $exact_eta = $event->order->confirm_at->addMinutes($event->order->eta);
+        $arrival_time = Carbon::createFromTimestamp(ceil($exact_eta->timestamp / (15 * 60)) * (15 * 60));
 
-        $push_message = trans('messages.order.push_notice.enroute', ['worker_name'=>Auth::user()->name]);
+        $push_message = trans('messages.order.push_notice.enroute', [
+            'worker_name'=>Auth::user()->name,
+            'arrival_time'=>$arrival_time->format('g:i a'),
+        ]);
 
         PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id);
 	}

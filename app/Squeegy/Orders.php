@@ -20,7 +20,7 @@ class Orders {
     const BASE_LEAD_TIME = 20;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
-    const TRAVEL_TIME = 20;
+    const TRAVEL_TIME = 25;
 
     /**
      * @var array
@@ -193,14 +193,14 @@ class Orders {
                         $complete_time = max(0, ($service_time - $mins_elapsed));
                     }
 
-                    if($orders->status == "enroute") {
-//                        print "alloted travel time:".self::TRAVEL_TIME."<br/>";
-//                        print "elapsed travel time:".$mins_elapsed."<br/>";
-//                        print "should be done: ".(max(0, self::TRAVEL_TIME - $mins_elapsed) + $service_time)."<br/>";
-                        $complete_time = max(0, (self::TRAVEL_TIME - $mins_elapsed) + $service_time);
-                    }
+//                    if($orders->status == "enroute") {
+////                        print "alloted travel time:".self::TRAVEL_TIME."<br/>";
+////                        print "elapsed travel time:".$mins_elapsed."<br/>";
+////                        print "should be done: ".(max(0, self::TRAVEL_TIME - $mins_elapsed) + $service_time)."<br/>";
+//                        $complete_time = max(0, (self::TRAVEL_TIME - $mins_elapsed) + $service_time);
+//                    }
 
-                    if($orders->status == "confirm") {
+                    if($orders->status == "confirm" || $orders->status == "enroute") {
                         $complete_time = max(0, ($orders->eta - $mins_elapsed) + $service_time);
 //                        print "should be done: ".$complete_time."<br/>";
                     }
