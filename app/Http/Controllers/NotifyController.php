@@ -47,7 +47,7 @@ class NotifyController extends Controller {
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
 
-        foreach($users as $user) {
+        foreach($send_list as $user) {
 
             if(empty($user->push_token)) continue;
 

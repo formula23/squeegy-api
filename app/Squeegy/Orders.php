@@ -215,6 +215,7 @@ class Orders {
 
         sort($completion_times);
 
+
 //        print "ETA: ".($completion_times[$pending_orders] + self::TRAVEL_TIME);
 //        dd($completion_times);
 //exit;
@@ -223,6 +224,8 @@ class Orders {
 
         if($order_index < 0) $order_index = 0;
         if($order_index >= count($completion_times)) $order_index = count($completion_times) - 1;
+
+        mail('dan@formula23.com', 'etas', print_r($completion_times, 1)."--".$order_index);
 
         try {
             return $completion_times[$order_index] + self::TRAVEL_TIME;
