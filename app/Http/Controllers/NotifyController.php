@@ -25,7 +25,9 @@ class NotifyController extends Controller {
 //                ->where('email', 'like', '%squeegyapp-tmp.com%')
 //                ->get();
 
-            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')->limit(25);
+            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
+                ->where('email', 'like', '%squeegyapp-tmp.com%')
+                ->limit(25);
 
 //            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
 //                ->where('app_version', '>=', '1.3')
