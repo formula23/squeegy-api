@@ -158,7 +158,7 @@ class Orders {
             ->count();
 
         //jobs in Q
-        $pending_orders = Order::where('status', 'confirm')->count();
+        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
 //        print $orders_in_q;
 //dd($available_workers);
         if($available_workers - $pending_orders > 0) {
@@ -225,7 +225,7 @@ class Orders {
         if($order_index < 0) $order_index = 0;
         if($order_index >= count($completion_times)) $order_index = count($completion_times) - 1;
 
-//        mail('dan@formula23.com', 'etas', print_r($completion_times, 1)."--".$order_index);
+        mail('dan@formula23.com', 'etas', print_r($completion_times, 1)."--".$order_index);
 
         try {
             return $completion_times[$order_index] + self::TRAVEL_TIME;
