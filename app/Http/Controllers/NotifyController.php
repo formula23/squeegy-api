@@ -12,9 +12,10 @@ class NotifyController extends Controller {
     {
 //        if(!$request->input('user_id')) return;
 
+        $default_users = User::where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
+
         if($request->input('user_id')) {
             $users = User::whereIn('id', explode(",",$request->input('user_id')))->get();
-
         } else {
             //anonymous users
 //            $users = User::where('app_version', '>=', '1.3')
@@ -24,7 +25,7 @@ class NotifyController extends Controller {
 //                ->where('email', 'like', '%squeegyapp-tmp.com%')
 //                ->get();
 
-            $user_qry = User::where('app_version', '1.3')->where('push_token', '!=', '');
+            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')->limit(25);
 
 //            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
 //                ->where('app_version', '>=', '1.3')
@@ -37,12 +38,15 @@ class NotifyController extends Controller {
 //                ->groupBy('users.id');
             $users = $user_qry->get();
         }
-        
-        print "user count:".$users->count()."\n";
+
+        $send_list = array_merge($users->toArray(), $default_users->toArray());
+
+        print "user count:".count($send_list)."\n";
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
 
         foreach($users as $user) {
+
             if(empty($user->push_token)) continue;
 
             PushNotification::send($user->push_token, $request->input('message'), 1);
