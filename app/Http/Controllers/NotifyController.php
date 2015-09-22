@@ -49,11 +49,11 @@ class NotifyController extends Controller {
 
         foreach($send_list as $user) {
 
-            if(empty($user->push_token)) continue;
+            if(empty($user['push_token'])) continue;
 
-            PushNotification::send($user->push_token, $request->input('message'), 1);
+            PushNotification::send($user['push_token'], $request->input('message'), 1);
 
-            print "sent to: ".$user->push_token."\n";
+            print "sent to: ".$user['push_token']."\n";
         }
 
     }
