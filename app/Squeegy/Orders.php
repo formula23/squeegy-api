@@ -150,27 +150,29 @@ class Orders {
 
         $total_workers = User::workers()->where('users.is_active',1)->get()->count();
 
-        //get available workers
-        $available_workers = User::workers()
-            ->select('users.*')
-            ->where('users.is_active',1)
-            ->leftJoin(\DB::raw("(select * from orders where orders.status in ('confirm', 'enroute', 'start')) AS orders"), 'users.id', '=', 'orders.worker_id')
-            ->whereNull('orders.status')
-            ->get()
-            ->count();
-
-        //jobs in Q
-        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
-
-        $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n pending: $pending_orders";
-
-        if($available_workers - $pending_orders > 0) {
-            return static::TRAVEL_TIME;
-        }
-
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
         $open_orders = $orders_in_q->get();
+
+        $available_workers = $total_workers - $open_orders->count();
+
+        //get available workers
+//        $available_workers = User::workers()
+//            ->select('users.*')
+//            ->where('users.is_active',1)
+//            ->leftJoin(\DB::raw("(select * from orders where orders.status in ('confirm', 'enroute', 'start')) AS orders"), 'users.id', '=', 'orders.worker_id')
+//            ->whereNull('orders.status')
+//            ->get()
+//            ->count();
+
+        //jobs in Q
+//        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
+
+        $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: $open_orders";
+
+        if($available_workers > 0) {
+            return static::TRAVEL_TIME;
+        }
 
         $completion_times=[];
 
