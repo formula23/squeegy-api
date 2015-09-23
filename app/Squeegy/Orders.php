@@ -148,6 +148,8 @@ class Orders {
     public static function getLeadTime(Order $order = null)
     {
 
+        $total_workers = User::workers()->where('users.is_active',1)->get()->count();
+
         //get available workers
         $available_workers = User::workers()
             ->select('users.*')
@@ -159,9 +161,9 @@ class Orders {
 
         //jobs in Q
         $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
-//        print $orders_in_q;
-$lead_time = "available: ".print_r($available_workers, 1)."\n\npending: ".print_r($pending_orders, 1);
-//        mail("dan@formula23.com", "lead time", );
+
+        $lead_time = "available: ".print_r($available_workers, 1)."\n\npending: ".print_r($pending_orders, 1);
+
 
         if($available_workers - $pending_orders > 0) {
             return static::TRAVEL_TIME;
@@ -222,10 +224,14 @@ $lead_time = "available: ".print_r($available_workers, 1)."\n\npending: ".print_
 //        dd($completion_times);
 //exit;
 
-        $order_index = ($pending_orders > $available_workers && $pending_orders > 0) ? $pending_orders : $pending_orders - 1 ;
+        $order_index = count($completion_times) - $total_workers;
+        if($order_index<0) $order_index = 0;
+        //if count of Q is greater than
 
-        if($order_index < 0) $order_index = 0;
-        if($order_index >= count($completion_times)) $order_index = count($completion_times) - 1;
+//        $order_index = ($pending_orders > $available_workers && $pending_orders > 0) ? $pending_orders : $pending_orders - 1 ;
+//
+//        if($order_index < 0) $order_index = 0;
+//        if($order_index >= count($completion_times)) $order_index = count($completion_times) - 1;
 
         mail('dan@formula23.com', 'etas', $lead_time."\n\n".print_r($completion_times, 1)."--".$order_index);
 
