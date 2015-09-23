@@ -227,10 +227,14 @@ class Orders {
 //        if($order_index < 0) $order_index = 0;
 //        if($order_index >= count($completion_times)) $order_index = count($completion_times) - 1;
 
-        mail('dan@formula23.com', 'etas', $lead_time."\n\n".print_r($completion_times, 1)."--".$order_index);
+
 
         try {
-            return $completion_times[$order_index] + self::TRAVEL_TIME;
+            $eta = $completion_times[$order_index] + self::TRAVEL_TIME;
+
+            mail('dan@formula23.com', 'etas', $lead_time."\n\n index: $order_index \n\n".print_r($completion_times, 1)." \n\n ETA: $eta");
+
+            return $eta;
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
             return self::TRAVEL_TIME;
