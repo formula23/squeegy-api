@@ -170,64 +170,31 @@ class Orders {
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
-
         $open_orders = $orders_in_q->get();
 
-        $orders_assessed=[];
         $completion_times=[];
 
-//        $testdate = Carbon::create(2015,9,9,18);
+        foreach($open_orders as $order) {
 
-        foreach(['start', 'enroute', 'confirm'] as $status) {
-            foreach($open_orders as $orders) {
+            $service_time = $order->service->time;
 
-                if( ! empty($orders->{$status."_at"}) && ! in_array($orders->id, $orders_assessed)) {
+            $mins_elapsed = $order->{$order->status."_at"}->diffInMinutes();
 
-                    $service_time = $orders->service->time;
-
-                    $mins_elapsed = $orders->{$orders->status."_at"}->diffInMinutes();
-
-//                    print $status." == ".$orders->service->name." | ".$orders->id."<br/>";
-//                    print "mins elapsed: ".$mins_elapsed."<br/>";
-//                    print "service time: ".$service_time."<br/>";
-
-                    if($orders->status == "start") {
-//                        print "should be done: ".max(0, $service_time - $mins_elapsed)."<br/>";
-                        $complete_time = max(0, ($service_time - $mins_elapsed));
-                    }
-
-//                    if($orders->status == "enroute") {
-////                        print "alloted travel time:".self::TRAVEL_TIME."<br/>";
-////                        print "elapsed travel time:".$mins_elapsed."<br/>";
-////                        print "should be done: ".(max(0, self::TRAVEL_TIME - $mins_elapsed) + $service_time)."<br/>";
-//                        $complete_time = max(0, (self::TRAVEL_TIME - $mins_elapsed) + $service_time);
-//                    }
-
-                    if($orders->status == "confirm" || $orders->status == "enroute") {
-                        $complete_time = max(0, ($orders->eta - $mins_elapsed) + $service_time);
-//                        print "should be done: ".$complete_time."<br/>";
-                    }
-
-                    $completion_times[] = $complete_time;
-
-                    $orders_assessed[] = $orders->id;
-                }
-//print "<br/>";
+            if($order->status == "start") {
+//                print "should be done: ".max(0, $service_time - $mins_elapsed)."<br/>";
+                $complete_time = max(0, ($service_time - $mins_elapsed));
+            } else {
+//                print "should be done: ".$complete_time."<br/>";
+                $complete_time = max(0, ($order->eta - $mins_elapsed) + $service_time);
             }
+
+            $completion_times[] = $complete_time;
+
         }
 
         sort($completion_times);
 
-        $order_index = count($completion_times) - $total_workers;
-        if($order_index < 0) $order_index = 0;
-        //if count of Q is greater than
-
-//        $order_index = ($pending_orders > $available_workers && $pending_orders > 0) ? $pending_orders : $pending_orders - 1 ;
-//
-//        if($order_index < 0) $order_index = 0;
-//        if($order_index >= count($completion_times)) $order_index = count($completion_times) - 1;
-
-
+        $order_index = max(0, count($completion_times) - $total_workers);
 
         try {
             $eta = $completion_times[$order_index] + self::TRAVEL_TIME;
