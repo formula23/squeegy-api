@@ -151,7 +151,7 @@ class Orders {
         $total_workers = User::workers()->where('users.is_active',1)->get()->count();
 
         $orders_in_q = Order::query();
-        $orders_in_q->whereIn('status', ['confirm','enroute','start']);
+        $orders_in_q->whereIn('status', ['confirm','enroute','start'])->where('promo_code', '!=', 'training');
         $open_orders = $orders_in_q->get();
 
         $available_workers = $total_workers - $open_orders->count();
