@@ -162,8 +162,7 @@ class Orders {
         //jobs in Q
         $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
 
-        $lead_time = "available: ".print_r($available_workers, 1)."\n\npending: ".print_r($pending_orders, 1);
-
+        $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n pending: $pending_orders";
 
         if($available_workers - $pending_orders > 0) {
             return static::TRAVEL_TIME;
@@ -219,13 +218,8 @@ class Orders {
 
         sort($completion_times);
 
-
-//        print "ETA: ".($completion_times[$pending_orders] + self::TRAVEL_TIME);
-//        dd($completion_times);
-//exit;
-
         $order_index = count($completion_times) - $total_workers;
-        if($order_index<0) $order_index = 0;
+        if($order_index < 0) $order_index = 0;
         //if count of Q is greater than
 
 //        $order_index = ($pending_orders > $available_workers && $pending_orders > 0) ? $pending_orders : $pending_orders - 1 ;
