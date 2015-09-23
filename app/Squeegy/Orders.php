@@ -160,7 +160,9 @@ class Orders {
         //jobs in Q
         $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
 //        print $orders_in_q;
-//dd($available_workers);
+
+        mail("dan@formula23.com", "lead time", "available: ".print_r($available_workers, 1)."\n\npending: ".print_r($pending_orders, 1));
+
         if($available_workers - $pending_orders > 0) {
             return static::TRAVEL_TIME;
         }
