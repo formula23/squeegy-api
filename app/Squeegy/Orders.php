@@ -168,6 +168,8 @@ class Orders {
         //jobs in Q
 //        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
 
+        mail("dan@formula23.com", "open orders", print_r($open_orders->toArray(), 1));
+
         $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: ".$open_orders->count();
 
         if($available_workers > 0) {
