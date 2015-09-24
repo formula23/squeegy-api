@@ -27,7 +27,9 @@ class NotifyController extends Controller {
 
             $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
                 ->where('email', 'like', '%squeegyapp-tmp.com%')
-                ->skip(50)->take(25);
+                ->where('id', '>', 418)
+                ->orderBy('id')
+                ->limit(31);
 
 //            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
 //                ->where('app_version', '>=', '1.3')
@@ -53,7 +55,7 @@ class NotifyController extends Controller {
 
             PushNotification::send($user['push_token'], $request->input('message'), 1);
 
-            print "sent to: ".$user['push_token']."\n";
+            print "sent to: id# ".$user['id']." - ".$user['push_token']."\n";
         }
 
     }
