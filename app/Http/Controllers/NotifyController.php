@@ -31,6 +31,10 @@ class NotifyController extends Controller {
                 ->orderBy('id')
                 ->limit(31);
 
+            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
+                ->where('email', 'not like', '%squeegyapp-tmp.com%');
+
+
 //            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
 //                ->where('app_version', '>=', '1.3')
 //                ->where('users.is_active', 1)
