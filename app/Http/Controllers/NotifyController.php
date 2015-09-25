@@ -10,6 +10,8 @@ class NotifyController extends Controller {
 
 	public function push(Request $request)
     {
+        set_time_limit(0);
+
 //        if(!$request->input('user_id')) return;
 
         $default_users = User::where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
