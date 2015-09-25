@@ -20,16 +20,7 @@ class Orders {
     const BASE_LEAD_TIME = 20;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
-    const TRAVEL_TIME = 25;
-
-    /**
-     * @var array
-     */
-    private static $order_status_time_map = [
-        'confirm' => 50,
-        'enroute' => 40,
-        'start' => 30,
-    ];
+    const TRAVEL_TIME = 30;
 
     /**
      * @return bool
@@ -84,7 +75,7 @@ class Orders {
 
             $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? $now->addDay()->format('l') : $now->format('l') );
 
-            if($day_of_week == 6 && $curr_hr > env('OPERATING_HR_CLOSE') || $day_of_week == 0) {
+            if($day_of_week == 6 && $curr_hr >= env('OPERATING_HR_CLOSE') && $now->minute >= env('OPERATING_MIN_CLOSE') || $day_of_week == 0) {
                 $next_day = "Monday";
             }
 
