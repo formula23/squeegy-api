@@ -125,6 +125,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function discountEligible(Discount $discount)
     {
-        return ($discount->frequency_rate && $this->orders()->where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count() < $discount->frequency_rate);
+        if( ! $discount->frequency_rate) return true;
+        return ($this->orders()->where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count() < $discount->frequency_rate);
     }
 }

@@ -266,7 +266,6 @@ class OrdersController extends Controller {
 
                 if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return trans('messages.order.discount.unavailable');
             } else {
-
                 if ( ! $order->customer->discountEligible($discount)) return trans('messages.order.discount.unavailable');
             }
 
