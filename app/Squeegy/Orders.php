@@ -22,6 +22,8 @@ class Orders {
     const SUV_SURCHARGE_MULTIPLIER = 2;
     const TRAVEL_TIME = 30;
 
+    protected static $open_orders;
+
     /**
      * @return bool
      */
@@ -83,7 +85,8 @@ class Orders {
         }
 
         $data['lead_time'] = self::getLeadTime();
-        if( ! $data['lead_time']) {
+
+        if(self::$open_orders->count() >= 1 && $data['lead_time'] > self::remainingBusinessTime()) {
             $data['accept'] = 0;
             $data['description'] = trans('messages.service.highdemand');
         }
@@ -143,9 +146,9 @@ class Orders {
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
-        $open_orders = $orders_in_q->get();
+        self::$open_orders = $orders_in_q->get();
 
-        $available_workers = $total_workers - $open_orders->count();
+        $available_workers = $total_workers - self::$open_orders->count();
 
         //get available workers
 //        $available_workers = User::workers()
@@ -159,9 +162,9 @@ class Orders {
         //jobs in Q
 //        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
 
-//        mail("dan@formula23.com", "open orders", print_r($open_orders->toArray(), 1));
+//        mail("dan@formula23.com", "open orders", print_r(self::$open_orders->toArray(), 1));
 
-        $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: ".$open_orders->count();
+        $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: ".self::$open_orders->count();
 
         if($available_workers > 0) {
             return static::TRAVEL_TIME;
@@ -169,7 +172,7 @@ class Orders {
 
         $completion_times=[];
 
-        foreach($open_orders as $order) {
+        foreach(self::$open_orders as $order) {
 
             $service_time = $order->service->time;
 
@@ -248,8 +251,8 @@ class Orders {
      */
     public static function remainingBusinessTime()
     {
-        if(env('APP_DEV')) return 1000;
-        return Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'),0,0)->diffInMinutes();
+//        if(env('APP_DEV')) return 1000;
+        return Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE') ,0)->diffInMinutes();
     }
 
 }

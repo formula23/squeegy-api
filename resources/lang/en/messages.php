@@ -39,7 +39,7 @@ return [
     ],
     'service' => [
         'closed' => "Sorry we missed you!\nWe'll be back :next_day, ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12).":".env('OPERATING_MIN_CLOSE')."pm",
-        'highdemand' => "We are experiencing high-demand.\nPlease try again later.",
+        'highdemand' => "Due to high-demand we cannot take your order.\nPlease try again later.",
     ],
     'emails' => [
         'welcome' => [
