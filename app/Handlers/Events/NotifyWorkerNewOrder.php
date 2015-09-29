@@ -47,7 +47,7 @@ class NotifyWorkerNewOrder {
                     'order_service' => $event->order->service->name,
                     'order_id' => $event->order->id,
                     'eta' => "\nQuoted ETA: ".$event->order->eta." | Arrival: ".eta_real_time($event->order),
-                    'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model,
+                    'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model." ".$vehicle->color,
                     'customer_name' => $event->order->customer->name,
                     'customer_phone' => $event->order->customer->phone,
                     'customer_address' => "\n\n".$event->order->location['street'].", ".$event->order->location['city']." ".$event->order->location['zip'],
