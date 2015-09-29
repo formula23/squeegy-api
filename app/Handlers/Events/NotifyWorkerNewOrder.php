@@ -46,7 +46,7 @@ class NotifyWorkerNewOrder {
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
                     'order_service' => $event->order->service->name,
                     'order_id' => $event->order->id,
-                    'eta' => "\nQuoted ETA: ".$event->order->eta,
+                    'eta' => "\nQuoted ETA: ".$event->order->eta." | Arrival: ".eta_real_time($event->order),
                     'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model,
                     'customer_name' => $event->order->customer->name,
                     'customer_phone' => $event->order->customer->phone,
