@@ -29,22 +29,22 @@ class NotifyController extends Controller {
 
             $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
                 ->where('email', 'like', '%squeegyapp-tmp.com%')
-                ->where('id', '>', 418)
-                ->orderBy('id')
-                ->limit(31);
+                ->where('id', '>', 590)
+                ->where('created_at', '<', '2015-09-29')
+                ->orderBy('id');
 
-            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
-                ->where('email', 'like', '%squeegyapp-tmp.com%');
-
-
-            $user_qry = User::where('app_version', '1.3')->where('push_token', '!=', '')
-                ->where('email', 'like', '%squeegyapp-tmp.com%');
-
-
-            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
-                ->where('email', 'like', '%squeegyapp-tmp.com%')
-                ->where('created_at', '>=', '2015-09-26');
-
+//            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
+//                ->where('email', 'like', '%squeegyapp-tmp.com%');
+//
+//
+//            $user_qry = User::where('app_version', '1.3')->where('push_token', '!=', '')
+//                ->where('email', 'like', '%squeegyapp-tmp.com%');
+//
+//
+//            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
+//                ->where('email', 'like', '%squeegyapp-tmp.com%')
+//                ->where('created_at', '>=', '2015-09-26');
+//dd($user_qry);
 
 //            $user_qry = User::join('orders', 'users.id', '=', 'orders.user_id')
 //                ->where('app_version', '>=', '1.3')
