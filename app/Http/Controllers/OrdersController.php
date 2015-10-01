@@ -199,8 +199,8 @@ class OrdersController extends Controller {
                     break;
                 case "start":
 
-                    if( ! $request->user()->is('worker')) {
-                        return $this->response->errorUnauthorized();
+                    if( ! $request->user()->is('worker') || $request->user()->id != $order->worker_id) {
+                        return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
                     Event::fire(new OrderStart($order));
@@ -209,8 +209,8 @@ class OrdersController extends Controller {
 
                 case "done":
 
-                    if( ! $request->user()->is('worker')) {
-                        return $this->response->errorUnauthorized();
+                    if( ! $request->user()->is('worker') || $request->user()->id != $order->worker_id) {
+                        return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
                     Event::fire(new OrderDone($order));
