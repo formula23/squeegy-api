@@ -37,6 +37,11 @@ class NotifyController extends Controller {
                 ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-10-01')
                 ->orderBy('id');
 
+            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
+                ->where('email', 'not like', '%squeegyapp-tmp.com%')
+                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-09-25')
+                ->orderBy('id');
+
 //            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
 //                ->where('email', 'like', '%squeegyapp-tmp.com%');
 //
