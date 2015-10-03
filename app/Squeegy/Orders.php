@@ -21,6 +21,7 @@ class Orders {
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
     const TRAVEL_TIME = 30;
+    const CLOSING_BUFFER = 20;
 
     protected static $open_orders;
 
@@ -86,7 +87,7 @@ class Orders {
 
         $data['lead_time'] = self::getLeadTime();
 
-        if(self::$open_orders->count() >= 1 && $data['lead_time'] > self::remainingBusinessTime()) {
+        if(self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['accept'] = 0;
             $data['description'] = trans('messages.service.highdemand');
         }
@@ -162,7 +163,7 @@ class Orders {
         //jobs in Q
 //        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
 
-        mail("dan@formula23.com", "open orders", print_r(self::$open_orders->toArray(), 1));
+//        mail("dan@formula23.com", "open orders", print_r(self::$open_orders->toArray(), 1));
 
         $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: ".self::$open_orders->count();
 
@@ -197,7 +198,7 @@ class Orders {
         try {
             $eta = $completion_times[$order_index] + self::TRAVEL_TIME;
 
-            mail('dan@formula23.com', 'etas', $lead_time."\n\n index: $order_index \n\n".print_r($completion_times, 1)." \n\n ETA: $eta");
+//            mail('dan@formula23.com', 'etas', $lead_time."\n\n index: $order_index \n\n".print_r($completion_times, 1)." \n\n ETA: $eta");
 
             return $eta;
         } catch (\Exception $e) {
@@ -252,7 +253,8 @@ class Orders {
     public static function remainingBusinessTime()
     {
 //        if(env('APP_DEV')) return 1000;
-        return Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE') ,0)->diffInMinutes();
+        $close_time = Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE') ,0);
+        return $close_time->diffInMinutes();
     }
 
 }
