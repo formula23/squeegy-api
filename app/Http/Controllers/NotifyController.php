@@ -42,7 +42,8 @@ class NotifyController extends Controller {
 //                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<', '2015-09-25')
 //                ->orderBy('id');
 
-            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
+            $user_qry = User::leftJoin('orders', 'users.id', '=', 'orders.user_id')
+                ->where('app_version', '1.4')->where('push_token', '!=', '')
                 ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<', '2015-10-02')
                 ->where('orders.status', 'done')
                 ->orWhereNull('orders.status')
