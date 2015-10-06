@@ -44,10 +44,10 @@ class NotifyController extends Controller {
 
             $user_qry = User::leftJoin('orders', 'users.id', '=', 'orders.user_id')
                 ->where('app_version', '1.4')->where('push_token', '!=', '')
-                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<', '2015-10-02')
+                ->where(\DB::raw('DATE_FORMAT(users.created_at, \'%Y-%m-%d\')'), '<', '2015-10-02')
                 ->where('orders.status', 'done')
                 ->orWhereNull('orders.status')
-                ->where(\DB::raw('DATE_FORMAT(confirm_at, \'%Y-%m-%d\')'), '<', '2015-09-30')
+                ->where(\DB::raw('DATE_FORMAT(orders.confirm_at, \'%Y-%m-%d\')'), '<', '2015-09-30')
                 ->orWhereNull('orders.confirm_at')
                 ->whereIn('users.id', [14,15,19,21,24], 'and', true)
                 ->groupBy('users.id')
@@ -78,7 +78,7 @@ class NotifyController extends Controller {
 //                ->groupBy('users.id');
             $users = $user_qry->get();
         }
-
+//dd($users);
         $send_list = array_merge($users->toArray(), $default_users->toArray());
 
         print "user count:".count($send_list)."\n";
