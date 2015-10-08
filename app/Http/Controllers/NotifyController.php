@@ -42,17 +42,18 @@ class NotifyController extends Controller {
 //                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<', '2015-09-25')
 //                ->orderBy('id');
 
-//            $user_qry = User::leftJoin('orders', 'users.id', '=', 'orders.user_id')
-//                ->where('app_version', '1.4')->where('push_token', '!=', '')
-//                ->where(\DB::raw('DATE_FORMAT(users.created_at, \'%Y-%m-%d\')'), '<', '2015-10-02')
-//                ->where('orders.status', 'done')
-//                ->orWhereNull('orders.status')
-//                ->where(\DB::raw('DATE_FORMAT(orders.confirm_at, \'%Y-%m-%d\')'), '<', '2015-09-30')
-//                ->orWhereNull('orders.confirm_at')
-//                ->whereIn('users.id', [14,15,19,21,24], 'and', true)
-//                ->groupBy('users.id')
-//                ->orderBy('users.id')
-//                ->limit(184);
+            $user_qry = User::leftJoin('orders', 'users.id', '=', 'orders.user_id')
+                ->where('app_version', '1.4')->where('push_token', '!=', '')
+                ->where(\DB::raw('DATE_FORMAT(users.created_at, \'%Y-%m-%d\')'), '<', '2015-10-02')
+                ->where('orders.status', 'done')
+                ->orWhereNull('orders.status')
+                ->where(\DB::raw('DATE_FORMAT(orders.confirm_at, \'%Y-%m-%d\')'), '<', '2015-09-30')
+                ->orWhereNull('orders.confirm_at')
+                ->whereIn('users.id', [14,15,19,21,24], 'and', true)
+                ->groupBy('users.id')
+                ->orderBy('users.id')
+                ->skip(184)
+                ->take(184);
 
 //            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
 //                ->where('email', 'like', '%squeegyapp-tmp.com%');
