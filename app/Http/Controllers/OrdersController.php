@@ -50,7 +50,7 @@ class OrdersController extends Controller {
     {
         parent::__construct();
 
-        $this->middleware('auth', ['except' => ['index']]);
+        $this->middleware('auth');
         $this->middleware('is.worker', ['only' => 'index']);
     }
 
