@@ -33,6 +33,7 @@ class OrderTransformer extends TransformerAbstract {
             'discount' => (($order->discount)? $order->discount : null ),
             'promo_code' => (($order->promo_code)? $order->promo_code : null ),
             'total' => (int)($order->price - (int)$order->discount),
+            'eta_quote' => (int)$order->eta,
             'eta' => Orders::formatConfirmEta(Orders::getLeadTime($order)),
             'eta_seconds' => Orders::getCurrentEta($order),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
@@ -41,6 +42,10 @@ class OrderTransformer extends TransformerAbstract {
             'enroute_time' => $order->enroute_at ? date("g:i:s a", strtotime($order->enroute_at)) : "",
             'start_time' => $order->start_at ? date("g:i:s a", strtotime($order->start_at)) : "",
             'done_time' => $order->done_at ? date("g:i:s a", strtotime($order->done_at)) : "",
+            'confirm_at' => $order->confirm_at,
+            'enroute_at' => $order->enroute_at,
+            'start_at' => $order->start_at,
+            'done_at' => $order->done_at,
             'links' => [
                 [
                     'rel' => 'self',

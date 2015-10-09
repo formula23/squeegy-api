@@ -13,7 +13,7 @@ class IsWorker {
 	 */
 	public function handle($request, Closure $next)
 	{
-        if( ! $request->user()->is('worker')) {
+        if( ! $request->user() || ! $request->user()->can('orders.get')) {
             return response()->json(['error'=>'Unauthorized.', 'status_code'=>401], 401);
         }
 		return $next($request);

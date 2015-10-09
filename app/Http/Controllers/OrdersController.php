@@ -20,6 +20,9 @@ use Illuminate\Http\Request;
 use Aloha\Twilio\Twilio;
 use Event;
 use Illuminate\Support\Facades\Auth;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
+
 /**
  * Class OrdersController
  * @package App\Http\Controllers
@@ -38,6 +41,8 @@ class OrdersController extends Controller {
         'done' => 5,
     ];
 
+    protected $limit = 10;
+
     /**
      *
      */
@@ -45,7 +50,7 @@ class OrdersController extends Controller {
     {
         parent::__construct();
 
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['index']]);
         $this->middleware('is.worker', ['only' => 'index']);
     }
 
@@ -59,18 +64,39 @@ class OrdersController extends Controller {
 
         if($request->input('status')) {
             $filters = explode(',', $request->input('status'));
-            $where_method = (is_array($filters)) ? 'whereIn' : 'where' ;
-            $orders->{$where_method}('status', $filters);
-            if(is_array($filters)) {
-                foreach($filters as $filter) {
-                    $orders->orderBy($filter.'_at');
-                }
-            } else {
-                $orders->orderBy($filters.'_at');
+            $orders->whereIn('status', $filters);
+        }
+
+        if($request->input('order_by')) {
+            $order_bys=explode(",", $request->input('order_by'));
+            foreach($order_bys as $order_by) {
+                $order_pts = explode(":", $order_by);
+                $orders->orderBy($order_pts[0], (!empty($order_pts[1])?:''));
             }
         }
 
-        return $this->response->withCollection($orders->get(), new OrderTransformer());
+        foreach(['confirm', 'enroute', 'start', 'done', 'cancel', 'created', 'updated'] as $status_time) {
+            if($request->input($status_time.'_on')) {
+
+                $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $request->input($status_time.'_on'));
+
+            } else if($request->input($status_time.'_before') || $request->input($status_time.'_after')) {
+
+                foreach(['before'=>'<', 'after'=>'>'] as $when=>$operator) {
+                    if( ! $request->input($status_time.'_'.$when)) continue;
+                    $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $operator, $request->input($status_time.'_'.$when));
+                }
+            }
+        }
+
+        if($request->input('limit')) {
+            if((int)$request->input('limit') < 1) $this->limit = 1;
+            else $this->limit = min($request->input('limit'), 50);
+        }
+
+        $paginator = $orders->paginate($this->limit);
+
+        return $this->response->withPaginator($paginator, new OrderTransformer());
     }
 
 	/**
