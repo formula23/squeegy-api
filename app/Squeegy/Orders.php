@@ -20,8 +20,8 @@ class Orders {
     const BASE_LEAD_TIME = 20;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
-    const TRAVEL_TIME = 20;
-    const CLOSING_BUFFER = 20;
+    const TRAVEL_TIME = 25;
+    const CLOSING_BUFFER = 10;
 
     protected static $open_orders;
 
