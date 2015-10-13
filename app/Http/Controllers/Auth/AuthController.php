@@ -65,7 +65,7 @@ class AuthController extends Controller {
         ]);
 
         $credentials = $request->only('email', 'password');
-//        $credentials['is_active'] = 1;
+        $credentials['is_active'] = 1;
 
         if ($this->auth->attempt($credentials, $request->has('remember')))
         {
