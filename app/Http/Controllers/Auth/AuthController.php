@@ -65,7 +65,12 @@ class AuthController extends Controller {
         ]);
 
         $credentials = $request->only('email', 'password');
-        $credentials['is_active'] = 1;
+
+        //little hack so that our accounts don't need to be active to log into the worker app
+        //currently ETA calculations are done by the active state of an account.. so we can't be active.
+        if( ! in_array($request->input('email'), ["dan@f23.com", "adavis@octanela.com"])) {
+            $credentials['is_active'] = 1;
+        }
 
         if ($this->auth->attempt($credentials, $request->has('remember')))
         {
