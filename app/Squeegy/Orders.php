@@ -184,7 +184,7 @@ class Orders {
                 $complete_time = max(10, ($service_time - $mins_elapsed));
             } else {
 //                print "should be done: ".$complete_time."<br/>";
-                $complete_time = max(10, ($order->eta - $mins_elapsed) + $service_time);
+                $complete_time = max(10, ($order->eta - $mins_elapsed)) + $service_time;
             }
 
             $completion_times[] = $complete_time;
