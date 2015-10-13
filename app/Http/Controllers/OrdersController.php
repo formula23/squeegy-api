@@ -71,7 +71,7 @@ class OrdersController extends Controller {
             $order_bys=explode(",", $request->input('order_by'));
             foreach($order_bys as $order_by) {
                 $order_pts = explode(":", $order_by);
-                $orders->orderBy($order_pts[0], (!empty($order_pts[1])?:''));
+                $orders->orderBy($order_pts[0], ( ! empty($order_pts[1])?$order_pts[1]:''));
             }
         }
 
