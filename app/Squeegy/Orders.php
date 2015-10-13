@@ -84,14 +84,14 @@ class Orders {
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day]);
         }
-
+        
         $data['lead_time'] = self::getLeadTime();
 
-        if(self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
+        if(self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['accept'] = 0;
             $data['description'] = trans('messages.service.highdemand');
         }
-
+        
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
 
         return array_merge($data, $lead_time_arr);
@@ -252,6 +252,7 @@ class Orders {
      */
     public static function remainingBusinessTime()
     {
+        if( ! self::open()) return 0;
 //        if(env('APP_DEV')) return 1000;
         $close_time = Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE') ,0);
         return $close_time->diffInMinutes();
