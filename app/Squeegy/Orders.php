@@ -183,8 +183,13 @@ class Orders {
 //                print "should be done: ".max(0, $service_time - $mins_elapsed)."<br/>";
                 $complete_time = max(10, ($service_time - $mins_elapsed));
             } else {
+                if($order->eta - $mins_elapsed < 0) {
+                    $complete_time = self::TRAVEL_TIME + $service_time;
+                } else {
+                    $complete_time = max(10, ($order->eta - $mins_elapsed)) + $service_time;
+                }
 //                print "should be done: ".$complete_time."<br/>";
-                $complete_time = max(10, ($order->eta - $mins_elapsed)) + $service_time;
+
             }
 
             $completion_times[] = $complete_time;
