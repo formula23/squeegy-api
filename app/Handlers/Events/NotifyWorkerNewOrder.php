@@ -31,7 +31,7 @@ class NotifyWorkerNewOrder {
 	public function handle(OrderConfirmed $event)
 	{
         try {
-            
+
             $worker_qry = User::workers()
                 ->where('is_active', 1)
                 ->orWhereIn('id', [1,2]); //send to active workers and andrew & dan
