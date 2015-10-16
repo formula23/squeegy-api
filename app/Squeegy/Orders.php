@@ -20,9 +20,9 @@ class Orders {
     const BASE_LEAD_TIME = 20;
     const SUV_SURCHARGE = 500;
     const SUV_SURCHARGE_MULTIPLIER = 2;
-    const TRAVEL_TIME = 35;
     const CLOSING_BUFFER = 10;
 
+    protected static $travel_time = 40;
     protected static $open_orders;
 
     /**
@@ -82,7 +82,7 @@ class Orders {
                 $next_day = "Monday";
             }
 
-            $data['description'] = trans('messages.service.closed', ['next_day' => $next_day]);
+            $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
         }
         
         $data['lead_time'] = self::getLeadTime();
@@ -142,8 +142,9 @@ class Orders {
      */
     public static function getLeadTime(Order $order = null)
     {
-
         $total_workers = User::workers()->where('users.is_active',1)->get()->count();
+
+        self::setTravelTime($total_workers);
 
         $orders_in_q = Order::query();
         $orders_in_q->whereIn('status', ['confirm','enroute','start']);
@@ -168,7 +169,7 @@ class Orders {
         $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: ".self::$open_orders->count();
 
         if($available_workers > 0) {
-            return static::TRAVEL_TIME;
+            return static::$travel_time;
         }
 
         $completion_times=[];
@@ -184,7 +185,7 @@ class Orders {
                 $complete_time = max(10, ($service_time - $mins_elapsed));
             } else {
                 if($order->eta - $mins_elapsed < 0) {
-                    $complete_time = self::TRAVEL_TIME + $service_time;
+                    $complete_time = self::$travel_time + $service_time;
                 } else {
                     $complete_time = max(10, ($order->eta - $mins_elapsed)) + $service_time;
                 }
@@ -201,14 +202,14 @@ class Orders {
         $order_index = max(0, count($completion_times) - $total_workers);
 
         try {
-            $eta = $completion_times[$order_index] + self::TRAVEL_TIME;
+            $eta = $completion_times[$order_index] + self::$travel_time;
 
 //            mail('dan@formula23.com', 'etas', $lead_time."\n\n index: $order_index \n\n".print_r($completion_times, 1)." \n\n ETA: $eta");
 
             return $eta;
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
-            return self::TRAVEL_TIME;
+            return self::$travel_time;
         }
 
     }
@@ -261,6 +262,14 @@ class Orders {
 //        if(env('APP_DEV')) return 1000;
         $close_time = Carbon::createFromTime(\Config::get('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE') ,0);
         return $close_time->diffInMinutes();
+    }
+
+    public static function setTravelTime($workers = 1)
+    {
+        if(Carbon::now()->hour >= 16) self::$travel_time = 45;
+
+        self::$travel_time = max(25, self::$travel_time - (5 * $workers));
+        return;
     }
 
 }
