@@ -268,7 +268,8 @@ class Orders {
 
     public static function setTravelTime($workers = 1)
     {
-        if(Carbon::now()->hour >= 16) self::$travel_time = 45;
+        $now = Carbon::now();
+        if($now->hour >= 16 && !in_array($now->dayOfWeek, [6,0])) self::$travel_time = 45;
 
         self::$travel_time = max(25, self::$travel_time - (5 * $workers));
         return;
