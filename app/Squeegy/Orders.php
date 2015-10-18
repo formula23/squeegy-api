@@ -34,7 +34,7 @@ class Orders {
 
         $now = Carbon::now();
 
-//        $now = Carbon::create(2015,9,16,19,30,0);
+//         $now = Carbon::create(2015,10,18,2,12,0);
 
         if($now->dayOfWeek == 0) return false;
 
@@ -67,7 +67,7 @@ class Orders {
                 return $data;
             }
 
-//            $now = Carbon::create(2015,10,18,20,30,0);
+//            $now = Carbon::create(2015,10,18,2,12,0);
 //            $open_time = Carbon::create(2015,9,16,9,0,0);
 //            $close_time = Carbon::create(2015,9,16,18,15,0);
 
@@ -77,14 +77,10 @@ class Orders {
             $curr_hr = $now->hour;
 
             $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? $now->addDay()->format('l') : $now->format('l') );
-
-            if(env('OPERATING_MIN_CLOSE') >= 30) {
-                $is_monday = ($curr_hr >= env('OPERATING_HR_CLOSE') && $now->minute <= env('OPERATING_MIN_CLOSE'));
-            } else {
-                $is_monday = ($curr_hr >= env('OPERATING_HR_CLOSE') && $now->minute >= env('OPERATING_MIN_CLOSE'));
-            }
             
-            if($day_of_week == 6 && $is_monday || $day_of_week == 0) {
+            $next_day_is_monday = ($curr_hr >= env('OPERATING_HR_CLOSE') || ($curr_hr = env('OPERATING_HR_CLOSE') && $now->minute >= env('OPERATING_MIN_CLOSE')));
+                
+            if($day_of_week == 6 && $next_day_is_monday || $day_of_week == 0) {
                 $next_day = "Monday";
             }
 
