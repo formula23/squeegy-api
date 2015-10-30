@@ -148,6 +148,7 @@ return [
         'Aloha\Twilio\Support\Laravel\ServiceProvider',
         'Bican\Roles\RolesServiceProvider',
         'Bugsnag\BugsnagLaravel\BugsnagLaravelServiceProvider',
+        'GoogleMaps\ServiceProvider\GoogleMapsServiceProvider',
 	],
 
 	/*
@@ -197,6 +198,7 @@ return [
 		'View'      => 'Illuminate\Support\Facades\View',
         'Twilio'    => 'Aloha\Twilio\Support\Laravel\Facade',
         'Bugsnag'   => 'Bugsnag\BugsnagLaravel\BugsnagFacade',
+        'GoogleMaps' => 'GoogleMaps\Facade\GoogleMapsFacade',
 	],
 
 ];

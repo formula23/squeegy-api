@@ -30,6 +30,7 @@ class Orders {
      */
     public static function open()
     {
+        return true;
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
@@ -53,9 +54,11 @@ class Orders {
     }
 
     /**
+     * @param null $lat
+     * @param null $lng
      * @return array
      */
-    public static function availability() {
+    public static function availability($lat=null, $lng=null) {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
@@ -87,7 +90,7 @@ class Orders {
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
         }
         
-        $data['lead_time'] = self::getLeadTime();
+        $data['lead_time'] = self::getLeadTime(null, $lat, $lng);
 
         if(self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['accept'] = 0;
@@ -140,79 +143,189 @@ class Orders {
      * Return time in minutes
      *
      * @param Order $order
+     * @param null $lat
+     * @param null $lng
      * @return int
      */
-    public static function getLeadTime(Order $order = null)
+    public static function getLeadTime(Order $order = null, $lat = null, $lng = null)
     {
-        $total_workers = User::workers()->where('users.is_active',1)->get()->count();
 
-        self::setTravelTime($total_workers);
+        //geo-code lat-long
+        if($lat && $lng) {
 
-        $orders_in_q = Order::query();
-        $orders_in_q->whereIn('status', ['confirm','enroute','start']);
+
+//            try {
+//                $customer_postal="";
+//                $response = \GoogleMaps::load('geocoding')
+//                    ->setParam (['latlng' =>$lat.','.$lng])
+//                    ->get();
+//                $json_resp = json_decode($response);
+//                if($json_resp->status =="OK") {
+//                    foreach($json_resp->results as $add_comps) {
+//                        foreach($add_comps->address_components as $add_comp) {
+//                            if($add_comp->types[0]=="postal_code") {
+//                                $customer_postal = $add_comp->long_name;
+//                                break 2;
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            } catch (\Exception $e) {
+//
+//            }
+        }
+
+        $total_active_workers = User::workers()->where('users.is_active', 1)->get();
+
+//        print "total active workers:".$total_active_workers->count()."<br/>";
+
+        self::setTravelTime($total_active_workers->count());
+
+        $orders_in_q = Order::whereIn('status', ['confirm','enroute','start'])
+            ->orderBy('worker_id')
+            ->orderBy('confirm_at');
+
         self::$open_orders = $orders_in_q->get();
 
-        $available_workers = $total_workers - self::$open_orders->count();
+//        print "open orders: ".self::$open_orders->count()."<br/>";
+
+//        $available_workers = $total_active_workers->count() - self::$open_orders->count();
+
+        $unassigned_orders = Order::where('status', 'confirm')->get()->count();
+
+//        print "un-assigned: ".$unassigned_orders."<br />";
 
         //get available workers
-//        $available_workers = User::workers()
-//            ->select('users.*')
-//            ->where('users.is_active',1)
-//            ->leftJoin(\DB::raw("(select * from orders where orders.status in ('confirm', 'enroute', 'start')) AS orders"), 'users.id', '=', 'orders.worker_id')
-//            ->whereNull('orders.status')
-//            ->get()
-//            ->count();
+        $unassigned_active_workers = User::workers()
+            ->select('users.*')
+            ->where('users.is_active',1)
+            ->leftJoin(\DB::raw("(select * from orders where orders.status in ('confirm', 'enroute', 'start')) AS orders"), 'users.id', '=', 'orders.worker_id')
+            ->whereNull('orders.status')
+            ->get()
+            ->count();
+//        dd($unassigned_available_workers - $unassigned_orders);
 
-        //jobs in Q
-//        $pending_orders = Order::whereIn('status', ['confirm','enroute'])->count();
+        $available_workers = ($unassigned_active_workers - $unassigned_orders);
 
-//        mail("dan@formula23.com", "open orders", print_r(self::$open_orders->toArray(), 1));
+//        dd("available workers: ".$available_workers);
 
-        $lead_time = "total workers: $total_workers \n\n available workers: $available_workers \n\n open orders: ".self::$open_orders->count();
+        $lead_time = "total active workers: ".$total_active_workers->count()." \n\n available workers: $available_workers \n\n open orders: ".self::$open_orders->count();
 
         if($available_workers > 0) {
             return static::$travel_time;
         }
 
-        $completion_times=[];
+        ///completion times for each worker
+//        print_r(self::$open_orders->toArray());
+//        exit;
+        $complete_times_by_worker=[];
 
-        foreach(self::$open_orders as $order) {
+//        print "travel time: ".static::$travel_time;
 
-            $service_time = $order->service->time;
-
-            $mins_elapsed = $order->{$order->status."_at"}->diffInMinutes();
+        foreach(self::$open_orders as $idx=>$order) {
+//            print "idx: ".$idx."<br/>";
+//            print_r($order->toArray());
+//            if( ! isset($complete_times_by_worker[$order->worker_id])) $complete_times_by_worker[$order->worker_id] = 0;
 
             if($order->status == "start") {
-//                print "should be done: ".max(0, $service_time - $mins_elapsed)."<br/>";
-                $complete_time = max(10, ($service_time - $mins_elapsed));
-            } else {
-                if($order->eta - $mins_elapsed < 0) {
-                    $complete_time = self::$travel_time + $service_time;
-                } else {
-                    $complete_time = max(10, ($order->eta - $mins_elapsed)) + $service_time;
-                }
-//                print "should be done: ".$complete_time."<br/>";
+                $complete_times_by_worker[$order->worker_id]['q'][] = max(5, $order->service->time - $order->start_at->diffInMinutes());
 
+//                print $order['location']['street']." --> ".self::$open_orders[$idx+1]['location']['street'];
+
+            } else {
+                ///calc remaining travel time
+                if( ! isset($complete_times_by_worker[$order->worker_id])) {
+                    $complete_times_by_worker[$order->worker_id]['q'][] = max(5, static::$travel_time - $order->enroute_at->diffInMinutes());
+                }
+                $complete_times_by_worker[$order->worker_id]['q'][] = (int)$order->service->time;
             }
 
-            $completion_times[] = $complete_time;
+            ///TO-DO:
+            /**
+             *
+             * Calculation travel time between $current location and $next_location (if exists)
+             * For now... default to static travel time
+             */
+
+            $current_location = $order['location']['lat'].",".$order['location']['lon'];
+            $next_location = (isset(self::$open_orders[$idx+1]) && ($order->worker_id == @self::$open_orders[$idx+1]->worker_id) ? self::$open_orders[$idx+1]['location']['lat'].",".self::$open_orders[$idx+1]['location']['lon'] : $lat.",".$lng);
+
+//            $complete_times_by_worker[$order->worker_id]['q'][] = $current_location .' --> '. $next_location;
+
+            if($current_location && $next_location && false) {
+
+                $response = \GoogleMaps::load('directions')
+                    ->setParam([
+                        'origin'=>$current_location,
+                        'destination'=>$next_location,
+                    ])
+                    ->get();
+                $json_resp = json_decode($response);
+                if($json_resp->status == "OK") {
+                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+                }
+
+            } else {
+                $travel_time = static::$travel_time;
+            }
+
+            $complete_times_by_worker[$order->worker_id]['q'][] = $travel_time;
 
         }
 
-        sort($completion_times);
+        foreach($complete_times_by_worker as $worker_id=>$q) {
 
-        $order_index = max(0, count($completion_times) - $total_workers);
-
-        try {
-            $eta = $completion_times[$order_index] + self::$travel_time;
-
-//            mail('dan@formula23.com', 'etas', $lead_time."\n\n index: $order_index \n\n".print_r($completion_times, 1)." \n\n ETA: $eta");
-
-            return $eta;
-        } catch (\Exception $e) {
-            \Bugsnag::notifyException($e);
-            return self::$travel_time;
+            $complete_times_by_worker[$worker_id]['eta'] = array_sum($q['q']);
         }
+dd($complete_times_by_worker);
+        //soonest available
+        foreach($complete_times_by_worker as $worker_id=>$times) {
+            if (empty($soonest_available)) $soonest_available = $times['eta'];
+            else if($times['eta'] < $soonest_available) $soonest_available = $times['eta'];
+        }
+
+        return $soonest_available;
+
+//        $completion_times=[];
+//
+//        foreach(self::$open_orders as $order) {
+//
+//            $service_time = $order->service->time;
+//
+//            $mins_elapsed = $order->{$order->status."_at"}->diffInMinutes();
+//
+//            if($order->status == "start") {
+////                print "should be done: ".max(0, $service_time - $mins_elapsed)."<br/>";
+//                $complete_time = max(10, ($service_time - $mins_elapsed));
+//            } else {
+//                if($order->eta - $mins_elapsed < 0) {
+//                    $complete_time = self::$travel_time + $service_time;
+//                } else {
+//                    $complete_time = max(10, ($order->eta - $mins_elapsed)) + $service_time;
+//                }
+////                print "should be done: ".$complete_time."<br/>";
+//
+//            }
+//
+//            $completion_times[] = $complete_time;
+//
+//        }
+//
+//        sort($completion_times);
+//
+//        $order_index = max(0, count($completion_times) - $total_active_workers->count());
+//
+//        try {
+//            $eta = $completion_times[$order_index] + self::$travel_time;
+//
+////            mail('dan@formula23.com', 'etas', $lead_time."\n\n index: $order_index \n\n".print_r($completion_times, 1)." \n\n ETA: $eta");
+//
+//            return $eta;
+//        } catch (\Exception $e) {
+//            \Bugsnag::notifyException($e);
+//            return self::$travel_time;
+//        }
 
     }
 
