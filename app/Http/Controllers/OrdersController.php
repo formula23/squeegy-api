@@ -108,9 +108,8 @@ class OrdersController extends Controller {
 	{
         $data = $request->all();
 
-        //TO-DO:
-        //does current user have any washes in progress.. - accept, enroute, start, in-progress,
-        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','in-progress'])->get()->count()) {
+        //does current user have any washes in progress.. - accept, enroute, start, start,
+        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','start'])->get()->count()) {
             return $this->response->errorUnwillingToProcess(trans('messages.order.exists'));
         }
 
