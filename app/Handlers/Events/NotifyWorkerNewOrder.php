@@ -32,11 +32,11 @@ class NotifyWorkerNewOrder {
 	{
         try {
 
-            $worker_qry = User::workers()
-                ->where('is_active', 1)
-                ->orWhereIn('id', [1,2]); //send to active workers and andrew & dan
-
-            $workers = $worker_qry->get();
+            //get assigned worker and andrew & dan
+            $workers = User::workers()
+                ->where('id', $event->order->worker_id)
+                ->orWhereIn('id', [1])
+                ->get();
 
             $vehicle = $event->order->vehicle;
 
@@ -44,7 +44,7 @@ class NotifyWorkerNewOrder {
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
                     'order_service' => $event->order->service->name,
                     'order_id' => $event->order->id,
-                    'eta' => "\nQuoted ETA: ".$event->order->eta." | Arrival: ".eta_real_time($event->order),
+                    'eta' => "Quoted ETA: ".$event->order->eta." | Arrival: ".eta_real_time($event->order),
                     'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model." ".$vehicle->color,
                     'customer_name' => $event->order->customer->name,
                     'customer_phone' => $event->order->customer->phone,

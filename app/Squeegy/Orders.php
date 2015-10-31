@@ -89,10 +89,12 @@ class Orders {
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
         }
-        
-        $data['lead_time'] = self::getLeadTime(null, $lat, $lng);
 
-        if(self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
+        $eta = self::getLeadTime($lat, $lng);
+        $data['lead_time'] = $eta['time'];
+        $data['worker_id'] = $eta['worker_id'];
+
+        if(self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['accept'] = 0;
             $data['description'] = trans('messages.service.highdemand');
         }
@@ -147,12 +149,12 @@ class Orders {
      * @param null $lng
      * @return int
      */
-    public static function getLeadTime(Order $order = null, $lat = null, $lng = null)
+    public static function getLeadTime($lat = null, $lng = null)
     {
 
         //geo-code lat-long
-        if($lat && $lng) {
-
+//        if($lat && $lng) {
+//
 //            try {
 //                $customer_postal="";
 //                $response = \GoogleMaps::load('geocoding')
@@ -173,7 +175,7 @@ class Orders {
 //            } catch (\Exception $e) {
 //
 //            }
-        }
+//        }
 
         $active_workers = User::workers()
                 ->with(['jobs' => function ($query) {
@@ -181,6 +183,8 @@ class Orders {
                         ->orderBy('confirm_at');
                 }])
                 ->where('users.is_active', 1)->get();
+
+        self::setTravelTime($active_workers->count());
 //dd($active_workers);
 
         /*
@@ -232,47 +236,54 @@ class Orders {
         foreach($active_workers as $active_worker) {
 
             if( ! count($active_worker->jobs) ) {
-                $complete_times_by_worker[$active_worker->id]['q'][] = static::$travel_time;
+                $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = static::$travel_time;
                 continue;
             }
 
             foreach($active_worker->jobs as $idx => $job) {
 
                 if($job->status == "start") {
-                    $complete_times_by_worker[$active_worker->id]['q'][] = max(5, $job->service->time - $job->start_at->diffInMinutes());
+                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
 
                 } else {
-                    ///calc remaining travel time
+                    //calc remaining travel time for first job
                     if( ! isset($complete_times_by_worker[$active_worker->id])) {
-                        $complete_times_by_worker[$active_worker->id]['q'][] = max(5, static::$travel_time - $job->enroute_at->diffInMinutes());
+                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, static::$travel_time - $job->enroute_at->diffInMinutes());
                     }
-                    $complete_times_by_worker[$active_worker->id]['q'][] = (int)$job->service->time;
+                    $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
 
                 $current_location = $job->location['lat'].",".$job->location['lon'];
-                $next_location = ( $active_worker->jobs->get($idx+1) ? $active_worker->jobs->get($idx+1)->location['lat'].",".$active_worker->jobs->get($idx+1)->location['lon'] : $lat.",".$lng );
+                //next location
+                $next_job = $active_worker->jobs->get($idx+1);
+                $next_location = ( $next_job ? $next_job->location['lat'].",".$next_job->location['lon'] : $lat.",".$lng ); //else location of requesting job
 
 //                $complete_times_by_worker[$active_worker->id]['q'][] = $current_location .' --> '. $next_location;
 
-
                 if($current_location && $next_location && false) {
-
-                    $response = \GoogleMaps::load('directions')
-                        ->setParam([
-                            'origin'=>$current_location,
-                            'destination'=>$next_location,
-                        ])
-                        ->get();
-                    $json_resp = json_decode($response);
-                    if($json_resp->status == "OK") {
-                        $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+                    try {
+                        $response = \GoogleMaps::load('directions')
+                            ->setParam([
+                                'origin'=>$current_location,
+                                'destination'=>$next_location,
+                            ])
+                            ->get();
+                        $json_resp = json_decode($response);
+                        if($json_resp->status == "OK") {
+                            $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+                        } else {
+                            throw new \Exception("Unable to get live travel time.");
+                        }
+                    } catch (\Exception $e) {
+                        \Bugsnag::notifyException($e);
+                        $travel_time = static::$travel_time;
                     }
 
                 } else {
                     $travel_time = static::$travel_time;
                 }
 
-                $complete_times_by_worker[$active_worker->id]['q'][] = $travel_time;
+                $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
             }
 
@@ -286,19 +297,19 @@ class Orders {
         $next_available = [];
         foreach($complete_times_by_worker as $worker_id=>$times) {
             if (empty($next_available)) {
-                $next_available['eta'] = $times['eta'];
+                $next_available['time'] = $times['eta'];
                 $next_available['worker_id'] = $worker_id;
             }
-            else if($times['eta'] < $next_available) {
-                $next_available['eta'] = $times['eta'];
+            else if($times['eta'] < $next_available['time']) {
+                $next_available['time'] = $times['eta'];
                 $next_available['worker_id'] = $worker_id;
             }
         }
 
-        print_r($complete_times_by_worker);
-        print_r($next_available);
-exit;
-
+//        print_r($complete_times_by_worker);
+//        print_r($next_available);
+//        exit;
+        return $next_available;
     }
 
     /**

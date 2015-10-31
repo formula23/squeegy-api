@@ -119,7 +119,8 @@ class OrdersController extends Controller {
         }
 
         $data['price'] = Service::find($data['service_id'])->price;
-        $data['eta'] = Orders::getLeadTime();
+        $eta = Orders::getLeadTime();
+        $data['eta'] = $eta['time'];
 
         $order = new Order($data);
 
@@ -205,10 +206,17 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    $order->eta = Orders::getLeadTime();
+//                    $order->eta = Orders::getLeadTime();
+                    $order->eta = $availability['lead_time'];
+                    $order->worker_id = $availability['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
                     Event::fire(new OrderConfirmed($order));
+
+                    $order->status = 'enroute';
+                    $order->enroute_at = Carbon::now();
+
+                    Event::fire(new OrderEnroute($order));
 
                     break;
                 case "enroute":
