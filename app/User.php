@@ -66,9 +66,25 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Order', 'worker_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function discounts()
     {
         return $this->belongsToMany('App\Discount');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function regions()
+    {
+        return $this->belongsToMany('App\Region');
+    }
+
+    public function default_location()
+    {
+        return $this->hasOne('App\WasherDefaultLocation');
     }
 
     /**

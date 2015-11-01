@@ -9,6 +9,7 @@
 use App\Order;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class Orders
@@ -22,7 +23,8 @@ class Orders {
     const SUV_SURCHARGE_MULTIPLIER = 2;
     const CLOSING_BUFFER = 10;
 
-    protected static $travel_time = 40;
+    protected static $travel_time = 30;
+    protected static $travel_time_buffer = 5;
     protected static $open_orders;
 
     /**
@@ -91,6 +93,13 @@ class Orders {
         }
 
         $eta = self::getLeadTime($lat, $lng);
+        
+        if ( ! $eta) {
+            $data['accept'] = 0;
+            $data['description'] = 'Squeegy not available at this time. Please try again later.';
+            return $data;
+        }
+
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
@@ -149,94 +158,50 @@ class Orders {
      * @param null $lng
      * @return int
      */
-    public static function getLeadTime($lat = null, $lng = null)
+    public static function getLeadTime($lat, $lng)
     {
+        //geo-code customer request location lat-long
+        //used to get correct workers
+        $request_loc_pair = implode(",", [
+            'lat'=>round((float)$lat, 3),
+            'lng'=>round((float)$lng, 3),
+        ]);
 
-        //geo-code lat-long
-//        if($lat && $lng) {
-//
-//            try {
-//                $customer_postal="";
-//                $response = \GoogleMaps::load('geocoding')
-//                    ->setParam (['latlng' =>$lat.','.$lng])
-//                    ->get();
-//                $json_resp = json_decode($response);
-//                if($json_resp->status =="OK") {
-//                    foreach($json_resp->results as $add_comps) {
-//                        foreach($add_comps->address_components as $add_comp) {
-//                            if($add_comp->types[0]=="postal_code") {
-//                                $customer_postal = $add_comp->long_name;
-//                                break 2;
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            } catch (\Exception $e) {
-//
-//            }
-//        }
+        $customer_postal = self::geocode($request_loc_pair);
 
-        $active_workers = User::workers()
+        if ( ! $customer_postal) return false;
+
+        $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
-                    $query->whereIn('status', ['confirm','enroute','start'])
-                        ->orderBy('confirm_at');
+                    $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
                 }])
-                ->where('users.is_active', 1)->get();
+                ->with('default_location')
+                ->whereHas('regions', function($q) use ($customer_postal) {
+                    $q->where('postal_code', $customer_postal);
+                })
+                ->where('users.is_active', 1);
+        $active_workers = $active_workers_qry->get();
 
-        self::setTravelTime($active_workers->count());
-//dd($active_workers);
-
-        /*
-//        print "total active workers:".$total_active_workers->count()."<br/>";
-
-//        self::setTravelTime($total_active_workers->count());
-
-//        $orders_in_q = Order::whereIn('status', ['confirm','enroute','start'])
-//            ->orderBy('worker_id')
-//            ->orderBy('confirm_at');
-//
-//        self::$open_orders = $orders_in_q->get();
-
-//        print "open orders: ".self::$open_orders->count()."<br/>";
-
-//        $available_workers = $total_active_workers->count() - self::$open_orders->count();
-
-//        $unassigned_orders = Order::where('status', 'confirm')->get()->count();
-
-//        print "un-assigned: ".$unassigned_orders."<br />";
-
-        //get available workers
-//        $unassigned_active_workers = User::workers()
-//            ->select('users.*')
-//            ->where('users.is_active',1)
-//            ->leftJoin(\DB::raw("(select * from orders where orders.status in ('confirm', 'enroute', 'start')) AS orders"), 'users.id', '=', 'orders.worker_id')
-//            ->whereNull('orders.status')
-//            ->get()
-//            ->count();
-//        dd($unassigned_available_workers - $unassigned_orders);
-
-//        $available_workers = ($unassigned_active_workers - $unassigned_orders);
-
-//        dd("available workers: ".$available_workers);
-
-//        $lead_time = "total active workers: ".$total_active_workers->count()." \n\n available workers: $available_workers \n\n open orders: ".self::$open_orders->count();
-//
-//        if($available_workers > 0) {
-//            return static::$travel_time;
-//        }
-
-        ///completion times for each worker
-//        print_r(self::$open_orders->toArray());
-//        exit;
-        */
+        if( ! $active_workers->count()) return false;
 
         $complete_times_by_worker=[];
 
         foreach($active_workers as $active_worker) {
 
             if( ! count($active_worker->jobs) ) {
-                $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = static::$travel_time;
+                //get travel time from default location -> requested location
+                if($active_worker->default_location) {
+
+                    $origin = implode(",", $active_worker->default_location()->select('latitude', 'longitude')->get()->first()->toArray());
+                    $destination = $request_loc_pair;
+
+                    $travel_time = self::getTravelTime($origin, $destination);
+
+                } else {
+                    $travel_time = static::$travel_time;
+                }
+
+                $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
 
@@ -253,35 +218,14 @@ class Orders {
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
 
-                $current_location = $job->location['lat'].",".$job->location['lon'];
+                $current_location = implode(",", [$job->location['lat'], $job->location['lon']]);
                 //next location
                 $next_job = $active_worker->jobs->get($idx+1);
-                $next_location = ( $next_job ? $next_job->location['lat'].",".$next_job->location['lon'] : $lat.",".$lng ); //else location of requesting job
+                $next_location = ( $next_job ? implode(",", [$next_job->location['lat'],$next_job->location['lon']]) : $request_loc_pair ); //else location of requesting job
 
 //                $complete_times_by_worker[$active_worker->id]['q'][] = $current_location .' --> '. $next_location;
 
-                if($current_location && $next_location && false) {
-                    try {
-                        $response = \GoogleMaps::load('directions')
-                            ->setParam([
-                                'origin'=>$current_location,
-                                'destination'=>$next_location,
-                            ])
-                            ->get();
-                        $json_resp = json_decode($response);
-                        if($json_resp->status == "OK") {
-                            $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-                        } else {
-                            throw new \Exception("Unable to get live travel time.");
-                        }
-                    } catch (\Exception $e) {
-                        \Bugsnag::notifyException($e);
-                        $travel_time = static::$travel_time;
-                    }
-
-                } else {
-                    $travel_time = static::$travel_time;
-                }
+                $travel_time = self::getTravelTime($current_location, $next_location);
 
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
@@ -306,9 +250,9 @@ class Orders {
             }
         }
 
-//        print_r($complete_times_by_worker);
-//        print_r($next_available);
-//        exit;
+        print_r($complete_times_by_worker);
+        print_r($next_available);
+        exit;
         return $next_available;
     }
 
@@ -369,6 +313,67 @@ class Orders {
 
         self::$travel_time = max(25, self::$travel_time - (5 * $workers));
         return;
+    }
+
+    private static function getTravelTime($origin, $destination)
+    {
+        try {
+            $travel_time = static::$travel_time;
+
+            $cache_key = implode(",", [$origin,$destination]);
+            if(Cache::has($cache_key)) {
+                $travel_time = Cache::get($cache_key);
+            } else {
+                $response = \GoogleMaps::load('directions')
+                    ->setParam([
+                        'origin'=>$origin,
+                        'destination'=>$destination,
+                    ])
+                    ->get();
+                $json_resp = json_decode($response);
+                if($json_resp->status == "OK") {
+                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+                    Cache::put($cache_key, $travel_time, 1440); //store for one day
+                } else {
+                    throw new \Exception("Unable to get live travel time. -- ".$json_resp->status);
+                }
+            }
+
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+
+        return $travel_time + self::$travel_time_buffer;
+    }
+
+    private static function geocode($latlng)
+    {
+        try {
+
+            if(Cache::has($latlng)) {
+                $customer_postal = Cache::get($latlng);
+            } else {
+                $response = \GoogleMaps::load('geocoding')
+                    ->setParam (['latlng' => $latlng])
+                    ->get();
+                $json_resp = json_decode($response);
+                if($json_resp->status =="OK") {
+                    foreach($json_resp->results as $add_comps) {
+                        foreach($add_comps->address_components as $add_comp) {
+                            if($add_comp->types[0]=="postal_code") {
+                                $customer_postal = $add_comp->long_name;
+                                Cache::put($latlng, $customer_postal, 1440);
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+
+        return $customer_postal;
     }
 
 }
