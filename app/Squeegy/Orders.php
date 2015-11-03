@@ -386,6 +386,7 @@ class Orders {
 
     private static function geocode($latlng)
     {
+        $customer_postal = "";
         try {
 
             if(Cache::has($latlng)) {
