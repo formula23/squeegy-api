@@ -93,7 +93,7 @@ class Orders {
         }
 
         $eta = self::getLeadTime($lat, $lng);
-        
+
         if ( ! $eta) {
             $data['accept'] = 0;
             $data['description'] = 'Squeegy not available at this time. Please try again later.';
@@ -175,32 +175,48 @@ class Orders {
                 ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
                 }])
-                ->with('default_location')
+                ->with(['default_location' => function($q) {
+                    $q->select('user_id', 'latitude', 'longitude');
+                }])
                 ->whereHas('regions', function($q) use ($customer_postal) {
                     $q->where('postal_code', $customer_postal);
                 })
-                ->where('users.is_active', 1);
+                ->whereHas('activity_logs', function($q) {
+                    $q->whereNull('log_off');
+                });
+
         $active_workers = $active_workers_qry->get();
 
         if( ! $active_workers->count()) return false;
 
         $complete_times_by_worker=[];
 
+        $bypass_job = [];
+
         foreach($active_workers as $active_worker) {
+
+            $worker_default_origin = implode(",", array_only($active_worker->default_location->toArray(), ['latitude', 'longitude']));
+
+            if($active_worker->jobs->count() < 2) {
+                if(isset($active_worker->jobs[0])) {
+                    $origin = implode(",", [$active_worker->jobs[0]->location['lat'], $active_worker->jobs[0]->location['lon']]);
+                } else {
+                    $origin = $worker_default_origin;
+                }
+                $bypass_job[$active_worker->id] = self::getTravelTime($origin, $request_loc_pair);
+            }
 
             if( ! count($active_worker->jobs) ) {
                 //get travel time from default location -> requested location
                 if($active_worker->default_location) {
 
-                    $origin = implode(",", $active_worker->default_location()->select('latitude', 'longitude')->get()->first()->toArray());
-                    $destination = $request_loc_pair;
-
-                    $travel_time = self::getTravelTime($origin, $destination);
+                    $travel_time = self::getTravelTime($worker_default_origin, $request_loc_pair);
 
                 } else {
                     $travel_time = static::$travel_time;
                 }
 
+//                $complete_times_by_worker[$active_worker->id]['q']['default_travel--'] = $worker_default_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
@@ -213,7 +229,11 @@ class Orders {
                 } else {
                     //calc remaining travel time for first job
                     if( ! isset($complete_times_by_worker[$active_worker->id])) {
-                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, static::$travel_time - $job->enroute_at->diffInMinutes());
+
+                        $destination = implode(",", [$job->location['lat'], $job->location['lon']]);
+
+                        $travel_time = self::getTravelTime($worker_default_origin, $destination);
+                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $job->enroute_at->diffInMinutes());
                     }
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
@@ -223,10 +243,9 @@ class Orders {
                 $next_job = $active_worker->jobs->get($idx+1);
                 $next_location = ( $next_job ? implode(",", [$next_job->location['lat'],$next_job->location['lon']]) : $request_loc_pair ); //else location of requesting job
 
-//                $complete_times_by_worker[$active_worker->id]['q'][] = $current_location .' --> '. $next_location;
-
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
+//                $complete_times_by_worker[$active_worker->id]['q']['travel time---'.$idx] = $current_location."-->".$next_location;
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
             }
@@ -239,20 +258,38 @@ class Orders {
         }
 
         $next_available = [];
-        foreach($complete_times_by_worker as $worker_id=>$times) {
-            if (empty($next_available)) {
-                $next_available['time'] = $times['eta'];
-                $next_available['worker_id'] = $worker_id;
+
+        if(count($bypass_job)) {
+
+            if(count(array_unique($bypass_job)) < count($bypass_job)) { //we have multiple jobs with the same travel time.
+                $tmp_bypass_job=[];
+                foreach($bypass_job as $worker_id=>$travel_tm) {
+                    @$tmp_bypass_job[$worker_id] = $complete_times_by_worker[$worker_id]['eta'];
+                }
+                $bypass_job = $tmp_bypass_job;
             }
-            else if($times['eta'] < $next_available['time']) {
-                $next_available['time'] = $times['eta'];
-                $next_available['worker_id'] = $worker_id;
+
+            asort($bypass_job);
+            $worker_id = key($bypass_job);
+            $next_available['time'] = $complete_times_by_worker[$worker_id]['eta'];
+            $next_available['worker_id'] = $worker_id;
+
+        } else {
+            foreach($complete_times_by_worker as $worker_id=>$times) {
+                if (empty($next_available)) {
+                    $next_available['time'] = $times['eta'];
+                    $next_available['worker_id'] = $worker_id;
+                }
+                else if($times['eta'] < $next_available['time']) {
+                    $next_available['time'] = $times['eta'];
+                    $next_available['worker_id'] = $worker_id;
+                }
             }
         }
 
-        print_r($complete_times_by_worker);
-        print_r($next_available);
-        exit;
+//        print_r($complete_times_by_worker);
+//        print_r($next_available);
+//        exit;
         return $next_available;
     }
 
@@ -317,8 +354,9 @@ class Orders {
 
     private static function getTravelTime($origin, $destination)
     {
+        $travel_time = static::$travel_time;
+
         try {
-            $travel_time = static::$travel_time;
 
             $cache_key = implode(",", [$origin,$destination]);
             if(Cache::has($cache_key)) {
