@@ -120,7 +120,7 @@ class OrdersController extends Controller {
 
         $data['price'] = Service::find($data['service_id'])->price;
 
-        $eta = Orders::getLeadTime($data->location['latitude'], $data->location['longitude']);
+        $eta = Orders::getLeadTime($data['location']['latitude'], $data['location']['longitude']);
         $data['eta'] = $eta['time'];
 
         $order = new Order($data);
