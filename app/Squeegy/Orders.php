@@ -167,10 +167,6 @@ class Orders {
             'lng'=>round((float)$lng, 3),
         ]);
 
-        $customer_postal = self::geocode($request_loc_pair);
-
-        if ( ! $customer_postal) return false;
-
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
@@ -178,12 +174,16 @@ class Orders {
                 ->with(['default_location' => function($q) {
                     $q->select('user_id', 'latitude', 'longitude');
                 }])
-                ->whereHas('regions', function($q) use ($customer_postal) {
-                    $q->where('postal_code', $customer_postal);
-                })
                 ->whereHas('activity_logs', function($q) {
                     $q->whereNull('log_off');
                 });
+
+        if(\Config::get('squeegy.use_worker_regions')) {
+            $customer_postal = self::geocode($request_loc_pair);
+            $active_workers_qry->whereHas('regions', function($q) use ($customer_postal) {
+                $q->where('postal_code', $customer_postal);
+            });
+        }
 
         $active_workers = $active_workers_qry->get();
 
@@ -195,7 +195,11 @@ class Orders {
 
         foreach($active_workers as $active_worker) {
 
-            $worker_default_origin = implode(",", array_only($active_worker->default_location->toArray(), ['latitude', 'longitude']));
+            if( ! empty($active_worker->default_location)) {
+                $worker_default_origin = implode(",", array_only($active_worker->default_location->toArray(), ['latitude', 'longitude']));
+            } else {
+                $worker_default_origin = implode(",", \Config::get('squeegy.worker_default_location'));
+            }
 
             if($active_worker->jobs->count() < 2) {
                 if(isset($active_worker->jobs[0])) {
@@ -253,7 +257,6 @@ class Orders {
         }
 
         foreach($complete_times_by_worker as $worker_id=>$q) {
-
             $complete_times_by_worker[$worker_id]['eta'] = array_sum($q['q']);
         }
 

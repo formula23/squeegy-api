@@ -29,4 +29,9 @@ return [
         'start' => 4,
         'done' => 5,
     ],
+    'use_worker_regions' => env('USE_WORKER_REGIONS', false),
+    'worker_default_location' => [
+        'lat' => 34.032817,
+        'lng' => -118.432363,
+    ]
 ];
