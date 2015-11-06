@@ -25,6 +25,7 @@ class Orders {
 
     protected static $travel_time = 30;
     protected static $travel_time_buffer = 5;
+    protected static $travel_time_buffer_pct = 1.2;
     protected static $open_orders;
 
     /**
@@ -375,16 +376,19 @@ class Orders {
                 if($json_resp->status == "OK") {
                     $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
                     Cache::put($cache_key, $travel_time, 1440); //store for one day
-                } else {
-                    throw new \Exception("Unable to get live travel time. -- ".$json_resp->status."--origin".$origin."=dest=".$destination);
                 }
+//                else {
+//                    //throw new \Exception("Unable to get live travel time. -- ".$json_resp->status."--origin".$origin."=dest=".$destination);
+//                }
             }
 
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
         }
 
-        return $travel_time + self::$travel_time_buffer;
+        if( ! $travel_time) $travel_time = self::$travel_time_buffer;
+
+        return round($travel_time * self::$travel_time_buffer_pct);
     }
 
     private static function geocode($latlng)
