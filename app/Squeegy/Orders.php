@@ -152,7 +152,7 @@ class Orders {
 
     public static function getLeadTimeByOrder(Order $order)
     {
-        return self::getTravelTime($order->location['lat'], $order->location['lon'], $order);
+        return self::getLeadTime($order->location['lat'], $order->location['lon'], $order);
     }
 
     /**
@@ -174,8 +174,7 @@ class Orders {
         ]);
 
         $active_workers_qry = User::workers()
-                ->with(['jobs' => function ($query) use ($order) {
-                    if($order) $query->where('id', '!=', $order->id);
+                ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
                 }])
                 ->with(['default_location' => function($q) {

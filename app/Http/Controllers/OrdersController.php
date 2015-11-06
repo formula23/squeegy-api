@@ -202,13 +202,13 @@ class OrdersController extends Controller {
                     }
 
                     $availability = Orders::availability();
-
                     if( ! $availability['accept']) {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
                     $eta = Orders::getLeadTimeByOrder($order);
-                    $order->eta = $eta['lead_time'];
+
+                    $order->eta = $eta['time'];
                     $order->worker_id = $eta['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
