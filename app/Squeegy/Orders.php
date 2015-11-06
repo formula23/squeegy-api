@@ -213,7 +213,11 @@ class Orders {
                 } else {
                     $origin = $worker_default_origin;
                 }
-                $bypass_job[$active_worker->id] = self::getTravelTime($origin, $request_loc_pair);
+                $bypass_time = self::getTravelTime($origin, $request_loc_pair);
+                if($bypass_time <= 5) {
+                    $bypass_job[$active_worker->id] = $bypass_time;
+                }
+
             }
 
             if( ! count($active_worker->jobs) ) {
