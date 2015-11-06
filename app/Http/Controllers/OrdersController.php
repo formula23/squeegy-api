@@ -207,9 +207,9 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-//                    $order->eta = Orders::getLeadTime();
-                    $order->eta = $availability['lead_time'];
-                    $order->worker_id = $availability['worker_id'];
+                    $eta = Orders::getLeadTimeByOrder($order);
+                    $order->eta = $eta['lead_time'];
+                    $order->worker_id = $eta['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
                     Event::fire(new OrderConfirmed($order));
