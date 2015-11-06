@@ -102,7 +102,14 @@ class UserController extends Controller {
 
         }
 
-        $customer->save();
+        try {
+            $customer->save();
+        }
+        catch (\Exception $e)
+        {
+            dd($e);
+        }
+
 
 // && ! empty($request->user()->phone) -- removed 9/17
 

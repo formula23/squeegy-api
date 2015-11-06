@@ -19,7 +19,6 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\UserRegistered' => [
             'App\Handlers\Events\SendWelcomeEmail',
-            'App\Handlers\Events\SendSMSVerification',
         ],
 
         'App\Events\OrderCancelled' => [
