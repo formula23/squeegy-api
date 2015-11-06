@@ -300,9 +300,9 @@ class Orders {
             }
         }
 
-        print_r($complete_times_by_worker);
-        print_r($next_available);
-        exit;
+//        print_r($complete_times_by_worker);
+//        print_r($next_available);
+//        exit;
         return $next_available;
     }
 
@@ -395,10 +395,9 @@ class Orders {
             \Bugsnag::notifyException($e);
         }
 
-        if( ! $travel_time) $travel_time = self::$travel_time;
         if( $travel_time < self::$travel_time_buffer) $travel_time = self::$travel_time_buffer;
-        
-        return round($travel_time * self::$travel_time_buffer_pct);
+
+        return round($travel_time * self::traffic_buffer());
     }
 
     private static function geocode($latlng)
@@ -431,5 +430,15 @@ class Orders {
 
         return $customer_postal;
     }
+
+    private static function traffic_buffer()
+    {
+        if( Carbon::now()->hour >= 16) {
+            return 1.25;
+        } else {
+            return 1.1;
+        }
+    }
+
 
 }
