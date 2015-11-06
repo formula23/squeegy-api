@@ -38,9 +38,6 @@ class UpdateUserRequest extends Request {
                     $old_user->email = "old-".str_random(5)."-".$old_user->email;
                     $old_user->save();
 
-                    $current_user->phone = $old_user->phone;
-                    $current_user->save();
-
                     //update orders
                     Order::where('user_id', $old_user->id)->update(['user_id'=>$current_user->id]);
                     return true;
