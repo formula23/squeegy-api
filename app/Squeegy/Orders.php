@@ -150,6 +150,11 @@ class Orders {
         return max(($order->eta * 60 - $time_passed), 0);
     }
 
+    public static function getLeadTimeByOrder(Order $order)
+    {
+        return self::getLeadTime($order->location['lat'], $order->location['lon'], $order);
+    }
+
     /**
      * Get the lead time to perform next order based on operating hours and open order status
      * Return time in minutes
@@ -159,7 +164,7 @@ class Orders {
      * @param null $lng
      * @return int
      */
-    public static function getLeadTime($lat, $lng)
+    public static function getLeadTime($lat, $lng, Order $order=null)
     {
         //geo-code customer request location lat-long
         //used to get correct workers
