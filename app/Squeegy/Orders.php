@@ -169,8 +169,8 @@ class Orders {
         //geo-code customer request location lat-long
         //used to get correct workers
         $request_loc_pair = implode(",", [
-            'lat'=>round((float)$lat, 2),
-            'lng'=>round((float)$lng, 2),
+            'lat'=>round((float)$lat, 4),
+            'lng'=>round((float)$lng, 4),
         ]);
 
         $active_workers_qry = User::workers()
