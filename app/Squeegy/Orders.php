@@ -434,9 +434,9 @@ class Orders {
     private static function traffic_buffer()
     {
         if( Carbon::now()->hour >= 16) {
-            return 1.25;
+            return 1.5;
         } else {
-            return 1.1;
+            return 1.2;
         }
     }
 
