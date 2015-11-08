@@ -10,6 +10,8 @@ class ZonesTableSeeder extends Seeder
 {
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+
         Zone::truncate();
 
         Zone::create([
@@ -21,6 +23,6 @@ class ZonesTableSeeder extends Seeder
             'name' => 'South Bay',
             'code' => '002',
         ]);
-
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }
