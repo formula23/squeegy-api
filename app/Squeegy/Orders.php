@@ -384,7 +384,7 @@ class Orders {
                 $json_resp = json_decode($response);
                 if($json_resp->status == "OK") {
                     $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-                    Cache::put($cache_key, $travel_time, 1440); //store for one day
+                    Cache::forever($cache_key, $travel_time); //store for one day
                 }
 //                else {
 //                    //throw new \Exception("Unable to get live travel time. -- ".$json_resp->status."--origin".$origin."=dest=".$destination);
@@ -417,7 +417,7 @@ class Orders {
                         foreach($add_comps->address_components as $add_comp) {
                             if($add_comp->types[0]=="postal_code") {
                                 $customer_postal = $add_comp->long_name;
-                                Cache::put($latlng, $customer_postal, 1440);
+                                Cache::forever($latlng, $customer_postal);
                                 break 2;
                             }
                         }
