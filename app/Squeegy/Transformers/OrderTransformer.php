@@ -23,7 +23,7 @@ class OrderTransformer extends TransformerAbstract {
 
     public function transform(Order $order)
     {
-        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
+//        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
 
         return [
             'id' => (string)$order->id,
