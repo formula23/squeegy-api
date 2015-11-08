@@ -1,6 +1,6 @@
 <?php
 
-use App\Zones;
+use App\Zone;
 use Illuminate\Database\Seeder;
 
 // composer require laracasts/testdummy
@@ -10,14 +10,14 @@ class ZonesTableSeeder extends Seeder
 {
     public function run()
     {
-        Zones::truncate();
+        Zone::truncate();
 
-        Zones::create([
+        Zone::create([
             'name' => 'LA',
             'code' => '001',
         ]);
 
-        Zones::create([
+        Zone::create([
             'name' => 'South Bay',
             'code' => '002',
         ]);
