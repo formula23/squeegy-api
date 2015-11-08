@@ -7,7 +7,9 @@
  */
 
 use App\Order;
+use App\Region;
 use App\User;
+use App\Zone;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -173,6 +175,11 @@ class Orders {
             'lng'=>round((float)$lng, 4),
         ]);
 
+        $customer_postal = self::geocode($request_loc_pair);
+
+        //get zone
+        $region = Region::where('postal_code', $customer_postal)->get()->first();
+
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
@@ -182,14 +189,10 @@ class Orders {
                 }])
                 ->whereHas('activity_logs', function($q) {
                     $q->whereNull('log_off');
+                })
+                ->whereHas('zones', function($q) use ($region) {
+                    $q->where('id', $region->zone_id);
                 });
-
-        if(\Config::get('squeegy.use_worker_regions')) {
-            $customer_postal = self::geocode($request_loc_pair);
-            $active_workers_qry->whereHas('regions', function($q) use ($customer_postal) {
-                $q->where('postal_code', $customer_postal);
-            });
-        }
 
         $active_workers = $active_workers_qry->get();
 
@@ -300,9 +303,9 @@ class Orders {
             }
         }
 
-//        print_r($complete_times_by_worker);
-//        print_r($next_available);
-//        exit;
+        print_r($complete_times_by_worker);
+        print_r($next_available);
+        exit;
         return $next_available;
     }
 
@@ -434,7 +437,7 @@ class Orders {
     private static function traffic_buffer()
     {
         if( Carbon::now()->hour >= 16) {
-            return 1.5;
+            return 1.4;
         } else {
             return 1.2;
         }

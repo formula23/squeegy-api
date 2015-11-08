@@ -77,9 +77,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function regions()
+    public function zones()
     {
-        return $this->belongsToMany('App\Region');
+        return $this->belongsToMany('App\Zone');
     }
 
     /**

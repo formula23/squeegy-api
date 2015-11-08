@@ -4,11 +4,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Region extends Model {
 
-	protected $fillable = ['postal_code'];
+	protected $fillable = ['zone_id', 'postal_code'];
 
-    public function users()
+    public function zone()
     {
-        return $this->belongsToMany('App\User');
+        return $this->belongsTo('App\Zone');
     }
 
 }

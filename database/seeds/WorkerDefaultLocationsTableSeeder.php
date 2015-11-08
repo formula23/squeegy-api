@@ -18,9 +18,10 @@ class WorkerDefaultLocationsTableSeeder extends Seeder
         $default_location_map = [
             1 => ['latitude' => 33.984316, 'longitude' => -118.406227],
             2 => ['latitude' => 33.957200, 'longitude' => -118.441594],
+            58 => ['latitude' => 33.815731, 'longitude' => -118.372360],
         ];
 
-        foreach([1,2] as $user_id) {
+        foreach(array_keys($default_location_map) as $user_id) {
             User::find($user_id)
                 ->default_location()
                 ->create($default_location_map[$user_id]);
