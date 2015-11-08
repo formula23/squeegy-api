@@ -214,8 +214,6 @@ class OrdersController extends Controller {
 
                     Event::fire(new OrderConfirmed($order));
 
-                    sleep(10);
-
                     $order->status = 'enroute';
                     $order->enroute_at = Carbon::now();
 
