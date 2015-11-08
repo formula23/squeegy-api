@@ -9,6 +9,7 @@
 use App\Order;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class Orders
@@ -30,6 +31,8 @@ class Orders {
      */
     public static function open()
     {
+        if(self::is_internal()) return true;
+
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
@@ -89,7 +92,7 @@ class Orders {
         
         $data['lead_time'] = self::getLeadTime();
 
-        if(self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
+        if(! self::is_internal() && self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['accept'] = 0;
             $data['description'] = trans('messages.service.highdemand');
         }
@@ -273,6 +276,11 @@ class Orders {
 
         self::$travel_time = max(25, self::$travel_time - (5 * $workers));
         return;
+    }
+
+    private static function is_internal()
+    {
+        return in_array(Request::getClientIp(), ['127.0.0.1', '104.174.111.129']);
     }
 
 }
