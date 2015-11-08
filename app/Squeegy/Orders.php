@@ -303,9 +303,9 @@ class Orders {
             }
         }
 
-        print_r($complete_times_by_worker);
-        print_r($next_available);
-        exit;
+//        print_r($complete_times_by_worker);
+//        print_r($next_available);
+//        exit;
         return $next_available;
     }
 
