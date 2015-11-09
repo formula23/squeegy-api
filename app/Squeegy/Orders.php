@@ -180,6 +180,8 @@ mail("dan@formula23.com", 'postal_code', $customer_postal);
         //get zone
         $region = Region::where('postal_code', $customer_postal)->get()->first();
 
+        if( ! $region) return false;
+
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
