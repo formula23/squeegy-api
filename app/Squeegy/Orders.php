@@ -177,11 +177,6 @@ class Orders {
 
         $customer_postal = self::geocode($request_loc_pair);
 
-        //get zone
-        $region = Region::where('postal_code', $customer_postal)->get()->first();
-
-        if( ! $region) return false;
-
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
@@ -192,8 +187,8 @@ class Orders {
                 ->whereHas('activity_logs', function($q) {
                     $q->whereNull('log_off');
                 })
-                ->whereHas('zones', function($q) use ($region) {
-                    $q->where('id', $region->zone_id);
+                ->whereHas('zones.regions', function($q) use ($customer_postal) {
+                    $q->where('postal_code', $customer_postal);
                 });
 
         $active_workers = $active_workers_qry->get();
