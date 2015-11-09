@@ -176,7 +176,7 @@ class Orders {
         ]);
 
         $customer_postal = self::geocode($request_loc_pair);
-mail("dan@formula23.com", 'postal_code', $customer_postal);
+
         //get zone
         $region = Region::where('postal_code', $customer_postal)->get()->first();
 
