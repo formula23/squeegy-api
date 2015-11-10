@@ -90,6 +90,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasOne('App\WasherDefaultLocation');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function activity_logs()
     {
         return $this->hasMany('App\WasherActivityLog');
