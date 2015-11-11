@@ -35,7 +35,7 @@ class NotifyWorkerNewOrder {
             //get assigned worker and andrew & dan
             $workers = User::workers()
                 ->where('id', $event->order->worker_id)
-                ->orWhereIn('id', [1])
+                ->orWhereIn('id', [1,2])
                 ->get();
 
             $vehicle = $event->order->vehicle;
