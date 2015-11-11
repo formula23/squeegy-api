@@ -171,8 +171,8 @@ class Orders {
         //geo-code customer request location lat-long
         //used to get correct workers
         $request_loc_pair = implode(",", [
-            'lat'=>round((float)$lat, 4),
-            'lng'=>round((float)$lng, 4),
+            'lat'=>round((float)$lat, 3),
+            'lng'=>round((float)$lng, 3),
         ]);
 
         $customer_postal = self::geocode($request_loc_pair);
