@@ -174,8 +174,8 @@ class Orders {
         //geo-code customer request location lat-long
         //used to get correct workers
         $request_loc_pair = implode(",", [
-            'lat'=>round((float)$lat, 3),
-            'lng'=>round((float)$lng, 3),
+            'lat'=>round((float)$lat, 5),
+            'lng'=>round((float)$lng, 5),
         ]);
 
         $customer_postal = self::geocode($request_loc_pair);
@@ -209,12 +209,16 @@ class Orders {
 
             $worker_origin = self::get_workers_location($active_worker);
 
+/*
             if($active_worker->jobs->count() < 2) {
-                $bypass_time = self::getTravelTime($worker_origin, $request_loc_pair);
-                if($bypass_time <= self::$bypass_time) {
-                    $bypass_job[$active_worker->id] = $bypass_time;
+                $byp_time = self::getTravelTime($worker_origin, $request_loc_pair);
+//                 mail("dan@formula23.com", "byp - ".$active_worker->id, $byp_time."==".$worker_origin."->".$request_loc_pair);
+                if($byp_time <= self::$bypass_time) {
+                    $bypass_job[$active_worker->id] = $byp_time;
                 }
+//                 mail("dan@formula23.com", 'by_arr', print_r($bypass_job, 1));
             }
+*/
 
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
@@ -300,6 +304,7 @@ class Orders {
         $msg = print_r($complete_times_by_worker, 1);
         $msg .= print_r($complete_times_by_worker2, 1);
         $msg .= print_r($next_available, 1);
+        $msg .= print_r($bypass_job, 1);
 // mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
 //        print_r($complete_times_by_worker2);
@@ -397,7 +402,7 @@ class Orders {
             \Bugsnag::notifyException($e);
         }
 
-        if( $travel_time < self::$travel_time_buffer) $travel_time = self::$travel_time_buffer;
+        $travel_time = max(self::$travel_time_buffer, $travel_time);
 
         return round($travel_time * self::traffic_buffer($travel_time));
     }
