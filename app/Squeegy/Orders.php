@@ -399,7 +399,7 @@ class Orders {
 
         if( $travel_time < self::$travel_time_buffer) $travel_time = self::$travel_time_buffer;
 
-        return round($travel_time * self::traffic_buffer());
+        return round($travel_time * self::traffic_buffer($travel_time));
     }
 
     private static function geocode($latlng)
@@ -433,13 +433,18 @@ class Orders {
         return $customer_postal;
     }
 
-    private static function traffic_buffer()
+    private static function traffic_buffer($travel_time)
     {
-        if( Carbon::now()->hour >= 16 && false) {
-            return 1.4;
+        if($travel_time < 20) {
+            return 1.6;
         } else {
             return 1.3;
         }
+//        if( Carbon::now()->hour >= 16 && false) {
+//            return 1.4;
+//        } else {
+//            return 1.3;
+//        }
     }
 
 }
