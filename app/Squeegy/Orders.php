@@ -29,6 +29,7 @@ class Orders {
     protected static $travel_time_buffer = 5;
     protected static $travel_time_buffer_pct = 1.2;
     protected static $open_orders;
+    protected static $bypass_time = 8;
 
     /**
      * @return bool
@@ -216,7 +217,7 @@ class Orders {
                     $origin = $worker_default_origin;
                 }
                 $bypass_time = self::getTravelTime($origin, $request_loc_pair);
-                if($bypass_time <= 8) {
+                if($bypass_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $bypass_time;
                 }
 
@@ -302,9 +303,9 @@ class Orders {
             }
         }
 
-//        print_r($complete_times_by_worker);
-//        print_r($next_available);
-//        exit;
+        print_r($complete_times_by_worker);
+        print_r($next_available);
+        exit;
         return $next_available;
     }
 
