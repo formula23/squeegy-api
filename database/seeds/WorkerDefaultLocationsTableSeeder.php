@@ -12,7 +12,7 @@ class WorkerDefaultLocationsTableSeeder extends Seeder
 {
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
 
         WasherDefaultLocation::truncate();
 
