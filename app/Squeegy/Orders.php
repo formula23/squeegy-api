@@ -182,7 +182,9 @@ class Orders {
 
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
-                    $query->whereIn('status', ['enroute','start'])->orderBy('enroute_at');
+                    $query->whereIn('status', ['enroute','start','done'])
+                        ->whereDate('enroute_at', '=', Carbon::today()->toDateString())
+                        ->orderBy('enroute_at');
                 }])
                 ->with(['default_location' => function($q) {
                     $q->select('user_id', 'latitude', 'longitude');
@@ -204,41 +206,25 @@ class Orders {
 
         foreach($active_workers as $active_worker) {
 
-            if( ! empty($active_worker->default_location)) {
-                $worker_default_origin = implode(",", array_only($active_worker->default_location->toArray(), ['latitude', 'longitude']));
-            } else {
-                $worker_default_origin = implode(",", \Config::get('squeegy.worker_default_location'));
-            }
+            $worker_origin = self::get_workers_location($active_worker);
 
             if($active_worker->jobs->count() < 2) {
-                if(isset($active_worker->jobs[0])) {
-                    $origin = implode(",", [$active_worker->jobs[0]->location['lat'], $active_worker->jobs[0]->location['lon']]);
-                } else {
-                    $origin = $worker_default_origin;
-                }
-                $bypass_time = self::getTravelTime($origin, $request_loc_pair);
+                $bypass_time = self::getTravelTime($worker_origin, $request_loc_pair);
                 if($bypass_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $bypass_time;
                 }
-
             }
 
             if( ! count($active_worker->jobs) ) {
-                //get travel time from default location -> requested location
-                if($active_worker->default_location) {
+                $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
-                    $travel_time = self::getTravelTime($worker_default_origin, $request_loc_pair);
-
-                } else {
-                    $travel_time = static::$travel_time;
-                }
-
-//                $complete_times_by_worker[$active_worker->id]['q']['default_travel--'] = $worker_default_origin."-->".$request_loc_pair;
+//                $complete_times_by_worker[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
 
             foreach($active_worker->jobs as $idx => $job) {
+                if($job->status == "done") continue;
 
                 if($job->status == "start") {
                     $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
@@ -249,8 +235,16 @@ class Orders {
 
                         $destination = implode(",", [$job->location['lat'], $job->location['lon']]);
 
-                        $travel_time = self::getTravelTime($worker_default_origin, $destination);
-                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $job->enroute_at->diffInMinutes());
+                        $travel_time = self::getTravelTime($worker_origin, $destination);
+
+                        if( ! empty($active_worker->jobs[$idx-1]) && $active_worker->jobs[$idx-1]->status == "done") {
+                            $time_elapsed = $active_worker->jobs[$idx-1]->done_at->diffInMinutes();
+                        } else {
+                            $time_elapsed = $job->enroute_at->diffInMinutes();
+                        }
+
+//                        $complete_times_by_worker[$active_worker->id]['q']['remaining route time---'.$idx] = $worker_origin."-->".$destination." -- ".$travel_time;
+                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
@@ -303,9 +297,9 @@ class Orders {
             }
         }
 
-        print_r($complete_times_by_worker);
-        print_r($next_available);
-        exit;
+//        print_r($complete_times_by_worker);
+//        print_r($next_available);
+//        exit;
         return $next_available;
     }
 
@@ -446,6 +440,22 @@ class Orders {
 //        } else {
 //            return 1.3;
 //        }
+    }
+
+    private static function get_workers_location(User $worker)
+    {
+        $last_job = $worker->jobs()->whereIn('status', ['done'])->whereDate('enroute_at', '=', Carbon::today()->toDateString())->orderBy('enroute_at', 'desc')->first();
+
+        if($last_job) {
+            $location = implode(",", array_only($last_job->location, ['lat', 'lon']));
+        } else {
+            if( ! empty($worker->default_location)) {
+                $location = implode(",", array_only($worker->default_location->toArray(), ['latitude', 'longitude']));
+            } else {
+                $location = implode(",", \Config::get('squeegy.worker_default_location'));
+            }
+        }
+        return $location;
     }
 
 }
