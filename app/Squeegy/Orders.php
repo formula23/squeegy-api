@@ -94,6 +94,7 @@ class Orders {
             }
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
+            return $data;
         }
 
         $eta = self::getLeadTime($lat, $lng);
