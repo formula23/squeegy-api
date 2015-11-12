@@ -182,7 +182,7 @@ class Orders {
 
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
-                    $query->whereIn('status', ['enroute','start','done'])
+                    $query->whereIn('status', ['enroute','start'])
                         ->whereDate('enroute_at', '=', Carbon::today()->toDateString())
                         ->orderBy('enroute_at');
                 }])
@@ -229,7 +229,7 @@ class Orders {
                 if($job->status == "start") {
                     $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
 
-                } else if($job->status = "enroute") {
+                } else {
                     //calc remaining travel time for first job
                     if( ! isset($complete_times_by_worker[$active_worker->id])) {
 
@@ -237,12 +237,12 @@ class Orders {
 
                         $travel_time = self::getTravelTime($worker_origin, $destination);
 
-                        if( ! empty($active_worker->jobs[$idx-1]) && $active_worker->jobs[$idx-1]->status == "done") {
-                            $time_elapsed = $active_worker->jobs[$idx-1]->done_at->diffInMinutes();
-                        } else {
-                            $time_elapsed = $job->enroute_at->diffInMinutes();
-                        }
-
+//                        if( ! empty($active_worker->jobs[$idx-1]) && $active_worker->jobs[$idx-1]->status == "done") {
+//                            $time_elapsed = $active_worker->jobs[$idx-1]->done_at->diffInMinutes();
+//                        } else {
+//
+//                        }
+                        $time_elapsed = $job->enroute_at->diffInMinutes();
                         $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$idx] = $worker_origin."-->".$destination." -- ".$travel_time;
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
@@ -296,10 +296,10 @@ class Orders {
                 }
             }
         }
-//        $msg = print_r($complete_times_by_worker, 1);
-//        $msg .= print_r($complete_times_by_worker2, 1);
-//        $msg .= print_r($next_available, 1);
-//mail("dan@formula23.com", "eta", $msg);
+        $msg = print_r($complete_times_by_worker, 1);
+        $msg .= print_r($complete_times_by_worker2, 1);
+        $msg .= print_r($next_available, 1);
+mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
 //        print_r($complete_times_by_worker2);
 //        print_r($next_available);
