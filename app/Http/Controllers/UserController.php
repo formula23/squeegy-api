@@ -3,6 +3,9 @@
 use Aloha\Twilio\Twilio;
 use App\Http\Requests;
 use App\Squeegy\Transformers\UserTransformer;
+use App\User;
+use App\WasherActivityLog;
+use Carbon\Carbon;
 use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
@@ -146,6 +149,30 @@ class UserController extends Controller {
         }
 
         return $this->response->withItem(\Auth::user(), new UserTransformer());
+    }
+
+    public function duty(Request $request)
+    {
+        if( ! \Auth::user()->can('set.duty')) {
+            return $this->response->errorUnauthorized();
+        }
+
+        if(\Auth::user()->is('admin') && !$request->input('user_id')) {
+            return $this->response->withArray(['message'=>'user_id required']);
+        }
+
+        $worker_id = ($request->input('user_id') ? $request->input('user_id') : \Auth::user()->id );
+
+        WasherActivityLog::where('user_id', $worker_id)->whereNull('log_off')->update(['log_off' => Carbon::now()]);
+
+        switch($request->input('status')) {
+            case "on":
+                User::find($worker_id)->activity_logs()->create(['log_on' => Carbon::now()]);
+                break;
+        }
+
+        return $this->response->withArray(['success'=>1]);
+
     }
 
 }

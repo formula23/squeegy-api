@@ -28,7 +28,7 @@ class NotifyCustomerEnroute {
 	public function handle(OrderEnroute $event)
 	{
         $push_message = trans('messages.order.push_notice.enroute', [
-            'worker_name'=>Auth::user()->name,
+            'worker_name'=>$event->order->worker->name,
             'arrival_time'=>eta_real_time($event->order),
         ]);
 

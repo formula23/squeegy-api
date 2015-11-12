@@ -108,9 +108,8 @@ class OrdersController extends Controller {
 	{
         $data = $request->all();
 
-        //TO-DO:
-        //does current user have any washes in progress.. - accept, enroute, start, in-progress,
-        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','in-progress'])->get()->count()) {
+        //does current user have any washes in progress.. - accept, enroute, start, start,
+        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','start'])->get()->count()) {
             return $this->response->errorUnwillingToProcess(trans('messages.order.exists'));
         }
 
@@ -120,7 +119,9 @@ class OrdersController extends Controller {
         }
 
         $data['price'] = Service::find($data['service_id'])->price;
-        $data['eta'] = Orders::getLeadTime();
+
+        $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
+        $data['eta'] = $eta['time'];
 
         $order = new Order($data);
 
@@ -200,16 +201,23 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $availability = Orders::availability();
-
+                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
                     if( ! $availability['accept']) {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    $order->eta = Orders::getLeadTime();
+//                    $eta = Orders::getLeadTimeByOrder($order);
+
+                    $order->eta = $availability['time'];
+                    $order->worker_id = $availability['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
                     Event::fire(new OrderConfirmed($order));
+
+                    $order->status = 'enroute';
+                    $order->enroute_at = Carbon::now();
+
+                    Event::fire(new OrderEnroute($order));
 
                     break;
                 case "enroute":

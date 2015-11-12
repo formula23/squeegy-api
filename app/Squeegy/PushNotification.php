@@ -27,7 +27,6 @@ class PushNotification {
      * @param string $message
      * @param int $badge
      * @param int $order_id
-     * @internal param Order $order
      */
     public static function send($push_token, $message, $badge = 1, $order_id = 0) {
 

@@ -16,7 +16,7 @@ use Carbon\Carbon;
 function eta_real_time(Order $order)
 {
     try {
-        if(!empty($order->confirm_at)) {
+        if( ! empty($order->confirm_at)) {
             $exact_eta = $order->confirm_at->addMinutes($order->eta);
             $arrival_time = Carbon::createFromTimestamp(ceil($exact_eta->timestamp / (15 * 60)) * (15 * 60));
             return $arrival_time->format('g:i a');
