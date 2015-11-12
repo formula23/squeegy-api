@@ -296,9 +296,9 @@ class Orders {
                 }
             }
         }
-        $msg = print_r($complete_times_by_worker, 1);
-        $msg .= print_r($complete_times_by_worker2, 1);
-        $msg .= print_r($next_available, 1);
+//        $msg = print_r($complete_times_by_worker, 1);
+//        $msg .= print_r($complete_times_by_worker2, 1);
+//        $msg .= print_r($next_available, 1);
 //mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
 //        print_r($complete_times_by_worker2);
