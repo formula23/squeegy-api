@@ -89,6 +89,10 @@ class OrdersController extends Controller {
             }
         }
 
+        if($request->input('worker_id')) {
+            $orders->where('worker_id', $request->input('worker_id'));
+        }
+
         if($request->input('limit')) {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = min($request->input('limit'), 500);
