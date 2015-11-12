@@ -19,8 +19,9 @@ class WorkerDefaultLocationsTableSeeder extends Seeder
         $default_location_map = [
             'dan@squeegy.com' => ['latitude' => 33.984285, 'longitude' => -118.406087],
             'andrew@squeegy.com' => ['latitude' => 33.956813, 'longitude' => -118.441428],
-            'jake@squeegy.com' => ['latitude' => 33.825557, 'longitude' => -118.388577],
-            'ricardo@squeegy.com' => ['latitude' => 34.022286, 'longitude' => -118.405400],
+//            'jake@squeegy.com' => ['latitude' => 33.825557, 'longitude' => -118.388577], // zone 2 - southbay
+            'jake@squeegy.com' => ['latitude' => 34.010352, 'longitude' => -118.457714], //zone 1 - LA
+            'ricardo@squeegy.com' => ['latitude' => 34.041921, 'longitude' => -118.424827],
             'daniel@squeegy.com' => ['latitude' => 34.098085, 'longitude' => -118.326694],
         ];
 
