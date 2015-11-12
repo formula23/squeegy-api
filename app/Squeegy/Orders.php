@@ -35,7 +35,8 @@ class Orders {
      */
     public static function open()
     {
-        return true;
+        if(is_internal()) return true;
+
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
@@ -106,9 +107,9 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
-            $data['accept'] = 0;
-            $data['description'] = trans('messages.service.highdemand');
+        if(! is_internal() && self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
+                $data['accept'] = 0;
+                $data['description'] = trans('messages.service.highdemand');
         }
         
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
@@ -439,6 +440,5 @@ class Orders {
             return 1.3;
         }
     }
-
 
 }
