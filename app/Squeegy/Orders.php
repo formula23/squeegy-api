@@ -246,6 +246,7 @@ class Orders {
                         $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$idx] = $worker_origin."-->".$destination." -- ".$travel_time;
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
+                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
 
@@ -299,7 +300,7 @@ class Orders {
         $msg = print_r($complete_times_by_worker, 1);
         $msg .= print_r($complete_times_by_worker2, 1);
         $msg .= print_r($next_available, 1);
-mail("dan@formula23.com", "eta", $msg);
+// mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
 //        print_r($complete_times_by_worker2);
 //        print_r($next_available);
@@ -451,7 +452,8 @@ mail("dan@formula23.com", "eta", $msg);
         $last_job = $worker->jobs()->whereIn('status', ['done'])->whereDate('enroute_at', '=', Carbon::today()->toDateString())->orderBy('enroute_at', 'desc')->first();
 
         if($last_job) {
-            $location = implode(",", array_only($last_job->location, ['lat', 'lon']));
+            $arr = array_only($last_job->location, ['lat', 'lon']);
+            $location = implode(",", [$arr['lat'], $arr['lon']]);
         } else {
             if( ! empty($worker->default_location)) {
                 $location = implode(",", array_only($worker->default_location->toArray(), ['latitude', 'longitude']));
