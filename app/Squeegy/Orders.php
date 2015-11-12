@@ -436,7 +436,7 @@ class Orders {
         if( Carbon::now()->hour >= 16 && false) {
             return 1.4;
         } else {
-            return 1.2;
+            return 1.3;
         }
     }
 
