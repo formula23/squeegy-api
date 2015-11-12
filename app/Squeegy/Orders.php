@@ -225,12 +225,11 @@ class Orders {
             }
 
             foreach($active_worker->jobs as $idx => $job) {
-                if($job->status == "done") continue;
 
                 if($job->status == "start") {
                     $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
 
-                } else {
+                } else if($job->status = "enroute") {
                     //calc remaining travel time for first job
                     if( ! isset($complete_times_by_worker[$active_worker->id])) {
 
@@ -300,8 +299,9 @@ class Orders {
         $msg = print_r($complete_times_by_worker, 1);
         $msg .= print_r($complete_times_by_worker2, 1);
         $msg .= print_r($next_available, 1);
-mail("dan@formula23.com", "eta", $msg);
+//mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
+//        print_r($complete_times_by_worker2);
 //        print_r($next_available);
 //        exit;
         return $next_available;
