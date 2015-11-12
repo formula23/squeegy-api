@@ -201,6 +201,7 @@ class Orders {
         if( ! $active_workers->count()) return false;
 
         $complete_times_by_worker=[];
+        $complete_times_by_worker2=[];
 
         $bypass_job = [];
 
@@ -218,7 +219,7 @@ class Orders {
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
-//                $complete_times_by_worker[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
+                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
@@ -243,7 +244,7 @@ class Orders {
                             $time_elapsed = $job->enroute_at->diffInMinutes();
                         }
 
-//                        $complete_times_by_worker[$active_worker->id]['q']['remaining route time---'.$idx] = $worker_origin."-->".$destination." -- ".$travel_time;
+                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$idx] = $worker_origin."-->".$destination." -- ".$travel_time;
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
@@ -256,7 +257,7 @@ class Orders {
 
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
-//                $complete_times_by_worker[$active_worker->id]['q']['travel time---'.$idx] = $current_location."-->".$next_location;
+                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$idx] = $current_location."-->".$next_location;
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
             }
@@ -297,6 +298,7 @@ class Orders {
             }
         }
         $msg = print_r($complete_times_by_worker, 1);
+        $msg .= print_r($complete_times_by_worker2, 1);
         $msg .= print_r($next_available, 1);
 mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
