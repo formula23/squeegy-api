@@ -108,7 +108,7 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(! is_internal() && self::open() && self::$open_orders->count() >= 1 && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
+        if(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
                 $data['accept'] = 0;
                 $data['description'] = trans('messages.service.highdemand');
         }
