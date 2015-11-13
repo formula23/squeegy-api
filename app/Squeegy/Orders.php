@@ -182,7 +182,7 @@ class Orders {
 
         $regions = Region::where('postal_code', $customer_postal)->where('zone_id', 1)->get();
         if( ! $regions->count()) {
-            return ['error_msg'=>'Outside of service area.\nTap here to go to our service area.'];
+            return ['error_msg'=>"Outside of service area.\nTap here to go to our service area."];
         }
 
         $active_workers_qry = User::workers()
