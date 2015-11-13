@@ -30,6 +30,7 @@ class Orders {
     protected static $travel_time_buffer_pct = 1.2;
     protected static $open_orders;
     protected static $bypass_time = 8;
+    protected static $last_job = null;
 
     /**
      * @return bool
@@ -174,8 +175,8 @@ class Orders {
         //geo-code customer request location lat-long
         //used to get correct workers
         $request_loc_pair = implode(",", [
-            'lat'=>round((float)$lat, 5),
-            'lng'=>round((float)$lng, 5),
+            'lat'=>round((float)$lat, 3),
+            'lng'=>round((float)$lng, 3),
         ]);
 
         $customer_postal = self::geocode($request_loc_pair);
@@ -225,7 +226,7 @@ class Orders {
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
-                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
+//                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
@@ -235,24 +236,33 @@ class Orders {
                 if($job->status == "start") {
                     $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
 
-                } else {
-                    //calc remaining travel time for first job
+                } else if($job->status == "enroute") {
+                    /* calc remaining travel time for first job
+                    * need to see if there have been previous jobs to this one during the day
+                     * is worker_origin, default location or location of previous job
+                     *
+                     * determining elapsed time, to deduct from travel time
+                     * if there is a previous job and it was finished after this job was created, elapsed time is calculate using the previous job
+                     * if the current job was created after the previous job ended, calculate elapsed time using current job.
+                    */
                     if( ! isset($complete_times_by_worker[$active_worker->id])) {
 
                         $destination = implode(",", [$job->location['lat'], $job->location['lon']]);
 
                         $travel_time = self::getTravelTime($worker_origin, $destination);
 
-//                        if( ! empty($active_worker->jobs[$idx-1]) && $active_worker->jobs[$idx-1]->status == "done") {
-//                            $time_elapsed = $active_worker->jobs[$idx-1]->done_at->diffInMinutes();
-//                        } else {
-//
-//                        }
-                        $time_elapsed = $job->enroute_at->diffInMinutes();
-                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$idx] = $worker_origin."-->".$destination." -- ".$travel_time;
+                        if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
+                            $time_elapsed = self::$last_job->done_at->diffInMinutes();
+                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
+                        } else {
+                            $time_elapsed = $job->enroute_at->diffInMinutes();
+                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
+                        }
+
+//                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time." elap:".$time_elapsed;
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
-                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
+//                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
 
@@ -263,7 +273,7 @@ class Orders {
 
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
-                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$idx] = $current_location."-->".$next_location;
+//                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location;
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
             }
@@ -311,6 +321,7 @@ class Orders {
 //        print_r($complete_times_by_worker);
 //        print_r($complete_times_by_worker2);
 //        print_r($next_available);
+//        print_r($bypass_job);
 //        exit;
         return $next_available;
     }
@@ -374,7 +385,7 @@ class Orders {
         return;
     }
 
-    private static function getTravelTime($origin, $destination)
+    private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
         $travel_time = static::$travel_time;
 
@@ -393,11 +404,12 @@ class Orders {
                 $json_resp = json_decode($response);
                 if($json_resp->status == "OK") {
                     $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-                    Cache::forever($cache_key, $travel_time); //store for one day
+                    if( ! $cache_exp) {
+                        Cache::forever($cache_key, $travel_time); //store for one day
+                    } else {
+                        Cache::put($cache_key, $travel_time, $cache_exp);
+                    }
                 }
-//                else {
-//                    //throw new \Exception("Unable to get live travel time. -- ".$json_resp->status."--origin".$origin."=dest=".$destination);
-//                }
             }
 
         } catch (\Exception $e) {
@@ -456,10 +468,10 @@ class Orders {
 
     private static function get_workers_location(User $worker)
     {
-        $last_job = $worker->jobs()->whereIn('status', ['done'])->whereDate('enroute_at', '=', Carbon::today()->toDateString())->orderBy('enroute_at', 'desc')->first();
+        self::get_last_job($worker);
 
-        if($last_job) {
-            $arr = array_only($last_job->location, ['lat', 'lon']);
+        if(self::$last_job) {
+            $arr = array_only(self::$last_job->location, ['lat', 'lon']);
             $location = implode(",", [$arr['lat'], $arr['lon']]);
         } else {
             if( ! empty($worker->default_location)) {
@@ -469,6 +481,11 @@ class Orders {
             }
         }
         return $location;
+    }
+
+    private static function get_last_job(User $worker)
+    {
+        self::$last_job = $worker->jobs()->whereIn('status', ['done'])->whereDate('enroute_at', '=', Carbon::today()->toDateString())->orderBy('enroute_at', 'desc')->first();
     }
 
 }
