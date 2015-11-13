@@ -100,9 +100,9 @@ class Orders {
 
         $eta = self::getLeadTime($lat, $lng);
 
-        if ( ! $eta) {
+        if ( ! empty($eta['error_msg'])) {
             $data['accept'] = 0;
-            $data['description'] = 'Squeegy not available at this time. Please try again later.';
+            $data['description'] = $eta['error_msg'];
             return $data;
         }
 
@@ -180,6 +180,11 @@ class Orders {
 
         $customer_postal = self::geocode($request_loc_pair);
 
+        $regions = Region::where('postal_code', $customer_postal)->where('zone_id', 1)->get();
+        if( ! $regions->count()) {
+            return ['error_msg'=>'Outside of service area.\nTap here to go to our service area.'];
+        }
+
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
                     $query->whereIn('status', ['enroute','start'])
@@ -198,7 +203,7 @@ class Orders {
 
         $active_workers = $active_workers_qry->get();
 
-        if( ! $active_workers->count()) return false;
+        if( ! $active_workers->count()) return ['error_msg'=>'Squeegy not available at this time. Please try again later.'];
 
         $complete_times_by_worker=[];
         $complete_times_by_worker2=[];
@@ -209,16 +214,13 @@ class Orders {
 
             $worker_origin = self::get_workers_location($active_worker);
 
-/*
             if($active_worker->jobs->count() < 2) {
                 $byp_time = self::getTravelTime($worker_origin, $request_loc_pair);
 //                 mail("dan@formula23.com", "byp - ".$active_worker->id, $byp_time."==".$worker_origin."->".$request_loc_pair);
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
                 }
-//                 mail("dan@formula23.com", 'by_arr', print_r($bypass_job, 1));
             }
-*/
 
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
