@@ -35,7 +35,7 @@ class Authenticate {
 
 		if ($this->auth->guest())	
 		{
-    		\Bugsnag::notifyException(new \Exception("Unauthorized. Please login... Path:".$request->path()." -- ".print_r($request->all(), 1)));
+    		\Bugsnag::notifyException(new \Exception("Unauthorized. Please login... Path:".$request->path()." -- ".print_r($request->all(), 1)." -- ".$_SERVER['REMOTE_ADDR']));
             return response()->json(['error'=>'Unauthorized. Please login...', 'status_code'=>401], 401);
 		}
 
