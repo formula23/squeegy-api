@@ -26,6 +26,7 @@ return array(
     |
     */
     'notify_release_stages' => ['staging', 'production'],
+//    'notify_release_stages' => null,
 
     /*
     |--------------------------------------------------------------------------

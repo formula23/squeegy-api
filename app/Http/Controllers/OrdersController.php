@@ -41,7 +41,7 @@ class OrdersController extends Controller {
         'done' => 5,
     ];
 
-    protected $limit = 500;
+    protected $limit = null;
 
     /**
      *
