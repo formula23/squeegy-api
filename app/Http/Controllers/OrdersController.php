@@ -95,7 +95,7 @@ class OrdersController extends Controller {
 
         if($request->input('limit')) {
             if((int)$request->input('limit') < 1) $this->limit = 1;
-            else $this->limit = min($request->input('limit'), 500);
+            else $this->limit = $request->input('limit');
         }
 
         $paginator = $orders->paginate($this->limit);
