@@ -40,6 +40,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('services/{services}', ['as'=>'v1.services.show', 'uses'=>'ServicesController@show']);
 
     Route::get('orders', 'OrdersController@index');
+    Route::get('orders-all-locations', 'OrdersController@all_locations');
     Route::post('orders', 'OrdersController@store');
 
     Route::put('orders/{orders}', 'OrdersController@update');    

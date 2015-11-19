@@ -41,8 +41,6 @@ class OrdersController extends Controller {
         'done' => 5,
     ];
 
-    protected $limit = null;
-
     /**
      *
      */
@@ -101,6 +99,12 @@ class OrdersController extends Controller {
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
+    }
+
+    public function all_locations()
+    {
+        $orders = Order::select("location")->where('status', 'done')->get();
+        return $this->response->withArray($orders->toArray());
     }
 
 	/**
