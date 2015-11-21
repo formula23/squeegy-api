@@ -132,7 +132,11 @@ class OrdersController extends Controller {
         $data['price'] = Service::find($data['service_id'])->price;
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
-        $data['eta'] = $eta['time'];
+        try {
+            $data['eta'] = $eta['time'];
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
 
         $order = new Order($data);
 
