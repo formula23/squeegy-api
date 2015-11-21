@@ -182,7 +182,7 @@ class Orders {
 
         $customer_postal = self::geocode($request_loc_pair);
 
-        $regions = Region::where('postal_code', $customer_postal)->where('zone_id', 1)->get();
+        $regions = Region::where('postal_code', $customer_postal)->get();
         if( ! $regions->count()) {
             return ['error_msg'=>"Outside of service area.\nTap here to go to our service area."];
         }
