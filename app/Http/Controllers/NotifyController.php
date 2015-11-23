@@ -33,7 +33,7 @@ class NotifyController extends Controller {
 //
 //            $queries = \DB::getQueryLog();
 //            dd($queries);
-            
+
             //anonymous users
 //            $users = User::where('app_version', '>=', '1.3')
 //                ->where('is_active', 1)
@@ -47,7 +47,7 @@ class NotifyController extends Controller {
 //                ->where('created_at', '<', '2015-09-28')
 //                ->orderBy('id');
 //
-            $user_qry = User::select('push_token')->where('app_version', '1.4')->where('push_token', '!=', '')
+            $user_qry = User::select(['id', 'push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
                 ->where('email', 'like', '%squeegyapp-tmp.com%')
 //                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<=', '2015-11-10')
                 ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-21')
