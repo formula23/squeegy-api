@@ -29,7 +29,7 @@ class Orders {
     protected static $travel_time_buffer = 5;
     protected static $travel_time_buffer_pct = 1.2;
     protected static $open_orders;
-    protected static $bypass_time = 15;
+    protected static $bypass_time = 25;
     protected static $last_job = null;
     protected static $final_location = null;
 
