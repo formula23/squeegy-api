@@ -32,6 +32,7 @@ class Orders {
     protected static $bypass_time = 15;
     protected static $last_job = null;
     protected static $final_location = null;
+    protected static $holiday=null;
 
     /**
      * @return bool
@@ -43,16 +44,22 @@ class Orders {
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
-
-//         $now = Carbon::create(2015,10,18,2,12,0);
+//        $now = Carbon::create(2015,11,25,17,46,0);
 
         if($now->dayOfWeek == 0) return false;
 
         $open_time = Carbon::createFromTime(config('squeegy.operating_hours.open'), 0, 0);
         $close_time = Carbon::createFromTime(config('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE', 0), 0);
 
-//        $open_time = Carbon::create(2015,9,16,9,0,0);
-//        $close_time = Carbon::create(2015,9,16,18,15,0);
+        //holidays
+        // thanksgiving - closed 11/26
+        if($now > Carbon::create(2015,11,25,16,45) && $now < Carbon::create(2015,11,26,23,59,59)) {
+            self::$holiday = 'thanksgiving';
+            return false;
+        }
+
+//        $open_time = Carbon::create(2015,11,25,9,0,0);
+//        $close_time = Carbon::create(2015,11,25,16,45,0);
 
         if($now >= $open_time && $now <= $close_time) return true;
         return false;
@@ -79,11 +86,21 @@ class Orders {
                 return $data;
             }
 
-//            $now = Carbon::create(2015,10,18,2,12,0);
-//            $open_time = Carbon::create(2015,9,16,9,0,0);
-//            $close_time = Carbon::create(2015,9,16,18,15,0);
+            if(self::$holiday != null) {
+                switch(self::$holiday) {
+                    case "thanksgiving":
+                        $data['accept'] = 0;
+                        $data['description'] = "Happy Thanksgiving!\nWe'll be back Friday, 9am - 4:45pm";
+                        break;
+                }
+                return $data;
+            }
+
+//            $open_time = Carbon::create(2015,11,25,9,0,0);
+//            $close_time = Carbon::create(2015,11,25,16,45,0);
 
             $now = Carbon::now();
+//            $now = Carbon::create(2015,11,25,17,46,0);
 
             $day_of_week = $now->dayOfWeek;
             $curr_hr = $now->hour;
