@@ -11,6 +11,7 @@
 |
 */
 
+use App\User;
 use Illuminate\Http\Response;
 
 Route::get('email', function() {
@@ -22,10 +23,17 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::resource('vehicles', 'VehiclesController');
 
+    Route::get('users', 'UserController@index');
     Route::get('user', 'UserController@show');
+    Route::post('user/phone-verify', 'UserController@phoneVerify');
+    Route::get('user/authenticated', 'UserController@authenticated');
+
+    Route::get('user/{id}', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
     Route::put('user', 'UserController@update');
-    Route::post('user/phone-verify', 'UserController@phoneVerify');
+
+
+    Route::get('washers', 'WashersController@index');
 
     Route::post('auth/login', 'Auth\AuthController@postLogin');
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
