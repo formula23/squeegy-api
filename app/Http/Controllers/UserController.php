@@ -4,6 +4,11 @@ use Aloha\Twilio\Twilio;
 use App\Http\Requests;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
+
+
+use App\WasherActivityLog;
+use Carbon\Carbon;
+
 use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
@@ -109,17 +114,27 @@ class UserController extends Controller {
                 $customer_card = $customer->sources->create([
                     "source" => $data['stripe_token']
                 ]);
+                $customer->default_source = $customer_card->id;
+
             } catch(\Exception $e) {
-                return $this->response->errorWrongArgs($e->getMessage());
+                \Bugsnag::notifyException($e);
+//                return $this->response->errorWrongArgs($e->getMessage());
             }
 
-
-            $customer->default_source = $customer_card->id;
         }
 
-        $customer->save();
+        try {
+            $customer->save();
+        }
+        catch (\Exception $e)
+        {
+            dd($e);
+        }
 
-        if( ! empty($data["phone"]) && ! empty($request->user()->phone)) {
+
+// && ! empty($request->user()->phone) -- removed 9/17
+
+        if( ! empty($data["phone"])) {
 
             if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
                 try {
@@ -159,5 +174,28 @@ class UserController extends Controller {
         return $this->response->withArray(['authenticated'=>\Auth::check()]);
     }
 
+    public function duty(Request $request)
+    {
+        if( ! \Auth::user()->can('set.duty')) {
+            return $this->response->errorUnauthorized();
+        }
+
+        if(\Auth::user()->is('admin') && !$request->input('user_id')) {
+            return $this->response->withArray(['message'=>'user_id required']);
+        }
+
+        $worker_id = ($request->input('user_id') ? $request->input('user_id') : \Auth::user()->id );
+
+        WasherActivityLog::where('user_id', $worker_id)->whereNull('log_off')->update(['log_off' => Carbon::now()]);
+
+        switch($request->input('status')) {
+            case "on":
+                User::find($worker_id)->activity_logs()->create(['log_on' => Carbon::now()]);
+                break;
+        }
+
+        return $this->response->withArray(['success'=>1]);
+
+    }
 
 }

@@ -21,6 +21,8 @@ Route::get('email', function() {
 
 Route::group(['prefix' => 'v1'], function() {
 
+    Route::get('version', 'VersionController@index');
+
     Route::resource('vehicles', 'VehiclesController');
 
     Route::get('users', 'UserController@index');
@@ -35,6 +37,8 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::get('washers', 'WashersController@index');
 
+    Route::post('user/duty', 'UserController@duty');
+
     Route::post('auth/login', 'Auth\AuthController@postLogin');
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
@@ -44,6 +48,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('services/{services}', ['as'=>'v1.services.show', 'uses'=>'ServicesController@show']);
 
     Route::get('orders', 'OrdersController@index');
+    Route::get('orders-all-locations', 'OrdersController@all_locations');
     Route::post('orders', 'OrdersController@store');
 
     Route::put('orders/{orders}', 'OrdersController@update');    

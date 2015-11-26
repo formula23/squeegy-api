@@ -23,6 +23,8 @@ class OrderTransformer extends TransformerAbstract {
 
     public function transform(Order $order)
     {
+//        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
+
         return [
             'id' => (string)$order->id,
             'job_number' => $order->job_number,
@@ -33,7 +35,10 @@ class OrderTransformer extends TransformerAbstract {
             'discount' => (($order->discount)? $order->discount : null ),
             'promo_code' => (($order->promo_code)? $order->promo_code : null ),
             'total' => (int)($order->price - (int)$order->discount),
-            'eta' => Orders::formatConfirmEta(Orders::getLeadTime($order)),
+            'eta_quote' => (int)$order->eta,
+            'arrival_eta' => eta_real_time($order),
+            'eta' => Orders::formatConfirmEta($order->eta),
+//            'eta' => 'Around '.eta_real_time($order),
             'eta_seconds' => Orders::getCurrentEta($order),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
@@ -41,6 +46,10 @@ class OrderTransformer extends TransformerAbstract {
             'enroute_time' => $order->enroute_at ? date("g:i:s a", strtotime($order->enroute_at)) : "",
             'start_time' => $order->start_at ? date("g:i:s a", strtotime($order->start_at)) : "",
             'done_time' => $order->done_at ? date("g:i:s a", strtotime($order->done_at)) : "",
+            'confirm_at' => $order->confirm_at,
+            'enroute_at' => $order->enroute_at,
+            'start_at' => $order->start_at,
+            'done_at' => $order->done_at,
             'links' => [
                 [
                     'rel' => 'self',

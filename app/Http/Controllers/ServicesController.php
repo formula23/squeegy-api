@@ -7,7 +7,8 @@ use App\Squeegy\Transformers\ServiceTransformer;
 use App\Squeegy\Transformers\ServiceCoordTransformer;
 use App\Service;
 use App\ServiceCoord;
-use Request;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Lang;
 
 /**
@@ -51,9 +52,10 @@ class ServicesController extends Controller {
         return $this->response->withCollection($service_coords, new ServiceCoordTransformer);
     }
 
-    public function availability()
+    public function availability(Request $request)
     {
-        $availability = Orders::availability();
+        $availability = Orders::availability($request->input('lat'), $request->input('lng'));
+
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer);
     }
 

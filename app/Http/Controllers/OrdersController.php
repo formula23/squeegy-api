@@ -20,6 +20,9 @@ use Illuminate\Http\Request;
 use Aloha\Twilio\Twilio;
 use Event;
 use Illuminate\Support\Facades\Auth;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use League\Fractal\Resource\Collection;
+
 /**
  * Class OrdersController
  * @package App\Http\Controllers
@@ -37,6 +40,9 @@ class OrdersController extends Controller {
         'start' => 4,
         'done' => 5,
     ];
+
+
+    protected $limit = null;
 
     /**
      *
@@ -59,18 +65,49 @@ class OrdersController extends Controller {
 
         if($request->input('status')) {
             $filters = explode(',', $request->input('status'));
-            $where_method = (is_array($filters)) ? 'whereIn' : 'where' ;
-            $orders->{$where_method}('status', $filters);
-            if(is_array($filters)) {
-                foreach($filters as $filter) {
-                    $orders->orderBy($filter.'_at');
-                }
-            } else {
-                $orders->orderBy($filters.'_at');
+            $orders->whereIn('status', $filters);
+        }
+
+        if($request->input('order_by')) {
+            $order_bys=explode(",", $request->input('order_by'));
+            foreach($order_bys as $order_by) {
+                $order_pts = explode(":", $order_by);
+                $orders->orderBy($order_pts[0], ( ! empty($order_pts[1])?$order_pts[1]:''));
             }
         }
 
-        return $this->response->withCollection($orders->get(), new OrderTransformer());
+        foreach(['confirm', 'enroute', 'start', 'done', 'cancel', 'created', 'updated'] as $status_time) {
+            if($request->input($status_time.'_on')) {
+
+                $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $request->input($status_time.'_on'));
+
+            } else if($request->input($status_time.'_before') || $request->input($status_time.'_after')) {
+
+                foreach(['before'=>'<', 'after'=>'>'] as $when=>$operator) {
+                    if( ! $request->input($status_time.'_'.$when)) continue;
+                    $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $operator, $request->input($status_time.'_'.$when));
+                }
+            }
+        }
+
+        if($request->input('worker_id')) {
+            $orders->where('worker_id', $request->input('worker_id'));
+        }
+
+        if($request->input('limit')) {
+            if((int)$request->input('limit') < 1) $this->limit = 1;
+            else $this->limit = $request->input('limit');
+        }
+
+        $paginator = $orders->paginate($this->limit);
+
+        return $this->response->withPaginator($paginator, new OrderTransformer());
+    }
+
+    public function all_locations()
+    {
+        $orders = Order::select("location")->where('status', 'done')->get();
+        return $this->response->withArray($orders->toArray());
     }
 
 	/**
@@ -82,9 +119,8 @@ class OrdersController extends Controller {
 	{
         $data = $request->all();
 
-        //TO-DO:
-        //does current user have any washes in progress.. - accept, enroute, start, in-progress,
-        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','in-progress'])->get()->count()) {
+        //does current user have any washes in progress.. - accept, enroute, start, start,
+        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','start'])->get()->count()) {
             return $this->response->errorUnwillingToProcess(trans('messages.order.exists'));
         }
 
@@ -94,7 +130,13 @@ class OrdersController extends Controller {
         }
 
         $data['price'] = Service::find($data['service_id'])->price;
-        $data['eta'] = Orders::getLeadTime();
+
+        $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
+        try {
+            $data['eta'] = $eta['time'];
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
 
         $order = new Order($data);
 
@@ -174,16 +216,23 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $availability = Orders::availability();
-
+                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
                     if( ! $availability['accept']) {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    $order->eta = Orders::getLeadTime();
+//                    $eta = Orders::getLeadTimeByOrder($order);
+
+                    $order->eta = $availability['time'];
+                    $order->worker_id = $availability['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
                     Event::fire(new OrderConfirmed($order));
+
+                    $order->status = 'enroute';
+                    $order->enroute_at = Carbon::now();
+
+                    Event::fire(new OrderEnroute($order));
 
                     break;
                 case "enroute":
@@ -199,8 +248,8 @@ class OrdersController extends Controller {
                     break;
                 case "start":
 
-                    if( ! $request->user()->is('worker')) {
-                        return $this->response->errorUnauthorized();
+                    if( ! $request->user()->is('worker') || $request->user()->id != $order->worker_id) {
+                        return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
                     Event::fire(new OrderStart($order));
@@ -209,8 +258,8 @@ class OrdersController extends Controller {
 
                 case "done":
 
-                    if( ! $request->user()->is('worker')) {
-                        return $this->response->errorUnauthorized();
+                    if( ! $request->user()->is('worker') || $request->user()->id != $order->worker_id) {
+                        return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
                     Event::fire(new OrderDone($order));
@@ -266,7 +315,6 @@ class OrdersController extends Controller {
 
                 if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return trans('messages.order.discount.unavailable');
             } else {
-
                 if ( ! $order->customer->discountEligible($discount)) return trans('messages.order.discount.unavailable');
             }
 

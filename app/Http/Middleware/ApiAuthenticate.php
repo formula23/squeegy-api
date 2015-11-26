@@ -19,6 +19,7 @@ class ApiAuthenticate {
 	 */
 	public function handle($request, Closure $next)
 	{
+/*
         $key = $request->header(Config::get('apiguard.keyName', 'X-Authorization'));
 
         if (empty($key)) {
@@ -44,6 +45,7 @@ class ApiAuthenticate {
         if (empty($this->apiKey)) {
             return response()->json(['error'=>'Unauthorized. Please provide a valid API Key.', 'status_code'=>401], 401);
         }
+*/
 
 		return $next($request);
 	}

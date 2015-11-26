@@ -14,12 +14,12 @@ return [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'You already have an order pending.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
-        'new_order_worker' => 'New Order# :order_id - :customer_name :customer_phone :customer_address :customer_address_lnk',
+        'new_order_worker' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
-            'enroute' => 'Hang tight! :worker_name is on the way.',
+            'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',
             'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt.',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
@@ -38,8 +38,8 @@ return [
         ],
     ],
     'service' => [
-        'closed' => "Sorry we missed you!\nWe'll be back :next_day, ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12).":".env('OPERATING_MIN_CLOSE')."pm",
-        'highdemand' => "We are experiencing high-demand.\nPlease try again later.",
+        'closed' => "Sorry we missed you!\nWe'll be back :next_day, ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12).":close_mins",
+        'highdemand' => "Due to high-demand we cannot take your order.\nPlease try again later.",
     ],
     'emails' => [
         'welcome' => [

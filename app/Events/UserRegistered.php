@@ -14,7 +14,6 @@ class UserRegistered extends Event {
      * Create a new event instance.
      *
      * @param Twilio $twilio
-     * @internal param $user_id
      */
 	public function __construct()
 	{
