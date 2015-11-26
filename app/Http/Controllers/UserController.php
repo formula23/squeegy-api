@@ -4,11 +4,8 @@ use Aloha\Twilio\Twilio;
 use App\Http\Requests;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
-
-
 use App\WasherActivityLog;
 use Carbon\Carbon;
-
 use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
@@ -35,7 +32,11 @@ class UserController extends Controller {
      */
     public function index(Request $request)
     {
-        $paginator = User::paginate($request->input('per_page', 10));
+        $type = $request->input('type');
+        if(!$type) $type = "customers";
+
+        $paginator = User::$type()->paginate($request->input('per_page', 10));
+//        $paginator = User::paginate($request->input('per_page', 10));
 
         return $this->response->withPaginator($paginator, new UserTransformer());
     }

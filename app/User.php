@@ -115,7 +115,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function scopeCustomers($query)
     {
-        return $query->whereHas('customers', function ($q) {
+        return $query->whereHas('roles', function ($q) {
             $q->where('name', 'Customer');
         });
     }

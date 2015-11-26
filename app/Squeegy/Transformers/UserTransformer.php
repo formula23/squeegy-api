@@ -59,6 +59,11 @@ class UserTransformer extends TransformerAbstract {
             if($orderCol && $orderBy) {
                 $orders_qry->orderBy($orderCol, $orderBy);
             }
+
+            $status = $params->get('status');
+            if($status) {
+                $orders_qry->whereIn('status',$status);
+            }
         }
 
         $orders = $orders_qry->get();
