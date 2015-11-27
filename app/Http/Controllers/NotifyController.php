@@ -104,9 +104,9 @@ class NotifyController extends Controller {
 //                ->groupBy('users.id');
 //            $users = $user_qry->get();
         }
-        print_r($default_users->toArray());
-dd($users);
-        $send_list = array_merge($users->toArray(), $default_users->toArray());
+//        print_r($default_users->toArray());
+//dd($users);
+        $send_list = array_merge($users, $default_users->toArray());
 
         print "user count:".count($send_list)."\n";
         print "sent message:\n\n";
