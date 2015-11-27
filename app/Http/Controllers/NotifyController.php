@@ -14,7 +14,7 @@ class NotifyController extends Controller {
 
 //        if(!$request->input('user_id')) return;
 
-        $default_users = User::where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
+        $default_users = User::select(['id','push_token'])->where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
 
         if($request->input('user_id')) {
             $users = User::whereIn('id', explode(",",$request->input('user_id')))->get();
@@ -104,7 +104,8 @@ class NotifyController extends Controller {
 //                ->groupBy('users.id');
 //            $users = $user_qry->get();
         }
-//dd($users);
+        print_r($default_users->toArray());
+dd($users);
         $send_list = array_merge($users->toArray(), $default_users->toArray());
 
         print "user count:".count($send_list)."\n";
