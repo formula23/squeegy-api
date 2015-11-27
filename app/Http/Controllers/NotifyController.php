@@ -28,7 +28,7 @@ class NotifyController extends Controller {
                             ->from('ordes')
                             ->where('status', 'done')
                             ->where('confirm_at', '>', '2015-11-26')
-                            ->whereOr(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-27');
+                            ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-27');
                 })
                 ->get();
             $queries = \DB::getQueryLog();
