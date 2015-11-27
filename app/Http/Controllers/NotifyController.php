@@ -20,7 +20,7 @@ class NotifyController extends Controller {
             $users = User::whereIn('id', explode(",",$request->input('user_id')))->get();
         } else {
 
-            \DB::connection()->enableQueryLog();
+//            \DB::connection()->enableQueryLog();
 
             $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
                     ->whereNotIn('id', function($q) {
@@ -31,14 +31,14 @@ class NotifyController extends Controller {
                             ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-27');
                 })
                 ->get();
-            $queries = \DB::getQueryLog();
-            print_r($queries);
+//            $queries = \DB::getQueryLog();
+//            print_r($queries);
 
-            dd($users);
+//            dd($users);
 
 
 
-            dd($queries);
+//            dd($queries);
 
 
             //anonymous users
@@ -110,7 +110,7 @@ class NotifyController extends Controller {
         print "user count:".count($send_list)."\n";
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
-
+dd($send_list);
         foreach($send_list as $user) {
 
             if(empty($user['push_token'])) continue;
