@@ -111,7 +111,7 @@ class NotifyController extends Controller {
         print "user count:".count($send_list)."\n";
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
-
+dd($send_list);
         foreach($send_list as $user) {
 dd($user);
             if(empty($user['push_token'])) continue;
