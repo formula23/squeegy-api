@@ -11,10 +11,15 @@ class NotifyController extends Controller {
 	public function push(Request $request)
     {
         set_time_limit(0);
-
+        
 //        if(!$request->input('user_id')) return;
 
         $default_users = User::select(['id','push_token'])->where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
+
+        $default_users_arr = [];
+        foreach($default_users as $def_user) {
+            $default_users_arr[] = $def_user;
+        }
 
         if($request->input('user_id')) {
             $users = User::whereIn('id', explode(",",$request->input('user_id')))->get();
@@ -28,13 +33,14 @@ class NotifyController extends Controller {
                             ->from('orders')
                             ->where('status', 'done')
                             ->where('confirm_at', '>', '2015-11-26')
-                            ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-27');
+                            ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-28');
                 })
+                ->take(400)
                 ->get();
 //            $queries = \DB::getQueryLog();
 //            print_r($queries);
 
-//            dd($users);
+           dd($users);
 
 
 
@@ -105,20 +111,20 @@ class NotifyController extends Controller {
 //            $users = $user_qry->get();
         }
 //        print_r($default_users->toArray());
-//dd($users);
-        $send_list = array_merge($users, $default_users->toArray());
+// dd($users->toArray());
+        $send_list = array_merge($users, $default_users_arr);
 
         print "user count:".count($send_list)."\n";
         print "sent message:\n\n";
         print $request->input('message')."\n\n";
-dd($send_list);
+// dd($send_list);
         foreach($send_list as $user) {
-dd($user);
-            if(empty($user['push_token'])) continue;
+// dd($user);
+            if(empty($user->push_token)) continue;
 
-//            PushNotification::send($user['push_token'], $request->input('message'), 1);
+           PushNotification::send($user->push_token, $request->input('message'), 1);
 
-            print "sent to: id# ".$user['id']." - ".$user['push_token']."\n";
+            print "sent to: id# ".$user->id." - ".$user->push_token."\n";
         }
 
     }
