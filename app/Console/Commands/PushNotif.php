@@ -146,7 +146,7 @@ class PushNotif extends Command {
 // dd($user);
             if(empty($user->push_token)) continue;
 
-//           PushNotification::send($user->push_token, $message, 1);
+          PushNotification::send($user->push_token, $message, 1);
             $this->info("sent to: id# ".$user->id." - ".$user->push_token);
 //            print "sent to: id# ".$user->id." - ".$user->push_token."\n";
         }
