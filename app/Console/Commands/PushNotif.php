@@ -4,6 +4,7 @@ use App\User;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use App\Squeegy\PushNotification;
 
 class PushNotif extends Command {
 
@@ -57,8 +58,8 @@ class PushNotif extends Command {
                     ->where('confirm_at', '>', '2015-11-26')
                     ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-28');
             })
-            ->take(400)
-            ->skip(400)
+            ->skip(800)
+            ->limit(3000)
             ->get();
 //            $queries = \DB::getQueryLog();
 //            print_r($queries);
@@ -145,7 +146,7 @@ class PushNotif extends Command {
 // dd($user);
             if(empty($user->push_token)) continue;
 
-//           PushNotification::send($user->push_token, $message, 1);
+          PushNotification::send($user->push_token, $message, 1);
             $this->info("sent to: id# ".$user->id." - ".$user->push_token);
 //            print "sent to: id# ".$user->id." - ".$user->push_token."\n";
         }

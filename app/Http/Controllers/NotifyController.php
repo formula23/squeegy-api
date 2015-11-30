@@ -10,7 +10,26 @@ class NotifyController extends Controller {
 
 	public function push(Request $request)
     {
+        set_time_limit(5);
+
+for ($i = 0; $i < 4; $i++) {
+    sleep(1);
+    echo $i, "<br />";
+}
+
+// set_time_limit(5);
+
+for ($i = 0; $i < 4; $i++) {
+    sleep(1);
+    echo $i, "<br />";
+}
+dd('asdf');
+        ini_set('max_execution_time', 300);
         set_time_limit(0);
+
+        while(1) {
+            
+        }
         
 //        if(!$request->input('user_id')) return;
 
@@ -35,7 +54,9 @@ class NotifyController extends Controller {
                             ->where('confirm_at', '>', '2015-11-26')
                             ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-28');
                 })
+                ->where('id','>', 24)
                 ->take(400)
+                ->skip(0)
                 ->get();
 //            $queries = \DB::getQueryLog();
 //            print_r($queries);
@@ -122,7 +143,7 @@ class NotifyController extends Controller {
 // dd($user);
             if(empty($user->push_token)) continue;
 
-           PushNotification::send($user->push_token, $request->input('message'), 1);
+//            PushNotification::send($user->push_token, $request->input('message'), 1);
 
             print "sent to: id# ".$user->id." - ".$user->push_token."\n";
         }
