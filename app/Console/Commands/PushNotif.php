@@ -46,8 +46,8 @@ class PushNotif extends Command {
             $default_users_arr[] = $def_user;
         }
 
-        $message = "If you missed black friday. We've extended it, use promo code: BLACKFRIDAY to get 50% off your car wash.";
-
+//        $message = "If you missed black friday. We've extended it, use promo code: BLACKFRIDAY to get 50% off your car wash.";
+        $message = "Get your car cleaned on cyber monday for 40% off with code CYBER40";
 //            \DB::connection()->enableQueryLog();
 
         $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
@@ -56,10 +56,10 @@ class PushNotif extends Command {
                     ->from('orders')
                     ->where('status', 'done')
                     ->where('confirm_at', '>', '2015-11-26')
-                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-28');
+                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-30');
             })
-            ->skip(800)
-            ->limit(3000)
+            ->take(1000)
+            ->skip(0)
             ->get();
 //            $queries = \DB::getQueryLog();
 //            print_r($queries);
