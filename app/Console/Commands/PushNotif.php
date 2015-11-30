@@ -58,8 +58,8 @@ class PushNotif extends Command {
                     ->where('confirm_at', '>', '2015-11-26')
                     ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-30');
             })
-            ->take(1000)
-            ->skip(1000)
+            ->take(2000)
+            ->skip(2000)
             ->get();
 //            $queries = \DB::getQueryLog();
 //            print_r($queries);
