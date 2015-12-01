@@ -147,7 +147,7 @@ class PushNotif extends Command {
         $this->info("user count:".count($send_list));
         $this->info("sent message:");
 
- dd($send_list);
+// dd($send_list);
         foreach($send_list as $user) {
 // dd($user);
             if(empty($user->push_token)) continue;
