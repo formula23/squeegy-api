@@ -39,12 +39,12 @@ class PushNotif extends Command {
 	 */
 	public function fire()
 	{
-        $default_users = User::select(['id','push_token'])->where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
+        $default_users = \DB::table('users')->select(['id','push_token'])->where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
 
-        $default_users_arr = [];
-        foreach($default_users as $def_user) {
-            $default_users_arr[] = $def_user;
-        }
+//        $default_users_arr = [];
+//        foreach($default_users as $def_user) {
+//            $default_users_arr[] = $def_user;
+//        }
 
 //        $message = "If you missed black friday. We've extended it, use promo code: BLACKFRIDAY to get 50% off your car wash.";
 //        $message = "Get your car cleaned on cyber monday for 40% off with code CYBER40";
@@ -142,7 +142,7 @@ class PushNotif extends Command {
 
 //        print_r($default_users->toArray());
 // dd($users->toArray());
-        $send_list = array_merge($users, $default_users_arr);
+        $send_list = array_merge($users, $default_users);
 
         $this->info("user count:".count($send_list));
         $this->info("sent message:");
