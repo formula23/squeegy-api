@@ -47,20 +47,21 @@ class PushNotif extends Command {
         }
 
 //        $message = "If you missed black friday. We've extended it, use promo code: BLACKFRIDAY to get 50% off your car wash.";
-        $message = "Get your car cleaned on cyber monday for 40% off with code CYBER40";
+//        $message = "Get your car cleaned on cyber monday for 40% off with code CYBER40";
+        $message = "Don't forget, your first car wash is on us. Request now! - Use Promo Code FREE";
 //            \DB::connection()->enableQueryLog();
 
-        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
-            ->whereNotIn('id', function($q) {
-                $q->select('user_id')
-                    ->from('orders')
-                    ->where('status', 'done')
-                    ->where('confirm_at', '>', '2015-11-26')
-                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-30');
-            })
-            ->take(2000)
-            ->skip(2000)
-            ->get();
+//        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
+//            ->whereNotIn('id', function($q) {
+//                $q->select('user_id')
+//                    ->from('orders')
+//                    ->where('status', 'done')
+//                    ->where('confirm_at', '>', '2015-11-26')
+//                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-30');
+//            })
+//            ->take(2000)
+//            ->skip(2000)
+//            ->get();
 //            $queries = \DB::getQueryLog();
 //            print_r($queries);
 
@@ -84,10 +85,10 @@ class PushNotif extends Command {
 //                ->where('created_at', '<', '2015-09-28')
 //                ->orderBy('id');
 //
-//            $user_qry = User::select(['id', 'push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
-//                ->where('email', 'like', '%squeegyapp-tmp.com%')
-//                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-26')
-//                ->orderBy('id');
+            $user_qry = User::select(['id', 'push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
+                ->where('email', 'like', '%squeegyapp-tmp.com%')
+                ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '>', '2015-11-26')
+                ->orderBy('id');
 
 //            $user_qry = User::where('app_version', '1.4')->where('push_token', '!=', '')
 //                ->whereIn('id', [161,260,406,454,521,436,170,531,390,287,463,781,997,898,1025,1067,2288,1080,1039,1153,1174,1178,1127,1202,1177,1301,1289,1423,1306,1306,1489,1500,1576,1549,1518,1622,1679,1750,1615,1389,1034,1060,1856,1800,1893,1284,1507,1109]);
@@ -132,7 +133,7 @@ class PushNotif extends Command {
 //                ->whereIn('orders.status', ['done'])
 //                ->where('orders.done_at', '<', '2015-09-16')
 //                ->groupBy('users.id');
-//            $users = $user_qry->get();
+            $users = $user_qry->get();
 
 //        print_r($default_users->toArray());
 // dd($users->toArray());
@@ -141,7 +142,7 @@ class PushNotif extends Command {
         $this->info("user count:".count($send_list));
         $this->info("sent message:");
 
-// dd($send_list);
+ dd($send_list);
         foreach($send_list as $user) {
 // dd($user);
             if(empty($user->push_token)) continue;
