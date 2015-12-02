@@ -173,7 +173,7 @@ class PushNotification extends Command {
             env('APNS') => json_encode($aps_payload)
         ]);
 
-        $this->push_client->publish([
+        $this->sns_client->publish([
             'TargetArn' => $topic_arn,
             'MessageStructure' => 'json',
             'Message' => $message,
