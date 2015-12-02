@@ -68,6 +68,7 @@ class PushNotification extends Command {
 //            ->skip(2000)
 //            ->get();
 
+        //daily anonymous users push
         $user_qry = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
             ->where('email', 'like', '%squeegyapp-tmp.com%')
             ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-01')
@@ -158,7 +159,7 @@ class PushNotification extends Command {
         $this->info('user id: ' . $user->id." -- ".$user->push_token);
     }
 
-    private function publish($topic_arn)
+    private function publish($endpoint_arn)
     {
         $aps_payload = [
             'aps' => [
@@ -173,11 +174,16 @@ class PushNotification extends Command {
             env('APNS') => json_encode($aps_payload)
         ]);
 
-        $this->sns_client->publish([
-            'TargetArn' => $topic_arn,
-            'MessageStructure' => 'json',
-            'Message' => $message,
-        ]);
+        try {
+            $this->sns_client->publish([
+                'TargetArn' => $endpoint_arn,
+                'MessageStructure' => 'json',
+                'Message' => $message,
+            ]);
+        } catch(\Exception $e) {
+            $this->error($e->getMessage().' : '.$endpoint_arn);
+            \Bugsnag::notifyException($e);
+        }
 
         return;
     }
