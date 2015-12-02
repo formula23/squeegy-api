@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel {
 		'App\Console\Commands\Inspire',
 		'App\Console\Commands\CreateUser',
         'App\Console\Commands\PushNotification',
+        'App\Console\Commands\DbBackup',
 	];
 
 	/**
