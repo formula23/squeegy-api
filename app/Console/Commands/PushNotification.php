@@ -154,11 +154,17 @@ class PushNotification extends Command {
 		];
 	}
 
+    /**
+     * @param $user
+     */
     protected function _output($user)
     {
         $this->info('user id: ' . $user->id." -- ".$user->push_token);
     }
 
+    /**
+     * @param $endpoint_arn
+     */
     private function publish($endpoint_arn)
     {
         $aps_payload = [
