@@ -107,7 +107,7 @@ class PushNotification extends Command {
                 }
 
                 $this->info('Publish to TopicArn');
-                $this->publish($topic_arn);
+//                $this->publish($topic_arn);
 
             } else {
 
