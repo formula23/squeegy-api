@@ -49,13 +49,13 @@ class DbBackup extends Command {
         $db_creds = \Config::get("database.connections.".\Config::get('database.default'));
 
         $cmd_parts = [
-            "mysqldump",
+            env('MYSQL_BIN')."/mysqldump",
             "-u".$db_creds['username'],
             "-p'".$db_creds['password']."'",
             $db_creds['database']." > ",
             $this->dir."/".$db_creds['database'].".".Carbon::now()->format("H").".sql",
         ];
-
+//dd(implode(" ", $cmd_parts));
         $process = new Process(implode(" ", $cmd_parts));
         $process->run();
 
