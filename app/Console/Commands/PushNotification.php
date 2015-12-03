@@ -65,6 +65,9 @@ class PushNotification extends Command {
                     ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-03');
             })->get();
 
+        //all users
+        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
+
         //daily anonymous users push
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
 //            ->where('email', 'like', '%squeegyapp-tmp.com%')
@@ -107,7 +110,7 @@ class PushNotification extends Command {
                 }
 
                 $this->info('Publish to TopicArn');
-//                $this->publish($topic_arn);
+                $this->publish($topic_arn);
 
             } else {
 
