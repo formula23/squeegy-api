@@ -56,28 +56,24 @@ class PushNotification extends Command {
 
         $default_users = \DB::table('users')->select(['id','push_token'])->where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
 
-        //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
-//            ->whereNotIn('id', function($q) {
-//                $q->select('user_id')
-//                    ->from('orders')
-//                    ->where('status', 'done')
-//                    ->where('confirm_at', '>', '2015-11-26')
-//                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-11-30');
-//            })
-//            ->take(2000)
-//            ->skip(2000)
-//            ->get();
+        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
+            ->whereNotIn('id', function($q) {
+                $q->select('user_id')
+                    ->from('orders')
+                    ->where('status', 'done')
+                    ->where('confirm_at', '>', '2015-11-26')
+                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-03');
+            })->get();
 
         //daily anonymous users push
-        $user_qry = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
-            ->where('email', 'like', '%squeegyapp-tmp.com%')
-            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-01')
-            ->orderBy('id');
+//        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
+//            ->where('email', 'like', '%squeegyapp-tmp.com%')
+//            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-01')
+//            ->orderBy('id')->get();
 
-        $users = $user_qry->get();
         $send_list = array_merge($users, $default_users);
-        $this->info("user count: ".count($send_list));
 
+        $this->info("user count: ".count($send_list));
         $this->info("publish message: ".$this->message);
 
         if($this->argument('env') == "test") {
