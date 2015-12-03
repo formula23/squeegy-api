@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 
 class DbBackup extends Command {
@@ -33,10 +34,13 @@ class DbBackup extends Command {
 
         $this->dir = storage_path().'/database/auto_backup/'.Carbon::now()->format("D");
 
-        if ( ! file_exists($this->dir)) {
-            mkdir($this->dir, 0777, true);
+        try {
+            if ( ! File::exists($this->dir)) {
+                File::makeDirectory($this->dir, 0775, true);
+            }
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
         }
-
 	}
 
 	/**
@@ -55,7 +59,7 @@ class DbBackup extends Command {
             $db_creds['database']." > ",
             $this->dir."/".$db_creds['database'].".".Carbon::now()->format("H").".sql",
         ];
-//dd(implode(" ", $cmd_parts));
+
         $process = new Process(implode(" ", $cmd_parts));
         $process->run();
 
