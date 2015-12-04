@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-        $schedule->command('db:backup')->cron('* */6 * * *');
+        $schedule->command('db:backup')->cron('* */4 * * *');
 	}
 
 }
