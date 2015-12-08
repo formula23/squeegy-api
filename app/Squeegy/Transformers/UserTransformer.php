@@ -9,6 +9,7 @@
 namespace App\Squeegy\Transformers;
 
 use App\User;
+use App\WasherActivityLog;
 use League\Fractal\ParamBag;
 use League\Fractal\TransformerAbstract;
 
@@ -20,6 +21,8 @@ class UserTransformer extends TransformerAbstract {
         'roles',
         'orders',
         'vehicles',
+        'activity_logs',
+        'latest_activity_log',
     ];
 
     public function transform(User $user)
@@ -74,6 +77,20 @@ class UserTransformer extends TransformerAbstract {
     public function includeVehicles(User $user)
     {
         return $this->collection($user->vehicles, new VehicleTransformer());
+    }
+
+    public function includeActivityLogs(User $user)
+    {
+        return $this->collection($user->activity_logs, new WasherActivityLogTransformer());
+    }
+
+    public function includeLatestActivityLog(User $user)
+    {
+        $washer_log = new WasherActivityLog();
+        $washer_log->log_on = $user->log_on;
+        $washer_log->log_off = $user->log_off;
+
+        return $this->item($washer_log, new WasherActivityLogTransformer());
     }
 
 }

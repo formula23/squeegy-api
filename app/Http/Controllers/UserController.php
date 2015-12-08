@@ -35,8 +35,15 @@ class UserController extends Controller {
         $type = $request->input('type');
         if(!$type) $type = "customers";
 
-        $paginator = User::$type()->paginate($request->input('per_page', 10));
-//        $paginator = User::paginate($request->input('per_page', 10));
+        $usr_qry = User::$type();
+
+        if($type=="workers") { //get activity log
+            $usr_qry->leftJoin(\DB::raw("(select user_id, log_on, log_off from washer_activity_logs order by log_on desc) as wal"), function($q) {
+                $q->on('users.id', '=', 'wal.user_id');
+            })->groupBy('users.id');
+        }
+
+        $paginator = $usr_qry->paginate($request->input('per_page', 10));
 
         return $this->response->withPaginator($paginator, new UserTransformer());
     }
