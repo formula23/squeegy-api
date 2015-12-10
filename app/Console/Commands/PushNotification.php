@@ -71,7 +71,7 @@ class PushNotification extends Command {
         //daily anonymous users push
         $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
             ->where('email', 'like', '%squeegyapp-tmp.com%')
-            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-07') // 12/8
+            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-08') // 12/8
             ->orderBy('id')->get();
 
         $send_list = array_merge($users, $default_users);
