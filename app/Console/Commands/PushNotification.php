@@ -65,14 +65,45 @@ class PushNotification extends Command {
 //                    ->orWhere(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-03');
 //            })->get();
 
+        $zip_codes = explode(",", $this->option('zip_codes'));
+
+        $users_qry = \DB::table('orders')
+            ->join('users', 'orders.user_id', '=', 'users.id')
+            ->select(['users.id','push_token'])
+            ->where('app_version', '1.4')
+            ->where('push_token', '!=', '')
+            ->where('status','done')
+            ->where(function($q) use ($zip_codes) {
+                if( ! empty($zip_codes)) {
+                    foreach($zip_codes as $zip_code) {
+                        $q->orWhere('location', 'like', '%'.$zip_code.'%');
+                    }
+                }
+            })
+            ->where('location', 'not like', '%31050 Venice Blvd%')
+            ->whereNotIn('user_id', function($q) {
+                $q->select('user_id')
+                    ->from('orders')
+                    ->whereIn('status', ['enroute', 'start', 'done'])
+                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 2 WEEK)'));
+            })
+            ->groupBy('user_id');
+
+        if($this->option('take')) {
+            if($this->option('skip')) $users_qry->skip($this->option('skip'));
+            $users_qry->take($this->option('take'));
+        }
+
+        $users = $users_qry->get();
+
         //all users
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
 
         //daily anonymous users push
-        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
-            ->where('email', 'like', '%squeegyapp-tmp.com%')
-            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-10') // 12/8
-            ->orderBy('id')->get();
+//        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
+//            ->where('email', 'like', '%squeegyapp-tmp.com%')
+//            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-10') // 12/8
+//            ->orderBy('id')->get();
 
         $send_list = array_merge($users, $default_users);
 
@@ -150,6 +181,9 @@ class PushNotification extends Command {
 		return [
 			['message', null, InputOption::VALUE_REQUIRED, 'The message to send.', null],
 			['topic_name', null, InputOption::VALUE_OPTIONAL, 'Topic name.', null],
+			['zip_codes', null, InputOption::VALUE_OPTIONAL, 'Zip codes', null],
+            ['skip', null, InputOption::VALUE_OPTIONAL, 'Skip', null],
+            ['take', null, InputOption::VALUE_OPTIONAL, 'Take', null],
 		];
 	}
 
