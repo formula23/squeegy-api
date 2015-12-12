@@ -67,7 +67,7 @@ class OrdersController extends Controller {
             if(Auth::user()->is('worker')) {
                 $orders->where('worker_id', Auth::user()->id)
                     ->orderBy('confirm_at', 'asc');
-                $this->limit = 1;
+//                $this->limit = 1;
             } else {
                 $orders->where('user_id', Auth::user()->id);
             }
