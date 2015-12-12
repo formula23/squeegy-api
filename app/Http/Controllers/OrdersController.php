@@ -52,7 +52,7 @@ class OrdersController extends Controller {
         parent::__construct();
 
         $this->middleware('auth');
-        $this->middleware('is.worker', ['only' => 'index']);
+//        $this->middleware('is.worker', ['only' => 'index']);
     }
 
     /**
@@ -62,6 +62,16 @@ class OrdersController extends Controller {
     public function index(Request $request)
     {
         $orders = Order::query();
+
+        if(Auth::user()->is('customer|worker')) {
+            if(Auth::user()->is('worker')) {
+                $orders->where('worker_id', Auth::user()->id)
+                    ->orderBy('confirm_at', 'asc');
+                $this->limit = 1;
+            } else {
+                $orders->where('user_id', Auth::user()->id);
+            }
+        }
 
         if($request->input('status')) {
             $filters = explode(',', $request->input('status'));
@@ -98,7 +108,7 @@ class OrdersController extends Controller {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = $request->input('limit');
         }
-
+//dd($orders);
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
@@ -136,6 +146,7 @@ class OrdersController extends Controller {
             $data['eta'] = $eta['time'];
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
+            return $this->response->errorWrongArgs(trans('messages.service.outside_area'));
         }
 
         $order = new Order($data);

@@ -55,7 +55,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function orders()
     {
-        return $this->hasMany('App\Order');
+        $foreign_key = \Auth::user()->is('worker') ? 'worker_id' : null ;
+        return $this->hasMany('App\Order', $foreign_key);
     }
 
     /**
