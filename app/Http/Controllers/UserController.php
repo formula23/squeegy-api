@@ -23,18 +23,44 @@ class UserController extends Controller {
     public function __construct()
     {
         parent::__construct();
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => 'authenticated']);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     */
+    public function index(Request $request)
+    {
+        $type = $request->input('type');
+        if(!$type) $type = "customers";
+
+        $usr_qry = User::$type();
+
+        if($type=="workers") { //get activity log
+            $usr_qry->leftJoin(\DB::raw("(select user_id, log_on, log_off from washer_activity_logs where log_off is null) as wal"), function($q) {
+                $q->on('users.id', '=', 'wal.user_id');
+            })->groupBy('users.id');
+        }
+
+        $paginator = $usr_qry->paginate($request->input('per_page', 10));
+
+        return $this->response->withPaginator($paginator, new UserTransformer());
     }
 
     /**
      * Display the specified resource.
      *
      * @param Request $request
+     * @param int $id
      * @return Response
      */
-	public function show(Request $request)
+	public function show(Request $request, $id = 0)
 	{
-        return $this->response->withItem($request->user(), new UserTransformer);
+        if($id) $user = User::find($id);
+        else $user = $request->user();
+
+        return $this->response->withItem($user, new UserTransformer());
 	}
 
     /**
@@ -149,6 +175,11 @@ class UserController extends Controller {
         }
 
         return $this->response->withItem(\Auth::user(), new UserTransformer());
+    }
+
+    public function authenticated()
+    {
+        return $this->response->withArray(['authenticated'=>\Auth::check()]);
     }
 
     public function duty(Request $request)
