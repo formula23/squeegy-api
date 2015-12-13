@@ -82,7 +82,7 @@ class Orders {
      */
     public static function availability($lat=null, $lng=null) {
 
-        $data = ['accept'=>self::open(), 'description'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
+        $data = ['accept'=>self::open(), 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         if( ! self::open()) {
 
@@ -126,7 +126,11 @@ class Orders {
         self::$lat = $lat;
         self::$lng = $lng;
 
-        $eta = self::getLeadTime($lat, $lng);
+//        $eta = self::getLeadTime($lat, $lng);
+//        dd($eta);
+$eta['time'] = "4";
+$eta['worker_id'] = 1234;
+$eta['code'] = "";
 
         $data['zip_code'] = self::$postal_code;
 
