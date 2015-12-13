@@ -14,11 +14,6 @@
 use App\User;
 use Illuminate\Http\Response;
 
-Route::get('email', function() {
-//    return view('emails.welcome');
-    return View::make('emails.welcome');
-});
-
 Route::group(['prefix' => 'v1'], function() {
 
     Route::get('version', 'VersionController@index');
@@ -33,7 +28,6 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('user/{id}', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
     Route::put('user', 'UserController@update');
-
 
     Route::get('washers', 'WashersController@index');
 
