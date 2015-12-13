@@ -41,6 +41,7 @@ return [
         'closed' => "Sorry we missed you!\nWe'll be back :next_day, ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12).":close_mins",
         'highdemand' => "Due to high-demand we cannot take your order.\nPlease try again later.",
         'outside_area' => "Outside of service area.\nTap here to go to our service area.",
+        'not_available' => 'Squeegy not available at this time. Please try again later.',
     ],
     'emails' => [
         'welcome' => [

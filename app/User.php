@@ -99,6 +99,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\WasherActivityLog');
     }
 
+    public function activity()
+    {
+        return $this->hasMany('App\ActivityLog');
+    }
+
     /**
      * @param $query
      * @return mixed

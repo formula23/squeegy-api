@@ -34,6 +34,12 @@ class Orders {
     protected static $final_location = null;
     protected static $holiday=null;
 
+    public static $lat=null;
+    public static $lng=null;
+    public static $city=null;
+    public static $state=null;
+    public static $postal_code=null;
+
     /**
      * @return bool
      */
@@ -117,16 +123,23 @@ class Orders {
             return $data;
         }
 
+        self::$lat = $lat;
+        self::$lng = $lng;
+
         $eta = self::getLeadTime($lat, $lng);
+
+        $data['zip_code'] = self::$postal_code;
 
         if ( ! empty($eta['error_msg'])) {
             $data['accept'] = 0;
             $data['description'] = $eta['error_msg'];
+            $data['code'] = $eta['error_code'];
             return $data;
         }
 
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
+
 
         if(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
                 $data['accept'] = 0;
@@ -197,11 +210,11 @@ class Orders {
             'lng'=>round((float)$lng, 3),
         ]);
 
-        $customer_postal = self::geocode($request_loc_pair);
+        self::geocode($request_loc_pair);
 
-        $regions = Region::where('postal_code', $customer_postal)->get();
+        $regions = Region::where('postal_code', self::$postal_code)->get();
         if( ! $regions->count()) {
-            return ['error_msg'=>trans('messages.service.outside_area')];
+            return ['error_msg'=>trans('messages.service.outside_area'), 'error_code'=>'outside_area'];
         }
 
         $active_workers_qry = User::workers()
@@ -216,13 +229,13 @@ class Orders {
                 ->whereHas('activity_logs', function($q) {
                     $q->whereNull('log_off');
                 })
-                ->whereHas('zones.regions', function($q) use ($customer_postal) {
-                    $q->where('postal_code', $customer_postal);
+                ->whereHas('zones.regions', function($q) {
+                    $q->where('postal_code', self::$postal_code);
                 });
 
         $active_workers = $active_workers_qry->get();
 
-        if( ! $active_workers->count()) return ['error_msg'=>'Squeegy not available at this time. Please try again later.'];
+        if( ! $active_workers->count()) return ['error_msg'=>trans('messages.service.not_available'), 'error_code'=>'not_available'];
 
         $complete_times_by_worker=[];
         $complete_times_by_worker2=[];
@@ -441,33 +454,50 @@ class Orders {
 
     private static function geocode($latlng)
     {
-        $customer_postal = "";
         try {
 
             if(Cache::has($latlng)) {
-                $customer_postal = Cache::get($latlng);
+                $results = Cache::get($latlng);
+                self::parse_add_components($results);
             } else {
-                $response = \GoogleMaps::load('geocoding')
-                    ->setParam (['latlng' => $latlng])
-                    ->get();
+                $response = \GoogleMaps::load('geocoding')->setParam (['latlng' => $latlng])->get();
                 $json_resp = json_decode($response);
-                if($json_resp->status =="OK") {
-                    foreach($json_resp->results as $add_comps) {
-                        foreach($add_comps->address_components as $add_comp) {
-                            if($add_comp->types[0]=="postal_code") {
-                                $customer_postal = $add_comp->long_name;
-                                Cache::forever($latlng, $customer_postal);
-                                break 2;
-                            }
-                        }
-                    }
+                if($json_resp->status == "OK") {
+                    self::parse_add_components($json_resp->results);
+                    Cache::forever($latlng, $json_resp->results);
                 }
             }
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
         }
 
-        return $customer_postal;
+        return;
+    }
+
+    private static function parse_add_components($results)
+    {
+        $data_cnt=0;
+
+        foreach($results as $result) {
+
+            foreach ($result->address_components as $address_component) {
+                if($data_cnt==3) { break(2); }
+
+                if ($address_component->types[0] == "postal_code") {
+                    self::$postal_code = $address_component->long_name;
+                    $data_cnt++;
+                }
+                if ($address_component->types[0] == "locality") {
+                    self::$city = $address_component->long_name;
+                    $data_cnt++;
+                }
+                if ($address_component->types[0] == "administrative_area_level_1") {
+                    self::$state = $address_component->short_name;
+                    $data_cnt++;
+                }
+            }
+        }
+        return;
     }
 
     private static function traffic_buffer($travel_time)

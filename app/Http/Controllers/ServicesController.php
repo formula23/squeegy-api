@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+
+use App\EtaLog;
 use App\Http\Requests;
 use App\Squeegy\Orders;
 use App\Squeegy\Transformers\ServiceAvailabilityTransformer;
@@ -52,9 +54,23 @@ class ServicesController extends Controller {
         return $this->response->withCollection($service_coords, new ServiceCoordTransformer);
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     public function availability(Request $request)
     {
         $availability = Orders::availability($request->input('lat'), $request->input('lng'));
+
+        EtaLog::create([
+            'eta' => $availability["time"],
+            'city' => Orders::$city,
+            'state' => Orders::$state,
+            'postal_code' => Orders::$postal_code,
+            'latitude' => Orders::$lat,
+            'longitude' => Orders::$lng,
+            'message' => $availability["code"],
+        ]);
 
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer);
     }
