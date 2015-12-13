@@ -62,15 +62,15 @@ class ServicesController extends Controller {
     {
         $availability = Orders::availability($request->input('lat'), $request->input('lng'));
 
-//        EtaLog::create([
-//            'eta' => $availability["time"],
-//            'city' => Orders::$city,
-//            'state' => Orders::$state,
-//            'postal_code' => Orders::$postal_code,
-//            'latitude' => Orders::$lat,
-//            'longitude' => Orders::$lng,
-//            'message' => $availability["code"],
-//        ]);
+        EtaLog::create([
+            'eta' => $availability["time"],
+            'city' => Orders::$city,
+            'state' => Orders::$state,
+            'postal_code' => Orders::$postal_code,
+            'latitude' => Orders::$lat,
+            'longitude' => Orders::$lng,
+            'message' => $availability["code"],
+        ]);
 
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer);
     }

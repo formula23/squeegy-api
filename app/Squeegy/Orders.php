@@ -126,11 +126,7 @@ class Orders {
         self::$lat = $lat;
         self::$lng = $lng;
 
-//        $eta = self::getLeadTime($lat, $lng);
-//        dd($eta);
-$eta['time'] = "4";
-$eta['worker_id'] = 1234;
-$eta['code'] = "";
+        $eta = self::getLeadTime($lat, $lng);
 
         $data['zip_code'] = self::$postal_code;
 
