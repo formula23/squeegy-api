@@ -209,7 +209,10 @@ class Orders {
     {
         //geo-code customer request location lat-long
         //used to get correct workers
+
         $request_loc_pair = self::get_location($lat, $lng);
+
+        self::geocode($request_loc_pair);
 
         $regions = Region::where('postal_code', self::$postal_code)->get();
         if( ! $regions->count()) {
