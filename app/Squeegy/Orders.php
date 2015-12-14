@@ -84,11 +84,16 @@ class Orders {
 
         $data = ['accept'=>self::open(), 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
+        self::geocode(self::get_location($lat, $lng));
+        self::$lat = $lat;
+        self::$lng = $lng;
+
         if( ! self::open()) {
 
             if(env('MAINTENANCE')) {
                 $data['accept'] = 0;
                 $data['description'] = "Squeegy is currently closed for scheduled maintenance.";
+                $data['code'] = "maintenance";
                 return $data;
             }
 
@@ -97,6 +102,7 @@ class Orders {
                     case "thanksgiving":
                         $data['accept'] = 0;
                         $data['description'] = "Happy Thanksgiving!\nWe'll be back Friday, 9am - 4:45pm";
+                        $data['code'] = "holiday";
                         break;
                 }
                 return $data;
@@ -120,11 +126,9 @@ class Orders {
             }
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
+            $data['code'] = "closed";
             return $data;
         }
-
-        self::$lat = $lat;
-        self::$lng = $lng;
 
         $eta = self::getLeadTime($lat, $lng);
 
@@ -205,12 +209,7 @@ class Orders {
     {
         //geo-code customer request location lat-long
         //used to get correct workers
-        $request_loc_pair = implode(",", [
-            'lat'=>round((float)$lat, 3),
-            'lng'=>round((float)$lng, 3),
-        ]);
-
-        self::geocode($request_loc_pair);
+        $request_loc_pair = self::get_location($lat, $lng);
 
         $regions = Region::where('postal_code', self::$postal_code)->get();
         if( ! $regions->count()) {
@@ -450,6 +449,14 @@ class Orders {
         $travel_time = max(self::$travel_time_buffer, $travel_time);
 
         return round($travel_time * self::traffic_buffer($travel_time));
+    }
+
+    private static function get_location($lat, $lng)
+    {
+        return implode(",", [
+            'lat'=>round((float)$lat, 3),
+            'lng'=>round((float)$lng, 3),
+        ]);
     }
 
     private static function geocode($latlng)
