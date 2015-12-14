@@ -17,9 +17,9 @@ class CreateEtaLogsTable extends Migration {
 			$table->increments('id');
             $table->integer('user_id')->unsigned()->index()->nullable();
             $table->integer('eta')->unsigned()->nullable();
-            $table->string('city');
-            $table->string('state');
-            $table->string('postal_code');
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('postal_code')->nullable();
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
             $table->string('message')->nullable();
