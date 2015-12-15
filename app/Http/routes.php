@@ -29,9 +29,8 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('user', 'Auth\AuthController@postRegister');
     Route::put('user', 'UserController@update');
 
-    Route::get('washers', 'WashersController@index');
-
     Route::post('user/duty', 'UserController@duty');
+    Route::post('user/location', 'UserController@location');
 
     Route::post('auth/login', 'Auth\AuthController@postLogin');
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
