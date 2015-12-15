@@ -425,7 +425,7 @@ class Orders {
 
         switch(true) {
             case ($miles < 3):
-                self::$mph = 10;
+                self::$mph = 9;
                 break;
             case ($miles >= 3 && $miles <= 7):
                 self::$mph = 12;
