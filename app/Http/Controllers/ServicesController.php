@@ -71,6 +71,7 @@ class ServicesController extends Controller {
                 'latitude' => Orders::$lat,
                 'longitude' => Orders::$lng,
                 'message' => $availability["code"],
+                'ip_address' => $request->getClientIp(),
             ]);
         } catch(\Exception $e) {
             \Bugsnag::notifyException($e);
