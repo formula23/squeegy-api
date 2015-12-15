@@ -425,7 +425,7 @@ class Orders {
 
         switch(true) {
             case ($miles < 3):
-                self::$mph = 9;
+                self::$mph = 8.5;
                 break;
             case ($miles >= 3 && $miles <= 7):
                 self::$mph = 12;
@@ -436,7 +436,7 @@ class Orders {
         }
 
         $travel_time = round(($miles / self::$mph) * 60);
-        return $travel_time;
+        return max(8, $travel_time);
 
 //        $travel_time = self::$travel_time;
 //
