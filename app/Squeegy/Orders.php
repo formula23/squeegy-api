@@ -80,8 +80,8 @@ class Orders {
      * @param null $lng
      * @return array
      */
-    public static function availability($lat=null, $lng=null) {
-
+    public static function availability($lat=null, $lng=null)
+    {
         $data = ['accept'=>self::open(), 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
@@ -420,38 +420,54 @@ class Orders {
 
     private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
-        $travel_time = static::$travel_time;
+        $miles = self::get_distance($origin, $destination);
 
-        try {
+        $travel_time = $miles * 5.5;
 
-            $cache_key = implode(",", [$origin,$destination]);
-            if(Cache::has($cache_key)) {
-                $travel_time = Cache::get($cache_key);
-            } else {
-                $response = \GoogleMaps::load('directions')
-                    ->setParam([
-                        'origin'=>$origin,
-                        'destination'=>$destination,
-                    ])
-                    ->get();
-                $json_resp = json_decode($response);
-                if($json_resp->status == "OK") {
-                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-                    if( ! $cache_exp) {
-                        Cache::forever($cache_key, $travel_time); //store for one day
-                    } else {
-                        Cache::put($cache_key, $travel_time, $cache_exp);
-                    }
-                }
-            }
-
-        } catch (\Exception $e) {
-            \Bugsnag::notifyException($e);
-        }
+//        try {
+//
+//            $cache_key = implode(",", [$origin,$destination]);
+//            if(Cache::has($cache_key)) {
+//                $travel_time = Cache::get($cache_key);
+//            } else {
+//                $response = \GoogleMaps::load('directions')
+//                    ->setParam([
+//                        'origin'=>$origin,
+//                        'destination'=>$destination,
+//                    ])
+//                    ->get();
+//                $json_resp = json_decode($response);
+//                if($json_resp->status == "OK") {
+//                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+//                    if( ! $cache_exp) {
+//                        Cache::forever($cache_key, $travel_time); //store for one day
+//                    } else {
+//                        Cache::put($cache_key, $travel_time, $cache_exp);
+//                    }
+//                }
+//            }
+//
+//        } catch (\Exception $e) {
+//            \Bugsnag::notifyException($e);
+//        }
 
         $travel_time = max(self::$travel_time_buffer, $travel_time);
 
         return round($travel_time * self::traffic_buffer($travel_time));
+    }
+
+    private static function get_distance($pt1, $pt2)
+    {
+        list($lat1, $lon1) = explode(",", $pt1);
+        list($lat2, $lon2) = explode(",", $pt2);
+
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = round($dist * 60 * 1.1515);
+
+        return $miles;
     }
 
     private static function get_location($lat, $lng)
@@ -513,7 +529,7 @@ class Orders {
     private static function traffic_buffer($travel_time)
     {
         if($travel_time < 20) {
-            return 1.6;
+            return 1.5;
         } else {
             return 1.3;
         }
