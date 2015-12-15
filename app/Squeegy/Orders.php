@@ -422,6 +422,19 @@ class Orders {
     private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
         $miles = self::get_distance($origin, $destination);
+
+        switch(true) {
+            case ($miles < 3):
+                self::$mph = 10;
+                break;
+            case ($miles >= 3 && $miles <= 7):
+                self::$mph = 12;
+                break;
+            case ($miles > 7):
+                self::$mph = 15;
+                break;
+        }
+
         $travel_time = round(($miles / self::$mph) * 60);
         return $travel_time;
 
