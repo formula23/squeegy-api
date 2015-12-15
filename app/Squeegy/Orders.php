@@ -422,21 +422,22 @@ class Orders {
     private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
         $miles = self::get_distance($origin, $destination);
-
+// dd($miles);
         switch(true) {
             case ($miles < 3):
-                self::$mph = 8.5;
+                self::$mph = 16;
                 break;
             case ($miles >= 3 && $miles <= 7):
-                self::$mph = 12;
+                self::$mph = 18;
                 break;
             case ($miles > 7):
-                self::$mph = 15;
+                self::$mph = 20;
                 break;
         }
 
-        $travel_time = round(($miles / self::$mph) * 60);
-        return max(8, $travel_time);
+        $travel_time = max(8, round(($miles / self::$mph) * 60));
+
+        return round($travel_time * self::traffic_buffer($travel_time));
 
 //        $travel_time = self::$travel_time;
 //
@@ -483,7 +484,7 @@ class Orders {
         $dist = rad2deg($dist);
         $miles = round($dist * 60 * 1.1515);
 
-        return $miles;
+        return ($miles * 1.3);
     }
 
     private static function get_location($lat, $lng)
