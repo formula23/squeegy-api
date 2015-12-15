@@ -5,6 +5,7 @@ use App\Http\Requests;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
 use App\WasherActivityLog;
+use App\WasherLocation;
 use Carbon\Carbon;
 use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
@@ -204,6 +205,22 @@ class UserController extends Controller {
 
         return $this->response->withArray(['success'=>1]);
 
+    }
+
+    public function location(Request $request)
+    {
+        if( ! \Auth::user()->can('set.location')) {
+            return $this->response->errorUnauthorized();
+        }
+
+        $data = [
+            'latitude'=>$request->input('latitude'),
+            'longitude'=>$request->input('longitude')
+        ];
+
+        \Auth::user()->current_location()->updateOrCreate(['user_id'=>\Auth::user()->id], $data);
+
+        return $this->response->withArray($data);
     }
 
 }
