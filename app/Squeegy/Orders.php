@@ -30,6 +30,7 @@ class Orders {
     protected static $travel_time_buffer_pct = 1.2;
     protected static $open_orders;
     protected static $bypass_time = 15;
+    protected static $mph = 14;
     protected static $last_job = null;
     protected static $final_location = null;
     protected static $holiday=null;
@@ -250,7 +251,7 @@ class Orders {
 
             if($active_worker->jobs->count() < 2) {
                 $byp_time = self::getTravelTime($worker_origin, $request_loc_pair);
-//                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $worker_origin."-->".$request_loc_pair." :: ".$byp_time;
+                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $worker_origin."-->".$request_loc_pair." :: ".$byp_time;
 //                 mail("dan@formula23.com", "byp - ".$active_worker->id, $byp_time."==".$worker_origin."->".$request_loc_pair);
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
@@ -260,7 +261,7 @@ class Orders {
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
-//                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
+                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
@@ -289,16 +290,16 @@ class Orders {
 
                         if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
                             $time_elapsed = self::$last_job->done_at->diffInMinutes();
-//                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
+                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
                         } else {
                             $time_elapsed = $job->enroute_at->diffInMinutes();
-//                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
+                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
                         }
 
-//                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time." elap:".$time_elapsed;
+                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time." elap:".$time_elapsed;
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
-//                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
+                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
 
@@ -309,7 +310,7 @@ class Orders {
 
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
-//                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location;
+                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location;
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
             }
@@ -420,38 +421,38 @@ class Orders {
 
     private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
-//        $miles = self::get_distance($origin, $destination);
+        $miles = self::get_distance($origin, $destination);
+        $travel_time = round(($miles / self::$mph) * 60);
+        return $travel_time;
+
+//        $travel_time = self::$travel_time;
 //
-//        $travel_time = $miles * 5.5;
-
-        $travel_time = self::$travel_time;
-        
-        try {
-
-            $cache_key = implode(",", [$origin,$destination]);
-            if(Cache::has($cache_key)) {
-                $travel_time = Cache::get($cache_key);
-            } else {
-                $response = \GoogleMaps::load('directions')
-                    ->setParam([
-                        'origin'=>$origin,
-                        'destination'=>$destination,
-                    ])
-                    ->get();
-                $json_resp = json_decode($response);
-                if($json_resp->status == "OK") {
-                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-                    if( ! $cache_exp) {
-                        Cache::forever($cache_key, $travel_time); //store for one day
-                    } else {
-                        Cache::put($cache_key, $travel_time, $cache_exp);
-                    }
-                }
-            }
-
-        } catch (\Exception $e) {
-            \Bugsnag::notifyException($e);
-        }
+//        try {
+//
+//            $cache_key = implode(",", [$origin,$destination]);
+//            if(Cache::has($cache_key)) {
+//                $travel_time = Cache::get($cache_key);
+//            } else {
+//                $response = \GoogleMaps::load('directions')
+//                    ->setParam([
+//                        'origin'=>$origin,
+//                        'destination'=>$destination,
+//                    ])
+//                    ->get();
+//                $json_resp = json_decode($response);
+//                if($json_resp->status == "OK") {
+//                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+//                    if( ! $cache_exp) {
+//                        Cache::forever($cache_key, $travel_time); //store for one day
+//                    } else {
+//                        Cache::put($cache_key, $travel_time, $cache_exp);
+//                    }
+//                }
+//            }
+//
+//        } catch (\Exception $e) {
+//            \Bugsnag::notifyException($e);
+//        }
 
         $travel_time = max(self::$travel_time_buffer, $travel_time);
 
@@ -475,8 +476,8 @@ class Orders {
     private static function get_location($lat, $lng)
     {
         return implode(",", [
-            'lat'=>round((float)$lat, 3),
-            'lng'=>round((float)$lng, 3),
+            'lat'=>round((float)$lat, 2),
+            'lng'=>round((float)$lng, 2),
         ]);
     }
 
