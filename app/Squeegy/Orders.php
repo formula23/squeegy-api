@@ -420,36 +420,38 @@ class Orders {
 
     private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
-        $miles = self::get_distance($origin, $destination);
-
-        $travel_time = $miles * 5.5;
-
-//        try {
+//        $miles = self::get_distance($origin, $destination);
 //
-//            $cache_key = implode(",", [$origin,$destination]);
-//            if(Cache::has($cache_key)) {
-//                $travel_time = Cache::get($cache_key);
-//            } else {
-//                $response = \GoogleMaps::load('directions')
-//                    ->setParam([
-//                        'origin'=>$origin,
-//                        'destination'=>$destination,
-//                    ])
-//                    ->get();
-//                $json_resp = json_decode($response);
-//                if($json_resp->status == "OK") {
-//                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-//                    if( ! $cache_exp) {
-//                        Cache::forever($cache_key, $travel_time); //store for one day
-//                    } else {
-//                        Cache::put($cache_key, $travel_time, $cache_exp);
-//                    }
-//                }
-//            }
-//
-//        } catch (\Exception $e) {
-//            \Bugsnag::notifyException($e);
-//        }
+//        $travel_time = $miles * 5.5;
+
+        $travel_time = self::$travel_time;
+        
+        try {
+
+            $cache_key = implode(",", [$origin,$destination]);
+            if(Cache::has($cache_key)) {
+                $travel_time = Cache::get($cache_key);
+            } else {
+                $response = \GoogleMaps::load('directions')
+                    ->setParam([
+                        'origin'=>$origin,
+                        'destination'=>$destination,
+                    ])
+                    ->get();
+                $json_resp = json_decode($response);
+                if($json_resp->status == "OK") {
+                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+                    if( ! $cache_exp) {
+                        Cache::forever($cache_key, $travel_time); //store for one day
+                    } else {
+                        Cache::put($cache_key, $travel_time, $cache_exp);
+                    }
+                }
+            }
+
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
 
         $travel_time = max(self::$travel_time_buffer, $travel_time);
 
