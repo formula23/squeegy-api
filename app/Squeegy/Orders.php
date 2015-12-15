@@ -251,7 +251,7 @@ class Orders {
 
             if($active_worker->jobs->count() < 2) {
                 $byp_time = self::getTravelTime($worker_origin, $request_loc_pair);
-                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $worker_origin."-->".$request_loc_pair." :: ".$byp_time;
+//                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $worker_origin."-->".$request_loc_pair." :: ".$byp_time;
 //                 mail("dan@formula23.com", "byp - ".$active_worker->id, $byp_time."==".$worker_origin."->".$request_loc_pair);
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
@@ -261,7 +261,7 @@ class Orders {
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
-                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
+//                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
             }
@@ -290,16 +290,16 @@ class Orders {
 
                         if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
                             $time_elapsed = self::$last_job->done_at->diffInMinutes();
-                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
+//                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
                         } else {
                             $time_elapsed = $job->enroute_at->diffInMinutes();
-                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
+//                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
                         }
 
-                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time." elap:".$time_elapsed;
+//                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time." elap:".$time_elapsed;
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                     }
-                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
+//                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                 }
 
@@ -310,7 +310,7 @@ class Orders {
 
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
-                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location;
+//                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location;
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
             }
@@ -422,7 +422,7 @@ class Orders {
     private static function getTravelTime($origin, $destination, $cache_exp=1440)
     {
         $miles = self::get_distance($origin, $destination);
-// dd($miles);
+
         switch(true) {
             case ($miles < 3):
                 self::$mph = 16;
@@ -468,9 +468,9 @@ class Orders {
 //            \Bugsnag::notifyException($e);
 //        }
 
-        $travel_time = max(self::$travel_time_buffer, $travel_time);
+//        $travel_time = max(self::$travel_time_buffer, $travel_time);
 
-        return round($travel_time * self::traffic_buffer($travel_time));
+//        return round($travel_time * self::traffic_buffer($travel_time));
     }
 
     private static function get_distance($pt1, $pt2)
