@@ -14,7 +14,7 @@ class CreateUser extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'users:create';
+	protected $name = 'user:create';
 
 	/**
 	 * The console command description.
@@ -63,6 +63,14 @@ class CreateUser extends Command {
         if($new_user) {
             $role = Role::where('slug', $this->option('user_type'))->first();
             $new_user->attachRole($role->id);
+
+            $zone_location = [
+                '1' => ['latitude'=>'34.041868', 'longitude'=>'-118.425181'],
+                '2' => ['latitude'=>'33.87313753', 'longitude'=>'-118.35977216'],
+            ];
+
+            $new_user->default_location()->create($zone_location[$this->option('zone')]);
+            $new_user->zones()->attach($this->option('zone'));
         }
 
         $this->info("User created. ID# ".$new_user->id);
@@ -80,7 +88,8 @@ class CreateUser extends Command {
 			['name', InputArgument::REQUIRED, 'User name'],
 			['email', InputArgument::REQUIRED, 'User email address'],
 			['password', InputArgument::REQUIRED, 'User password'],
-			['phone', InputArgument::OPTIONAL, 'User phone number: 000-000-0000'],
+			['phone', InputArgument::OPTIONAL, 'User phone number: 0000000000'],
+
 		];
 	}
 
@@ -93,6 +102,7 @@ class CreateUser extends Command {
 	{
 		return [
 			['user_type', null, InputOption::VALUE_OPTIONAL, 'worker OR customer', 'worker'],
+			['zone', null, InputOption::VALUE_OPTIONAL, '1 OR 2', '1'],
 		];
 	}
 
