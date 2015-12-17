@@ -100,10 +100,10 @@ class PushNotification extends Command {
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
 
         //daily anonymous users push
-//        $users_qry = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
-//            ->where('email', 'like', '%squeegyapp-tmp.com%')
-//            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-14') // 12/8
-//            ->orderBy('id');
+        $users_qry = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
+            ->where('email', 'like', '%squeegyapp-tmp.com%')
+            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-15') // 12/8
+            ->orderBy('id');
 
         $users = $users_qry->get();
 
