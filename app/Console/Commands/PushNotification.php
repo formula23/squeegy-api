@@ -89,11 +89,6 @@ class PushNotification extends Command {
             })
             ->groupBy('user_id');
 
-        if($this->option('take')) {
-            if($this->option('skip')) $users_qry->skip($this->option('skip'));
-            $users_qry->take($this->option('take'));
-        }
-
 
 
         //all users
@@ -104,6 +99,14 @@ class PushNotification extends Command {
             ->where('email', 'like', '%squeegyapp-tmp.com%')
 //            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2015-12-17') // 12/8
             ->orderBy('id');
+
+
+        ///limits
+        if($this->option('take')) {
+            if($this->option('skip')) $users_qry->skip($this->option('skip'));
+            $users_qry->take($this->option('take'));
+        }
+
 
         $users = $users_qry->get();
 
