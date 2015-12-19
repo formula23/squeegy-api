@@ -18,7 +18,7 @@ return [
         'from' => 'team@squeegyapp.com',
         'from_name' => 'Team Squeegy',
         'receipt' => [
-            'photo_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders/',
+            'photo_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders' . (app()->environment('production') ? "/" : "-dev/" ),
         ]
     ],
     'order_seq' => [
