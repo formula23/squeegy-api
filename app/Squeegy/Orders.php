@@ -51,7 +51,7 @@ class Orders {
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
-//        $now = Carbon::create(2015,11,25,17,46,0);
+//        $now = Carbon::create(2015,12,25,13,46,0);
 
         if($now->dayOfWeek == 0) return false;
 
@@ -65,8 +65,18 @@ class Orders {
             return false;
         }
 
-//        $open_time = Carbon::create(2015,11,25,9,0,0);
-//        $close_time = Carbon::create(2015,11,25,16,45,0);
+        if($now > Carbon::create(2015,12,23,16,30) && $now < Carbon::create(2015,12,25,23,59,59)) {
+            self::$holiday = "xmas";
+            return false;
+        }
+
+        if($now > Carbon::create(2015,12,31,16,30) && $now < Carbon::create(2016,01,01,23,59,59)) {
+            self::$holiday = "newyear";
+            return false;
+        }
+
+//        $open_time = Carbon::create(2015,12,25,8,0,0);
+//        $close_time = Carbon::create(2015,12,25,16,30,0);
 
         if($now >= $open_time && $now <= $close_time) return true;
         return false;
@@ -101,11 +111,17 @@ class Orders {
             if(self::$holiday != null) {
                 switch(self::$holiday) {
                     case "thanksgiving":
-                        $data['accept'] = 0;
                         $data['description'] = "Happy Thanksgiving!\nWe'll be back Friday, 9am - 4:45pm";
-                        $data['code'] = "holiday";
+                        break;
+                    case "xmas":
+                        $data['description'] = "Merry Christmas from Squeegy!\nWe'll be back Saturday 26th, 8am - 4:30pm";
+                        break;
+                    case "newyear":
+                        $data['description'] = "Happy New Year!\nSqueegy will return Saturday 2nd, 8am - 4:30pm";
                         break;
                 }
+                $data['accept'] = 0;
+                $data['code'] = "holiday";
                 return $data;
             }
 
