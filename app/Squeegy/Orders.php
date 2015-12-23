@@ -65,7 +65,7 @@ class Orders {
             return false;
         }
 
-        if($now > Carbon::create(2015,12,23,16,30) && $now < Carbon::create(2015,12,25,23,59,59)) {
+        if($now > Carbon::create(2015,12,24,16,30) && $now < Carbon::create(2015,12,25,23,59,59)) {
             self::$holiday = "xmas";
             return false;
         }
