@@ -85,7 +85,7 @@ class PushNotification extends Command {
                 $q->select('user_id')
                     ->from('orders')
                     ->whereIn('status', ['enroute', 'start', 'done'])
-                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 3 WEEK)'));
+                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 2 WEEK)'));
             })
             ->groupBy('user_id');
 
