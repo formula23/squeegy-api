@@ -50,5 +50,6 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('notify/push', 'NotifyController@push');
 
     Route::get('washers/locations', 'WashersController@locations');
+    Route::get('washers/duty-status', 'WashersController@dutyStatus');
 
 });
