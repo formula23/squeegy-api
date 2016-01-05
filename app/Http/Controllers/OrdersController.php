@@ -281,9 +281,21 @@ class OrdersController extends Controller {
 
         }
 
+        //update other fields
+        $update_fields = [
+            'start_at',
+            'done_at',
+        ];
+
+        foreach($update_fields as $update_field) {
+            if(isset($request_data[$update_field])) {
+                $order->{$update_field} = $request_data[$update_field];
+            }
+        }
+
         $order->save();
 
-        return $this->response->withItem($order, new OrderTransformer);
+        return $this->response->withItem($order, new OrderTransformer());
     }
 
     /**
