@@ -19,6 +19,7 @@ class Order extends Model {
         'job_number',
         'status',
         'eta',
+        'etc',
         'location',
         'instructions',
         'confirm_at',

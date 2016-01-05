@@ -20,12 +20,12 @@ function is_internal()
     ]);
 }
 
-function eta_real_time(Order $order)
+function eta_real_time(Order $order, $round = 10)
 {
     try {
         if( ! empty($order->confirm_at)) {
             $exact_eta = $order->confirm_at->addMinutes($order->eta);
-            $arrival_time = Carbon::createFromTimestamp(ceil($exact_eta->timestamp / (15 * 60)) * (15 * 60));
+            $arrival_time = Carbon::createFromTimestamp(ceil(strtotime($exact_eta->format('Y-m-d H:i')) / ($round * 60)) * ($round * 60));
             return $arrival_time->format('g:i a');
         }
     } catch (\Exception $e) {

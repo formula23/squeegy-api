@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Auth;
 
 class WashersController extends Controller {
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->middleware('auth', ['only' => 'dutyStatus']);
+    }
+
     public function locations(Request $request)
     {
         $washer_locations_qry = WasherLocation::whereDate('washer_locations.updated_at', '=', Carbon::today()->toDateString());

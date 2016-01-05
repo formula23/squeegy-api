@@ -214,7 +214,7 @@ class OrdersController extends Controller {
                     if ( ! empty($request_data['cancel_reason']))
                         $order->cancel_reason = $request_data['cancel_reason'];
 
-                    if(Auth::user()->is('worker')) {
+                    if(Auth::user()->can('order.status')) {
                         Event::fire(new OrderCancelledByWorker($order));
                     } else {
                         Event::fire(new OrderCancelled($order));
@@ -235,6 +235,7 @@ class OrdersController extends Controller {
 //                    $eta = Orders::getLeadTimeByOrder($order);
 
                     $order->eta = $availability['time'];
+                    $order->etc = $order->service->time;
                     $order->worker_id = $availability['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
@@ -248,7 +249,7 @@ class OrdersController extends Controller {
                     break;
                 case "enroute":
 
-                    if( ! $request->user()->is('worker')) {
+                    if( ! $request->user()->can('order.status')) {
                         return $this->response->errorUnauthorized();
                     }
 
@@ -259,7 +260,7 @@ class OrdersController extends Controller {
                     break;
                 case "start":
 
-                    if( ! $request->user()->is('worker') || $request->user()->id != $order->worker_id) {
+                    if( ! $request->user()->can('order.status') || $request->user()->id != $order->worker_id) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
@@ -269,7 +270,7 @@ class OrdersController extends Controller {
 
                 case "done":
 
-                    if( ! $request->user()->is('worker') || $request->user()->id != $order->worker_id) {
+                    if( ! $request->user()->can('order.status') || $request->user()->id != $order->worker_id) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
