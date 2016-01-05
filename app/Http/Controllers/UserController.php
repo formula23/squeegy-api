@@ -190,7 +190,7 @@ class UserController extends Controller {
         }
 
         if(\Auth::user()->is('admin') && !$request->input('user_id')) {
-            return $this->response->withArray(['message'=>'user_id required']);
+            return $this->response->errorWrongArgs('user_id required');
         }
 
         $worker_id = ($request->input('user_id') ? $request->input('user_id') : \Auth::user()->id );
