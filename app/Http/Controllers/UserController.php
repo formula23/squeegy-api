@@ -189,10 +189,6 @@ class UserController extends Controller {
             return $this->response->errorUnauthorized();
         }
 
-        if(\Auth::user()->is('admin') && !$request->input('user_id')) {
-            return $this->response->errorWrongArgs('user_id required');
-        }
-
         $worker_id = ($request->input('user_id') ? $request->input('user_id') : \Auth::user()->id );
 
         WasherActivityLog::where('user_id', $worker_id)->whereNull('log_off')->update(['log_off' => Carbon::now()]);
