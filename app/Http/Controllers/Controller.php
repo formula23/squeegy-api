@@ -190,6 +190,12 @@ abstract class Controller extends ApiGuardController {
                     $this->apiLog->method     = $request->getMethod();
                     $this->apiLog->params     = http_build_query(Input::all());
                     $this->apiLog->ip_address = $request->getClientIp();
+                    $this->apiLog->device     = $request->header('X-Device');
+                    $this->apiLog->device_os  = $request->header('X-Device-Software-Version');
+                    $this->apiLog->device_carrier = $request->header('X-Device-Carrier');
+                    $this->apiLog->device_identifier = $request->header('X-Device-Identifier');
+                    $this->apiLog->app_type = $request->header('X-Application-Type');
+                    $this->apiLog->app_version = $request->header('X-Application-Version');
                     $this->apiLog->save();
 
                 }
@@ -197,5 +203,6 @@ abstract class Controller extends ApiGuardController {
             $this->initialize();
 
         }, ['apiMethods' => $this->apiMethods]);
+
     }
 }

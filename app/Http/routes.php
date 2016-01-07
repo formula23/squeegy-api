@@ -17,6 +17,7 @@ use Illuminate\Http\Response;
 Route::group(['prefix' => 'v1'], function() {
 
     Route::get('version', 'VersionController@index');
+    Route::post('version', 'VersionController@check');
 
     Route::resource('vehicles', 'VehiclesController');
 
