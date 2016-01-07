@@ -67,12 +67,6 @@ abstract class Controller extends ApiGuardController {
                 $key = $request->header(Config::get('apiguard.keyName', 'X-Authorization'));
 
                 if (empty($key)) {
-                    // Try getting the key from elsewhere
-                    $key = Input::get(Config::get('apiguard.keyName', 'X-Authorization'));
-                }
-
-                if (empty($key)) {
-                    // It's still empty!
                     return $this->response->errorUnauthorized('No API Key');
                 }
 
