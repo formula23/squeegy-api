@@ -2,6 +2,7 @@
 
 use App\Discount;
 use App\Events\BadRating;
+use App\Events\OrderAssign;
 use App\Events\OrderCancelled;
 use App\Events\OrderCancelledByWorker;
 use App\Events\OrderConfirmed;
@@ -36,9 +37,11 @@ class OrdersController extends Controller {
         'cancel' => 100,
         'request' => 1,
         'confirm' => 2,
-        'enroute' => 3,
-        'start' => 4,
-        'done' => 5,
+        'receive' => 2,
+        'assign' => 3,
+        'enroute' => 4,
+        'start' => 5,
+        'done' => 6,
     ];
 
 
@@ -86,7 +89,7 @@ class OrdersController extends Controller {
             }
         }
 
-        foreach(['confirm', 'enroute', 'start', 'done', 'cancel', 'created', 'updated'] as $status_time) {
+        foreach(['confirm', 'assign', 'enroute', 'start', 'done', 'cancel', 'created', 'updated'] as $status_time) {
             if($request->input($status_time.'_on')) {
 
                 $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $request->input($status_time.'_on'));
@@ -129,8 +132,8 @@ class OrdersController extends Controller {
 	{
         $data = $request->all();
 
-        //does current user have any washes in progress.. - accept, enroute, start, start,
-        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','start'])->get()->count()) {
+        //does current user have any washes in progress for the requested vehicle
+        if($request->user()->orders()->whereIn('status', ['confirm','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorUnwillingToProcess(trans('messages.order.exists'));
         }
 
@@ -153,18 +156,16 @@ class OrdersController extends Controller {
 
         $request->user()->orders()->save($order);
 
-        return $this->response->withItem($order, new OrderTransformer);
+        return $this->response->withItem($order, new OrderTransformer());
 
 	}
 
     /**
      * @param Order $order
      * @param UpdateOrderRequest $request
-     * @param SnsClient $sns_client
-     * @param Twilio $twilio
      * @return mixed
      */
-    public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client, Twilio $twilio)
+    public function update(Order $order, UpdateOrderRequest $request)
     {
 
         if(empty($order->id)) {
@@ -173,10 +174,6 @@ class OrdersController extends Controller {
 
         $request_data = $request->all();
 
-//        $promo_code = $this->applyPromoCode($order, $request_data);
-//        if( ! $promo_code) {
-//            return $this->response->errorWrongArgs(trans('messages.order.discount.unavailable'));
-//        }
         $promo_code_msg = $this->applyPromoCode($order, $request_data);
         if($promo_code_msg) {
             return $this->response->errorWrongArgs($promo_code_msg);
@@ -221,7 +218,7 @@ class OrdersController extends Controller {
                     }
 
                     break;
-                case "confirm":
+                case "confirm": //v1.4 uses this status
 
                     if( ! $request->user()->is('customer')) {
                         return $this->response->errorUnauthorized();
@@ -247,6 +244,36 @@ class OrdersController extends Controller {
                     Event::fire(new OrderEnroute($order));
 
                     break;
+                case "receive": //v1.5 uses this status
+                    if( ! $request->user()->is('customer')) {
+                        return $this->response->errorUnauthorized();
+                    }
+
+                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+                    if( ! $availability['accept']) {
+                        return $this->response->errorWrongArgs($availability['description']);
+                    }
+
+                    unset($order->receive_at);
+                    $order->confirm_at = Carbon::now();
+
+                    $order->status = 'assign';
+                    $order->assign_at = Carbon::now();
+
+                    $order->eta = $availability['time'];
+                    $order->etc = $order->service->time;
+                    $order->worker_id = $availability['worker_id'];
+                    $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
+
+                    Event::fire(new OrderConfirmed($order));
+                    Event::fire(new OrderAssign($order));
+
+                    break;
+                case "assign":
+
+                    Event::fire(new OrderAssign($order));
+
+                    break;
                 case "enroute":
 
                     if( ! $request->user()->can('order.status')) {
@@ -255,7 +282,7 @@ class OrdersController extends Controller {
 
                     $order->worker_id = $request->user()->id;
 
-                    Event::fire(new OrderEnroute($order));
+                    Event::fire(new OrderEnroute($order, false));
 
                     break;
                 case "start":
@@ -335,11 +362,26 @@ class OrdersController extends Controller {
 
             if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
 
+            $scope_discount = true;
             if($discount->scope == "system") {
-
-                if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return trans('messages.order.discount.unavailable');
+                if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count()) {
+                    $scope_discount = false;
+                }
             } else {
-                if ( ! $order->customer->discountEligible($discount)) return trans('messages.order.discount.unavailable');
+                if ( ! $order->customer->discountEligible($discount)) $scope_discount = false;
+            }
+            if( ! $scope_discount) {
+                switch($discount->frequency_rate) {
+                    case 1:
+                    case 2:
+                        $word_map = ['once','twice'];
+                        $times = $word_map[($discount->frequency_rate-1)];
+                        break;
+                    default:
+                        $times = $discount->frequency_rate." ".str_plural('time', $discount->frequency_rate);
+                        break;
+                }
+                return trans('messages.order.discount.frequency', ['times'=>$times]);
             }
 
             //calculate discount

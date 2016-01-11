@@ -30,7 +30,7 @@ class PushNotification {
      */
     public static function send($push_token, $message, $badge = 1, $order_id = 0) {
 
-        if( ! $push_token) return;
+        if( ! $push_token) return false;
 
         try {
 
@@ -54,11 +54,14 @@ class PushNotification {
                     env('APNS') => json_encode($aps_payload)
                 ]),
             ]);
+
+            return true;
+
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 
-        return;
+        return false;
     }
 
 }

@@ -23,6 +23,7 @@ class Order extends Model {
         'location',
         'instructions',
         'confirm_at',
+        'assign_at',
         'enroute_at',
         'start_at',
         'done_at',
@@ -48,6 +49,7 @@ class Order extends Model {
 
     protected $dates = [
         'confirm_at',
+        'assign_at',
         'enroute_at',
         'start_at',
         'done_at',
@@ -100,7 +102,7 @@ class Order extends Model {
      */
     public function vehicle()
     {
-        return $this->belongsTo('App\Vehicle');
+        return $this->belongsTo('App\Vehicle')->withTrashed();
     }
 
     /**

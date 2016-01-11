@@ -33,6 +33,7 @@ class VehicleTransformer extends TransformerAbstract {
             'color' => $vehicle->color,
             'type' => $vehicle->type,
             'license_plate' => $vehicle->license_plate,
+            'removed' => $vehicle->trashed(),
             'links' => [
                 [
                     'rel' => 'self',

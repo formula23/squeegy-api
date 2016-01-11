@@ -238,9 +238,9 @@ class Orders {
 
         $active_workers_qry = User::workers()
                 ->with(['jobs' => function ($query) {
-                    $query->whereIn('status', ['enroute','start'])
-                        ->whereDate('enroute_at', '=', Carbon::today()->toDateString())
-                        ->orderBy('enroute_at');
+                    $query->whereIn('status', ['assign','enroute','start'])
+                        ->whereDate('confirm_at', '=', Carbon::today()->toDateString())
+                        ->orderBy('confirm_at');
                 }])
                 ->with(['default_location' => function($q) {
                     $q->select('user_id', 'latitude', 'longitude');
@@ -435,7 +435,7 @@ class Orders {
         return;
     }
 
-    private static function getTravelTime($origin, $destination, $cache_exp=1440)
+    public static function getTravelTime($origin, $destination)
     {
         $miles = self::get_distance($origin, $destination);
 
@@ -455,41 +455,43 @@ class Orders {
 
         return round($travel_time * self::traffic_buffer($travel_time));
 
-//        $travel_time = self::$travel_time;
-//
-//        try {
-//
-//            $cache_key = implode(",", [$origin,$destination]);
-//            if(Cache::has($cache_key)) {
-//                $travel_time = Cache::get($cache_key);
-//            } else {
-//                $response = \GoogleMaps::load('directions')
-//                    ->setParam([
-//                        'origin'=>$origin,
-//                        'destination'=>$destination,
-//                    ])
-//                    ->get();
-//                $json_resp = json_decode($response);
-//                if($json_resp->status == "OK") {
-//                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
-//                    if( ! $cache_exp) {
-//                        Cache::forever($cache_key, $travel_time); //store for one day
-//                    } else {
-//                        Cache::put($cache_key, $travel_time, $cache_exp);
-//                    }
-//                }
-//            }
-//
-//        } catch (\Exception $e) {
-//            \Bugsnag::notifyException($e);
-//        }
-
-//        $travel_time = max(self::$travel_time_buffer, $travel_time);
-
-//        return round($travel_time * self::traffic_buffer($travel_time));
     }
 
-    private static function get_distance($pt1, $pt2)
+    public static function getRealTravelTime($origin, $destination, $cache_exp=1440)
+    {
+        try {
+
+            $cache_key = implode(",", [$origin,$destination]);
+            if(Cache::has($cache_key)) {
+                $travel_time = Cache::get($cache_key);
+            } else {
+                $response = \GoogleMaps::load('directions')
+                    ->setParam([
+                        'origin'=>$origin,
+                        'destination'=>$destination,
+                    ])
+                    ->get();
+                $json_resp = json_decode($response);
+                if($json_resp->status == "OK") {
+                    $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
+                    if( ! $cache_exp) {
+                        Cache::forever($cache_key, $travel_time);
+                    } else {
+                        Cache::put($cache_key, $travel_time, $cache_exp);
+                    }
+                }
+            }
+
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+
+        $travel_time = max(self::$travel_time_buffer, $travel_time);
+
+        return round($travel_time * self::traffic_buffer($travel_time));
+    }
+
+    public static function get_distance($pt1, $pt2)
     {
         list($lat1, $lon1) = explode(",", $pt1);
         list($lat2, $lon2) = explode(",", $pt2);
@@ -503,7 +505,7 @@ class Orders {
         return ($miles * 1.3);
     }
 
-    private static function get_location($lat, $lng)
+    public static function get_location($lat, $lng)
     {
         return implode(",", [
             'lat'=>round((float)$lat, 2),
@@ -511,7 +513,7 @@ class Orders {
         ]);
     }
 
-    private static function geocode($latlng)
+    public static function geocode($latlng)
     {
         try {
 
@@ -533,7 +535,7 @@ class Orders {
         return;
     }
 
-    private static function parse_add_components($results)
+    public static function parse_add_components($results)
     {
         $data_cnt=0;
 
@@ -559,7 +561,7 @@ class Orders {
         return;
     }
 
-    private static function traffic_buffer($travel_time)
+    public static function traffic_buffer($travel_time)
     {
         if($travel_time < 20) {
             return 1.5;
@@ -573,7 +575,7 @@ class Orders {
 //        }
     }
 
-    private static function get_workers_location(User $worker)
+    public static function get_workers_location(User $worker)
     {
         self::get_final_location($worker);
 
@@ -590,7 +592,7 @@ class Orders {
         return $location;
     }
 
-    private static function get_final_location(User $worker) {
+    public static function get_final_location(User $worker) {
         self::$final_location = $worker
             ->jobs()
             ->whereIn('status', ['enroute','start','done'])
@@ -599,7 +601,7 @@ class Orders {
             ->first();
     }
 
-    private static function get_last_job(User $worker)
+    public static function get_last_job(User $worker)
     {
         self::$last_job = $worker
             ->jobs()

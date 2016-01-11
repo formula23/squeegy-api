@@ -12,7 +12,7 @@ return [
     ],
     'order' => [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
-        'exists' => 'You already have an order pending.',
+        'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
         'new_order_worker' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
         'same_status' => 'This order is already in the \':status\' state.',
@@ -20,8 +20,9 @@ return [
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
+            'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',
-            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt.',
+            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don\'t forget to rate your wash. Thanks for using Squeegy!',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
         'cancel_reason' => [
@@ -32,6 +33,7 @@ return [
         ],
         'discount' => [
             'unavailable' => 'Invalid Promo Code',
+            'frequency' => 'Promotion can only be used :times per customer',
             'new_customer' => 'Promotion only available for new customers',
             'out_of_region' => 'Promotion not available in your area',
             'invalid_service' => 'Promotion not available for the :service_name wash',
