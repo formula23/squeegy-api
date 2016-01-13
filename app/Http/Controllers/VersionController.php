@@ -12,7 +12,7 @@ class VersionController extends Controller {
 
     public function check(Request $request)
     {
-        $user_app_version = $request->input('app_version');
+        $user_app_version = (float)$request->input('app_version');
         $user_app_type = $request->input('app_type');
         if($user_app_version) {
 
