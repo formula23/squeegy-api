@@ -14,7 +14,8 @@ class AddReferralCodeToUsers extends Migration {
 	{
 		Schema::table('users', function(Blueprint $table)
 		{
-			//
+			$table->char('referral_code',6)->after('remember_token')->nullable();
+			$table->unique('referral_code');
 		});
 	}
 
@@ -27,7 +28,7 @@ class AddReferralCodeToUsers extends Migration {
 	{
 		Schema::table('users', function(Blueprint $table)
 		{
-			//
+			$table->dropColumn('referral_code');
 		});
 	}
 
