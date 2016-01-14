@@ -33,6 +33,7 @@ class Orders {
     protected static $mph = 13;
     protected static $last_job = null;
     protected static $final_location = null;
+    protected static $current_location = null;
     protected static $holiday=null;
 
     public static $lat=null;
@@ -236,21 +237,7 @@ class Orders {
             return ['error_msg'=>trans('messages.service.outside_area'), 'error_code'=>'outside_area'];
         }
 
-        $active_workers_qry = User::workers()
-                ->with(['jobs' => function ($query) {
-                    $query->whereIn('status', ['enroute','start'])
-                        ->whereDate('enroute_at', '=', Carbon::today()->toDateString())
-                        ->orderBy('enroute_at');
-                }])
-                ->with(['default_location' => function($q) {
-                    $q->select('user_id', 'latitude', 'longitude');
-                }])
-                ->whereHas('activity_logs', function($q) {
-                    $q->whereNull('log_off');
-                })
-                ->whereHas('zones.regions', function($q) {
-                    $q->where('postal_code', self::$postal_code);
-                });
+        $active_workers_qry = User::activeWashers(self::$postal_code);
 
         $active_workers = $active_workers_qry->get();
 
@@ -266,9 +253,15 @@ class Orders {
             $worker_origin = self::get_workers_location($active_worker);
 
             if($active_worker->jobs->count() < 2) {
-                $byp_time = self::getTravelTime($worker_origin, $request_loc_pair);
-//                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $worker_origin."-->".$request_loc_pair." :: ".$byp_time;
-//                 mail("dan@formula23.com", "byp - ".$active_worker->id, $byp_time."==".$worker_origin."->".$request_loc_pair);
+                if(self::$final_location && self::$final_location->status != 'done') {
+                    $final_location = self::$final_location->location['lat'].",".self::$final_location->location['lon'];
+                } else {
+                    $final_location = $worker_origin;
+                }
+
+                $byp_time = self::getTravelTime($final_location, $request_loc_pair);
+//                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $final_location."-->".$request_loc_pair." :: ".$byp_time;
+
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
                 }
@@ -276,7 +269,6 @@ class Orders {
 
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
-
 //                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
                 continue;
@@ -296,24 +288,25 @@ class Orders {
                      * if there is a previous job and it was finished after this job was created, elapsed time is calculate using the previous job
                      * if the current job was created after the previous job ended, calculate elapsed time using current job.
                     */
-                    if( ! isset($complete_times_by_worker[$active_worker->id])) {
+                    if( ! isset($complete_times_by_worker[$active_worker->id])) { //washers first job - calc remaining
 
                         self::get_last_job($active_worker);
 
                         $destination = implode(",", [$job->location['lat'], $job->location['lon']]);
 
-                        $travel_time = self::getTravelTime($worker_origin, $destination);
+                        $travel_time = self::getTravelTime($worker_origin, $destination, true);
 
-                        if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
-                            $time_elapsed = self::$last_job->done_at->diffInMinutes();
+//                        if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
+//                            $time_elapsed = self::$last_job->done_at->diffInMinutes();
 //                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
-                        } else {
-                            $time_elapsed = $job->enroute_at->diffInMinutes();
+//                        } else {
+//                            $time_elapsed = $job->enroute_at->diffInMinutes();
 //                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
-                        }
+//                        }
 
-//                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time." elap:".$time_elapsed;
-                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
+//                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time;
+//                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
+                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = $travel_time;
                     }
 //                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
@@ -338,7 +331,7 @@ class Orders {
         }
 
         $next_available = [];
-        $tmp_bypass_job=[];
+        $tmp_bypass_job = [];
 
         if(count($bypass_job)) {
             foreach($bypass_job as $worker_id=>$travel_tm) {
@@ -369,8 +362,11 @@ class Orders {
 // mail("dan@formula23.com", "eta", $msg);
 //        print_r($complete_times_by_worker);
 //        print_r($complete_times_by_worker2);
+//        print "Next available:\n";
 //        print_r($next_available);
+//        print "Bypass jobs:\n";
 //        print_r($bypass_job);
+//        print "bypass job actual eta:\n";
 //        print_r($tmp_bypass_job);
 //        exit;
         return $next_available;
@@ -435,25 +431,38 @@ class Orders {
         return;
     }
 
-    private static function getTravelTime($origin, $destination, $cache_exp=1440)
+    private static function getTravelTime($origin, $destination, $current_route=false)
     {
+
         $miles = self::get_distance($origin, $destination);
 
         switch(true) {
             case ($miles < 3):
                 self::$mph = 16;
                 break;
-            case ($miles >= 3 && $miles <= 7):
+            case ($miles >= 3 && $miles < 7):
                 self::$mph = 18;
                 break;
-            case ($miles > 7):
+            case ($miles >= 7 && $miles < 10):
                 self::$mph = 20;
+                break;
+            case ($miles >= 10 && $miles < 13):
+                self::$mph = 25;
+                break;
+            case ($miles >= 13):
+                self::$mph = 30;
                 break;
         }
 
-        $travel_time = max(8, round(($miles / self::$mph) * 60));
+        $actual_time = round(($miles / self::$mph) * 60);
+        if($current_route) {
+            return max(5, $actual_time);
+        } else {
+            $travel_time = max(8, $actual_time);
+            return round($travel_time * self::traffic_buffer($travel_time));
+        }
 
-        return round($travel_time * self::traffic_buffer($travel_time));
+
 
 //        $travel_time = self::$travel_time;
 //
@@ -500,7 +509,7 @@ class Orders {
         $dist = rad2deg($dist);
         $miles = round($dist * 60 * 1.1515);
 
-        return ($miles * 1.3);
+        return ($miles * 1.3); // increase miles by 30% to account for turns a 'real' driving direction
     }
 
     private static function get_location($lat, $lng)
@@ -577,11 +586,13 @@ class Orders {
     {
         self::get_final_location($worker);
 
-        if(self::$final_location) {
+        if(self::$final_location && self::$final_location->status == 'start') {
             $arr = array_only(self::$final_location->location, ['lat', 'lon']);
             $location = implode(",", [$arr['lat'], $arr['lon']]);
         } else {
-            if( ! empty($worker->default_location)) {
+            if( ! empty($worker->current_location)) {
+                $location = implode(",", array_only($worker->current_location->toArray(), ['latitude', 'longitude']));
+            } else if( ! empty($worker->default_location)) {
                 $location = implode(",", array_only($worker->default_location->toArray(), ['latitude', 'longitude']));
             } else {
                 $location = implode(",", \Config::get('squeegy.worker_default_location'));
