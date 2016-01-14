@@ -98,7 +98,7 @@ class PushNotification extends Command {
         $users_qry = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
             ->where('email', 'like', '%squeegyapp-tmp.com%')
             ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '>=', '2016-01-05') // 12/18 - 12/22
-            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<=', '2016-01-10')
+            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<=', '2016-01-14')
             ->orderBy('id');
 
 
