@@ -185,13 +185,11 @@ class UserController extends Controller {
 
     public function authenticated()
     {
-        dd(\Auth::check());
         return $this->response->withArray(['authenticated'=>\Auth::check()]);
     }
 
     public function duty(Request $request)
     {
-        dd(\Auth::check());
         if( ! \Auth::user()->can('set.duty')) {
             return $this->response->errorUnauthorized();
         }
