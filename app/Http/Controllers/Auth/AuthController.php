@@ -162,12 +162,6 @@ class AuthController extends Controller {
             return $this->response->errorInternalError($e->getMessage());
         }
 
-        try {
-            $token = JWTAuth::fromUser($this->auth->user());
-        } catch (JWTException $e) {
-            \Bugsnag::notifyException($e);
-        }
-
         return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
     }
 
