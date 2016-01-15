@@ -29,6 +29,8 @@ class Kernel extends HttpKernel {
 		'guest' => 'App\Http\Middleware\RedirectIfAuthenticated',
         'csrf' => 'App\Http\Middleware\VerifyCsrfToken',
         'is.worker' => 'App\Http\Middleware\IsWorker',
+		'jwt.auth' => 'Tymon\JWTAuth\Middleware\GetUserFromToken',
+		'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
 	];
 
 }

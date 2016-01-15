@@ -149,6 +149,7 @@ return [
         'Bican\Roles\RolesServiceProvider',
         'Bugsnag\BugsnagLaravel\BugsnagLaravelServiceProvider',
         'GoogleMaps\ServiceProvider\GoogleMapsServiceProvider',
+		'Tymon\JWTAuth\Providers\JWTAuthServiceProvider',
 	],
 
 	/*
@@ -199,6 +200,8 @@ return [
         'Twilio'    => 'Aloha\Twilio\Support\Laravel\Facade',
         'Bugsnag'   => 'Bugsnag\BugsnagLaravel\BugsnagFacade',
         'GoogleMaps' => 'GoogleMaps\Facade\GoogleMapsFacade',
+		'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
+		'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
 	],
 
 ];

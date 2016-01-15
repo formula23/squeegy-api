@@ -18,6 +18,8 @@ use App\Http\Controllers\Controller;
 use App\Squeegy\Transformers\UserTransformer;
 
 use Bugsnag;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 /**
@@ -48,7 +50,7 @@ class AuthController extends Controller {
 		$this->auth = $auth;
 		$this->registrar = $registrar;
 
-        $this->middleware('auth.api');
+//        $this->middleware('auth.api');
 
 //		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
 //        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
@@ -72,23 +74,37 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-        if ($this->auth->attempt($credentials, $request->has('remember')))
-        {
-            return $this->response->withItem($this->auth->user(), new UserTransformer());
-        }
+        if($request->header('Authorization')) {
+            try {
+                // attempt to verify the credentials and create a token for the user
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return $this->response->errorUnauthorized('Unauthorized to login.');
+                }
+            } catch (JWTException $e) {
+                // something went wrong whilst attempting to encode the token
+                return response()->json(['error' => 'could_not_create_token'], 500);
+            }
+            return response()->json(compact('token'));
 
-        \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
+        } else {
+            if ($this->auth->attempt($credentials, $request->has('remember')))
+            {
+                return $this->response->withItem($this->auth->user(), new UserTransformer());
+            }
 
-        //if login attempt failed -- check to see if the user record based on password is an anon user
-        $anon_user_rec = User::where('email', $credentials['password']."@squeegyapp-tmp.com")->get()->first();
-        $user_rec = User::where('email', $credentials['email'])->get()->first();
+            \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
 
-        if( ! preg_match('/squeegyapp-tmp.com$/', $credentials['email']) && $anon_user_rec && !$user_rec) {
-            $anon_user_rec->email = $credentials['email'];
-            $anon_user_rec->save();
-            //manual login
-            Auth::login($anon_user_rec);
-            return $this->response->withItem($this->auth->user(), new UserTransformer());
+            //if login attempt failed -- check to see if the user record based on password is an anon user
+            $anon_user_rec = User::where('email', $credentials['password']."@squeegyapp-tmp.com")->get()->first();
+            $user_rec = User::where('email', $credentials['email'])->get()->first();
+
+            if( ! preg_match('/squeegyapp-tmp.com$/', $credentials['email']) && $anon_user_rec && !$user_rec) {
+                $anon_user_rec->email = $credentials['email'];
+                $anon_user_rec->save();
+                //manual login
+                Auth::login($anon_user_rec);
+                return $this->response->withItem($this->auth->user(), new UserTransformer());
+            }
         }
 
         return $this->response->errorUnauthorized('Unauthorized to login.');

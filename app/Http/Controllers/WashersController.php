@@ -17,13 +17,26 @@ use Illuminate\Support\Facades\Auth;
 
 class WashersController extends Controller {
 
-    public function __construct()
+    /**
+     * WashersController constructor.
+     * @param Request $request
+     */
+    public function __construct(Request $request)
     {
         parent::__construct();
 
-        $this->middleware('auth', ['only' => 'dutyStatus']);
+        if($request->header('Authorization')) {
+            $this->middleware('jwt.auth');
+        } else {
+            $this->middleware('auth', ['only' => 'dutyStatus']);
+        }
+
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     public function locations(Request $request)
     {
         $washer_locations_qry = WasherLocation::whereDate('washer_locations.updated_at', '=', Carbon::today()->toDateString());
@@ -38,6 +51,9 @@ class WashersController extends Controller {
         return $this->response->withCollection($washer_locations, new WasherLocationTransformer());
     }
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     */
     public function dutyStatus()
     {
         $latest_duty_status = Auth::user()->activity_logs()->orderBy('updated_at', 'desc')->first();
