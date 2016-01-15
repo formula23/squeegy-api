@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Squeegy\Transformers\WasherLocationTransformer;
 use App\WasherLocation;
 use Carbon\Carbon;
