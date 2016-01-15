@@ -74,37 +74,37 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-        if($request->header('Authorization')) {
-            try {
-                // attempt to verify the credentials and create a token for the user
-                if (!$token = JWTAuth::attempt($credentials)) {
-                    return $this->response->errorUnauthorized('Unauthorized to login.');
-                }
-            } catch (JWTException $e) {
-                // something went wrong whilst attempting to encode the token
-                return response()->json(['error' => 'could_not_create_token'], 500);
-            }
-            return response()->json(compact('token'));
 
-        } else {
-            if ($this->auth->attempt($credentials, $request->has('remember')))
-            {
-                return $this->response->withItem($this->auth->user(), new UserTransformer());
-            }
+//            try {
+//                // attempt to verify the credentials and create a token for the user
+//                if (!$token = JWTAuth::attempt($credentials)) {
+//                    return $this->response->errorUnauthorized('Unauthorized to login.');
+//                }
+//            } catch (JWTException $e) {
+//                // something went wrong whilst attempting to encode the token
+//                return response()->json(['error' => 'could_not_create_token'], 500);
+//            }
+//            return response()->json(compact('token'));
 
-            \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
 
-            //if login attempt failed -- check to see if the user record based on password is an anon user
-            $anon_user_rec = User::where('email', $credentials['password']."@squeegyapp-tmp.com")->get()->first();
-            $user_rec = User::where('email', $credentials['email'])->get()->first();
+        if ($this->auth->attempt($credentials, $request->has('remember')))
+        {
+            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
+        }
 
-            if( ! preg_match('/squeegyapp-tmp.com$/', $credentials['email']) && $anon_user_rec && !$user_rec) {
-                $anon_user_rec->email = $credentials['email'];
-                $anon_user_rec->save();
-                //manual login
-                Auth::login($anon_user_rec);
-                return $this->response->withItem($this->auth->user(), new UserTransformer());
-            }
+        \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
+
+        //if login attempt failed -- check to see if the user record based on password is an anon user
+        $anon_user_rec = User::where('email', $credentials['password']."@squeegyapp-tmp.com")->get()->first();
+        $user_rec = User::where('email', $credentials['email'])->get()->first();
+
+        if( ! preg_match('/squeegyapp-tmp.com$/', $credentials['email']) && $anon_user_rec && !$user_rec) {
+            $anon_user_rec->email = $credentials['email'];
+            $anon_user_rec->save();
+            //manual login
+            Auth::login($anon_user_rec);
+            $token = JWTAuth::fromUser($this->auth->user());
+            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
         return $this->response->errorUnauthorized('Unauthorized to login.');
@@ -148,7 +148,6 @@ class AuthController extends Controller {
             } catch (Exception $e) {}
         }
 
-
         try {
 
             $this->auth->login($this->registrar->create($data));
@@ -163,7 +162,13 @@ class AuthController extends Controller {
             return $this->response->errorInternalError($e->getMessage());
         }
 
-        return $this->response->withItem($this->auth->user(), new UserTransformer());
+        try {
+            $token = JWTAuth::fromUser($this->auth->user());
+        } catch (JWTException $e) {
+            \Bugsnag::notifyException($e);
+        }
+
+        return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
     }
 
     /**
@@ -178,4 +183,16 @@ class AuthController extends Controller {
             'status_code' => 200
         ]);
     }
+
+    private function getAuthToken()
+    {
+        $token="";
+        try {
+            $token = JWTAuth::fromUser($this->auth->user());
+        } catch (JWTException $e) {
+            \Bugsnag::notifyException($e);
+        }
+        return $token;
+    }
+
 }
