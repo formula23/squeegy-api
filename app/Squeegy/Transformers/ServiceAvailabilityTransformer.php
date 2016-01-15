@@ -33,8 +33,8 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
 
     public function includeServices()
     {
-        $services = Service::all();
-        return $this->collection($services, new ServiceTransformer);
+        $services = Service::getAvailableServices();
+        return $this->collection($services, new ServiceTransformer());
     }
 
 }

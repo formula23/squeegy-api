@@ -24,8 +24,7 @@ class ServicesController extends Controller {
      */
     public function index()
     {
-        $services = Service::where('is_active', 1)->orderBy('sequence')->get();
-//dd($services);
+        $services = Service::getAvailableServices();
         return $this->response->withCollection($services, new ServiceTransformer);
     }
 
