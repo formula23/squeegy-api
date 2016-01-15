@@ -366,7 +366,7 @@ class Orders {
         $debug_log .= "bypass job actual eta:\n";
         $debug_log .= print_r($tmp_bypass_job, 1);
         $debug_log .= "next available:\n";
-        $debug_log .= print_r($next_available);
+        $debug_log .= print_r($next_available, 1);
 
         if(env('ETA_LOGGING')) Log::info($debug_log);
 
