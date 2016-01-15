@@ -21,6 +21,7 @@ class ServiceTransformer extends TransformerAbstract {
             'price' => $service->price,
             'details' => $service->details,
             'time' => $service->time,
+            'time_label' => $service->time_label,
             'links' => [
                 [
                     'rel' => 'self',
