@@ -158,11 +158,9 @@ class OrdersController extends Controller {
     /**
      * @param Order $order
      * @param UpdateOrderRequest $request
-     * @param SnsClient $sns_client
-     * @param Twilio $twilio
      * @return mixed
      */
-    public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client, Twilio $twilio)
+    public function update(Order $order, UpdateOrderRequest $request)
     {
 
         if(empty($order->id)) {
