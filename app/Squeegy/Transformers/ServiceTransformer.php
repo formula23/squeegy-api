@@ -18,7 +18,7 @@ class ServiceTransformer extends TransformerAbstract {
         return [
             'id' => (string)$service->id,
             'name' => $service->name,
-            'price' => $service->price,
+            'price' => (string)$service->price,
             'details' => $service->details,
             'time' => $service->time,
             'time_label' => $service->time_label,
