@@ -357,18 +357,26 @@ class Orders {
                 }
             }
         }
-        $debug_log = print_r($complete_times_by_worker, 1);
-        $debug_log .= print_r($complete_times_by_worker_debug, 1);
-        $debug_log .= "Next available:\n";
-        $debug_log .= print_r($next_available, 1);
-        $debug_log .= "Bypass jobs:\n";
-        $debug_log .= print_r($bypass_job, 1);
-        $debug_log .= "bypass job actual eta:\n";
-        $debug_log .= print_r($tmp_bypass_job, 1);
-        $debug_log .= "next available:\n";
-        $debug_log .= print_r($next_available, 1);
 
-        if(env('ETA_LOGGING')) Log::info($debug_log);
+        if(env('ETA_LOGGING')) {
+            Log::info('****************************** ETA LOGGING *****************************');
+            Log::info("Requested location: $request_loc_pair");
+            Log::info('Complete times by worker');
+            Log::info(print_r($complete_times_by_worker,1));
+
+            Log::info('Complete times by worker DEBUG');
+            Log::info(print_r($complete_times_by_worker_debug,1));
+
+            Log::info('Bypass jobs');
+            Log::info(print_r($bypass_job,1));
+
+            Log::info('bypass job actual eta');
+            Log::info(print_r($tmp_bypass_job,1));
+
+            Log::info('next available');
+            Log::info(print_r($next_available,1));
+            Log::info('****************************** /ETA LOGGING *****************************');
+        }
 
         return $next_available;
     }
