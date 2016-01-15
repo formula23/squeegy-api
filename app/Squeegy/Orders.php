@@ -47,7 +47,7 @@ class Orders {
      */
     public static function open()
     {
-        if(is_internal()) return true;
+//        if(is_internal()) return true;
 
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
@@ -94,13 +94,14 @@ class Orders {
      */
     public static function availability($lat=null, $lng=null)
     {
-        $data = ['accept'=>self::open(), 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
+        $open = self::open();
+        $data = ['accept'=>1, 'schedule'=>false, 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
         self::$lat = $lat;
         self::$lng = $lng;
 
-        if( ! self::open()) {
+        if( ! $open) {
 
             if(env('MAINTENANCE')) {
                 $data['accept'] = 0;
@@ -145,6 +146,7 @@ class Orders {
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
             $data['code'] = "closed";
+            $data['schedule'] = true;
             return $data;
         }
 
@@ -164,8 +166,8 @@ class Orders {
 
 
         if(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
-                $data['accept'] = 0;
-                $data['description'] = trans('messages.service.highdemand');
+            $data['description'] = trans('messages.service.highdemand');
+            $data['schedule'] = true;
         }
         
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
@@ -462,8 +464,6 @@ class Orders {
             $travel_time = max(8, $actual_time);
             return round($travel_time * self::traffic_buffer($travel_time));
         }
-
-
 
     }
 

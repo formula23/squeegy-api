@@ -77,7 +77,7 @@ class ServicesController extends Controller {
             \Bugsnag::notifyException($e);
         }
 
-        return $this->response->withItem($availability, new ServiceAvailabilityTransformer);
+        return $this->response->withItem($availability, new ServiceAvailabilityTransformer());
     }
 
 

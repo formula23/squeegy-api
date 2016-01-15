@@ -21,6 +21,7 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
 
         return [
             'accept' => (int)$data['accept'],
+            'schedule' => $data['schedule'],
             'description' => $data['description'],
             'time' => $data['time'],
             'time_label' => $data['time_label'],

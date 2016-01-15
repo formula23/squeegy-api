@@ -185,7 +185,6 @@ class UserController extends Controller {
 
     public function authenticated()
     {
-        dd(\Auth::check());
         return $this->response->withArray(['authenticated'=>\Auth::check()]);
     }
 
