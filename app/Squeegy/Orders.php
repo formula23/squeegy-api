@@ -47,7 +47,7 @@ class Orders {
      */
     public static function open()
     {
-//        if(is_internal()) return true;
+        if(is_internal()) return true;
 
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
@@ -161,6 +161,12 @@ class Orders {
             return $data;
         }
 
+        if( !empty($eta['schedule'])) {
+            $data['accept'] = 1;
+            $data['schedule'] = $eta['schedule'];
+            return $data;
+        }
+
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
@@ -243,7 +249,7 @@ class Orders {
 
         $active_workers = $active_workers_qry->get();
 
-        if( ! $active_workers->count()) return ['error_msg'=>trans('messages.service.not_available'), 'error_code'=>'not_available'];
+        if( ! $active_workers->count()) return ['schedule'=>true];
 
         $complete_times_by_worker=[];
         $complete_times_by_worker2=[];
