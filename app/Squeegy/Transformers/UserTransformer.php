@@ -33,6 +33,7 @@ class UserTransformer extends TransformerAbstract {
             'email' => $user->email,
             'phone' => $user->phone,
             'is_active' => $user->is_active,
+            'token'=>($user->token ? $user->token : "" ),
         ];
     }
 

@@ -19,12 +19,17 @@ use Exception;
 class UserController extends Controller {
 
     /**
-     *
+     * @param Request $request
      */
-    public function __construct()
+    public function __construct(Request $request)
     {
         parent::__construct();
-        $this->middleware('auth', ['except' => 'authenticated']);
+
+        if($request->header('Authorization')) {
+            $this->middleware('jwt.auth');
+        } else {
+            $this->middleware('auth', ['except' => 'authenticated']);
+        }
     }
 
     /**
@@ -180,11 +185,13 @@ class UserController extends Controller {
 
     public function authenticated()
     {
+        dd(\Auth::check());
         return $this->response->withArray(['authenticated'=>\Auth::check()]);
     }
 
     public function duty(Request $request)
     {
+        dd(\Auth::check());
         if( ! \Auth::user()->can('set.duty')) {
             return $this->response->errorUnauthorized();
         }
