@@ -1,1 +1,1 @@
-Click here to reset your password: {{ url('password/reset/'.$token) }}
+Click here to reset your password: {{ env('WEBSITE_URL').'/password/reset/'.$token }}
