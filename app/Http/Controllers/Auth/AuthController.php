@@ -74,21 +74,7 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-
-//            try {
-//                // attempt to verify the credentials and create a token for the user
-//                if (!$token = JWTAuth::attempt($credentials)) {
-//                    return $this->response->errorUnauthorized('Unauthorized to login.');
-//                }
-//            } catch (JWTException $e) {
-//                // something went wrong whilst attempting to encode the token
-//                return response()->json(['error' => 'could_not_create_token'], 500);
-//            }
-//            return response()->json(compact('token'));
-
-
-        if ($this->auth->attempt($credentials, $request->has('remember')))
-        {
+        if ($this->auth->attempt($credentials, $request->has('remember'))) {
             return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
@@ -103,7 +89,7 @@ class AuthController extends Controller {
             $anon_user_rec->save();
             //manual login
             Auth::login($anon_user_rec);
-            $token = JWTAuth::fromUser($this->auth->user());
+
             return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
@@ -121,8 +107,7 @@ class AuthController extends Controller {
 
         $validator = $this->registrar->validator($data);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return $this->response->errorWrongArgs($validator->errors()->getMessages());
         }
 
@@ -160,12 +145,6 @@ class AuthController extends Controller {
 
         } catch(Exception $e) {
             return $this->response->errorInternalError($e->getMessage());
-        }
-
-        try {
-            $token = JWTAuth::fromUser($this->auth->user());
-        } catch (JWTException $e) {
-            \Bugsnag::notifyException($e);
         }
 
         return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
