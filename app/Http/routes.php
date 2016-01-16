@@ -33,6 +33,10 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('user/duty', 'UserController@duty');
     Route::post('user/location', 'UserController@location');
 
+    Route::controllers([
+        'password' => 'Auth\PasswordController',
+    ]);
+
     Route::post('auth/login', 'Auth\AuthController@postLogin');
     Route::get('auth/logout', 'Auth\AuthController@getLogout');
 
@@ -47,8 +51,6 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::put('orders/{orders}', 'OrdersController@update');    
     Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
-
-    Route::post('notify/push', 'NotifyController@push');
 
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');
