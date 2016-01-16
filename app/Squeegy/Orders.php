@@ -268,7 +268,7 @@ class Orders {
                 }
 
                 $byp_time = self::getTravelTime($final_location, $request_loc_pair);
-                $complete_times_by_worker_debug[$active_worker->id]['q']['bypass--'] = $final_location."-->".$request_loc_pair." (trvl time:$byp_time)";
+                $complete_times_by_worker_debug[$active_worker->id]['q']['bypass--'] = $final_location." --> ".$request_loc_pair." (trvl time:$byp_time)";
 
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
@@ -279,7 +279,7 @@ class Orders {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
-                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair." (trvl time:$travel_time)";
+                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel--'] = $worker_origin." --> ".$request_loc_pair." (trvl time:$travel_time)";
                 continue;
             }
 
@@ -320,7 +320,7 @@ class Orders {
 
 //                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = $travel_time;
-                        $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." (trvl time:$travel_time)";
+                        $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin." --> ".$destination." (trvl time:$travel_time)";
                     }
 
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
@@ -336,7 +336,7 @@ class Orders {
 
 
                 $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
-                $complete_times_by_worker_debug[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location." (trvl time: $travel_time)";
+                $complete_times_by_worker_debug[$active_worker->id]['q']['travel time---'.$job->id] = $current_location." --> ".$next_location." (trvl time: $travel_time)";
             }
 
         }
