@@ -385,7 +385,8 @@ class Orders {
             Log::info(print_r($next_available,1));
 
             $end = microtime(true);
-            Log::info('Execution time: '.$end - $start);
+            Log::info('End time: '.$end);
+            Log::info('Execution time: '.($end - $start));
 
             Log::info('****************************** /ETA LOGGING *****************************');
         }
