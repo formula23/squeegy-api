@@ -277,15 +277,18 @@ class Orders {
 
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
-                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair." (trvl time:$travel_time)";
+
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
+                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair." (trvl time:$travel_time)";
                 continue;
             }
 
             foreach($active_worker->jobs as $idx => $job) {
 
                 if($job->status == "start") {
-                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
+                    $remaining_job_time = max(5, $job->service->time - $job->start_at->diffInMinutes());
+                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = $remaining_job_time;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['remaining job time-'.$job->id] = $remaining_job_time;
 
                 } else if($job->status == "enroute") {
                     /* calc remaining travel time for first job
