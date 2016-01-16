@@ -14,14 +14,10 @@ use App\Squeegy\Orders;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
 use App\Service;
-use Aws\Sns\SnsClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Aloha\Twilio\Twilio;
 use Event;
 use Illuminate\Support\Facades\Auth;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-use League\Fractal\Resource\Collection;
 
 /**
  * Class OrdersController
@@ -41,18 +37,20 @@ class OrdersController extends Controller {
         'done' => 5,
     ];
 
-
     protected $limit = null;
 
     /**
-     *
+     * @param Request $request
      */
-    public function __construct()
+    public function __construct(Request $request)
     {
         parent::__construct();
 
-        $this->middleware('auth');
-//        $this->middleware('is.worker', ['only' => 'index']);
+        if($request->header('Authorization')) {
+            $this->middleware('jwt.auth');
+        } else {
+            $this->middleware('auth');
+        }
     }
 
     /**
@@ -129,9 +127,9 @@ class OrdersController extends Controller {
 	{
         $data = $request->all();
 
-        //does current user have any washes in progress.. - accept, enroute, start, start,
-        if($request->user()->orders()->where('status', 'in', ['confirm','enroute','start'])->get()->count()) {
-            return $this->response->errorUnwillingToProcess(trans('messages.order.exists'));
+        //does current user have any washes in progress for the requested vehicle
+        if($request->user()->orders()->whereIn('status', ['confirm','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
+            return $this->response->errorWrongArgs(trans('messages.order.exists'));
         }
 
         //does the vehicle being sent belong to this user
@@ -160,11 +158,9 @@ class OrdersController extends Controller {
     /**
      * @param Order $order
      * @param UpdateOrderRequest $request
-     * @param SnsClient $sns_client
-     * @param Twilio $twilio
      * @return mixed
      */
-    public function update(Order $order, UpdateOrderRequest $request, SnsClient $sns_client, Twilio $twilio)
+    public function update(Order $order, UpdateOrderRequest $request)
     {
 
         if(empty($order->id)) {

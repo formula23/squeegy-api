@@ -55,7 +55,7 @@ abstract class Controller extends ApiGuardController {
 
             $method = last($routeArray);
 
-            /*// We should check if key authentication is enabled for this method
+            // We should check if key authentication is enabled for this method
             $keyAuthentication = true;
 
             if (isset($apiMethods[$method]['keyAuthentication']) && $apiMethods[$method]['keyAuthentication'] === false) {
@@ -65,6 +65,11 @@ abstract class Controller extends ApiGuardController {
             if ($keyAuthentication === true) {
 
                 $key = $request->header(Config::get('apiguard.keyName', 'X-Authorization'));
+
+                if (empty($key)) {
+                    // Try getting the key from elsewhere
+                    $key = Input::get(Config::get('apiguard.keyName', 'X-Authorization'));
+                }
 
                 if (empty($key)) {
                     return $this->response->errorUnauthorized('No API Key');
@@ -91,7 +96,7 @@ abstract class Controller extends ApiGuardController {
                         return $this->response->errorForbidden();
                     }
                 }
-            }*/
+            }
 
             $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
 

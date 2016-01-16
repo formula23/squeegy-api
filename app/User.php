@@ -5,6 +5,7 @@ use Bican\Roles\Contracts\HasRoleAndPermissionContract;
 use Bican\Roles\Traits\HasRoleAndPermission;
 //use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -132,6 +133,33 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $query->whereHas('roles', function ($q) {
             $q->where('name', 'Customer');
         });
+    }
+
+    public function scopeActiveWashers($query, $postal_code)
+    {
+        $query = self::scopeWorkers($query);
+
+        $today = Carbon::today()->toDateString();
+
+        $query->with(['jobs' => function ($q) use ($today) {
+            $q->whereIn('status', ['enroute','start'])
+                ->whereDate('enroute_at', '=', $today)
+                ->orderBy('enroute_at');
+        }])
+        ->with(['default_location' => function($q) {
+            $q->select('user_id', 'latitude', 'longitude');
+        }])
+        ->with(['current_location' => function($q) {
+            $q->select('user_id', 'latitude', 'longitude');
+        }])
+        ->whereHas('activity_logs', function($q) {
+            $q->whereNull('log_off');
+        })
+        ->whereHas('zones.regions', function($q) use ($postal_code) {
+            $q->where('postal_code', $postal_code);
+        });
+
+        return $query;
     }
 
     /**

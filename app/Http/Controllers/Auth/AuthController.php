@@ -18,6 +18,8 @@ use App\Http\Controllers\Controller;
 use App\Squeegy\Transformers\UserTransformer;
 
 use Bugsnag;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 /**
@@ -48,7 +50,7 @@ class AuthController extends Controller {
 		$this->auth = $auth;
 		$this->registrar = $registrar;
 
-        $this->middleware('auth.api');
+//        $this->middleware('auth.api');
 
 //		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
 //        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
@@ -72,9 +74,22 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
+
+//            try {
+//                // attempt to verify the credentials and create a token for the user
+//                if (!$token = JWTAuth::attempt($credentials)) {
+//                    return $this->response->errorUnauthorized('Unauthorized to login.');
+//                }
+//            } catch (JWTException $e) {
+//                // something went wrong whilst attempting to encode the token
+//                return response()->json(['error' => 'could_not_create_token'], 500);
+//            }
+//            return response()->json(compact('token'));
+
+
         if ($this->auth->attempt($credentials, $request->has('remember')))
         {
-            return $this->response->withItem($this->auth->user(), new UserTransformer());
+            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
         \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
@@ -88,7 +103,8 @@ class AuthController extends Controller {
             $anon_user_rec->save();
             //manual login
             Auth::login($anon_user_rec);
-            return $this->response->withItem($this->auth->user(), new UserTransformer());
+            $token = JWTAuth::fromUser($this->auth->user());
+            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
         return $this->response->errorUnauthorized('Unauthorized to login.');
@@ -132,7 +148,6 @@ class AuthController extends Controller {
             } catch (Exception $e) {}
         }
 
-
         try {
 
             $this->auth->login($this->registrar->create($data));
@@ -147,7 +162,13 @@ class AuthController extends Controller {
             return $this->response->errorInternalError($e->getMessage());
         }
 
-        return $this->response->withItem($this->auth->user(), new UserTransformer());
+        try {
+            $token = JWTAuth::fromUser($this->auth->user());
+        } catch (JWTException $e) {
+            \Bugsnag::notifyException($e);
+        }
+
+        return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
     }
 
     /**
@@ -162,4 +183,16 @@ class AuthController extends Controller {
             'status_code' => 200
         ]);
     }
+
+    private function getAuthToken()
+    {
+        $token="";
+        try {
+            $token = JWTAuth::fromUser($this->auth->user());
+        } catch (JWTException $e) {
+            \Bugsnag::notifyException($e);
+        }
+        return $token;
+    }
+
 }
