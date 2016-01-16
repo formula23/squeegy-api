@@ -2,7 +2,8 @@
 
 use App\Squeegy\Transformers\VehicleTransformer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+
+use Illuminate\Http\Request;
 use Response;
 use App\Vehicle;
 use App\Http\Requests;
@@ -21,6 +22,7 @@ class VehiclesController extends Controller {
     public function __construct(Request $request)
     {
         parent::__construct();
+
         if($request->header('Authorization')) {
             $this->middleware('jwt.auth');
         } else {

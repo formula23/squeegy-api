@@ -12,6 +12,7 @@ use App\User;
 use App\Zone;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class Orders
@@ -252,9 +253,16 @@ class Orders {
         if( ! $active_workers->count()) return ['schedule'=>true];
 
         $complete_times_by_worker=[];
-        $complete_times_by_worker2=[];
+        $complete_times_by_worker_debug=[];
 
         $bypass_job = [];
+
+        if(env('ETA_LOGGING')) {
+            Log::info('****************************** ETA LOGGING *****************************');
+            $start = microtime(true);
+            Log::info('Start: '.$start);
+        }
+
 
         foreach($active_workers as $active_worker) {
 
@@ -268,7 +276,7 @@ class Orders {
                 }
 
                 $byp_time = self::getTravelTime($final_location, $request_loc_pair);
-//                $complete_times_by_worker2[$active_worker->id]['q']['bypass--'] = $final_location."-->".$request_loc_pair." :: ".$byp_time;
+                $complete_times_by_worker_debug[$active_worker->id]['q']['bypass--'] = $final_location." --> ".$request_loc_pair." (trvl time:$byp_time)";
 
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
@@ -277,15 +285,20 @@ class Orders {
 
             if( ! count($active_worker->jobs) ) {
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
-//                $complete_times_by_worker2[$active_worker->id]['q']['default_travel--'] = $worker_origin."-->".$request_loc_pair;
+
                 $complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
+                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel--'] = $worker_origin." --> ".$request_loc_pair." (trvl time:$travel_time)";
                 continue;
             }
 
             foreach($active_worker->jobs as $idx => $job) {
 
                 if($job->status == "start") {
-                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = max(5, $job->service->time - $job->start_at->diffInMinutes());
+                    $etc = (!empty($job->etc) ? $job->etc : $job->service->time );
+                    $remaining_job_time = max(5, $etc - $job->start_at->diffInMinutes());
+
+                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = $remaining_job_time;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['remaining job time-'.$job->id] = $remaining_job_time;
 
                 } else if($job->status == "enroute") {
                     /* calc remaining travel time for first job
@@ -302,7 +315,9 @@ class Orders {
 
                         $destination = implode(",", [$job->location['lat'], $job->location['lon']]);
 
-                        $travel_time = self::getTravelTime($worker_origin, $destination, true);
+//                        $travel_time = self::getTravelTime($worker_origin, $destination, true);
+
+                        $travel_time = self::getRealTravelTime($worker_origin, $destination); //google map directions
 
 //                        if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
 //                            $time_elapsed = self::$last_job->done_at->diffInMinutes();
@@ -312,12 +327,14 @@ class Orders {
 //                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
 //                        }
 
-//                        $complete_times_by_worker2[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin."-->".$destination." -- ".$travel_time;
+
 //                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = $travel_time;
+                        $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin." --> ".$destination." (trvl time:$travel_time)";
                     }
-//                    $complete_times_by_worker2[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
+
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
                 }
 
                 $current_location = implode(",", [$job->location['lat'], $job->location['lon']]);
@@ -327,9 +344,9 @@ class Orders {
 
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
-//                $complete_times_by_worker2[$active_worker->id]['q']['travel time---'.$job->id] = $current_location."-->".$next_location;
-                $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
 
+                $complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
+                $complete_times_by_worker_debug[$active_worker->id]['q']['travel time---'.$job->id] = $current_location." --> ".$next_location." (trvl time: $travel_time)";
             }
 
         }
@@ -362,21 +379,31 @@ class Orders {
                 }
             }
         }
-//        $msg = print_r($complete_times_by_worker, 1);
-//        $msg .= print_r($complete_times_by_worker2, 1);
-//        $msg .= print_r($next_available, 1);
-//        $msg .= print_r($bypass_job, 1);
-//        $msg .= print_r($tmp_bypass_job, 1);
-// mail("dan@formula23.com", "eta", $msg);
-//        print_r($complete_times_by_worker);
-//        print_r($complete_times_by_worker2);
-//        print "Next available:\n";
-//        print_r($next_available);
-//        print "Bypass jobs:\n";
-//        print_r($bypass_job);
-//        print "bypass job actual eta:\n";
-//        print_r($tmp_bypass_job);
-//        exit;
+
+        if(env('ETA_LOGGING')) {
+            Log::info("Requested location: $request_loc_pair");
+            Log::info('Complete times by worker');
+            Log::info(print_r($complete_times_by_worker,1));
+
+            Log::info('Complete times by worker DEBUG');
+            Log::info(print_r($complete_times_by_worker_debug,1));
+
+            Log::info('Bypass jobs');
+            Log::info(print_r($bypass_job,1));
+
+            Log::info('bypass job actual eta');
+            Log::info(print_r($tmp_bypass_job,1));
+
+            Log::info('next available');
+            Log::info(print_r($next_available,1));
+
+            $end = microtime(true);
+            Log::info('End time: '.$end);
+            Log::info('Execution time: '.($end - $start));
+
+            Log::info('****************************** /ETA LOGGING *****************************');
+        }
+
         return $next_available;
     }
 
@@ -438,7 +465,6 @@ class Orders {
         self::$travel_time = max(25, self::$travel_time - (5 * $workers));
         return;
     }
-
 
     public static function getTravelTime($origin, $destination, $current_route=false)
     {
