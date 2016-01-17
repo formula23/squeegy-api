@@ -17,6 +17,7 @@ function is_internal()
         '127.0.0.1',
         '104.174.111.129', //dan home wifi
         '104.32.54.86', //squeegy office
+        '24.205.12.22', //kevin
     ]);
 }
 
