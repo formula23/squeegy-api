@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Config;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -83,15 +84,20 @@ class UserController extends Controller {
         if(isset($data['push_token'])) {
 
             try {
+
+                $config_key = 'aws.sns_arn'.($request->header('X-Device')=="Android" ? '_android' : '');
                 $endpoint_arn = $sns_client->createPlatformEndpoint([
-                    'PlatformApplicationArn' => \Config::get('aws.sns_arn'),
+                    'PlatformApplicationArn' => \Config::get($config_key),
                     'Token' => $data['push_token'],
                 ]);
 
                 if (!$endpoint_arn->get('EndpointArn')) {
                     return $this->response->errorInternalError('Unable to create push token');
                 }
-                $data['push_token'] = $endpoint_arn->get('EndpointArn');
+
+                $field_key = ($request->header('X-Device')=="Android" ? "target_arn_gcm" : "push_token" );
+                $data[$field_key] = $endpoint_arn->get('EndpointArn');
+
             } catch (ValidationException $e) {
                 return $this->response->errorWrongArgs($e->getMessage());
             } catch (Exception $e) {

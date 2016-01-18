@@ -42,7 +42,7 @@ abstract class Controller extends ApiGuardController {
 
             // This is the actual request object used
             $request = Route::getCurrentRequest();
-
+            
             // Let's get the method
             Str::parseCallback(Route::currentRouteAction(), null);
 

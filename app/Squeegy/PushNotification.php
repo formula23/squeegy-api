@@ -10,6 +10,7 @@ namespace App\Squeegy;
 
 use Aws\Sns\SnsClient;
 use App\Order;
+use Illuminate\Http\Request;
 
 /**
  * Class PushNotification
@@ -34,15 +35,28 @@ class PushNotification {
 
         try {
 
-            $aps_payload = [
-                'aps' => [
-                    'alert' => $message,
-                    'sound' => 'default',
-                    'badge' => $badge
-                ],
-            ];
+            $target = (preg_match('/gcm/i', $push_token) ? "gcm" : "apns" );
 
-            if($order_id) $aps_payload['order_id'] = (string)$order_id;
+            if($target=="apns") {
+                $platform = env('APNS');
+                $payload = [
+                    'aps' => [
+                        'alert' => $message,
+                        'sound' => 'default',
+                        'badge' => $badge
+                    ],
+                ];
+            } else {
+                $platform = env('GCM');
+                $payload = [
+                    'data' => [
+                        'message' => $message,
+                        'url' => "squeegy://"
+                    ],
+                ];
+            }
+
+            if($order_id) $payload['order_id'] = (string)$order_id;
 
             self::$sns_client = \App::make('Aws\Sns\SnsClient');
 
@@ -51,7 +65,7 @@ class PushNotification {
                 'MessageStructure' => 'json',
                 'Message' => json_encode([
                     'default' => $message,
-                    env('APNS') => json_encode($aps_payload)
+                    $platform => json_encode($payload)
                 ]),
             ]);
         } catch(\Exception $e) {
