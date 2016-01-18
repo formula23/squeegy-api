@@ -29,13 +29,11 @@ class PushNotification {
      * @param int $badge
      * @param int $order_id
      */
-    public static function send($push_token, $message, $badge = 1, $order_id = 0) {
+    public static function send($push_token, $message, $badge = 1, $order_id = 0, $target="apns") {
 
         if( ! $push_token) return;
 
         try {
-
-            $target = (preg_match('/gcm/i', $push_token) ? "gcm" : "apns" );
 
             if($target=="apns") {
                 $platform = env('APNS');
@@ -46,6 +44,7 @@ class PushNotification {
                         'badge' => $badge
                     ],
                 ];
+                if($order_id) $payload['order_id'] = (string)$order_id;
             } else {
                 $platform = env('GCM');
                 $payload = [
@@ -54,9 +53,8 @@ class PushNotification {
                         'url' => "squeegy://"
                     ],
                 ];
+                if($order_id) $payload['data']['order_id'] = (string)$order_id;
             }
-
-            if($order_id) $payload['order_id'] = (string)$order_id;
 
             self::$sns_client = \App::make('Aws\Sns\SnsClient');
 

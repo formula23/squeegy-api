@@ -32,7 +32,9 @@ class NotifyCustomerEnroute {
             'arrival_time'=>eta_real_time($event->order),
         ]);
 
-        PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id);
+        $arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+
+        PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform);
 	}
 
 }

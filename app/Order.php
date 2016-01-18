@@ -36,6 +36,7 @@ class Order extends Model {
         'promo_code',
         'rating',
         'rating_comment',
+        'push_platform',
         ];
 
     /**

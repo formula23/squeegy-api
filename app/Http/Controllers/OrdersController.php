@@ -147,6 +147,8 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs(trans('messages.service.outside_area'));
         }
 
+        if($request->header('X-Device')=="Android") $data['push_platform'] = 'gcm';
+
         $order = new Order($data);
 
         $request->user()->orders()->save($order);

@@ -103,7 +103,7 @@ class UserController extends Controller {
                 } else {
                     $data['push_token'] = $endpoint_arn;
                 }
-                
+
             } catch (ValidationException $e) {
                 return $this->response->errorWrongArgs($e->getMessage());
             } catch (Exception $e) {
