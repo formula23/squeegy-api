@@ -29,7 +29,7 @@ class PushNotification {
      * @param int $badge
      * @param int $order_id
      */
-    public static function send($push_token, $message, $badge = 1, $order_id = 0, $target="apns") {
+    public static function send($push_token, $message, $badge = 1, $order_id = 0, $target="apns", $title="Squeegy") {
 
         if( ! $push_token) return;
 
@@ -49,11 +49,12 @@ class PushNotification {
                 $platform = env('GCM');
                 $payload = [
                     'data' => [
+                        'title' => $title,
                         'message' => $message,
-                        'url' => "squeegy://"
+                        'url' => "squeegy://",
+                        'order_id' => (string)$order_id
                     ],
                 ];
-                if($order_id) $payload['data']['order_id'] = (string)$order_id;
             }
 
             self::$sns_client = \App::make('Aws\Sns\SnsClient');
