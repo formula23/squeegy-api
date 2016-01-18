@@ -95,9 +95,15 @@ class UserController extends Controller {
                     return $this->response->errorInternalError('Unable to create push token');
                 }
 
-                $field_key = ($request->header('X-Device')=="Android" ? "target_arn_gcm" : "push_token" );
-                $data[$field_key] = $endpoint_arn->get('EndpointArn');
+                $endpoint_arn = $endpoint_arn->get('EndpointArn');
 
+                if($request->header('X-Device')=="Android") {
+                    unset($data['push_token']);
+                    $data['target_arn_gcm'] = $endpoint_arn;
+                } else {
+                    $data['push_token'] = $endpoint_arn;
+                }
+                
             } catch (ValidationException $e) {
                 return $this->response->errorWrongArgs($e->getMessage());
             } catch (Exception $e) {
