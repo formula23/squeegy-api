@@ -37,6 +37,7 @@ class Registrar implements RegistrarContract {
             'phone' => ! empty($data['phone']) ? $data['phone'] : '',
             'stripe_customer_id' => (isset($data['stripe_customer_id']) ? $data['stripe_customer_id']:null),
             'push_token' => ! empty($data['push_token']) ? $data['push_token'] : '',
+			'referral_code' => $data['referral_code'],
 		]);
 	}
 

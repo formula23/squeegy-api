@@ -135,6 +135,8 @@ class AuthController extends Controller {
 
         try {
 
+            $data['referral_code'] = User::generateReferralCode();
+
             $this->auth->login($this->registrar->create($data));
 
             $this->auth->user()->attachRole(3);

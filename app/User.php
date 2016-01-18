@@ -32,7 +32,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id', 'is_active', 'app_version'];
+	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id', 'is_active', 'app_version', 'referral_code'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -197,4 +197,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         if( ! $discount->frequency_rate) return true;
         return ($this->orders()->where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count() < $discount->frequency_rate);
     }
+
+    public static function generateReferralCode()
+    {
+        while(true) {
+            $referral_code = strtoupper(substr( md5(rand()), 0, 5));
+            $usr = self::where('referral_code', $referral_code)->get();
+            if(!$usr->count()) break;
+        }
+        return $referral_code;
+    }
+
 }
