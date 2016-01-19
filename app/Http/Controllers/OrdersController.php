@@ -15,10 +15,12 @@ use App\Squeegy\Orders;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
 use App\Service;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Event;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 /**
  * Class OrdersController
@@ -348,51 +350,66 @@ class OrdersController extends Controller {
     {
         if (isset($request_data['promo_code'])) { //calculate promo
 
-            $discount = Discount::validate_code($request_data['promo_code'], $order);
-
-            if($discount === null) return trans('messages.order.discount.unavailable');
-
-            if($discount->new_customer && ! $order->customer->firstOrder()) return trans('messages.order.discount.new_customer');
-
-            if($discount->user_id && ($order->user_id != $discount->user_id)) return trans('messages.order.discount.unavailable');
-
-            if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
-
-            if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
-
-            $scope_discount = true;
-            if($discount->scope == "system") {
-                if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count()) {
-                    $scope_discount = false;
+            //check if promo code is a referral code
+            if($referrer = User::where('referral_code', $request_data['promo_code'])->where('id','!=',\Auth::user()->id)->first())
+            {
+                //has this customer used this referral code before?
+                $already_used = \Auth::user()->orders()->whereNotIn('status', ['request','cancel'])->where('referrer_id', $referrer->id)->count();
+                if( ! $already_used) {
+                    $order->referrer_id = $referrer->id;
+                    $order->promo_code = $request_data['promo_code'];
+                    $order->discount = Config::get('squeegy.referral_program.referred_amt');
+                } else {
+                    return trans('messages.order.discount.referral_code_used');
                 }
-            } else {
-                if ( ! $order->customer->discountEligible($discount)) $scope_discount = false;
             }
-            if( ! $scope_discount) {
-                switch($discount->frequency_rate) {
-                    case 1:
-                    case 2:
-                        $word_map = ['once','twice'];
-                        $times = $word_map[($discount->frequency_rate-1)];
-                        break;
-                    default:
-                        $times = $discount->frequency_rate." ".str_plural('time', $discount->frequency_rate);
-                        break;
+            else
+            {
+                $discount = Discount::validate_code($request_data['promo_code'], $order);
+
+                if($discount === null) return trans('messages.order.discount.unavailable');
+
+                if($discount->new_customer && ! $order->customer->firstOrder()) return trans('messages.order.discount.new_customer');
+
+                if($discount->user_id && ($order->user_id != $discount->user_id)) return trans('messages.order.discount.unavailable');
+
+                if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
+
+                if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
+
+                $scope_discount = true;
+                if($discount->scope == "system") {
+                    if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count()) {
+                        $scope_discount = false;
+                    }
+                } else {
+                    if ( ! $order->customer->discountEligible($discount)) $scope_discount = false;
                 }
-                return trans('messages.order.discount.frequency', ['times'=>$times]);
+                if( ! $scope_discount) {
+                    switch($discount->frequency_rate) {
+                        case 1:
+                        case 2:
+                            $word_map = ['once','twice'];
+                            $times = $word_map[($discount->frequency_rate-1)];
+                            break;
+                        default:
+                            $times = $discount->frequency_rate." ".str_plural('time', $discount->frequency_rate);
+                            break;
+                    }
+                    return trans('messages.order.discount.frequency', ['times'=>$times]);
+                }
+
+                //calculate discount
+                $order->discount_id = $discount->id;
+                $order->promo_code = $request_data['promo_code'];
+
+                if( $discount->discount_type=='amt' ) {
+                    $order->discount = $discount->amount * 100;
+                } else {
+                    $order->discount = (int) ($order->price * ($discount->amount / 100));
+                }
+
             }
-
-            //calculate discount
-
-            $order->discount_id = $discount->id;
-            $order->promo_code = $request_data['promo_code'];
-
-            if( $discount->discount_type=='amt' ) {
-                $order->discount = $discount->amount * 100;
-            } else {
-                $order->discount = (int) ($order->price * ($discount->amount / 100));
-            }
-
         }
 
         return "";

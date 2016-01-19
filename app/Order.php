@@ -14,6 +14,7 @@ class Order extends Model {
     protected $fillable = [
         'user_id',
         'worker_id',
+        'referrer_id',
         'service_id',
         'vehicle_id',
         'job_number',
@@ -87,6 +88,14 @@ class Order extends Model {
     public function worker()
     {
         return $this->belongsTo('App\User', 'worker_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function referrer()
+    {
+        return $this->belongsTo('App\User', 'referrer_id');
     }
 
     /**

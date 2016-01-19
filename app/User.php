@@ -60,6 +60,21 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Order', $foreign_key);
     }
 
+    public function referral_orders()
+    {
+        return $this->hasMany('App\Order', 'referrer_id');
+    }
+
+    public function credits()
+    {
+        return $this->hasMany('App\Credit');
+    }
+
+    public function availableCredit()
+    {
+        return $this->credits()->where('status', '!=', 'void')->sum('amount');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -111,6 +126,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function activity()
     {
         return $this->hasMany('App\ActivityLog');
+    }
+
+    public function scopePastOrders($query)
+    {
+        return $query->whereHas('orders', function($q) {
+            $q->where('status', 'done');
+        });
     }
 
     /**

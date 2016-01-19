@@ -21,6 +21,10 @@ class OrderTransformer extends TransformerAbstract {
         'customer',
     ];
 
+    protected $availableIncludes = [
+        'referrer',
+    ];
+
     public function transform(Order $order)
     {
 //        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
@@ -62,6 +66,10 @@ class OrderTransformer extends TransformerAbstract {
                 ]
             ],
         ];
+    }
+
+    public function includeReferrer(Order $order) {
+        return $this->item($order->referrer, new UserTransformer);
     }
 
     public function includeCustomer(Order $order) {

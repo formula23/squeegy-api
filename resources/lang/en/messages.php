@@ -37,6 +37,7 @@ return [
             'new_customer' => 'Promotion only available for new customers',
             'out_of_region' => 'Promotion not available in your area',
             'invalid_service' => 'Promotion not available for the :service_name wash',
+            'referral_code_used' => 'You have already used this referral code.',
         ],
     ],
     'service' => [

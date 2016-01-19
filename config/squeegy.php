@@ -33,5 +33,9 @@ return [
     'worker_default_location' => [
         'lat' => 34.032817,
         'lng' => -118.432363,
+    ],
+    'referral_program' => [
+        'referrer_amt' => env('REFERRER_AMT'),
+        'referred_amt' => env('REFERRED_AMT'),
     ]
 ];

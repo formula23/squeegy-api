@@ -5,7 +5,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 use App\Squeegy\PushNotification;
 
-class NotifyCustomerCancel {
+class NotifyCustomerCancel extends BaseEventHandler {
 
 	/**
 	 * Create the event handler.
@@ -27,8 +27,11 @@ class NotifyCustomerCancel {
 	{
         $push_message = trans('messages.order.push_notice.cancel');
 
-        PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id);
-
+		if ( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
+			$twilio = \App::make('Aloha\Twilio\Twilio');
+			$push_message = $this->_text_msg.$push_message;
+			$twilio->message($event->order->customer->phone, $push_message);
+		}
 	}
 
 }
