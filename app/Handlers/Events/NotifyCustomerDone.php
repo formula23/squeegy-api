@@ -27,11 +27,12 @@ class NotifyCustomerDone {
 	{
         $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 2)]);
 
-        if ( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
+		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+
+        if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
 			$twilio = \App::make('Aloha\Twilio\Twilio');
 			$twilio->message($event->order->customer->phone, $push_message);
 		}
-
     }
 
 }
