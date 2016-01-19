@@ -140,11 +140,14 @@ class OrdersController extends Controller {
         $data['price'] = Service::find($data['service_id'])->price;
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
+
         try {
             $data['eta'] = $eta['time'];
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
-            return $this->response->errorWrongArgs(trans('messages.service.outside_area'));
+            if(isset($data['error_msg'])) $msg = $data['error_msg'];
+            else $msg = trans('messages.service.outside_area');
+            return $this->response->errorWrongArgs($msg);
         }
 
         if($request->header('X-Device')=="Android") $data['push_platform'] = 'gcm';
