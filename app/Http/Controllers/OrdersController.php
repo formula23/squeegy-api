@@ -145,12 +145,14 @@ class OrdersController extends Controller {
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
 
         try {
-            $data['eta'] = $eta['time'];
+
+            if(!empty($data['eta'])) {
+                $data['eta'] = $eta['time'];
+            } else if(!empty($eta['schedule'])) {
+                return $this->response->errorWrongArgs('Scheduling not implemented yet.');
+            }
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
-            if(isset($data['error_msg'])) $msg = $data['error_msg'];
-            else $msg = trans('messages.service.outside_area');
-            return $this->response->errorWrongArgs($msg);
         }
 
         if($request->header('X-Device')=="Android") $data['push_platform'] = 'gcm';

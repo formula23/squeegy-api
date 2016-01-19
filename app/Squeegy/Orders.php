@@ -242,6 +242,7 @@ class Orders {
         self::geocode($request_loc_pair);
 
         $regions = Region::where('postal_code', self::$postal_code)->get();
+
         if( ! $regions->count()) {
             return ['error_msg'=>trans('messages.service.outside_area'), 'error_code'=>'outside_area'];
         }
