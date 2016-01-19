@@ -34,6 +34,7 @@ class UserTransformer extends TransformerAbstract {
             'phone' => $user->phone,
             'referral_code' => $user->referral_code,
             'is_active' => $user->is_active,
+            'available_credits' => $user->availableCredit(),
         ];
     }
 

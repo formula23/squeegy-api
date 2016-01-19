@@ -65,7 +65,7 @@ class UserController extends Controller {
 	{
         if($id) $user = User::find($id);
         else $user = $request->user();
-dd($user->availableCredit());
+
         return $this->response->withItem($user, new UserTransformer());
 	}
 

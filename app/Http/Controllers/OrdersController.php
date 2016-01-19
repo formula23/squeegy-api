@@ -11,6 +11,7 @@ use App\Events\OrderEnroute;
 use App\Events\OrderStart;
 use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\OrderDetail;
 use App\Squeegy\Orders;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
@@ -142,7 +143,12 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs(trans('messages.order.vehicle_invalid'));
         }
 
-        $data['price'] = Service::find($data['service_id'])->price;
+        $order = new Order($data);
+
+        $service = Service::find($data['service_id']);
+
+        $order_details = [];
+        $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price]);
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
         try {
@@ -152,9 +158,18 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs(trans('messages.service.outside_area'));
         }
 
-        $order = new Order($data);
+        ///use available credits
+        if($request->user()->availableCredit()) {
+            $credit_amount = min($service->price, $request->user()->availableCredit());
+            $order_details[] = new OrderDetail(['name'=>'Credit', 'amount'=> -$credit_amount]);
+        }
 
         $request->user()->orders()->save($order);
+
+        $order->order_details()->saveMany($order_details);
+
+        $order->price = $order->total();
+        $order->save();
 
         return $this->response->withItem($order, new OrderTransformer());
 

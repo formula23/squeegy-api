@@ -74,6 +74,26 @@ class Order extends Model {
         $this->attributes['location'] = json_encode($value);
     }
 
+    public function credit()
+    {
+        $credit = $this->order_details->where('name','Credit')->first();
+        if($credit) return $credit->amount;
+        return 0;
+    }
+
+    public function total()
+    {
+        return (int)$this->order_details()->sum('amount');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function order_details()
+    {
+        return $this->hasMany('App\OrderDetail');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
