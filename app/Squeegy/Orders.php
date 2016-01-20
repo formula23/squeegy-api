@@ -102,6 +102,8 @@ class Orders {
         self::$lat = $lat;
         self::$lng = $lng;
 
+        $data['postal_code'] = self::$postal_code;
+
         if( ! $open) {
 
             if(env('MAINTENANCE')) {
@@ -170,7 +172,6 @@ class Orders {
 
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
-
 
         if(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['description'] = trans('messages.service.highdemand');
@@ -382,7 +383,7 @@ class Orders {
         }
 
         if(env('ETA_LOGGING')) {
-            Log::info("Requested location: $request_loc_pair");
+            Log::info("Requested location: $request_loc_pair ".(self::$postal_code));
             Log::info('Complete times by worker');
             Log::info(print_r($complete_times_by_worker,1));
 
@@ -585,7 +586,6 @@ class Orders {
         foreach($results as $result) {
 
             foreach ($result->address_components as $address_component) {
-                if($data_cnt==3) { break(2); }
 
                 if ($address_component->types[0] == "postal_code") {
                     self::$postal_code = $address_component->long_name;
@@ -601,6 +601,7 @@ class Orders {
                 }
             }
         }
+
         return;
     }
 
