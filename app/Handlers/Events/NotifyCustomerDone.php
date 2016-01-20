@@ -28,9 +28,13 @@ class NotifyCustomerDone extends BaseEventHandler {
         $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 2)]);
 
         if ( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
-			$twilio = \App::make('Aloha\Twilio\Twilio');
-			$push_message = $this->_text_msg.$push_message;
-			$twilio->message($event->order->customer->phone, $push_message);
+			try {
+				$twilio = \App::make('Aloha\Twilio\Twilio');
+				$push_message = $this->_text_msg.$push_message;
+				$twilio->message($event->order->customer->phone, $push_message);
+			} catch(\Exception $e) {
+				\Bugsnag::notifyException($e);
+			}
 		}
 
     }

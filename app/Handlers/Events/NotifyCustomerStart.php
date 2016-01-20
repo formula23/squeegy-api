@@ -27,11 +27,14 @@ class NotifyCustomerStart {
 	{
         $push_message = trans('messages.order.push_notice.start',['worker_name'=>$event->order->worker->name]);
 
-        if ( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id))
-		{
-			$twilio = \App::make('Aloha\Twilio\Twilio');
-			$push_message = "Squeegy Order Status: ".$push_message;
-			$twilio->message($event->order->customer->phone, $push_message);
+        if ( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
+			try {
+				$twilio = \App::make('Aloha\Twilio\Twilio');
+				$push_message = "Squeegy Order Status: ".$push_message;
+				$twilio->message($event->order->customer->phone, $push_message);
+			} catch (\Exception $e) {
+				\Bugsnag::notifyException($e);
+			}
 		}
 	}
 

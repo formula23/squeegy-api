@@ -33,6 +33,8 @@ class Order extends Model {
         'photo_count',
         'price',
         'discount',
+        'credit',
+        'total',
         'charged',
         'stripe_charge_id',
         'promo_code',
@@ -74,16 +76,25 @@ class Order extends Model {
         $this->attributes['location'] = json_encode($value);
     }
 
-    public function credit()
-    {
-        $credit = $this->order_details->where('name','Credit')->first();
-        if($credit) return $credit->amount;
-        return 0;
-    }
-
-    public function total()
+    /**
+     * @return int
+     */
+    public function subTotal()
     {
         return (int)$this->order_details()->sum('amount');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany('App\Transaction');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function order_credit()
+    {
+        return $this->hasOne('App\Credit');
     }
 
     /**

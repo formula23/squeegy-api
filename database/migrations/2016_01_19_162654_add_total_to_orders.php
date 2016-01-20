@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class DropForeignKeyOrderOnCredits extends Migration {
+class AddTotalToOrders extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,9 +12,9 @@ class DropForeignKeyOrderOnCredits extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('credits', function(Blueprint $table)
+		Schema::table('orders', function(Blueprint $table)
 		{
-			$table->dropForeign('credits_order_id_foreign');
+			$table->integer('total')->unsigned()->nullable()->after('credit');
 		});
 	}
 
@@ -25,9 +25,9 @@ class DropForeignKeyOrderOnCredits extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('credits', function(Blueprint $table)
+		Schema::table('orders', function(Blueprint $table)
 		{
-//			$table->foreign('order_id')->references('id')->on('orders');
+			$table->dropColumn('total');
 		});
 	}
 

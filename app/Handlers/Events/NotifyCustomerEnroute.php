@@ -43,9 +43,14 @@ class NotifyCustomerEnroute {
 
 		if( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
 			//send sms to customer
-			$twilio = \App::make('Aloha\Twilio\Twilio');
-            $push_message = "Squeegy Order Status: ".$push_message;
-			$twilio->message($event->order->customer->phone, $push_message);
+            try {
+                $twilio = \App::make('Aloha\Twilio\Twilio');
+                $push_message = "Squeegy Order Status: ".$push_message;
+                $twilio->message($event->order->customer->phone, $push_message);
+            } catch (\Exception $e) {
+                \Bugsnag::notifyException($e);
+            }
+
 		}
 	}
 

@@ -143,12 +143,13 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs(trans('messages.order.vehicle_invalid'));
         }
 
-        $order = new Order($data);
-
         $service = Service::find($data['service_id']);
+
+        $data['price'] = 0;
 
         $order_details = [];
         $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price]);
+        $data['price'] += $service->price;
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
         try {
@@ -158,17 +159,19 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs(trans('messages.service.outside_area'));
         }
 
+        $data['total'] = $data['price'];
+
         ///use available credits
         if($request->user()->availableCredit()) {
-            $credit_amount = min($service->price, $request->user()->availableCredit());
-            $order_details[] = new OrderDetail(['name'=>'Credit', 'amount'=> -$credit_amount]);
+            $data['credit'] = min($service->price, $request->user()->availableCredit());
+            $data['total'] -= $data['credit'];
         }
 
+        $order = new Order($data);
         $request->user()->orders()->save($order);
 
         $order->order_details()->saveMany($order_details);
 
-        $order->price = $order->total();
         $order->save();
 
         return $this->response->withItem($order, new OrderTransformer());
@@ -373,7 +376,7 @@ class OrdersController extends Controller {
                 if( ! $already_used) {
                     $order->referrer_id = $referrer->id;
                     $order->promo_code = $request_data['promo_code'];
-                    $order->discount = Config::get('squeegy.referral_program.referred_amt');
+                    $order->discount = (int)Config::get('squeegy.referral_program.referred_amt');
                 } else {
                     return trans('messages.order.discount.referral_code_used');
                 }
@@ -423,12 +426,14 @@ class OrdersController extends Controller {
                 } else {
                     $order->discount = (int) ($order->price * ($discount->amount / 100));
                 }
-
             }
+
+            $order->credit = min($order->price - $order->discount, $order->customer->availableCredit());
+            $order->total = $order->price - $order->discount - $order->credit;
+
         }
 
         return "";
-//        return true;
     }
 
 }
