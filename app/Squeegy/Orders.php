@@ -577,7 +577,6 @@ class Orders {
         foreach($results as $result) {
 
             foreach ($result->address_components as $address_component) {
-//                if($data_cnt==3) { break(2); }
 
                 if ($address_component->types[0] == "postal_code") {
                     self::$postal_code = $address_component->long_name;
