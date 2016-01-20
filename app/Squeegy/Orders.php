@@ -374,7 +374,7 @@ class Orders {
         }
 
         if(env('ETA_LOGGING')) {
-            Log::info("Requested location: $request_loc_pair");
+            Log::info("Requested location: $request_loc_pair ".(self::$postal_code));
             Log::info('Complete times by worker');
             Log::info(print_r($complete_times_by_worker,1));
 
