@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Event;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class OrdersController
@@ -154,7 +155,7 @@ class OrdersController extends Controller {
         $data['price'] += $service->price;
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
-
+Log::info('ETA', $eta);
         try {
 
             if(!empty($data['eta'])) {
