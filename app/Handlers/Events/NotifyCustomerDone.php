@@ -5,7 +5,7 @@ use App\Squeegy\PushNotification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
-class NotifyCustomerDone {
+class NotifyCustomerDone extends BaseEventHandler {
 
 	/**
 	 * Create the event handler.
@@ -26,12 +26,16 @@ class NotifyCustomerDone {
 	public function handle(OrderDone $event)
 	{
         $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 2)]);
-
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 
         if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
-			$twilio = \App::make('Aloha\Twilio\Twilio');
-			$twilio->message($event->order->customer->phone, $push_message);
+			try {
+				$twilio = \App::make('Aloha\Twilio\Twilio');
+				$push_message = $this->_text_msg.$push_message;
+				$twilio->message($event->order->customer->phone, $push_message);
+			} catch(\Exception $e) {
+				\Bugsnag::notifyException($e);
+			}
 		}
     }
 

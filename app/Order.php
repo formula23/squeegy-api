@@ -14,6 +14,7 @@ class Order extends Model {
     protected $fillable = [
         'user_id',
         'worker_id',
+        'referrer_id',
         'service_id',
         'vehicle_id',
         'job_number',
@@ -32,6 +33,8 @@ class Order extends Model {
         'photo_count',
         'price',
         'discount',
+        'credit',
+        'total',
         'charged',
         'stripe_charge_id',
         'promo_code',
@@ -75,6 +78,35 @@ class Order extends Model {
     }
 
     /**
+     * @return int
+     */
+    public function subTotal()
+    {
+        return (int)$this->order_details()->sum('amount');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany('App\Transaction');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function order_credit()
+    {
+        return $this->hasOne('App\Credit');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function order_details()
+    {
+        return $this->hasMany('App\OrderDetail');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function customer()
@@ -88,6 +120,14 @@ class Order extends Model {
     public function worker()
     {
         return $this->belongsTo('App\User', 'worker_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function referrer()
+    {
+        return $this->belongsTo('App\User', 'referrer_id');
     }
 
     /**

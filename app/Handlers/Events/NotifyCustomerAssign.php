@@ -6,7 +6,7 @@ use App\Squeegy\PushNotification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 
-class NotifyCustomerAssign {
+class NotifyCustomerAssign extends BaseEventHandler {
 
 	/**
 	 * Create the event handler.
@@ -33,9 +33,13 @@ class NotifyCustomerAssign {
 
 		if( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
 			//send sms to customer
-			$twilio = \App::make('Aloha\Twilio\Twilio');
-			$push_message = "Thanks for using Squeegy! $push_message";
-			$twilio->message($event->order->customer->phone, $push_message);
+			try {
+				$twilio = \App::make('Aloha\Twilio\Twilio');
+				$push_message = $this->_text_msg.$push_message;
+				$twilio->message($event->order->customer->phone, $push_message);
+			} catch(\Exception $e) {
+				\Bugsnag::notifyException($e);
+			}
 		}
 	}
 

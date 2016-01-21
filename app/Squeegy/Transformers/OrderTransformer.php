@@ -21,6 +21,10 @@ class OrderTransformer extends TransformerAbstract {
         'customer',
     ];
 
+    protected $availableIncludes = [
+        'referrer',
+    ];
+
     public function transform(Order $order)
     {
 //        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
@@ -33,13 +37,13 @@ class OrderTransformer extends TransformerAbstract {
             'instructions' => $order->instructions,
             'subtotal' => (int)$order->price,
             'discount' => (($order->discount)? $order->discount : null ),
+            'credit' => (($order->credit)? $order->credit : null ),
+            'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
             'promo_code' => (($order->promo_code)? $order->promo_code : null ),
-            'total' => (int)($order->price - (int)$order->discount),
             'eta_quote' => (int)$order->eta,
             'arrival_eta' => eta_real_time($order),
             'current_eta' => current_eta($order),
             'eta' => Orders::formatConfirmEta($order->eta),
-//            'eta' => 'Around '.eta_real_time($order),
             'eta_seconds' => Orders::getCurrentEta($order),
             'etc' => ($order->start_at ? $order->start_at->addMinutes($order->etc)->format('g:i a') : ""),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
@@ -62,6 +66,10 @@ class OrderTransformer extends TransformerAbstract {
                 ]
             ],
         ];
+    }
+
+    public function includeReferrer(Order $order) {
+        return $this->item($order->referrer, new UserTransformer);
     }
 
     public function includeCustomer(Order $order) {

@@ -32,7 +32,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'target_arn_gcm', 'facebook_id', 'is_active', 'app_version'];
+
+	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'target_arn_gcm', 'facebook_id', 'is_active', 'app_version', 'referral_code'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -58,6 +59,21 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $foreign_key = \Auth::user()->is('worker') ? 'worker_id' : null ;
         return $this->hasMany('App\Order', $foreign_key);
+    }
+
+    public function referral_orders()
+    {
+        return $this->hasMany('App\Order', 'referrer_id');
+    }
+
+    public function credits()
+    {
+        return $this->hasMany('App\Credit');
+    }
+
+    public function availableCredit()
+    {
+        return (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
     }
 
     /**
@@ -111,6 +127,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function activity()
     {
         return $this->hasMany('App\ActivityLog');
+    }
+
+    public function scopePastOrders($query)
+    {
+        return $query->whereHas('orders', function($q) {
+            $q->where('status', 'done');
+        });
     }
 
     /**
@@ -197,4 +220,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         if( ! $discount->frequency_rate) return true;
         return ($this->orders()->where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count() < $discount->frequency_rate);
     }
+
+    public static function generateReferralCode()
+    {
+        while(true) {
+            $referral_code = strtoupper(substr( md5(rand()), 0, 5));
+            $usr = self::where('referral_code', $referral_code)->get();
+            if(!$usr->count()) break;
+        }
+        return $referral_code;
+    }
+
 }

@@ -39,7 +39,7 @@ class NotifyWorkerNewOrder {
                 ->get();
 
             $vehicle = $event->order->vehicle;
-
+//dd($workers);
             foreach($workers as $worker) {
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
                     'order_service' => $event->order->service->name,

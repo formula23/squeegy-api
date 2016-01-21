@@ -112,7 +112,6 @@ class AuthController extends Controller {
         }
 
         try {
-
             Stripe::setApiKey(\Config::get('services.stripe.secret'));
             $customer = StripeCustomer::create([
                 "description" => $data["name"],
@@ -134,6 +133,8 @@ class AuthController extends Controller {
         }
 
         try {
+
+            $data['referral_code'] = User::generateReferralCode();
 
             $this->auth->login($this->registrar->create($data));
 

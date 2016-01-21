@@ -49,6 +49,8 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\OrderDone' => [
             'App\Handlers\Events\ChargeOrder',
+			'App\Handlers\Events\CreditReferrer',
+//			'App\Handlers\Events\MarkSingleUseDiscount',
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',
         ],

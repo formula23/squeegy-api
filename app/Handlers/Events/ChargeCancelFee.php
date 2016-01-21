@@ -49,7 +49,7 @@ class ChargeCancelFee {
             $event->order->save();
 
         } catch(\Exception $e) {
-            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+            \Bugsnag::notifyException($e);
         }
 
 

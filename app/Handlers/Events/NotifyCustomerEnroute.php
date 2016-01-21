@@ -44,8 +44,14 @@ class NotifyCustomerEnroute {
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 		if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
 			//send sms to customer
-			$twilio = \App::make('Aloha\Twilio\Twilio');
-			$twilio->message($event->order->customer->phone, $push_message);
+            try {
+                $twilio = \App::make('Aloha\Twilio\Twilio');
+                $push_message = "Squeegy Order Status: ".$push_message;
+                $twilio->message($event->order->customer->phone, $push_message);
+            } catch (\Exception $e) {
+                \Bugsnag::notifyException($e);
+            }
+
 		}
 	}
 
