@@ -151,10 +151,8 @@ class UserController extends Controller {
 
         try {
             $customer->save();
-        }
-        catch (\Exception $e)
-        {
-            dd($e);
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
         }
 
 
