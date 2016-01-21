@@ -155,10 +155,10 @@ class OrdersController extends Controller {
         $data['price'] += $service->price;
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
-Log::info('ETA', $eta);
+
         try {
 
-            if(!empty($data['eta'])) {
+            if(!empty($eta['eta'])) {
                 $data['eta'] = $eta['time'];
             } else if(!empty($eta['schedule'])) {
                 return $this->response->errorWrongArgs('Scheduling not implemented yet.');
@@ -166,7 +166,6 @@ Log::info('ETA', $eta);
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
         }
-
 
         $data['total'] = $data['price'];
 
@@ -277,6 +276,7 @@ Log::info('ETA', $eta);
                     }
 
                     $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+                    Log::info('RECEIVE', $availability);
                     if( ! $availability['accept']) {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
