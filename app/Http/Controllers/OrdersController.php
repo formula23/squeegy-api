@@ -281,6 +281,10 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
+                    if( ! empty($availability['schedule']) && $availability['schedule']) {
+                        return $this->response->errorWrongArgs('Scheduling not implemented yet.');
+                    }
+
                     unset($order->receive_at);
                     $order->confirm_at = Carbon::now();
 
