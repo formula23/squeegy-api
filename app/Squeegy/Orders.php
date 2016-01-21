@@ -251,7 +251,7 @@ class Orders {
         $active_workers_qry = User::activeWashers(self::$postal_code);
 
         $active_workers = $active_workers_qry->get();
-
+//dd($active_workers[0]->jobs);
         if( ! $active_workers->count()) return ['schedule'=>true];
 
         $complete_times_by_worker=[];
@@ -296,13 +296,26 @@ class Orders {
             foreach($active_worker->jobs as $idx => $job) {
 
                 if($job->status == "start") {
-                    $etc = (!empty($job->etc) ? $job->etc : $job->service->time );
+                    $etc = (!empty($job->etc) ? $job->etc : $job->service->time);
                     $remaining_job_time = max(5, $etc - $job->start_at->diffInMinutes());
 
-                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start'.$idx] = $remaining_job_time;
-                    $complete_times_by_worker_debug[$active_worker->id]['q']['remaining job time-'.$job->id] = $remaining_job_time;
+                    $complete_times_by_worker[$active_worker->id]['q']['remaining_start' . $idx] = $remaining_job_time;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['remaining job time-' . $job->id] = $remaining_job_time;
 
-                } else if($job->status == "enroute") {
+                } else if($job->status == "enroute" && !empty($job->assign_at)) { //v1.5
+
+                    $destination = implode(",", [$job->location['lat'], $job->location['lon']]);
+                    $travel_time = self::getRealTravelTime($worker_origin, $destination); //google map directions
+
+                    $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = $travel_time;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin." --> ".$destination." (trvl time:$travel_time)";
+
+                    $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
+
+//                    dd($travel_time);
+
+                } else if($job->status == "enroute" || $job->status == "assign") { //v1.4
                     /* calc remaining travel time for first job
                     * need to see if there have been previous jobs to this one during the day
                      * is worker_origin, default location or location of previous job
@@ -321,15 +334,6 @@ class Orders {
 
                         $travel_time = self::getRealTravelTime($worker_origin, $destination); //google map directions
 
-//                        if(self::$last_job && ($job->enroute_at < self::$last_job->done_at)) {
-//                            $time_elapsed = self::$last_job->done_at->diffInMinutes();
-//                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = self::$last_job->id;
-//                        } else {
-//                            $time_elapsed = $job->enroute_at->diffInMinutes();
-//                            $complete_times_by_worker2[$active_worker->id]['q']['elapse time job'] = $job->id;
-//                        }
-
-
 //                        $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = max(5, $travel_time - $time_elapsed);
                         $complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = $travel_time;
                         $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin." --> ".$destination." (trvl time:$travel_time)";
@@ -337,8 +341,8 @@ class Orders {
 
                     $complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
                     $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
-                }
 
+                }
                 $current_location = implode(",", [$job->location['lat'], $job->location['lon']]);
                 //next location
                 $next_job = $active_worker->jobs->get($idx+1);
