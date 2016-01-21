@@ -202,7 +202,6 @@ class UserController extends Controller {
 
     public function duty(Request $request)
     {
-        dd(\Auth::check());
         if( ! \Auth::user()->can('set.duty')) {
             return $this->response->errorUnauthorized();
         }
