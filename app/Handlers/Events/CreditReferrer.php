@@ -28,12 +28,14 @@ class CreditReferrer {
 	 */
 	public function handle(OrderDone $event)
 	{
-		$credit = new Credit([
-			'order_id'=>$event->order->id,
-			'amount'=>Config::get('squeegy.referral_program.referrer_amt')
-		]);
-		if( ! Credit::where('order_id', $event->order->id)->get()->count()) {
-			$event->order->referrer->credits()->save($credit);
+		if($event->order->referrer) {
+			$credit = new Credit([
+				'order_id'=>$event->order->id,
+				'amount'=>Config::get('squeegy.referral_program.referrer_amt')
+			]);
+			if( ! Credit::where('order_id', $event->order->id)->get()->count()) {
+				$event->order->referrer->credits()->save($credit);
+			}
 		}
 	}
 

@@ -38,9 +38,6 @@ class ChargeOrder {
             $transaction = $order->transactions()->where('type', 'auth')->get()->first();
 
             if($transaction->charge_id) {
-
-                $order->charged = $order->total;
-
                 $payments = new Payments($event->order->customer->stripe_customer_id);
                 $charge = $payments->capture($transaction->charge_id);
                 $order->transactions()->create([
@@ -52,6 +49,7 @@ class ChargeOrder {
                 ]);
             }
 
+            $order->charged = $order->total;
             $order->push();
 
             if($order->discount_record && $order->discount_record->single_use_code) {
