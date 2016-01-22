@@ -64,13 +64,15 @@ class CreateUser extends Command {
             $role = Role::where('slug', $this->option('user_type'))->first();
             $new_user->attachRole($role->id);
 
-            $zone_location = [
-                '1' => ['latitude'=>'34.041868', 'longitude'=>'-118.425181'],
-                '2' => ['latitude'=>'33.87313753', 'longitude'=>'-118.35977216'],
-            ];
+			if($this->option('zone')) {
+				$zone_location = [
+					'1' => ['latitude'=>'34.041868', 'longitude'=>'-118.425181'],
+					'2' => ['latitude'=>'33.87313753', 'longitude'=>'-118.35977216'],
+				];
 
-            $new_user->default_location()->create($zone_location[$this->option('zone')]);
-            $new_user->zones()->attach($this->option('zone'));
+				$new_user->default_location()->create($zone_location[$this->option('zone')]);
+				$new_user->zones()->attach($this->option('zone'));
+			}
         }
 
         $this->info("User created. ID# ".$new_user->id);
@@ -101,8 +103,8 @@ class CreateUser extends Command {
 	protected function getOptions()
 	{
 		return [
-			['user_type', null, InputOption::VALUE_OPTIONAL, 'worker OR customer', 'worker'],
-			['zone', null, InputOption::VALUE_OPTIONAL, '1 OR 2', '1'],
+			['user_type', null, InputOption::VALUE_OPTIONAL, 'worker | customer | manager', 'worker'],
+			['zone', null, InputOption::VALUE_OPTIONAL, '1 | 2', '1'],
 		];
 	}
 
