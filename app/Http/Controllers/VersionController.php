@@ -5,56 +5,70 @@ use Illuminate\Http\Request;
 
 class VersionController extends Controller {
 
+    protected $min_app_version=[];
+    protected $user_app_version=[];
+    protected $upgrade=false;
+
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     */
     public function index()
     {
         return $this->response->withArray(['version'=>env('APP_VERSION')]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     */
     public function check(Request $request)
     {
-        $user_app_version = $request->input('app_version');
+        $user_app_version = $request->header('X-Application-Version');
+        $user_app_type = strtolower($request->header('X-Application-Type'));
 
-        $user_app_type = $request->input('app_type');
         if($user_app_version) {
 
+            $this->parseVersionNumber($user_app_version);
+
             $android = ($request->header('X-Device') == "Android" ? "_ANDROID" : "" );
+            $app_type_key = ($user_app_type=="washer" ? "WASHER_" : "" );
 
-            if($user_app_type=="washer") {
+            $install_link = env($app_type_key.'APP_INSTALL'.$android);
+            $min_app_version = env($app_type_key."APP_VERSION".$android);
 
-                $min_app_version = env("WASHER_APP_VERSION".$android);
-                preg_match("/([1-9]+)\.([0-9]+)\.*([0-9]+)*/", $min_app_version, $req_match);
+            $this->parseVersionNumber($min_app_version, "min_app_version");
 
-                $required_major = $req_match[1];
-                $required_minor = $req_match[2];
-                $required_build = (isset($req_match[3]) ? $req_match[3] : 0);
+            $this->requireUpgrade();
 
-                preg_match("/([1-9]+)\.([0-9]+)\.*([0-9]+)*/", $user_app_version, $app_match);
-                $major = $app_match[1];
-                $minor = $app_match[2];
-                $build = (isset($app_match[3]) ? $app_match[3] : 0);
-
-                $upgrade=false;
-                if($major < $required_major) { $upgrade = true; }
-                elseif($minor < $required_minor) { $upgrade = true; }
-                elseif($build < $required_build) { $upgrade = true; }
-
-                $install_link = env('WASHER_APP_INSTALL'.$android);
-
-                if($upgrade && $install_link) {
-                    return $this->response->withArray(['status'=>'upgrade', 'install_link'=>$install_link]);
-                } else {
-                    return $this->response->withArray(["status"=>"ok"]);
-                }
-
+            if($this->upgrade && $install_link) {
+                return $this->response->withArray(['status'=>'upgrade', 'install_link'=>$install_link]);
             } else {
-                $min_app_version = (float)env("APP_VERSION".$android);
-
-                if((float)$user_app_version < $min_app_version) {
-                    return $this->response->withArray(["status"=>"upgrade"]);
-                } else {
-                    return $this->response->withArray(["status"=>"ok"]);
-                }
+                return $this->response->withArray(["status"=>"ok"]);
             }
+        }
+    }
+
+    /**
+     * @param $min_ver_number
+     * @param string $type
+     * @internal param $version_numer
+     */
+    public function parseVersionNumber($min_ver_number, $type="user_app_version")
+    {
+        preg_match("/([1-9]+)\.([0-9]+)\.*([0-9]+)*/", $min_ver_number, $req_match);
+        $this->{$type}[] = (int)$req_match[1];
+        $this->{$type}[] = (int)$req_match[2];
+        $this->{$type}[] = (int)(isset($req_match[3]) ? $req_match[3] : 0);
+
+    }
+
+    /**
+     *
+     */
+    public function requireUpgrade()
+    {
+        for($i=0;$i<=2;$i++) {
+            if($this->user_app_version[$i] < $this->min_app_version[$i]) { $this->upgrade = true; break; }
         }
     }
 
