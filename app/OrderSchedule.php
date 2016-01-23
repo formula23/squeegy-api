@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrderDetail extends Model {
+class OrderSchedule extends Model {
 
-    protected $fillable = ['order_id', 'name', 'amount'];
+	protected $fillable = ['order_id', 'window_open', 'window_close'];
 
     public function order()
     {

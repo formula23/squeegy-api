@@ -8,8 +8,10 @@
 
 namespace App\Squeegy\Transformers;
 
+use App\OrderSchedule;
 use App\Squeegy\Orders;
 use App\Order;
+use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
 
 class OrderTransformer extends TransformerAbstract {
@@ -19,6 +21,7 @@ class OrderTransformer extends TransformerAbstract {
         'service',
         'worker',
         'customer',
+        'schedule',
     ];
 
     protected $availableIncludes = [
@@ -41,6 +44,8 @@ class OrderTransformer extends TransformerAbstract {
             'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
             'promo_code' => (($order->promo_code)? $order->promo_code : null ),
             'eta_quote' => (int)$order->eta,
+            'scheduled_day' => $order->scheduled_day(),
+            'scheduled_time' => $order->scheduled_time(),
             'arrival_eta' => eta_real_time($order),
             'current_eta' => current_eta($order),
             'eta' => Orders::formatConfirmEta($order->eta),
@@ -55,6 +60,7 @@ class OrderTransformer extends TransformerAbstract {
             'start_time' => $order->start_at ? date("g:i:s a", strtotime($order->start_at)) : "",
             'done_time' => $order->done_at ? date("g:i:s a", strtotime($order->done_at)) : "",
             'confirm_at' => $order->confirm_at,
+            'schedule_at' => $order->schedule_at,
             'assign_at' => $order->assign_at,
             'enroute_at' => $order->enroute_at,
             'start_at' => $order->start_at,
@@ -66,6 +72,12 @@ class OrderTransformer extends TransformerAbstract {
                 ]
             ],
         ];
+    }
+
+    public function includeSchedule(Order $order)
+    {
+        $schedule = ($order->schedule?:new OrderSchedule());
+        return $this->item($schedule, new OrderScheduleTransformer);
     }
 
     public function includeReferrer(Order $order) {
@@ -94,4 +106,5 @@ class OrderTransformer extends TransformerAbstract {
         $vehicle = $order->vehicle;
         return $this->item($vehicle, new VehicleTransformer);
     }
+
 }

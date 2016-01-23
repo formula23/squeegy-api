@@ -15,6 +15,7 @@ return [
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
         'new_order_worker' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
+        'new_schedule_order' => 'New Scheduled :order_service #:order_id on :scheduled_day between :scheduled_time',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'invalid_card' => 'Please enter a valid credit card.',

@@ -1,6 +1,7 @@
 <?php namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 /**
  * Class Order
@@ -85,9 +86,20 @@ class Order extends Model {
         return (int)$this->order_details()->sum('amount');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function transactions()
     {
         return $this->hasMany('App\Transaction');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function schedule()
+    {
+        return $this->hasOne('App\OrderSchedule');
     }
 
     /**
@@ -152,6 +164,37 @@ class Order extends Model {
     public function discount_record()
     {
         return $this->belongsTo('App\Discount', 'discount_id');
+    }
+
+    /**
+     * @return null|string
+     */
+    public function scheduled_date()
+    {
+        if(!$this->schedule) return null;
+        $open = new Carbon($this->schedule->window_open);
+        return $open->format('m/d/Y');
+    }
+
+    /**
+     * @return null|string
+     */
+    public function scheduled_day()
+    {
+        if(!$this->schedule) return null;
+        $open = new Carbon($this->schedule->window_open);
+        return $open->format('l');
+    }
+
+    /**
+     * @return null|string
+     */
+    public function scheduled_time()
+    {
+        if(!$this->schedule) return null;
+        $open = new Carbon($this->schedule->window_open);
+        $close = new Carbon($this->schedule->window_close);
+        return $open->format('g:ia')." - ".$close->format('g:ia');
     }
 
 }

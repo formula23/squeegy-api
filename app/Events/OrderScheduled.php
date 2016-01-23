@@ -1,26 +1,26 @@
 <?php namespace App\Events;
 
 use App\Events\Event;
+
 use App\Order;
 use Illuminate\Queue\SerializesModels;
 
-class OrderEnroute extends Event {
+class OrderScheduled extends Event {
 
 	use SerializesModels;
 
-    public $order;
-	public $auto;
+	public $order;
+	public $twilio;
 
 	/**
 	 * Create a new event instance.
 	 *
-	 * @param Order $order
-	 * @param bool $auto
+	 * @return void
 	 */
-	public function __construct(Order $order, $auto = true)
+	public function __construct(Order $order)
 	{
 		$this->order = $order;
-		$this->auto = $auto;
+		$this->twilio = \App::make('Aloha\Twilio\Twilio');
 	}
 
 }

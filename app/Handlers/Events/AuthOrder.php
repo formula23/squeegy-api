@@ -23,7 +23,7 @@ class AuthOrder {
 	 * @param  OrderConfirmed  $event
 	 * @return void
 	 */
-	public function handle(OrderConfirmed $event)
+	public function handle($event)
 	{
 		$order = $event->order;
 
@@ -48,18 +48,9 @@ class AuthOrder {
 				'last_four'=>$charge->source->last4,
 				'card_type'=>$charge->source->brand,
 			]);
-
-//			$event->order->stripe_charge_id = $charge->id;
 		}
 
-//        $order_amount = $event->order->price - (int)$event->order->discount;
         $order->charged = $charge->amount;
-
-//        if($order_amount) {
-//
-//            $charge = $payments->auth($order_amount);
-//            $event->order->stripe_charge_id = $charge->id;
-//        }
 
         $order->save();
 	}

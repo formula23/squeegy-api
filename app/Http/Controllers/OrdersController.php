@@ -8,10 +8,12 @@ use App\Events\OrderCancelledByWorker;
 use App\Events\OrderConfirmed;
 use App\Events\OrderDone;
 use App\Events\OrderEnroute;
+use App\Events\OrderScheduled;
 use App\Events\OrderStart;
 use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\OrderDetail;
+use App\OrderSchedule;
 use App\Squeegy\Orders;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
@@ -38,6 +40,7 @@ class OrdersController extends Controller {
         'request' => 1,
         'confirm' => 2,
         'receive' => 2,
+        'schedule' => 2,
         'assign' => 3,
         'enroute' => 4,
         'start' => 5,
@@ -135,7 +138,7 @@ class OrdersController extends Controller {
         $data = $request->all();
 
         //does current user have any washes in progress for the requested vehicle
-        if($request->user()->orders()->whereIn('status', ['confirm','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
+        if($request->user()->orders()->whereIn('status', ['confirm','schedule','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs(trans('messages.order.exists'));
         }
 
@@ -270,6 +273,32 @@ class OrdersController extends Controller {
                     Event::fire(new OrderEnroute($order));
 
                     break;
+
+                case "schedule":
+
+                    if( ! $request->user()->is('customer')) {
+                        return $this->response->errorUnauthorized();
+                    }
+
+                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+                    if( ! $availability['accept']) {
+                        return $this->response->errorWrongArgs($availability['description']);
+                    }
+
+                    list($window_open, $window_close) = explode("-", $request_data['time_slot']);
+
+                    $order_schedule = OrderSchedule::create([
+                        'window_open' => new Carbon($request_data['day']." ".$window_open),
+                        'window_close' => new Carbon($request_data['day']." ".$window_close),
+                    ]);
+
+                    $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
+                    $order->etc = $order->service->time;
+
+                    Event::fire(new OrderScheduled($order));
+
+                    break;
+
                 case "receive": //v1.5 uses this status
                     if( ! $request->user()->is('customer')) {
                         return $this->response->errorUnauthorized();
@@ -282,7 +311,7 @@ class OrdersController extends Controller {
                     }
 
                     if( ! empty($availability['schedule']) && $availability['schedule']) {
-                        return $this->response->errorWrongArgs('Scheduling not implemented yet.');
+                        return $this->response->errorWrongArgs('Only scheduling available at this time. Please try again.');
                     }
 
                     unset($order->receive_at);
@@ -352,6 +381,10 @@ class OrdersController extends Controller {
         }
 
         $order->save();
+
+        if($order_schedule) {
+            $order->schedule()->save($order_schedule);
+        }
 
         return $this->response->withItem($order, new OrderTransformer());
     }
