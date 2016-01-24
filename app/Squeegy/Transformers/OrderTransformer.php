@@ -36,6 +36,7 @@ class OrderTransformer extends TransformerAbstract {
             'id' => (string)$order->id,
             'job_number' => $order->job_number,
             'status' => $order->status,
+            'is_schedule_order' => ($order->schedule?true:false),
             'location' => $order->location,
             'instructions' => $order->instructions,
             'subtotal' => (int)$order->price,

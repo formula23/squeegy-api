@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Config;
 class Schedule
 {
     public $now;
+    public $open_hr;
+    public $close_hr;
     public $available=[];
     public $lead_hrs=3;
     public $days_out=5;
@@ -27,6 +29,9 @@ class Schedule
 
         $this->now = Carbon::now();
 
+        $this->open_hr = Config::get('squeegy.operating_hours.open');
+        $this->close_hr = Config::get('squeegy.operating_hours.close');
+
 //		$current_day = 7;
 //		$this->now = Carbon::create(2016,01,$current_day,9,0,0);
 
@@ -34,8 +39,8 @@ class Schedule
 
     public function availability()
     {
-        for($i=0; $i<=$this->days_out; $i++) {
-
+        for($i=0; $i<=$this->days_out; $i++)
+        {
             $this->now->addDay((!$i?0:1));
 
             if($this->now->isSunday()) {
@@ -43,31 +48,31 @@ class Schedule
                 continue;
             }
 
-            $open=Config::get('squeegy.operating_hours.open');
-            $close = Config::get('squeegy.operating_hours.close');
+            $this->open = $this->open_hr;
+            $this->close = $this->close_hr;
 
-            for($open; $open<=$close-1; $open++) {
-//print $open;
-                $start = new Carbon($this->now->format("m/d/y $open:00"));
+            for($this->open; $this->open<=$this->close-1; $this->open++) {
+
+                $start = new Carbon($this->now->format("m/d/y $this->open:00"));
 
                 if($this->now->isToday()) {
 //				if($this->now->day == $current_day) {
 
-                    if($this->now->hour >= $close) {
+                    if($this->now->hour >= $this->close) {
 //						print "after close\n";
                         continue(2);
                     }
 
-                    if($this->now->hour >= 0 && $this->now->hour < Config::get('squeegy.operating_hours.open') && $open < Config::get('squeegy.operating_hours.open')+$this->lead_hrs) {
+                    if($this->now->hour >= 0 && $this->now->hour < Config::get('squeegy.operating_hours.open') && $this->open < Config::get('squeegy.operating_hours.open')+$this->lead_hrs) {
 //						print "before open\n";
                         continue;
                     }
 
-                    if($open < $this->now->hour+$this->lead_hrs) {
+                    if($this->open < $this->now->hour+$this->lead_hrs) {
 //						print "cont\n";
                         continue;
                     }
-                    if($this->now->hour+$this->lead_hrs >= $close) {
+                    if($this->now->hour+$this->lead_hrs >= $this->close) {
 //						print "cont\n";
                         continue(2);
                     }
