@@ -37,7 +37,6 @@ class VehiclesController extends Controller {
      */
 	public function index()
 	{
-
         $vehicles = Auth::user()->vehicles;
 
         return $this->response->withCollection($vehicles, new VehicleTransformer);
@@ -86,7 +85,7 @@ class VehiclesController extends Controller {
      */
 	public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
 	{
-        if (empty($vehicle->id)) {
+        if (Auth::id() != $vehicle->user_id) {
             return $this->response->errorNotFound('Vehicle does not exist');
         }
 
@@ -104,7 +103,7 @@ class VehiclesController extends Controller {
      */
 	public function destroy(Vehicle $vehicle)
 	{
-        if (empty($vehicle->id)) {
+        if (Auth::id() != $vehicle->user_id) {
             return $this->response->errorNotFound('Vehicle does not exist');
         }
 
