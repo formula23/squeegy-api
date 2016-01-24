@@ -38,7 +38,6 @@ class EventServiceProvider extends ServiceProvider {
 		'App\Events\OrderScheduled' => [
 			'App\Handlers\Events\AuthOrder',
 			'App\Handlers\Events\NotifyAdminNewOrder',
-			'App\Handlers\Events\NotifyCustomerSchedule',
 		],
 
 		'App\Events\OrderAssign' => [

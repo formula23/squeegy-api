@@ -160,16 +160,24 @@ class OrdersController extends Controller {
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
 
         try {
+
             if($eta['schedule']) {
+
+                if( empty($data['day']) || empty($data['time_slot'])) return $this->response->errorWrongArgs(trans('messages.service.schedule_param_req'));
+
                 list($window_open, $window_close) = explode("-", $data['time_slot']);
 
                 $order_schedule = OrderSchedule::create([
                     'window_open' => new Carbon($data['day']." ".$window_open),
                     'window_close' => new Carbon($data['day']." ".$window_close),
                 ]);
+
             } else { //on-demand
                 if(!empty($eta['eta'])) {
                     $data['eta'] = $eta['time'];
+                } else {
+                    \Bugsnag::notifyException("No schedule or ETA avialable!");
+                    return $this->response->errorWrongArgs(trans('messages.service.error'));
                 }
             }
         } catch (\Exception $e) {
@@ -189,7 +197,7 @@ class OrdersController extends Controller {
 
         $order->order_details()->saveMany($order_details);
 
-        if($order_schedule) {
+        if( ! empty($order_schedule)) {
             $order->schedule()->save($order_schedule);
         }
 
@@ -284,31 +292,6 @@ class OrdersController extends Controller {
 
                     break;
 
-                case "schedule":
-
-                    if( ! $request->user()->is('customer')) {
-                        return $this->response->errorUnauthorized();
-                    }
-
-                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
-                    if( ! $availability['accept']) {
-                        return $this->response->errorWrongArgs($availability['description']);
-                    }
-
-//                    list($window_open, $window_close) = explode("-", $request_data['time_slot']);
-//
-//                    $order_schedule = OrderSchedule::create([
-//                        'window_open' => new Carbon($request_data['day']." ".$window_open),
-//                        'window_close' => new Carbon($request_data['day']." ".$window_close),
-//                    ]);
-
-                    $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
-                    $order->etc = $order->service->time;
-
-                    Event::fire(new OrderScheduled($order));
-
-                    break;
-
                 case "receive": //v1.5 uses this status
                     if( ! $request->user()->is('customer')) {
                         return $this->response->errorUnauthorized();
@@ -320,23 +303,27 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-//                    if( ! empty($availability['schedule']) && $availability['schedule']) {
-//                        return $this->response->errorWrongArgs('Only scheduling available at this time. Please try again.');
-//                    }
+                    $order->confirm_at = Carbon::now();
+                    $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
+                    $order->etc = $order->service->time;
 
                     unset($order->receive_at);
-                    $order->confirm_at = Carbon::now();
 
-                    $order->status = 'assign';
-                    $order->assign_at = Carbon::now();
+                    if($order->schedule) {
 
-                    $order->eta = $availability['time'];
-                    $order->etc = $order->service->time;
-                    $order->worker_id = $availability['worker_id'];
-                    $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
+                        $order->status = 'schedule';
+                        Event::fire(new OrderScheduled($order));
 
-                    Event::fire(new OrderConfirmed($order));
-                    Event::fire(new OrderAssign($order));
+                    } else {
+
+                        $order->status = 'assign';
+                        $order->assign_at = Carbon::now();
+                        $order->eta = $availability['time'];
+                        $order->worker_id = $availability['worker_id'];
+
+                        Event::fire(new OrderConfirmed($order));
+                        Event::fire(new OrderAssign($order));
+                    }
 
                     break;
                 case "assign":
@@ -391,10 +378,6 @@ class OrdersController extends Controller {
         }
 
         $order->save();
-
-//        if($order_schedule) {
-//            $order->schedule()->save($order_schedule);
-//        }
 
         return $this->response->withItem($order, new OrderTransformer());
     }

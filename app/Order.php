@@ -182,8 +182,7 @@ class Order extends Model {
     public function scheduled_day()
     {
         if(!$this->schedule) return null;
-        $open = new Carbon($this->schedule->window_open);
-        return $open->format('l');
+        return $this->schedule->window_open->format('l');
     }
 
     /**
@@ -192,9 +191,7 @@ class Order extends Model {
     public function scheduled_time()
     {
         if(!$this->schedule) return null;
-        $open = new Carbon($this->schedule->window_open);
-        $close = new Carbon($this->schedule->window_close);
-        return $open->format('g:ia')." - ".$close->format('g:ia');
+        return $this->schedule->window_open->format('g:ia')." - ".$this->schedule->window_close->format('g:ia');
     }
 
 }
