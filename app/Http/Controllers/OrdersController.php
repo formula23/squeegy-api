@@ -214,9 +214,8 @@ class OrdersController extends Controller {
      */
     public function update(Order $order, UpdateOrderRequest $request)
     {
-
-        if(empty($order->id)) {
-            return $this->response->errorNotFound();
+        if(empty($order->id) || (Auth::user()->is('customer') && Auth::id()!=$order->user_id)) {
+            return $this->response->errorNotFound('Order not found');
         }
 
         $request_data = $request->all();
@@ -391,8 +390,8 @@ class OrdersController extends Controller {
      */
 	public function show(Order $order)
     {
-        if (empty($order->id)) {
-            return $this->response->errorNotFound();
+        if(Auth::user()->is('customer') && Auth::id()!=$order->user_id) {
+            return $this->response->errorNotFound('Order not found');
         }
 
         return $this->response->withItem($order, new OrderTransformer);
@@ -405,6 +404,10 @@ class OrdersController extends Controller {
      */
     protected function applyPromoCode(Order $order, $request_data)
     {
+        if(Auth::user()->is('customer') && Auth::id()!=$order->user_id) {
+            return $this->response->errorNotFound('Order not found');
+        }
+
         if (isset($request_data['promo_code'])) { //calculate promo
 
             //check if promo code is a referral code
