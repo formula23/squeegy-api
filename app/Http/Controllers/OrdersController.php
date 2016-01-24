@@ -160,10 +160,17 @@ class OrdersController extends Controller {
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
 
         try {
-            if(!empty($eta['eta'])) {
-                $data['eta'] = $eta['time'];
-            } else if(!empty($eta['schedule'])) {
-                return $this->response->errorWrongArgs('Scheduling not implemented yet.');
+            if($eta['schedule']) {
+                list($window_open, $window_close) = explode("-", $data['time_slot']);
+
+                $order_schedule = OrderSchedule::create([
+                    'window_open' => new Carbon($data['day']." ".$window_open),
+                    'window_close' => new Carbon($data['day']." ".$window_close),
+                ]);
+            } else { //on-demand
+                if(!empty($eta['eta'])) {
+                    $data['eta'] = $eta['time'];
+                }
             }
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
@@ -181,6 +188,10 @@ class OrdersController extends Controller {
         $request->user()->orders()->save($order);
 
         $order->order_details()->saveMany($order_details);
+
+        if($order_schedule) {
+            $order->schedule()->save($order_schedule);
+        }
 
         $order->save();
 
@@ -284,12 +295,12 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    list($window_open, $window_close) = explode("-", $request_data['time_slot']);
-
-                    $order_schedule = OrderSchedule::create([
-                        'window_open' => new Carbon($request_data['day']." ".$window_open),
-                        'window_close' => new Carbon($request_data['day']." ".$window_close),
-                    ]);
+//                    list($window_open, $window_close) = explode("-", $request_data['time_slot']);
+//
+//                    $order_schedule = OrderSchedule::create([
+//                        'window_open' => new Carbon($request_data['day']." ".$window_open),
+//                        'window_close' => new Carbon($request_data['day']." ".$window_close),
+//                    ]);
 
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
                     $order->etc = $order->service->time;
@@ -309,9 +320,9 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    if( ! empty($availability['schedule']) && $availability['schedule']) {
-                        return $this->response->errorWrongArgs('Only scheduling available at this time. Please try again.');
-                    }
+//                    if( ! empty($availability['schedule']) && $availability['schedule']) {
+//                        return $this->response->errorWrongArgs('Only scheduling available at this time. Please try again.');
+//                    }
 
                     unset($order->receive_at);
                     $order->confirm_at = Carbon::now();
@@ -381,9 +392,9 @@ class OrdersController extends Controller {
 
         $order->save();
 
-        if($order_schedule) {
-            $order->schedule()->save($order_schedule);
-        }
+//        if($order_schedule) {
+//            $order->schedule()->save($order_schedule);
+//        }
 
         return $this->response->withItem($order, new OrderTransformer());
     }
