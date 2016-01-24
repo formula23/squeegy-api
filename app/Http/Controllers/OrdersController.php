@@ -160,7 +160,6 @@ class OrdersController extends Controller {
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
 
         try {
-
             if(!empty($eta['eta'])) {
                 $data['eta'] = $eta['time'];
             } else if(!empty($eta['schedule'])) {
