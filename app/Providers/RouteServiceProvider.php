@@ -25,15 +25,14 @@ class RouteServiceProvider extends ServiceProvider {
 	public function boot(Router $router)
 	{
 		parent::boot($router);
-
         $router->bind('vehicles', function($id) {
-            return \App\Vehicle::where('user_id', Auth::id())->find($id);
+            return \App\Vehicle::find($id);
         });
 
         $router->bind('orders', function($id) {
-            $order = \App\Order::query()->where('id', $id);
-            if(Auth::user() && Auth::user()->is('customer')) $order->where('user_id', Auth::id());
-            return $order->get()->first();
+            return \App\Order::find($id);
+//            if(Auth::user() && Auth::user()->is('customer')) $order->where('user_id', Auth::id());
+//            return $order->get()->first();
         });
 
         $router->model('services', 'App\Service');

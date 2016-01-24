@@ -69,7 +69,7 @@ class VehiclesController extends Controller {
      */
 	public function show(Vehicle $vehicle)
 	{
-        if (empty($vehicle->id)) {
+        if (Auth::id() != $vehicle->user_id) {
             return $this->response->errorNotFound('Vehicle does not exist');
         }
 
