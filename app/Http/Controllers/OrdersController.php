@@ -161,7 +161,7 @@ class OrdersController extends Controller {
 
         try {
 
-            if($eta['schedule']) {
+            if(!empty($eta['schedule'])) {
 
                 if( empty($data['day']) || empty($data['time_slot'])) return $this->response->errorWrongArgs(trans('messages.service.schedule_param_req'));
 
@@ -173,15 +173,16 @@ class OrdersController extends Controller {
                 ]);
 
             } else { //on-demand
-                if(!empty($eta['eta'])) {
+                if(!empty($eta['time'])) {
                     $data['eta'] = $eta['time'];
                 } else {
-                    \Bugsnag::notifyException("No schedule or ETA avialable!");
+                    \Bugsnag::notifyException(new \Exception("No schedule or ETA avialable!"));
                     return $this->response->errorWrongArgs(trans('messages.service.error'));
                 }
             }
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
+            return $this->response->errorWrongArgs(trans('messages.service.error'));
         }
 
         $data['total'] = $data['price'];
