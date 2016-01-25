@@ -466,8 +466,9 @@ class OrdersController extends Controller {
                 $order->discount_id = $discount->id;
                 $order->promo_code = $request_data['promo_code'];
 
+
                 if( $discount->discount_type=='amt' ) {
-                    $order->discount = $discount->amount * 100;
+                    $order->discount = $discount->amount;
                 } else {
                     $order->discount = (int) ($order->price * ($discount->amount / 100));
                 }
