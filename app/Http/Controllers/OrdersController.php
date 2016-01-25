@@ -276,8 +276,6 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-//                    $eta = Orders::getLeadTimeByOrder($order);
-
                     $order->eta = $availability['time'];
                     $order->etc = $order->service->time;
                     $order->worker_id = $availability['worker_id'];
