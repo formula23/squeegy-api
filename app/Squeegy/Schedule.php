@@ -8,7 +8,6 @@
 
 namespace App\Squeegy;
 
-
 use App\OrderSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
