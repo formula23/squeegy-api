@@ -230,12 +230,17 @@ class OrdersController extends Controller {
             return $this->response->errorWrongArgs($promo_code_msg);
         }
 
-        if(isset($request_data['rating']))
+        if( ! empty($request_data['rating']))
         {
             $order->rating = $request_data['rating'];
-            $order->rating_comment = $request_data['rating_comment'];
+            $order->rating_comment = (!empty($request_data['rating_comment'])?$request_data['rating_comment']:"");
 
             if($request_data['rating'] < 4) {
+                Event::fire(new BadRating($order));
+            }
+        } else if( ! empty($request_data['rating_comment'])) {
+            $order->rating_comment = $request_data['rating_comment'];
+            if($order->rating < 4) {
                 Event::fire(new BadRating($order));
             }
         }
