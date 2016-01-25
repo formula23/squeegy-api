@@ -75,6 +75,19 @@ class AuthController extends Controller {
         }
 
         if ($this->auth->attempt($credentials, $request->has('remember'))) {
+
+            if($request->header('X-Application-Type'))
+            {
+                switch(strtolower($request->header('X-Application-Type'))) {
+                    case "consumer":
+                        if( ! $this->auth->user()->is('customer')) return $this->response->errorUnauthorized('Account not authorized for this application.');
+                        break;
+                    case "washer":
+                        if( ! $this->auth->user()->is('worker')) return $this->response->errorUnauthorized('Account not authorized for this application.');
+                        break;
+                }
+            }
+
             return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
