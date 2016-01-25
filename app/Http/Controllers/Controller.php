@@ -14,6 +14,7 @@ use Route;
 use Illuminate\Support\Str;
 use App;
 use Exception;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 abstract class Controller extends ApiGuardController {
 
@@ -184,6 +185,11 @@ abstract class Controller extends ApiGuardController {
                     if (isset($this->apiKey)) {
                         $this->apiLog->api_key_id = $this->apiKey->id;
                     }
+
+                    try {
+                        $user = JWTAuth::parseToken()->authenticate();
+                        $this->apiLog->user_id    = $user->id;
+                    } catch(\Exception $e) {}
 
                     $this->apiLog->route      = Route::currentRouteAction();
                     $this->apiLog->method     = $request->getMethod();
