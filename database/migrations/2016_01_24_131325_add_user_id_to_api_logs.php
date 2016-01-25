@@ -28,6 +28,7 @@ class AddUserIdToApiLogs extends Migration {
 	{
 		Schema::table('api_logs', function(Blueprint $table)
 		{
+			$table->dropForeign('api_logs_user_id_foreign');
 			$table->dropColumn('user_id');
 		});
 	}
