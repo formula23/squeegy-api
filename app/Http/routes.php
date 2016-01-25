@@ -55,6 +55,4 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');
 
-    Route::get('schedule/available', 'ScheduleController@available');
-
 });

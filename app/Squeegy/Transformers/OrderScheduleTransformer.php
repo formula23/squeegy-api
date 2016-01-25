@@ -18,10 +18,13 @@ class OrderScheduleTransformer extends TransformerAbstract
     public function transform(OrderSchedule $orderSchedule)
     {
         return [
-            'id' => (string)$orderSchedule->id,
             'window_open' => $orderSchedule->window_open,
             'window_close' => $orderSchedule->window_close,
+            'day' => ($orderSchedule->window_open ? $orderSchedule->window_open->format('D') : null),
+            'date' => ($orderSchedule->window_open ? $orderSchedule->window_open->format('n/d') : null),
+            'time_slot' => ($orderSchedule->window_open ? $orderSchedule->window_open->format('g')."-".$orderSchedule->window_close->format('ga') : null),
         ];
+
     }
 
 }

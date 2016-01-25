@@ -46,6 +46,8 @@ return [
         'highdemand' => "Due to high-demand we cannot take your order.\nPlease try again later.",
         'outside_area' => "Outside of service area.\nTap here to go to our service area.",
         'not_available' => 'Squeegy not available at this time. Please try again later.',
+        'error' => 'There was an error. Please try again.',
+        'schedule_param_req' => 'To schedule an order, please select a day and time.',
     ],
     'emails' => [
         'welcome' => [
