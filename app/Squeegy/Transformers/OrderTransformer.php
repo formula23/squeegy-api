@@ -59,7 +59,6 @@ class OrderTransformer extends TransformerAbstract {
             'start_time' => $order->start_at ? date("g:i a", strtotime($order->start_at)) : "",
             'done_time' => $order->done_at ? date("g:i a", strtotime($order->done_at)) : "",
             'confirm_at' => $order->confirm_at,
-            'schedule_at' => $order->schedule_at,
             'assign_at' => $order->assign_at,
             'enroute_at' => $order->enroute_at,
             'start_at' => $order->start_at,
