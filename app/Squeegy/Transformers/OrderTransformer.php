@@ -32,7 +32,7 @@ class OrderTransformer extends TransformerAbstract {
     {
 //        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
 
-        return [
+        $resp = [
             'id' => (string)$order->id,
             'job_number' => $order->job_number,
             'status' => $order->status,
@@ -70,6 +70,13 @@ class OrderTransformer extends TransformerAbstract {
                 ]
             ],
         ];
+
+        if($order->schedule) {
+            $resp['eta'] = $order->scheduled_eta();
+        }
+
+        return $resp;
+
     }
 
     public function includeSchedule(Order $order)

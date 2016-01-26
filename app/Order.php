@@ -191,7 +191,13 @@ class Order extends Model {
     public function scheduled_time()
     {
         if(!$this->schedule) return null;
-        return $this->schedule->window_open->format('g:ia')." - ".$this->schedule->window_close->format('g:ia');
+        return $this->schedule->window_open->format('g')."-".$this->schedule->window_close->format('ga');
+    }
+
+    public function scheduled_eta()
+    {
+        if(!$this->schedule) return null;
+        return $this->schedule->window_open->format('n/d')." @ ".$this->scheduled_time();
     }
 
 }
