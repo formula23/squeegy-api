@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\PasswordBroker;
 use Illuminate\Foundation\Auth\ResetsPasswords;
@@ -35,6 +36,7 @@ class PasswordController extends Controller {
 
 		$this->auth = $auth;
 		$this->passwords = $passwords;
+
 	}
 
 	/**
@@ -43,16 +45,27 @@ class PasswordController extends Controller {
 	 * @param  Request  $request
 	 * @return Response
 	 */
-	public function postEmail(Request $request)
+	public function postEmail(Request $request, TokenRepositoryInterface $tokens)
 	{
+
 		$this->validate($request, ['email' => 'required|email']);
 
-		$response = $this->passwords->sendResetLink($request->only('email'), function($m)
-		{
+		$credentials = $request->only('email');
+		$user = $this->passwords->getUser($credentials);
+
+		$token = $tokens->create($user);
+
+		$this->passwords->emailResetLink($user, $token, function($m) use ($token) {
+
+			$headers = $m->getHeaders();
+			$mergevars=['RESET_PW_URL'=>env('WEBSITE_URL').'/password/reset/'.$token];
+			$headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
+			$headers->addTextHeader('X-MC-Template', 'password-reset');
+
 			$m->subject($this->getEmailSubject());
 		});
 
-		return $this->response->withArray(['status'=>trans($response)]);
+		return $this->response->withArray(['status'=>trans(PasswordBroker::RESET_LINK_SENT)]);
 
 	}
 
