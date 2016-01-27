@@ -330,7 +330,6 @@ class OrdersController extends Controller {
                         $order->worker_id = $availability['worker_id'];
 
                         Event::fire(new OrderConfirmed($order));
-                        Event::fire(new OrderAssign($order));
                     }
 
                     break;
