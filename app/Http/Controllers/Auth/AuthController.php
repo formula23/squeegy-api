@@ -153,6 +153,8 @@ class AuthController extends Controller {
 
             $this->auth->user()->attachRole(3);
 
+            $user = User::find($this->auth->user()->id);
+
             if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
                 \Event::fire(new UserRegistered());
             }
@@ -161,7 +163,7 @@ class AuthController extends Controller {
             return $this->response->errorInternalError($e->getMessage());
         }
 
-        return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
+        return $this->response->withItem($user, new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
     }
 
     /**

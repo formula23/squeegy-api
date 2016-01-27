@@ -170,6 +170,10 @@ class UserController extends Controller {
 
         }
 
+        if( ! empty($data['password'])) {
+            $data['anon_pw_reset'] = 1;
+        }
+
         $original_email = $request->user()->email;
 
         $request->user()->update($data);
