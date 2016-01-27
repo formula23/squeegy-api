@@ -45,6 +45,7 @@ class OrderTransformer extends TransformerAbstract {
             'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
             'promo_code' => ($order->promo_code ? $order->promo_code : null ),
             'eta_quote' => (int)$order->eta,
+            'arrival_eta' => eta_real_time($order),
             'eta' => Orders::formatConfirmEta($order->eta),
             'eta_seconds' => Orders::getCurrentEta($order),
             'etc' => ($order->start_at ? $order->start_at->addMinutes($order->etc)->format('g:i a') : ""),
