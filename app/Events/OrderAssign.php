@@ -9,6 +9,8 @@ class OrderAssign extends Event {
 
 	use SerializesModels;
 
+	public $twilio;
+
 	/**
 	 * Create a new event instance.
 	 *
@@ -17,6 +19,7 @@ class OrderAssign extends Event {
 	public function __construct(Order $order)
 	{
 		$this->order = $order;
+		$this->twilio = \App::make('Aloha\Twilio\Twilio');
 	}
 
 }

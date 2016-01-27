@@ -42,6 +42,7 @@ class EventServiceProvider extends ServiceProvider {
 
 		'App\Events\OrderAssign' => [
 			'App\Handlers\Events\NotifyCustomerAssign',
+			'App\Handlers\Events\NotifyWorkerNewOrder',
 		],
 
         'App\Events\OrderEnroute' => [

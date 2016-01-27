@@ -45,7 +45,6 @@ class OrderTransformer extends TransformerAbstract {
             'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
             'promo_code' => ($order->promo_code ? $order->promo_code : null ),
             'eta_quote' => (int)$order->eta,
-            'arrival_eta' => eta_real_time($order),
             'eta' => Orders::formatConfirmEta($order->eta),
             'eta_seconds' => Orders::getCurrentEta($order),
             'etc' => ($order->start_at ? $order->start_at->addMinutes($order->etc)->format('g:i a') : ""),
@@ -71,12 +70,17 @@ class OrderTransformer extends TransformerAbstract {
         ];
 
         if($order->schedule) {
-            $resp['arrival_eta'] = $order->scheduled_eta();
+            $resp['eta'] = $order->scheduled_eta();
+        } else {
+            $arrival_eta = eta_real_time($order);
+            if($arrival_eta) {
+                $resp['eta'] = $arrival_eta;
+            }
         }
 
         $current_eta = current_eta($order);
         if($current_eta) {
-            $resp['arrival_eta'] = $current_eta;
+            $resp['eta'] = $current_eta;
         }
 
         return $resp;

@@ -255,6 +255,7 @@ class OrdersController extends Controller {
                 ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']]) {
                 return $this->response->errorWrongArgs(trans('messages.order.status_change_not_allowed', ['request_status'=>$request_data['status'], 'current_status'=>$order->status]));
             }
+            $original_status = $order->status;
 
             $order->status = $request_data['status'];
 
@@ -334,6 +335,19 @@ class OrdersController extends Controller {
 
                     break;
                 case "assign":
+
+                    if( ! $request->user()->is('admin')) {
+                        return $this->response->errorUnauthorized();
+                    }
+
+                    if($original_status != "schedule") {
+                        return $this->response->errorUnauthorized('Unable to assign. Current status: '.$original_status);
+                    }
+
+                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+
+                    $order->eta = $availability['time'];
+                    $order->worker_id = $availability['worker_id'];
 
                     Event::fire(new OrderAssign($order));
 

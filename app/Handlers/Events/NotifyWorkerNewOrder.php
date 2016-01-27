@@ -28,7 +28,7 @@ class NotifyWorkerNewOrder {
 	 * @param  OrderConfirmed  $event
 	 * @return void
 	 */
-	public function handle(OrderConfirmed $event)
+	public function handle($event)
 	{
         try {
 
@@ -39,7 +39,7 @@ class NotifyWorkerNewOrder {
                 ->get();
 
             $vehicle = $event->order->vehicle;
-//dd($workers);
+
             foreach($workers as $worker) {
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
                     'order_service' => $event->order->service->name,
@@ -53,6 +53,7 @@ class NotifyWorkerNewOrder {
                 ]));
             }
         } catch(\Exception $e) {
+			dd($e);
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 

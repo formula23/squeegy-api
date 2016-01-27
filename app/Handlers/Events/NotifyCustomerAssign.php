@@ -26,9 +26,9 @@ class NotifyCustomerAssign extends BaseEventHandler {
 	 */
 	public function handle(OrderAssign $event)
 	{
-		$push_message = trans('messages.order.push_notice.enroute', [
+		$push_message = trans('messages.order.push_notice.assign', [
 			'worker_name'=>$event->order->worker->name,
-			'arrival_time'=>eta_real_time($event->order),
+			'window_time'=>$event->order->scheduled_time(),
 		]);
 
 		if( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
