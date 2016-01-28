@@ -150,6 +150,7 @@ class UserController extends Controller {
                     'exp_year'=>$customer_card->exp_year,
                     'is_default'=>1,
                 ];
+                $customer->default_source = $customer_card->id;
 
                 $request->user()->payment_methods()->update(['is_default'=>0]);
                 $request->user()->payment_methods()->create($payment_method_data);
