@@ -148,6 +148,7 @@ class UserController extends Controller {
                     'last4'=>$customer_card->last4,
                     'exp_month'=>$customer_card->exp_month,
                     'exp_year'=>$customer_card->exp_year,
+                    'is_default'=>1,
                 ];
 
                 $request->user()->payment_methods()->update(['is_default'=>0]);
