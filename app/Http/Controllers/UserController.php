@@ -142,13 +142,19 @@ class UserController extends Controller {
                     "source" => $data['stripe_token']
                 ]);
 
-                $request->user()->payment_methods()->create([
+                $payment_method_data = [
                     'identifier'=>$customer_card->id,
                     'card_type'=>$customer_card->brand,
                     'last4'=>$customer_card->last4,
                     'exp_month'=>$customer_card->exp_month,
                     'exp_year'=>$customer_card->exp_year,
-                ]);
+                ];
+
+                if($request->user()->payment_methods) {
+                    $request->user()->payment_methods()->update($payment_method_data);
+                } else {
+                    $request->user()->payment_methods()->create($payment_method_data);
+                }
 
                 $customer->default_source = $customer_card->id;
 
