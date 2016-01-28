@@ -13,20 +13,4 @@ class OrderSchedule extends Model {
     {
         return $this->belongsTo('App\Order');
     }
-
-    public static function current_scheduled_orders()
-    {
-        $existing_schedules = self::whereDate('window_open', '>', Carbon::now())->orderBy('window_open')->get();
-
-        $current_schedule=[];
-        foreach($existing_schedules as $existing_schedule) {
-            $key = $existing_schedule->window_open->format('m/d/Y H');
-            if(empty($current_schedule[$key])) $current_schedule[$key]=0;
-            $current_schedule[$key]+=1;
-        }
-
-        return $current_schedule;
-
-    }
-
 }

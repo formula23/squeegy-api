@@ -8,6 +8,7 @@
 
 namespace App\Squeegy;
 
+use App\Order;
 use App\OrderSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -84,13 +85,10 @@ class Schedule
                     }
                 }
 
-                $key = $this->now->format('m/d/Y ').$start->format('H');
-
-                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key]>=3?false:true);
-
-                if( ! $is_available) continue;
-
-                //, "available"=>$is_available
+                //will not block out windows at this time.
+//                $key = $this->now->format('m/d/Y ').$start->format('H');
+//                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key]>=3?false:true);
+//                if( ! $is_available) continue;
 
                 $windows[] = $start->format('g:00a')." - ".$start->addHours(1)->format('g:00a');
 
@@ -107,7 +105,7 @@ class Schedule
 
     protected function current_schedule()
     {
-        $this->current_schedule = OrderSchedule::current_scheduled_orders();
+        $this->current_schedule = Order::current_scheduled_orders();
     }
 
 }

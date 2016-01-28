@@ -200,4 +200,21 @@ class Order extends Model {
         return $this->schedule->window_open->format('n/d')." @ ".$this->scheduled_time();
     }
 
+    public static function current_scheduled_orders()
+    {
+        $existing_scheduled_orders = self::whereIn('status', ['schedule'])->whereHas('schedule', function($q) {
+            $q->whereDate('window_open', '>', Carbon::now())->orderBy('window_open');
+        })->with('schedule')->get();
+
+        $current_schedule=[];
+        foreach($existing_scheduled_orders as $existing_scheduled_order) {
+            $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y H');
+            if(empty($current_schedule[$key])) $current_schedule[$key]=0;
+            $current_schedule[$key]+=1;
+        }
+
+        return $current_schedule;
+
+    }
+
 }
