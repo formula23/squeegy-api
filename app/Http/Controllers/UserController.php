@@ -150,19 +150,12 @@ class UserController extends Controller {
                     'exp_year'=>$customer_card->exp_year,
                 ];
 
-                if($request->user()->payment_methods) {
-                    $request->user()->payment_methods()->update($payment_method_data);
-                } else {
-                    $request->user()->payment_methods()->create($payment_method_data);
-                }
-
-                $customer->default_source = $customer_card->id;
+                $request->user()->payment_methods()->update(['is_default'=>0]);
+                $request->user()->payment_methods()->create($payment_method_data);
 
             } catch(\Exception $e) {
                 \Bugsnag::notifyException($e);
-//                return $this->response->errorWrongArgs($e->getMessage());
             }
-
         }
 
         try {
@@ -170,7 +163,6 @@ class UserController extends Controller {
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
         }
-
 
 // && ! empty($request->user()->phone) -- removed 9/17
 

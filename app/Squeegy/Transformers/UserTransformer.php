@@ -90,7 +90,8 @@ class UserTransformer extends TransformerAbstract {
 
     public function includePaymentMethods(User $user)
     {
-        return $this->collection($user->payment_methods, new PaymentMethodTransformer());
+        $payment_methods = $user->payment_methods()->orderBy('is_default', 'desc')->get();
+        return $this->collection($payment_methods, new PaymentMethodTransformer());
     }
 
     public function includeLatestActivityLog(User $user)
