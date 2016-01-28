@@ -55,6 +55,7 @@ class ZoneRegionsTableSeeder extends Seeder
                 ['postal_code'=>'90293'],
                 ['postal_code'=>'90292'],
                 ['postal_code'=>'90291'],
+                ['postal_code'=>'90301'],
                 ['postal_code'=>'90401'],
                 ['postal_code'=>'90402'],
                 ['postal_code'=>'90403'],
