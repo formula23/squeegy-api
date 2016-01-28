@@ -55,22 +55,39 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    public function payment_methods()
+    {
+        return $this->hasMany('App\PaymentMethod');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function orders()
     {
         $foreign_key = \Auth::user()->is('worker') ? 'worker_id' : null ;
         return $this->hasMany('App\Order', $foreign_key);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function referral_orders()
     {
         return $this->hasMany('App\Order', 'referrer_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function credits()
     {
         return $this->hasMany('App\Credit');
     }
 
+    /**
+     * @return int
+     */
     public function availableCredit()
     {
         return (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
@@ -221,6 +238,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return ($this->orders()->where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count() < $discount->frequency_rate);
     }
 
+    /**
+     * @return string
+     */
     public static function generateReferralCode()
     {
         while(true) {
@@ -230,5 +250,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         }
         return $referral_code;
     }
+
+
 
 }

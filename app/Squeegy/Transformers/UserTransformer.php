@@ -8,6 +8,7 @@
 
 namespace App\Squeegy\Transformers;
 
+use App\PaymentMethod;
 use App\User;
 use App\WasherActivityLog;
 use League\Fractal\ParamBag;
@@ -23,6 +24,7 @@ class UserTransformer extends TransformerAbstract {
         'vehicles',
         'activity_logs',
         'latest_activity_log',
+        'payment_methods',
     ];
 
     public function transform(User $user)
@@ -84,6 +86,11 @@ class UserTransformer extends TransformerAbstract {
     public function includeActivityLogs(User $user)
     {
         return $this->collection($user->activity_logs, new WasherActivityLogTransformer());
+    }
+
+    public function includePaymentMethods(User $user)
+    {
+        return $this->collection($user->payment_methods, new PaymentMethodTransformer());
     }
 
     public function includeLatestActivityLog(User $user)

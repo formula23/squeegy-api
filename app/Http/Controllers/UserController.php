@@ -2,6 +2,7 @@
 
 use Aloha\Twilio\Twilio;
 use App\Http\Requests;
+use App\PaymentMethod;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
 use App\WasherActivityLog;
@@ -140,6 +141,15 @@ class UserController extends Controller {
                 $customer_card = $customer->sources->create([
                     "source" => $data['stripe_token']
                 ]);
+
+                $request->user()->payment_methods()->create([
+                    'identifier'=>$customer_card->id,
+                    'card_type'=>$customer_card->brand,
+                    'last4'=>$customer_card->last4,
+                    'exp_month'=>$customer_card->exp_month,
+                    'exp_year'=>$customer_card->exp_year,
+                ]);
+
                 $customer->default_source = $customer_card->id;
 
             } catch(\Exception $e) {
