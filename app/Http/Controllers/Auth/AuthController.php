@@ -74,7 +74,18 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-        if ($this->auth->attempt($credentials, $request->has('remember'))) {
+        if ($this->auth->attempt($credentials, $request->has('remember')))
+        {
+            //successful log
+            if($request->input('anon_email')) {
+                try {
+                    if(preg_match('/squeegyapp-tmp.com$/', $request->input('anon_email'))) {
+                        User::where('email', $request->input('anon_email'))->delete();
+                    }
+                } catch(\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                }
+            }
 
             if($request->header('X-Application-Type'))
             {
