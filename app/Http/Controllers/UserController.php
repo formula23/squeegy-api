@@ -51,6 +51,10 @@ class UserController extends Controller {
             })->groupBy('users.id');
         }
 
+        if($request->input('referral_code')) {
+            $usr_qry->where('referral_code', $request->input('referral_code'));
+        }
+
         $paginator = $usr_qry->paginate($request->input('per_page', 10));
 
         return $this->response->withPaginator($paginator, new UserTransformer());
