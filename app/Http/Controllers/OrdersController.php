@@ -337,7 +337,7 @@ class OrdersController extends Controller {
                 if($discount->discount_code) {
                     $actual_discount_code = $discount->actual_discount_code($request_data['promo_code']);
                     if(!$actual_discount_code) return trans('messages.order.discount.unavailable');
-                    
+
                     if($actual_discount_code->frequency_rate &&
                         $actual_discount_code->frequency_rate <= Order::where('promo_code', $request_data['promo_code'])->whereIn('status', ['assign','enroute','start','done'])->count())
                     {
@@ -345,7 +345,7 @@ class OrdersController extends Controller {
                     }
                 }
             } else {
-                if ( ! $order->customer->discountEligible($discount)) return trans('messages.order.discount.unavailable');
+                if ( ! $order->customer->discountEligible($discount, $request_data['promo_code'])) return trans('messages.order.discount.unavailable');
             }
 
             //calculate discount
