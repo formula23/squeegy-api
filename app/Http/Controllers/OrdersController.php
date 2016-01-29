@@ -443,15 +443,12 @@ class OrdersController extends Controller {
             //check if promo code is a referral code
             if($referrer = User::where('referral_code', $request_data['promo_code'])->where('id','!=',\Auth::user()->id)->first())
             {
-                //has this customer used this referral code before?
-                $already_used = \Auth::user()->orders()->whereNotIn('status', ['request','cancel'])->where('referrer_id', $referrer->id)->count();
-                if( ! $already_used) {
-                    $order->referrer_id = $referrer->id;
-                    $order->promo_code = $request_data['promo_code'];
-                    $order->discount = (int)Config::get('squeegy.referral_program.referred_amt');
-                } else {
-                    return trans('messages.order.discount.referral_code_used');
-                }
+                //only valid for new customers
+                if(\Auth::user()->orders()->whereNotIn('status', ['cancel','request'])->count()) return trans('messages.order.discount.referral_code_new_customer');
+
+                $order->referrer_id = $referrer->id;
+                $order->promo_code = $request_data['promo_code'];
+                $order->discount = (int)Config::get('squeegy.referral_program.referred_amt');
             }
             else
             {
