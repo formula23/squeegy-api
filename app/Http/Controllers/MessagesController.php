@@ -15,7 +15,7 @@ class MessagesController extends Controller {
 	public function getIndex()
 	{
 		$data=[
-			'referrer_friend' => [
+			'referral_program' => [
 				'header' => 'Invite friends. Get free washes.',
 				'body' => 'Send friends a free car wash and you\'ll get one to, worth $15.',
 			],
