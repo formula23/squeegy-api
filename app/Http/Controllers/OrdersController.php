@@ -141,8 +141,10 @@ class OrdersController extends Controller {
 	{
         $data = $request->all();
 
+        $is_schedule = ( !empty($data['day']) && !empty($data['time_slot']) ? true : false );
+
         //does current user have any washes in progress for the requested vehicle
-        if($request->user()->orders()->whereIn('status', ['confirm','schedule','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
+        if( !$is_schedule && $request->user()->orders()->whereIn('status', ['confirm','schedule','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs(trans('messages.order.exists'));
         }
 
@@ -165,11 +167,18 @@ class OrdersController extends Controller {
 
         try {
 
-            if(!empty($eta['schedule'])) {
+            if( ! empty($eta['schedule']) && (empty($data['day']) || empty($data['time_slot']))) return $this->response->errorWrongArgs(trans('messages.service.schedule_param_req'));
 
-                if( empty($data['day']) || empty($data['time_slot'])) return $this->response->errorWrongArgs(trans('messages.service.schedule_param_req'));
+            if($is_schedule) {
 
                 list($window_open, $window_close) = explode("-", $data['time_slot']);
+
+                $schedule_data = [
+                    'window_open' => new Carbon($data['day']." ".$window_open),
+                    'window_close' => new Carbon($data['day']." ".$window_close),
+                ];
+                
+                if($schedule_data['window_open']->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
                 $order_schedule = OrderSchedule::create([
                     'window_open' => new Carbon($data['day']." ".$window_open),
