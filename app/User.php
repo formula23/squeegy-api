@@ -205,10 +205,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @param Discount $discount
      * @return bool
      */
-    public function discountEligible(Discount $discount)
+    public function discountEligible(Discount $discount, $code)
     {
-        if($discount->discount_code && $discount->discount_code->frequency_rate > 0) {
-            return ($this->orders_with_discount('promo_code', $discount->discount_code->code)->count() < $discount->discount_code->frequency_rate);
+        if($discount->discount_code) {
+            $actual_code = $discount->actual_discount_code($code);
+            if(!$actual_code) return false;
+
+            if($actual_code->frequency_rate > 0) {
+                return ($this->orders_with_discount('promo_code', $code)->count() < $actual_code->frequency_rate);
+            }
         }
 
         if($discount->frequency_rate) {

@@ -108,6 +108,15 @@ class Discount extends Model {
     }
 
     /**
+     * @param $code
+     * @return mixed
+     */
+    public function actual_discount_code($code)
+    {
+        return $this->hasOne('App\DiscountCode')->where('code', $code)->first();
+    }
+
+    /**
      * @param $id
      * @return mixed
      */
