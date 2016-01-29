@@ -459,25 +459,59 @@ class OrdersController extends Controller {
                 if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
 
                 $scope_discount = true;
+                $frequency_rate = 0;
                 if($discount->scope == "system") {
-                    if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count()) {
+                    $scope_label="";
+                    if($discount->frequency_rate && $discount->frequency_rate <= $discount->active_orders->count()) {
                         $scope_discount = false;
+                        $frequency_rate = $discount->frequency_rate;
+                    }
+
+                    if($discount->discount_code) {
+                        $actual_discount_code = $discount->actual_discount_code($request_data['promo_code']);
+                        if( ! $actual_discount_code) return trans('messages.order.discount.unavailable');
+
+                        if($actual_discount_code->frequency_rate &&
+                            $actual_discount_code->frequency_rate <= Order::where('promo_code', $request_data['promo_code'])->whereNotIn('status', ['cancel','request'])->count())
+                        {
+                            $frequency_rate = $actual_discount_code->frequency_rate;
+                            $scope_discount = false;
+                        }
                     }
                 } else {
-                    if ( ! $order->customer->discountEligible($discount)) $scope_discount = false;
+                    $scope_label=" per customer";
+                    if($discount->discount_code) {
+                        $actual_code = $discount->actual_discount_code($request_data['promo_code']);
+                        if(!$actual_code) return trans('messages.order.discount.unavailable');
+
+                        if($actual_code->frequency_rate > 0) {
+                            if( ! (Auth::user()->orders_with_discount('promo_code', $request_data['promo_code'])->count() < $actual_code->frequency_rate)) {
+                                $frequency_rate = $actual_code->frequency_rate;
+                                $scope_discount = false;
+                            }
+                        }
+                    }
+
+                    if($discount->frequency_rate) {
+                        if( ! (Auth::user()->orders_with_discount('discount_id',$discount->id)->count() < $discount->frequency_rate)) {
+                            $frequency_rate = $discount->frequency_rate;
+                            $scope_discount = false;
+                        }
+                    }
                 }
+
                 if( ! $scope_discount) {
-                    switch($discount->frequency_rate) {
+                    switch($frequency_rate) {
                         case 1:
                         case 2:
                             $word_map = ['once','twice'];
-                            $times = $word_map[($discount->frequency_rate-1)];
+                            $times = $word_map[($frequency_rate-1)];
                             break;
                         default:
-                            $times = $discount->frequency_rate." ".str_plural('time', $discount->frequency_rate);
+                            $times = $frequency_rate." ".str_plural('time', $frequency_rate);
                             break;
                     }
-                    return trans('messages.order.discount.frequency', ['times'=>$times]);
+                    return trans('messages.order.discount.frequency', ['times'=>$times, 'scope_label'=>$scope_label]);
                 }
 
                 //calculate discount

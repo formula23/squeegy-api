@@ -141,6 +141,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\WasherActivityLog');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function activity()
     {
         return $this->hasMany('App\ActivityLog');
@@ -229,13 +232,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
-     * @param Discount $discount
-     * @return bool
+     * @param $col
+     * @param $val
+     * @return mixed
      */
-    public function discountEligible(Discount $discount)
+    public function orders_with_discount($col, $val)
     {
-        if( ! $discount->frequency_rate) return true;
-        return ($this->orders()->where(['discount_id'=>$discount->id])->whereNotIn('status', ['cancel','request'])->get()->count() < $discount->frequency_rate);
+        return $this->hasMany('App\Order')->where($col, $val)->whereNotIn('status', ['cancel','request']);
     }
 
     /**
