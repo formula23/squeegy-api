@@ -332,8 +332,15 @@ class OrdersController extends Controller {
             if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
 
             if($discount->scope == "system") {
+                if( $discount->frequency_rate && $discount->frequency_rate <= $discount->active_orders->count()) return trans('messages.order.discount.unavailable');
 
-                if( $discount->frequency_rate && $discount->frequency_rate <= Order::where(['discount_id'=>$discount->id, 'status'=>'done'])->get()->count()) return trans('messages.order.discount.unavailable');
+                if($discount->discount_code) {
+                    if($discount->discount_code->frequency_rate &&
+                        $discount->discount_code->frequency_rate <= Order::where('promo_code', $request_data['promo_code'])->whereIn('status', ['assign','enroute','start','done'])->count())
+                    {
+                        return trans('messages.order.discount.unavailable');
+                    }
+                }
             } else {
                 if ( ! $order->customer->discountEligible($discount)) return trans('messages.order.discount.unavailable');
             }

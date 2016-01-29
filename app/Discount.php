@@ -34,9 +34,29 @@ class Discount extends Model {
         'end_at',
     ];
 
+    /**
+     * @param $query
+     * @return mixed
+     */
     public function scopeActive($query)
     {
         return $query->where('discounts.is_active', 1);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orders()
+    {
+        return $this->hasMany('App\Order');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function active_orders()
+    {
+        return $this->hasMany('App\Order')->whereIn('status', ['assign','enroute','start','done']);
     }
 
     /**
@@ -80,6 +100,14 @@ class Discount extends Model {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function discount_code()
+    {
+        return $this->hasOne('App\DiscountCode');
+    }
+
+    /**
      * @param $id
      * @return mixed
      */
@@ -96,43 +124,35 @@ class Discount extends Model {
     static public function validate_code($code, Order $order)
     {
 //        $discount_qry = self::leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')->active();
-        $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'frequency_rate', 'single_use_code')
+        $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'discounts.frequency_rate', 'single_use_code')
             ->leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')
             ->leftJoin('discount_user', 'discounts.id', '=', 'discount_user.discount_id')
-            ->active();
-
-        $discount_qry->where(function($q) use ($order) {
-            $q->whereNull('discount_user.user_id')
-                ->orWhere('discount_user.user_id', $order->user_id);
-        });
-
-        $discount_qry->where(function($q) {
-            $q->whereNull('start_at')
-                ->orWhere('start_at', '<=', Carbon::now());
-        });
-
-        $discount_qry->where(function($q) {
-            $q->whereNull('end_at')
-                ->orWhere('end_at', '>=', Carbon::now());
-        });
-
-        $discount_qry->where(function($q) use ($code) {
-            $q->where('discounts.code', $code)
-                ->orWhere('discount_codes.code', $code);
-        });
-
-        $discount_qry->where(function($q) {
-            $q->where('discount_codes.is_active', 1)
-                ->orWhereNull('discount_codes.is_active');
-        });
-
-        $discount_qry->with(['regions' => function($q) use ($order) {
-            $q->where('postal_code', $order['location']['zip']);
-        }]);
-
-        $discount_qry->groupBy('discounts.id');
-
-//        dd($discount_qry::lists('discounts.id','discounts.name'));
+            ->active()
+            ->where(function($q) use ($order) {
+                $q->whereNull('discount_user.user_id')
+                    ->orWhere('discount_user.user_id', $order->user_id);
+            })
+            ->where(function($q) {
+                $q->whereNull('start_at')
+                    ->orWhere('start_at', '<=', Carbon::now());
+            })
+            ->where(function($q) {
+                $q->whereNull('end_at')
+                    ->orWhere('end_at', '>=', Carbon::now());
+            })
+            ->where(function($q) use ($code) {
+                $q->where('discounts.code', $code)
+                    ->orWhere('discount_codes.code', $code);
+            })
+            ->where(function($q) {
+                $q->where('discount_codes.is_active', 1)
+                    ->orWhereNull('discount_codes.is_active');
+            })
+            ->with(['regions' => function($q) use ($order) {
+                $q->where('postal_code', $order['location']['zip']);
+            }])
+            ->with('discount_code')
+            ->groupBy('discounts.id');
 
         return $discount_qry->get()->first();
     }
