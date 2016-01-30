@@ -12,6 +12,7 @@ use App\Order;
 use App\OrderSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Request;
 
 class Schedule
 {
@@ -21,6 +22,7 @@ class Schedule
 //    public $available=[];
     public $lead_hrs=3;
     public $days_out=5;
+    public $time_slot_interval=1;
     public $current_schedule;
 
     public function __construct()
@@ -40,6 +42,7 @@ class Schedule
     public function availability()
     {
 
+
         $idx=0;
         for($i=0; $i<=$this->days_out; $i++)
         {
@@ -52,7 +55,9 @@ class Schedule
                 continue;
             }
 
-            $container[$idx] = ['day'=>$this->now->format('l, F d')];
+            $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
+            $container[$idx] = ['day'=>$this->now->format($day_format)];
 
             $this->open = $this->open_hr;
             $this->close = $this->close_hr;
@@ -90,7 +95,11 @@ class Schedule
 //                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key]>=3?false:true);
 //                if( ! $is_available) continue;
 
-                $windows[] = $start->format('g:00a')." - ".$start->addHours(1)->format('g:00a');
+                if(Request::header('X-Device') == "Android") {
+                    $windows[] = $start->format('g')."-".$start->addHours($this->time_slot_interval)->format('ga');
+                } else {
+                    $windows[] = $start->format('g:00a')." - ".$start->addHours($this->time_slot_interval)->format('g:00a');
+                }
 
             }
 
