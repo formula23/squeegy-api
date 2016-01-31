@@ -77,21 +77,26 @@ class AuthController extends Controller {
         if ($this->auth->attempt($credentials, $request->has('remember')))
         {
             if($request->header('X-Device-Identifier')) {
+
+                $this->auth->user()->device_id = $request->header('X-Device-Identifier');
+
                 $users = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
                 if($users->count()) {
                     $latest_user = $users->first();
                     $sns_col = ( $request->header('X-Device') == "Android" ? "target_arn_gcm" : "push_token" );
                     if($latest_user->{$sns_col}) {
                         $this->auth->user()->{$sns_col} = $latest_user->{$sns_col};
-                        $this->auth->user()->save();
                     }
                     try {
+                        $users->limit(100);
                         $users->delete();
                     } catch(\Exception $e) {
                         dd($e);
                         \Bugsnag::notifyException($e);
                     }
                 }
+
+                $this->auth->user()->save();
             }
 
             //successful log
@@ -180,6 +185,7 @@ class AuthController extends Controller {
         try {
 
             $data['referral_code'] = User::generateReferralCode();
+            $data['device_id'] = $request->header('X-Device-Identifier');
 
             $this->auth->login($this->registrar->create($data));
 
