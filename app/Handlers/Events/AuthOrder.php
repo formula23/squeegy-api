@@ -36,6 +36,8 @@ class AuthOrder {
 			]);
 		}
 
+		$charged=0;
+
 		//auth customer card
 		if($order->total) { //auth the card
 			$payments = new Payments($order->customer->stripe_customer_id);
@@ -48,9 +50,10 @@ class AuthOrder {
 				'last_four'=>$charge->source->last4,
 				'card_type'=>$charge->source->brand,
 			]);
+			$charged = $charge->amount;
 		}
 
-        $order->charged = $charge->amount;
+        $order->charged = $charged;
 
         $order->save();
 	}
