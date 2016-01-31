@@ -42,6 +42,7 @@ class NotifyCustomerEnroute {
         ]);
 
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+
 		if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
 			//send sms to customer
             try {

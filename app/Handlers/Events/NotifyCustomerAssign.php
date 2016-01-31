@@ -31,7 +31,9 @@ class NotifyCustomerAssign extends BaseEventHandler {
 			'window_time'=>$event->order->scheduled_time(),
 		]);
 
-		if( ! PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id)) {
+		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+
+		if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
 			//send sms to customer
 			try {
 				$twilio = \App::make('Aloha\Twilio\Twilio');

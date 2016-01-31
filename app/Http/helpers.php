@@ -2,6 +2,7 @@
 use App\Order;
 use App\Squeegy\Orders;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Tests\ParameterBagTest;
 
 /**
@@ -48,7 +49,8 @@ function real_time(Carbon $time, $round=10)
 
 function current_eta(Order $order)
 {
-    if($order->worker && $order->status == "enroute") {
+    $order_seq = Config::get('squeegy.order_seq');
+    if($order->worker && $order_seq[$order->status] >= 3) {
         $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
         $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
         $travel_time = Orders::getRealTravelTime($origin, $destination);
