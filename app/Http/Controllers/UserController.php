@@ -140,14 +140,9 @@ class UserController extends Controller {
          * stripe_token passed, add card to customer
          */
         if( ! empty($data['stripe_token'])) {
-
             try {
-                $customer_card = $customer->sources->create([
-                    "source" => $data['stripe_token']
-                ]);
-
+                $customer_card = $customer->sources->create(["source" => $data['stripe_token']]);
                 $customer->default_source = $customer_card->id;
-
             } catch(\Exception $e) {
                 \Bugsnag::notifyException($e);
             }
