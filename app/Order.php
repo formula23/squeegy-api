@@ -219,14 +219,17 @@ class Order extends Model {
 
     }
 
-    public static function device_orders()
+    public static function device_orders($col=null, $val=null)
     {
         $collection = Collection::make([]);
         if(Request::header('X-Device-Identifier')) {
-            return self::join('users', 'orders.user_id' , '=', 'users.id')
+            $q = self::join('users', 'orders.user_id' , '=', 'users.id')
                 ->where('users.device_id', Request::header('X-Device-Identifier'))
-                ->whereNotIn('orders.status', ['cancel','request'])
-                ->get();
+                ->whereNotIn('orders.status', ['cancel','request']);
+            if($col && $val) {
+                $q->where($col, $val);
+            }
+            return $q->get();
         }
         return $collection;
     }

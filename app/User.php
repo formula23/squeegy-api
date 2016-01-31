@@ -42,6 +42,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = ['password', 'remember_token'];
 
+    public $device_orders = null;
+
     /**
      * A user can have many vehicles
      *
@@ -218,8 +220,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function firstOrder()
     {
-        $device_orders = Order::device_orders();
-        if($device_orders->count()) return false;
+        $this->device_orders = Order::device_orders();
+        if($this->device_orders->count()) return false;
 
         $prev_orders = $this->orders()->whereNotIn('orders.status', ['cancel','request'])->get();
         if($prev_orders->count()) return false;

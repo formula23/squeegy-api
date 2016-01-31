@@ -486,12 +486,16 @@ class OrdersController extends Controller {
                     }
                 } else {
                     $scope_label=" per customer";
+
                     if($discount->discount_code) {
                         $actual_code = $discount->actual_discount_code($request_data['promo_code']);
                         if(!$actual_code) return trans('messages.order.discount.unavailable');
 
                         if($actual_code->frequency_rate > 0) {
-                            if( ! (Auth::user()->orders_with_discount('promo_code', $request_data['promo_code'])->count() < $actual_code->frequency_rate)) {
+
+                            if( ! (Order::device_orders('promo_code', $request_data['promo_code'])->count() < $actual_code->frequency_rate) ||
+                                ! (Auth::user()->orders_with_discount('promo_code', $request_data['promo_code'])->count() < $actual_code->frequency_rate))
+                            {
                                 $frequency_rate = $actual_code->frequency_rate;
                                 $scope_discount = false;
                             }
@@ -499,7 +503,9 @@ class OrdersController extends Controller {
                     }
 
                     if($discount->frequency_rate) {
-                        if( ! (Auth::user()->orders_with_discount('discount_id',$discount->id)->count() < $discount->frequency_rate)) {
+                        if( ! (Order::device_orders('discount_id', $discount->id)->count() < $discount->frequency_rate) ||
+                            ! (Auth::user()->orders_with_discount('discount_id', $discount->id)->count() < $discount->frequency_rate))
+                        {
                             $frequency_rate = $discount->frequency_rate;
                             $scope_discount = false;
                         }
