@@ -352,10 +352,17 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized('Unable to assign. Current status: '.$original_status);
                     }
 
-                    $availability = Orders::availability($order->location['lat'], $order->location['lon']);
-
-                    $order->eta = $availability['time'];
-                    $order->worker_id = $availability['worker_id'];
+                    if($request_data['worker_id']) {
+                        $order->worker_id = $request_data['worker_id'];
+                    } else {
+                        $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+                        try {
+                            $order->eta = $availability['time'];
+                            $order->worker_id = $availability['worker_id'];
+                        } catch(\Exception $e) {
+                            return $this->response->errorWrongArgs('Unable to assign order.');
+                        }
+                    }
 
                     Event::fire(new OrderAssign($order));
 
