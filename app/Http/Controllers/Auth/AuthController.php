@@ -150,7 +150,10 @@ class AuthController extends Controller {
         $validator = $this->registrar->validator($data);
 
         if ($validator->fails()) {
-            return $this->response->errorWrongArgs($validator->errors()->getMessages());
+            foreach($validator->errors()->getMessages() as $msgs) {
+                $msg = implode(",", (array)$msgs);
+            }
+            return $this->response->errorWrongArgs($msg);
         }
 
         try {

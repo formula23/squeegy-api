@@ -62,6 +62,5 @@ class UpdateUserRequest extends Request {
             'unique_email' => 'This email address is already in use.',
         ];
     }
-
 }
 

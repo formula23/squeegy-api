@@ -17,7 +17,7 @@ class Registrar implements RegistrarContract {
 		return Validator::make($data, [
 //			'name' => 'required|max:255',
 			'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:8',
+			'password' => 'required|min:8',
 //            'phone' => 'required|digits:10',
 		]);
 	}
@@ -40,5 +40,4 @@ class Registrar implements RegistrarContract {
 			'referral_code' => $data['referral_code'],
 		]);
 	}
-
 }
