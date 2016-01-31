@@ -17,7 +17,7 @@ function is_internal()
 {
     return in_array(Request::getClientIp(), [
         '127.0.0.1',
-        '104.174.111.129', //dan home wifi
+        '76.94.204.22', //dan home wifi
         '104.32.54.86', //squeegy office
         '24.205.12.22', //kevin
         '24.199.45.29', //saleh hotel
