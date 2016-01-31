@@ -1,7 +1,9 @@
 <?php namespace App;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class Order
@@ -215,6 +217,18 @@ class Order extends Model {
 
         return $current_schedule;
 
+    }
+
+    public static function device_orders()
+    {
+        $collection = Collection::make([]);
+        if(Request::header('X-Device-Identifier')) {
+            return self::join('users', 'orders.user_id' , '=', 'users.id')
+                ->where('users.device_id', Request::header('X-Device-Identifier'))
+                ->whereNotIn('orders.status', ['cancel','request'])
+                ->get();
+        }
+        return $collection;
     }
 
 }

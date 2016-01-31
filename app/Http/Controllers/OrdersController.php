@@ -443,8 +443,8 @@ class OrdersController extends Controller {
             //check if promo code is a referral code
             if($referrer = User::where('referral_code', $request_data['promo_code'])->where('id','!=',\Auth::user()->id)->first())
             {
-                //only valid for new customers
-                if(\Auth::user()->orders()->whereNotIn('status', ['cancel','request'])->count()) return trans('messages.order.discount.referral_code_new_customer');
+                //referrer program only valid for new customers
+                if( ! $order->customer->firstOrder()) return trans('messages.order.discount.referral_code_new_customer');
 
                 $order->referrer_id = $referrer->id;
                 $order->promo_code = $request_data['promo_code'];
