@@ -21,7 +21,7 @@ class Schedule
     public $close_hr;
 //    public $available=[];
     public $lead_hrs=3;
-    public $days_out=7;
+    public $days_out=6;
     public $time_slot_interval=1;
     public $current_schedule;
 
