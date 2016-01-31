@@ -10,18 +10,18 @@ namespace app\Squeegy\Transformers;
 
 
 use App\PaymentMethod;
+use Stripe\Card;
 
 class PaymentMethodTransformer
 {
 
-    public function transform(PaymentMethod $paymentMethod) {
+    public function transform(Card $card) {
 
         return [
-            'identifier'=>$paymentMethod->identifier,
-            'card_type'=>$paymentMethod->card_type,
-            'last4'=>$paymentMethod->last4,
-            'exp'=>str_pad($paymentMethod->exp_month,2,'0',STR_PAD_LEFT)."/".substr($paymentMethod->exp_year,-2),
-            'is_default'=>(bool)$paymentMethod->is_default,
+//            'identifier'=>$card->id,
+            'card_type'=>$card->brand,
+            'last4'=>$card->last4,
+            'exp'=>str_pad($card->exp_month,2,'0',STR_PAD_LEFT)."/".substr($card->exp_year,-2),
         ];
 
     }

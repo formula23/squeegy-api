@@ -10,6 +10,7 @@ namespace App\Squeegy;
 
 use Stripe\Stripe;
 use Stripe\Charge as StripeCharge;
+use Stripe\Customer as StripeCustomer;
 
 class Payments {
 
@@ -78,6 +79,16 @@ class Payments {
         }
         $charge = StripeCharge::retrieve($charge_id);
         return $charge->refund($params);
+    }
+
+    public function cards()
+    {
+        $stripe_customer = StripeCustomer::retrieve($this->customer_id);
+
+        if($stripe_customer->sources) {
+            return $stripe_customer->sources->data;
+        }
+        return [];
     }
 
 }

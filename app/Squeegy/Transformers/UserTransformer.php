@@ -9,6 +9,7 @@
 namespace App\Squeegy\Transformers;
 
 use App\PaymentMethod;
+use App\Squeegy\Payments;
 use App\User;
 use App\WasherActivityLog;
 use League\Fractal\ParamBag;
@@ -92,8 +93,9 @@ class UserTransformer extends TransformerAbstract {
 
     public function includePaymentMethods(User $user)
     {
-        $payment_methods = $user->payment_methods()->orderBy('is_default', 'desc')->get();
-        return $this->collection($payment_methods, new PaymentMethodTransformer());
+        $payments = new Payments($user->stripe_customer_id);
+        $cards = $payments->cards();
+        return $this->collection($cards, new PaymentMethodTransformer());
     }
 
     public function includeLatestActivityLog(User $user)

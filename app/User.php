@@ -55,14 +55,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function payment_methods()
-    {
-        return $this->hasMany('App\PaymentMethod');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
     public function orders()
     {
         $foreign_key = \Auth::user()->is('worker') ? 'worker_id' : null ;
