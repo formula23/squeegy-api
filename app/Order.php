@@ -197,7 +197,7 @@ class Order extends Model {
     public function scheduled_eta()
     {
         if(!$this->schedule) return null;
-        return $this->schedule->window_open->format('n/d')." @ ".$this->scheduled_time();
+        return $this->schedule->window_open->format('D n/d')." @ ".$this->scheduled_time();
     }
 
     public static function current_scheduled_orders()
