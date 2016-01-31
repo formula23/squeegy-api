@@ -71,6 +71,10 @@ class OrdersController extends Controller {
             }
         }
 
+        if($request->input('job_number')) {
+            $orders->where('job_number', $request->input('job_number'));
+        }
+
         if($request->input('status')) {
             $filters = explode(',', $request->input('status'));
             $orders->whereIn('status', $filters);
