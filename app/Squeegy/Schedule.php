@@ -57,7 +57,15 @@ class Schedule
 
             $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
 
-            $container[$idx] = ['day'=>$this->now->format($day_format)];
+            if($this->now->isToday()) {
+                $day = "Today";
+            } elseif($this->now->isTomorrow()) {
+                $day = "Tomorrow";
+            } else {
+                $day = $this->now->format($day_format);
+            }
+
+            $container[$idx] = ['day'=>$day];
 
             $this->open = $this->open_hr;
             $this->close = $this->close_hr;
