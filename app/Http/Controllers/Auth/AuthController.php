@@ -76,6 +76,24 @@ class AuthController extends Controller {
 
         if ($this->auth->attempt($credentials, $request->has('remember')))
         {
+            if($request->header('X-Device-Identifier')) {
+                $users = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
+                if($users->count()) {
+                    $latest_user = $users->first();
+                    $sns_col = ( $request->header('X-Device') == "Android" ? "target_arn_gcm" : "push_token" );
+                    if($latest_user->{$sns_col}) {
+                        $this->auth->user()->{$sns_col} = $latest_user->{$sns_col};
+                        $this->auth->user()->save();
+                    }
+                    try {
+                        $users->delete();
+                    } catch(\Exception $e) {
+                        dd($e);
+                        \Bugsnag::notifyException($e);
+                    }
+                }
+            }
+
             //successful log
             if($request->input('anon_email')) {
                 try {
