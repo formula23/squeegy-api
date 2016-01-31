@@ -21,7 +21,7 @@ class Schedule
     public $close_hr;
 //    public $available=[];
     public $lead_hrs=3;
-    public $days_out=5;
+    public $days_out=7;
     public $time_slot_interval=1;
     public $current_schedule;
 
@@ -95,11 +95,11 @@ class Schedule
 //                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key]>=3?false:true);
 //                if( ! $is_available) continue;
 
-                if(Request::header('X-Device') == "Android") {
-                    $windows[] = $start->format('g')."-".$start->addHours($this->time_slot_interval)->format('ga');
-                } else {
+//                if(Request::header('X-Device') == "Android") {
+//                    $windows[] = $start->format('g')."-".$start->addHours($this->time_slot_interval)->format('ga');
+//                } else {
                     $windows[] = $start->format('g:00a')." - ".$start->addHours($this->time_slot_interval)->format('g:00a');
-                }
+//                }
 
             }
 

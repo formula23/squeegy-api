@@ -177,7 +177,7 @@ class OrdersController extends Controller {
                     'window_open' => new Carbon($data['day']." ".$window_open),
                     'window_close' => new Carbon($data['day']." ".$window_close),
                 ];
-                
+
                 if($schedule_data['window_open']->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
                 $order_schedule = OrderSchedule::create([
