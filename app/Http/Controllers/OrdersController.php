@@ -35,17 +35,7 @@ class OrdersController extends Controller {
     /**
      * @var array
      */
-    protected $order_seq = [
-        'cancel' => 100,
-        'request' => 1,
-        'confirm' => 2,
-        'receive' => 2,
-        'schedule' => 2,
-        'assign' => 3,
-        'enroute' => 4,
-        'start' => 5,
-        'done' => 6,
-    ];
+    protected $order_seq = null;
 
     protected $limit = null;
 
@@ -61,6 +51,9 @@ class OrdersController extends Controller {
         } else {
             $this->middleware('auth');
         }
+
+        $this->order_seq = Config::get('squeegy.order_seq');
+
     }
 
     /**
