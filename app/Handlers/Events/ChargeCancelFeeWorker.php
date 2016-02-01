@@ -28,9 +28,13 @@ class ChargeCancelFeeWorker {
         $cancel_fee = min(config('squeegy.cancellation_fee'), $event->order->charged);
 
         try{
-			if($event->order->stripe_charge_id) {
+
+			$transaction = $event->order->auth_transaction;
+			$stripe_charge_id = ($transaction ? $transaction->charge_id : $event->order->stripe_charge_id);
+
+			if($stripe_charge_id) {
 				$payments = new Payments($event->order->customer->stripe_customer_id);
-				$charge = $payments->cancel($event->order->stripe_charge_id, $cancel_fee);
+				$charge = $payments->cancel($stripe_charge_id, $cancel_fee);
 
 				$event->order->stripe_charge_id = $charge->id;
 				$event->order->charged = $cancel_fee;

@@ -8,6 +8,7 @@
 
 namespace App\Squeegy;
 
+use Illuminate\Support\Facades\Log;
 use Stripe\Refund;
 use Stripe\Stripe;
 use Stripe\Charge as StripeCharge;
@@ -76,11 +77,12 @@ class Payments {
 
         $charge = StripeCharge::retrieve($charge_id);
 
-        if($amt) {
-            $params['amount'] = $amt;
-        }
+        $params=[];
+        if($amt) $params['amount'] = $amt;
 
-        return $charge->refund($params);
+        $re = $charge->refund($params);
+
+        return $re;
     }
 
     public function cards()
