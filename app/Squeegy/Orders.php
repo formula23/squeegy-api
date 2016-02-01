@@ -103,6 +103,8 @@ class Orders {
 
         $data['postal_code'] = self::$postal_code;
 
+        Log::info($data);
+
         if( ! self::open()) {
 
             if(env('MAINTENANCE')) {
