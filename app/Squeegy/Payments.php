@@ -74,11 +74,13 @@ class Payments {
             throw new \Exception('No charge_id supplied');
         }
 
-        $params = ['charge' => $charge_id];
+        $charge = StripeCharge::retrieve($charge_id);
+
         if($amt) {
             $params['amount'] = $amt;
         }
-        return Refund::create($params);
+
+        return $charge->refund($params);
     }
 
     public function cards()
