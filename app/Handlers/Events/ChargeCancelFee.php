@@ -44,7 +44,7 @@ class ChargeCancelFee {
                 $payments = new Payments($event->order->customer->stripe_customer_id);
 
 				///if status is not enroute, start
-
+				Log::info($event->order);
 				if($this->order_seq[$event->order->status] < 4) {
 					Log::info('Full refund');
 					//full refund
