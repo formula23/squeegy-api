@@ -35,7 +35,7 @@ class ChargeCancelFee {
 
         try {
 			Log::info('Start ChargeCancelFee');
-			$transaction = $event->order->auth_transactions()->get();
+			$transaction = $event->order->auth_transaction;
 			$stripe_charge_id = ($transaction ? $transaction : $event->order->stripe_charge_id);
 
 			Log::info('Charge id: '.$stripe_charge_id);
@@ -73,6 +73,7 @@ class ChargeCancelFee {
             }
 
         } catch(\Exception $e) {
+
             \Bugsnag::notifyException($e);
         }
 
