@@ -55,7 +55,7 @@ class Orders {
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
-        $now = Carbon::create(2016,02,01,7,46,0);
+//        $now = Carbon::create(2016,02,01,7,46,0);
 
         if($now->dayOfWeek == 0) return false;
 
