@@ -163,10 +163,12 @@ class Orders {
 
         $eta = self::getLeadTime($lat, $lng);
 
+        Log::info('eta');
         Log::info($eta);
 
         $data['zip_code'] = self::$postal_code;
 
+        Log::info('data');
         Log::info($data);
 
         if ( ! empty($eta['error_msg'])) {
@@ -188,7 +190,9 @@ class Orders {
 
         if(! is_internal() && self::open() && $data['lead_time'] > 120) {
             $data['description'] = trans('messages.service.highdemand');
-            $data['schedule'] = true;
+            if(Request::header('X-Application-Version')) {
+                $data['schedule'] = true;
+            }
         }
         
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
