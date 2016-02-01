@@ -50,12 +50,12 @@ class Orders {
      */
     public static function open()
     {
-        if(is_internal()) return true;
+//        if(is_internal()) return true;
 
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
         $now = Carbon::now();
-//        $now = Carbon::create(2015,12,25,13,46,0);
+        $now = Carbon::create(2016,02,01,7,46,0);
 
         if($now->dayOfWeek == 0) return false;
 
@@ -98,6 +98,7 @@ class Orders {
     public static function availability($lat=null, $lng=null)
     {
         $open = self::open();
+        Log::info('Open: '.$open);
         $data = ['accept'=>0, 'schedule'=>false, 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
@@ -162,7 +163,11 @@ class Orders {
 
         $eta = self::getLeadTime($lat, $lng);
 
+        Log::info($eta);
+
         $data['zip_code'] = self::$postal_code;
+
+        Log::info($data);
 
         if ( ! empty($eta['error_msg'])) {
             $data['accept'] = 0;
@@ -177,6 +182,7 @@ class Orders {
             return $data;
         }
 
+        $data['accept'] = 1;
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
@@ -186,6 +192,8 @@ class Orders {
         }
         
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
+
+        Log::info($lead_time_arr);
 
         return array_merge($data, $lead_time_arr);
     }
