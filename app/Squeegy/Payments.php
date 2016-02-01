@@ -8,6 +8,7 @@
 
 namespace App\Squeegy;
 
+use Stripe\Refund;
 use Stripe\Stripe;
 use Stripe\Charge as StripeCharge;
 use Stripe\Customer as StripeCustomer;
@@ -73,12 +74,11 @@ class Payments {
             throw new \Exception('No charge_id supplied');
         }
 
-        $params = [];
+        $params = ['charge' => $charge_id];
         if($amt) {
             $params['amount'] = $amt;
         }
-        $charge = StripeCharge::retrieve($charge_id);
-        return $charge->refund($params);
+        return Refund::create($params);
     }
 
     public function cards()
