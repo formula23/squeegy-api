@@ -106,6 +106,7 @@ class Orders {
         self::$lng = $lng;
 
         $data['postal_code'] = self::$postal_code;
+        Log::info($data);
 
         if( ! $open) {
 
