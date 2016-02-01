@@ -41,11 +41,13 @@ class SendReceiptEmail {
                 $customer =& $order->customer;
                 $location = $order->location;
 
-                //get stripe customer
-                Stripe::setApiKey(config('services.stripe.secret'));
-                $stripe_customer = Customer::retrieve($customer->stripe_customer_id);
-                $default_card = $stripe_customer->sources->retrieve($stripe_customer->default_source);
-                
+                if($order->charged > 0) {
+                    //get stripe customer
+                    Stripe::setApiKey(config('services.stripe.secret'));
+                    $stripe_customer = Customer::retrieve($customer->stripe_customer_id);
+                    $default_card = $stripe_customer->sources->retrieve($stripe_customer->default_source);
+                }
+
                 $mergevars = [
                     'ORDER_ID' => $order->id,
                     'ORDER_DATE' => $order->done_at->format('m/d/Y'),
@@ -64,9 +66,12 @@ class SendReceiptEmail {
                     'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
                     'LICENSE_PLATE' => $vehicle->license_plate,
                     'ADDRESS' => $location['street'].", ".$location['city'].", ".$location['state']." ".$location['zip'],
-                    'CC_TYPE' => $default_card->brand,
-                    'CC_LAST4' => $default_card->last4,
                 ];
+
+                if($default_card) {
+                    $mergevars['CC_TYPE'] = $default_card->brand;
+                    $mergevars['CC_LAST4'] = $default_card->last4;
+                }
 
                 $headers = $message->getHeaders();
                 $headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
