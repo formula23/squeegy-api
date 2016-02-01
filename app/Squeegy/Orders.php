@@ -13,6 +13,7 @@ use App\Zone;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class Orders
@@ -97,7 +98,7 @@ class Orders {
     public static function availability($lat=null, $lng=null)
     {
         $open = self::open();
-        $data = ['accept'=>1, 'schedule'=>false, 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
+        $data = ['accept'=>0, 'schedule'=>false, 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
         self::$lat = $lat;
@@ -150,7 +151,12 @@ class Orders {
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
             $data['code'] = "closed";
-            $data['schedule'] = true;
+
+            if(Request::header('X-Application-Version')) {
+                $data['schedule'] = true;
+                $data['accept'] = 1;
+            }
+
             return $data;
         }
 
