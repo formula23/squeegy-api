@@ -50,8 +50,8 @@ class ChargeCancelFee {
 					//full refund
 					$event->order->charged = 0;
 					$charge = $payments->refund($stripe_charge_id);
+					$type = "void";
 					Log::info($charge);
-					$type = "refund";
 				} else {
 					$charge = $payments->cancel($stripe_charge_id, $cancel_fee);
 					Log::info('Capture: '.$cancel_fee);
@@ -59,7 +59,7 @@ class ChargeCancelFee {
 					$type = "capture";
 					$event->order->charged = $cancel_fee;
 				}
-
+				Log::info($type);
 				$event->order->transactions()->create([
 					'charge_id'=>$charge->id,
 					'amount'=>$cancel_fee,
