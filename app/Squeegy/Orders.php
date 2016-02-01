@@ -192,6 +192,8 @@ class Orders {
             $data['description'] = trans('messages.service.highdemand');
             if(Request::header('X-Application-Version')) {
                 $data['schedule'] = true;
+            } else {
+                $data['accept'] = 0;
             }
         }
         
@@ -271,7 +273,11 @@ class Orders {
 
         $active_workers = $active_workers_qry->get();
 //dd($active_workers[0]->jobs);
-        if( ! $active_workers->count()) return ['schedule'=>true];
+        if(Request::header('X-Application-Version')) {
+            if( ! $active_workers->count()) return ['schedule'=>true];
+        } else {
+            if( ! $active_workers->count()) return ['error_msg'=>trans('messages.service.not_available'), 'error_code'=>'not_available'];
+        }
 
         $complete_times_by_worker_debug=[];
 
