@@ -35,7 +35,7 @@ class ChargeOrder {
             }
             //if order->total exists capture
 
-            $transaction = $order->transactions()->where('type', 'auth')->get()->first();
+            $transaction = $order->auth_transactions()->get();
 
             if($transaction->charge_id) {
                 $payments = new Payments($event->order->customer->stripe_customer_id);

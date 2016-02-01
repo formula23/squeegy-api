@@ -96,6 +96,11 @@ class Order extends Model {
         return $this->hasMany('App\Transaction');
     }
 
+    public function auth_transaction()
+    {
+        return $this->hasOne('App\Transaction')->where('type', 'auth');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
