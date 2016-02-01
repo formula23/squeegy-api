@@ -50,7 +50,7 @@ function real_time(Carbon $time, $round=10)
 function current_eta(Order $order)
 {
     $order_seq = Config::get('squeegy.order_seq');
-    if($order->worker && $order_seq[$order->status] >= 3) {
+    if($order->worker && $order_seq[$order->status] > 3) {
         $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
         $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
         $travel_time = Orders::getRealTravelTime($origin, $destination);
