@@ -64,6 +64,11 @@ class OrdersController extends Controller {
     {
         $orders = Order::query();
 
+        $orders->with('vehicle')
+            ->with('service')
+            ->with('worker')
+            ->with('customer');
+
         if(Auth::user()->is('customer|worker')) {
             if(Auth::user()->is('worker')) {
                 $orders->where('worker_id', Auth::user()->id)
@@ -74,14 +79,14 @@ class OrdersController extends Controller {
             }
         } else {
             //exclude internal test orders
-            $orders->whereNotIn('user_id', function ($q) {
-                $q->select('id')
-                    ->from('users')
-                    ->where('email', 'like', '%formula23%')
-                    ->orWhere('email', 'like', '%sinister%')
-                    ->orWhere('email', 'like', '%squeegy%')
-                    ->orWhere('email', 'like', '%testing%');
-            });
+//            $orders->whereNotIn('user_id', function ($q) {
+//                $q->select('id')
+//                    ->from('users')
+//                    ->where('email', 'like', '%formula23%')
+//                    ->orWhere('email', 'like', '%sinister%')
+//                    ->orWhere('email', 'like', '%squeegy%')
+//                    ->orWhere('email', 'like', '%testing%');
+//            });
         }
 
         if($request->input('job_number')) {
