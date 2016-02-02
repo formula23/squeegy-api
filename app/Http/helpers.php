@@ -52,11 +52,15 @@ function current_eta(Order $order)
 {
     $order_seq = Config::get('squeegy.order_seq');
     if($order->worker && $order_seq[$order->status] > 3) {
-        $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
-        $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
-        $travel_time = Orders::getRealTravelTime($origin, $destination);
-        $eta=Carbon::now()->addMinutes($travel_time);
-        return real_time($eta, 5);
+        try {
+            $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
+            $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
+            $travel_time = Orders::getRealTravelTime($origin, $destination);
+            $eta=Carbon::now()->addMinutes($travel_time);
+            return real_time($eta, 5);
+        } catch(\Exception $e) {
+        }
+
     } else {
         return "";
     }

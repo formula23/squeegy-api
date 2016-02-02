@@ -72,6 +72,15 @@ class OrdersController extends Controller {
             } else {
                 $orders->where('user_id', Auth::user()->id);
             }
+        } else {
+            //exclude internal test orders
+            $orders->whereNotIn('user_id', function ($q) {
+                $q->select('id')
+                    ->from('users')
+                    ->where('email', 'not like', '%formula23%')
+                    ->where('email', 'not like', '%sinister%')
+                    ->where('email', 'not like', '%squeegy%');
+            });
         }
 
         if($request->input('job_number')) {
@@ -113,7 +122,7 @@ class OrdersController extends Controller {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = $request->input('limit');
         }
-//dd($orders);
+
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
