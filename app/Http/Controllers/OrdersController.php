@@ -78,8 +78,9 @@ class OrdersController extends Controller {
                 $q->select('id')
                     ->from('users')
                     ->where('email', 'like', '%formula23%')
-                    ->where('email', 'like', '%sinister%')
-                    ->where('email', 'like', '%squeegy%');
+                    ->orWhere('email', 'like', '%sinister%')
+                    ->orWhere('email', 'like', '%squeegy%')
+                    ->orWhere('email', 'like', '%testing%');
             });
         }
 
