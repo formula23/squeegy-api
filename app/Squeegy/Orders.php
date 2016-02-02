@@ -50,7 +50,7 @@ class Orders {
      */
     public static function open()
     {
-//        if(is_internal()) return true;
+        if(is_internal()) return true;
 
         if( ! env('OPERATING_OPEN') || env('MAINTENANCE')) return false;
 
