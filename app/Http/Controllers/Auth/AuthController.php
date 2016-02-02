@@ -150,11 +150,7 @@ class AuthController extends Controller {
      */
     public function postRegister(Request $request)
     {
-        Log::info('AuthController@postRegister');
-
         $data = $request->all();
-
-        Log::info($data);
 
         $validator = $this->registrar->validator($data);
 
@@ -166,14 +162,11 @@ class AuthController extends Controller {
         }
 
         try {
-            Log::info('Create stripe customer');
             Stripe::setApiKey(\Config::get('services.stripe.secret'));
             $customer = StripeCustomer::create([
                 "description" => (isset($data["name"])?:""),
                 "email" => $data['email'],
             ]);
-
-            Log::info('Stripe customer id: '.$customer->id);
 
             $data['stripe_customer_id'] = $customer->id;
 
@@ -183,7 +176,6 @@ class AuthController extends Controller {
         }
 
         if(isset($data['stripe_token'])) {
-
             try {
                 $customer->sources->create([
                     "source" => $data['stripe_token']
@@ -196,11 +188,7 @@ class AuthController extends Controller {
             $data['referral_code'] = User::generateReferralCode();
             $data['device_id'] = $request->header('X-Device-Identifier');
 
-            Log::info($data);
-            Log::info('Create and login');
             $this->auth->login($this->registrar->create($data));
-
-            Log::info($this->auth->user());
 
             $this->auth->user()->attachRole(3);
 

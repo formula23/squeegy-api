@@ -85,12 +85,7 @@ class UserController extends Controller {
      */
 	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio)
 	{
-        Log::info("UserController@update");
-
         $data = $request->all();
-
-        Log::info($data);
-
         if(isset($data['push_token'])) {
 
             try {
@@ -127,10 +122,7 @@ class UserController extends Controller {
 
         Stripe::setApiKey(\Config::get('services.stripe.secret'));
 
-        Log::info($request->user());
-
         if( ! $request->user()->stripe_customer_id) {
-            Log::info('No stripe_customer_id - create stripe customer');
             $customer = StripeCustomer::create([
                 "description" => (isset($data["name"]) ? $data["name"] : $request->user()->name ),
                 "email" => (isset($data["email"]) ? $data["email"] : $request->user()->email ),
@@ -138,7 +130,6 @@ class UserController extends Controller {
             $data['stripe_customer_id'] = $customer->id;
 
         } else {
-            Log::info('Stripe custome id exists.');
             $customer = StripeCustomer::retrieve($request->user()->stripe_customer_id);
             if( ! empty($data['email'])) $customer->email = $data['email'];
             if( ! empty($data['name'])) $customer->description = $data['name'];
@@ -148,8 +139,6 @@ class UserController extends Controller {
          * stripe_token passed, add card to customer
          */
         if( ! empty($data['stripe_token'])) {
-            Log::info('Stripe token - create source');
-
             try {
                 $customer_card = $customer->sources->create(["source" => $data['stripe_token']]);
                 $customer->default_source = $customer_card->id;
@@ -159,7 +148,6 @@ class UserController extends Controller {
         }
 
         try {
-            Log::info('save stripe customer');
             $customer->save();
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
@@ -168,7 +156,6 @@ class UserController extends Controller {
 // && ! empty($request->user()->phone) -- removed 9/17
 
         if( ! empty($data["phone"])) {
-
             if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
                 try {
                     $twilio->message($data["phone"], trans('messages.profile.phone_verify', ['verify_code'=>config('squeegy.sms_verification')]));
@@ -176,7 +163,6 @@ class UserController extends Controller {
                     return $this->response->errorWrongArgs("Please enter a valid phone number.");
                 }
             }
-
         }
 
         if( ! empty($data['password'])) {
@@ -184,8 +170,6 @@ class UserController extends Controller {
         }
 
         $original_email = $request->user()->email;
-
-        Log::info('update user');
 
         $request->user()->update($data);
 
