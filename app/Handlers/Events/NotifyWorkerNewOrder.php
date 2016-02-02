@@ -53,7 +53,6 @@ class NotifyWorkerNewOrder {
                 ]));
             }
         } catch(\Exception $e) {
-			dd($e);
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 

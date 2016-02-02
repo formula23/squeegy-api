@@ -41,6 +41,7 @@ class SendReceiptEmail {
                 $customer =& $order->customer;
                 $location = $order->location;
 
+                $default_card=null;
                 if($order->charged > 0) {
                     //get stripe customer
                     Stripe::setApiKey(config('services.stripe.secret'));
