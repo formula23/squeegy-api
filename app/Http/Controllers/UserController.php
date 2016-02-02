@@ -14,6 +14,7 @@ use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -84,7 +85,11 @@ class UserController extends Controller {
      */
 	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio)
 	{
+        Log::info("UserController@update");
+
         $data = $request->all();
+
+        Log::info($data);
 
         if(isset($data['push_token'])) {
 
@@ -122,8 +127,10 @@ class UserController extends Controller {
 
         Stripe::setApiKey(\Config::get('services.stripe.secret'));
 
-        if( ! $request->user()->stripe_customer_id) {
+        Log::info($request-user());
 
+        if( ! $request->user()->stripe_customer_id) {
+            Log::info('No stripe_customer_id - create stripe customer');
             $customer = StripeCustomer::create([
                 "description" => (isset($data["name"]) ? $data["name"] : $request->user()->name ),
                 "email" => (isset($data["email"]) ? $data["email"] : $request->user()->email ),
@@ -131,6 +138,7 @@ class UserController extends Controller {
             $data['stripe_customer_id'] = $customer->id;
 
         } else {
+            Log::info('Stripe custome id exists.');
             $customer = StripeCustomer::retrieve($request->user()->stripe_customer_id);
             if( ! empty($data['email'])) $customer->email = $data['email'];
             if( ! empty($data['name'])) $customer->description = $data['name'];
@@ -140,6 +148,8 @@ class UserController extends Controller {
          * stripe_token passed, add card to customer
          */
         if( ! empty($data['stripe_token'])) {
+            Log::info('Stripe token - create source');
+
             try {
                 $customer_card = $customer->sources->create(["source" => $data['stripe_token']]);
                 $customer->default_source = $customer_card->id;
@@ -149,6 +159,7 @@ class UserController extends Controller {
         }
 
         try {
+            Log::info('save stripe customer');
             $customer->save();
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
@@ -173,6 +184,8 @@ class UserController extends Controller {
         }
 
         $original_email = $request->user()->email;
+
+        Log::info('update user');
 
         $request->user()->update($data);
 
