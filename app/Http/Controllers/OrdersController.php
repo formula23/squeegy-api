@@ -64,10 +64,10 @@ class OrdersController extends Controller {
     {
         $orders = Order::query();
 
-        $orders->with('vehicle')
-            ->with('service')
-            ->with('worker')
-            ->with('customer');
+//        $orders->with('vehicle')
+//            ->with('service')
+//            ->with('worker')
+//            ->with('customer');
 
         if(Auth::user()->is('customer|worker')) {
             if(Auth::user()->is('worker')) {
