@@ -33,13 +33,13 @@ class ChargeOrder {
             if($order->order_credit) {
                 $order->order_credit->status = 'capture';
             }
-            //if order->total exists capture
+            
+            $transaction = $order->auth_transaction;
+            $stripe_charge_id = ($transaction ? $transaction->charge_id : $event->order->stripe_charge_id);
 
-            $transaction = $order->auth_transaction()->get();
-
-            if($transaction->charge_id) {
+            if($stripe_charge_id) {
                 $payments = new Payments($event->order->customer->stripe_customer_id);
-                $charge = $payments->capture($transaction->charge_id);
+                $charge = $payments->capture($stripe_charge_id);
                 $order->transactions()->create([
                     'charge_id'=>$charge->id,
                     'amount'=>$charge->amount,
