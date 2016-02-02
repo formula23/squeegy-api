@@ -15,7 +15,7 @@ class ApiSession extends StartSession {
 	 */
 	public function handle($request, Closure $next)
 	{
-        if($request->segment(2)=='services')
+        if($request->segment(2)=='services' || $request->header('Authorization'))
         {
             \Config::set('session.driver', 'array');
         }

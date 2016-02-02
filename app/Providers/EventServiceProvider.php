@@ -26,7 +26,7 @@ class EventServiceProvider extends ServiceProvider {
         ],
 
         'App\Events\OrderCancelledByWorker' => [
-            'App\Handlers\Events\ChargeCancelFeeWorker',
+            'App\Handlers\Events\ChargeCancelFee',
             'App\Handlers\Events\NotifyCustomerCancel',
         ],
 
@@ -34,6 +34,16 @@ class EventServiceProvider extends ServiceProvider {
             'App\Handlers\Events\AuthOrder',
             'App\Handlers\Events\NotifyWorkerNewOrder',
         ],
+
+		'App\Events\OrderScheduled' => [
+			'App\Handlers\Events\AuthOrder',
+			'App\Handlers\Events\NotifyAdminNewOrder',
+		],
+
+		'App\Events\OrderAssign' => [
+			'App\Handlers\Events\NotifyCustomerAssign',
+			'App\Handlers\Events\NotifyWorkerNewOrder',
+		],
 
         'App\Events\OrderEnroute' => [
             'App\Handlers\Events\NotifyCustomerEnroute',
@@ -45,6 +55,8 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\OrderDone' => [
             'App\Handlers\Events\ChargeOrder',
+			'App\Handlers\Events\CreditReferrer',
+//			'App\Handlers\Events\MarkSingleUseDiscount',
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',
         ],

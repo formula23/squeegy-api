@@ -28,7 +28,7 @@ class NotifyWorkerNewOrder {
 	 * @param  OrderConfirmed  $event
 	 * @return void
 	 */
-	public function handle(OrderConfirmed $event)
+	public function handle($event)
 	{
         try {
 

@@ -27,20 +27,33 @@ class ChargeOrder {
 	public function handle(OrderDone $event)
 	{
         try {
-            $order_amount = $event->order->price - (int)$event->order->discount;
+            $order = $event->order;
 
-            $payments = new Payments($event->order->customer->stripe_customer_id);
+            //if order has credits - capture them
+            if($order->order_credit) {
+                $order->order_credit->status = 'capture';
+            }
+            
+            $transaction = $order->auth_transaction;
+            $stripe_charge_id = ($transaction ? $transaction->charge_id : $event->order->stripe_charge_id);
 
-            if($event->order->stripe_charge_id) {
-                $charge = $payments->capture($event->order->stripe_charge_id);
-                $event->order->charged = $order_amount;
-                $event->order->stripe_charge_id = $charge->id;
+            if($stripe_charge_id) {
+                $payments = new Payments($event->order->customer->stripe_customer_id);
+                $charge = $payments->capture($stripe_charge_id);
+                $order->transactions()->create([
+                    'charge_id'=>$charge->id,
+                    'amount'=>$charge->amount,
+                    'type'=>'capture',
+                    'last_four'=>$charge->source->last4,
+                    'card_type'=>$charge->source->brand,
+                ]);
             }
 
-            $event->order->save();
+            $order->charged = $order->total;
+            $order->push();
 
-            if($event->order->discount_record && $event->order->discount_record->single_use_code) {
-                $discount_code = DiscountCode::where('discount_id', $event->order->discount_id)->where('code', $event->order->promo_code)->get()->first();
+            if($order->discount_record && $order->discount_record->single_use_code) {
+                $discount_code = DiscountCode::where('discount_id', $order->discount_id)->where('code', $order->promo_code)->get()->first();
                 $discount_code->is_active = 0;
                 $discount_code->save();
             }

@@ -12,16 +12,19 @@ return [
     ],
     'order' => [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
-        'exists' => 'You already have an order pending.',
+        'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
         'new_order_worker' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
+        'new_schedule_order' => 'New Scheduled :order_service #:order_id on :scheduled_day between :scheduled_time',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'Squeegy Car Wash - :service_level',
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
+            'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
+            'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',
-            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt.',
+            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don\'t forget to rate your wash. Thanks for using Squeegy!',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
         'cancel_reason' => [
@@ -32,9 +35,11 @@ return [
         ],
         'discount' => [
             'unavailable' => 'Invalid Promo Code',
+            'frequency' => 'Promotion can only be used :times:scope_label',
             'new_customer' => 'Promotion only available for new customers',
             'out_of_region' => 'Promotion not available in your area',
             'invalid_service' => 'Promotion not available for the :service_name wash',
+            'referral_code_new_customer' => 'Referral codes are only valid for new customers.',
         ],
     ],
     'service' => [
@@ -42,6 +47,9 @@ return [
         'highdemand' => "Due to high-demand we cannot take your order.\nPlease try again later.",
         'outside_area' => "Outside of service area.\nTap here to go to our service area.",
         'not_available' => 'Squeegy not available at this time. Please try again later.',
+        'error' => 'There was an error. Please try again.',
+        'schedule_param_req' => 'To schedule an order, please select a day and time.',
+        'schedule_in_past' => 'A wash can\'t be scheduled in the past.',
     ],
     'emails' => [
         'welcome' => [

@@ -32,7 +32,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'facebook_id', 'is_active', 'app_version'];
+
+	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'target_arn_gcm', 'facebook_id', 'is_active', 'app_version', 'referral_code', 'anon_pw_reset', 'device_id'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -40,6 +41,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @var array
 	 */
 	protected $hidden = ['password', 'remember_token'];
+
+    public $device_orders = null;
 
     /**
      * A user can have many vehicles
@@ -58,6 +61,30 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $foreign_key = \Auth::user()->is('worker') ? 'worker_id' : null ;
         return $this->hasMany('App\Order', $foreign_key);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function referral_orders()
+    {
+        return $this->hasMany('App\Order', 'referrer_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function credits()
+    {
+        return $this->hasMany('App\Credit');
+    }
+
+    /**
+     * @return int
+     */
+    public function availableCredit()
+    {
+        return (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
     }
 
     /**
@@ -116,6 +143,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\ActivityLog');
     }
 
+    public function scopePastOrders($query)
+    {
+        return $query->whereHas('orders', function($q) {
+            $q->where('status', 'done');
+        });
+    }
+
     /**
      * @param $query
      * @return mixed
@@ -145,9 +179,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $today = Carbon::today()->toDateString();
 
         $query->with(['jobs' => function ($q) use ($today) {
-            $q->whereIn('status', ['enroute','start'])
-                ->whereDate('enroute_at', '=', $today)
-                ->orderBy('enroute_at');
+            $q->whereIn('status', ['assign','enroute','start'])
+                ->whereDate('confirm_at', '=', $today)
+                ->orderBy('confirm_at');
         }])
         ->with(['default_location' => function($q) {
             $q->select('user_id', 'latitude', 'longitude');
@@ -186,6 +220,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function firstOrder()
     {
+        $this->device_orders = Order::device_orders();
+        if($this->device_orders->count()) return false;
+
         $prev_orders = $this->orders()->whereNotIn('orders.status', ['cancel','request'])->get();
         if($prev_orders->count()) return false;
         else return true;
@@ -198,28 +235,22 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function orders_with_discount($col, $val)
     {
-        return $this->hasMany('App\Order')->where($col, $val)->whereIn('status', ['assign','enroute','start','done']);
+        return $this->hasMany('App\Order')->where($col, $val)->whereNotIn('status', ['cancel','request']);
     }
 
     /**
-     * @param Discount $discount
-     * @return bool
+     * @return string
      */
-    public function discountEligible(Discount $discount, $code)
+    public static function generateReferralCode()
     {
-        if($discount->discount_code) {
-            $actual_code = $discount->actual_discount_code($code);
-            if(!$actual_code) return false;
-
-            if($actual_code->frequency_rate > 0) {
-                return ($this->orders_with_discount('promo_code', $code)->count() < $actual_code->frequency_rate);
-            }
+        while(true) {
+            $referral_code = strtoupper(substr( md5(rand()), 0, 5));
+            $usr = self::where('referral_code', $referral_code)->get();
+            if(!$usr->count()) break;
         }
-
-        if($discount->frequency_rate) {
-            return ($this->orders_with_discount('discount_id',$discount->id)->count() < $discount->frequency_rate);
-        }
-
-        return true;
+        return $referral_code;
     }
+
+
+
 }

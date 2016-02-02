@@ -61,6 +61,7 @@ class SendReceiptEmail {
                     'PROMO' => $order->promo_code,
                     'DISCOUNT_AMOUNT' => number_format($order->discount/100, 2),
                     'CHARGED' => number_format($order->charged/100, 2),
+                    'CREDIT_AMOUNT' => number_format($order->credit/100, 2),
                     'SHOW_CHARGE' => ($order->charged ? true : false),
                     'CUSTOMER_NAME' => $customer->name,
                     'VEHICLE' => $vehicle->year." ".$vehicle->make." ".$vehicle->model." (".$vehicle->color.")",
@@ -76,7 +77,10 @@ class SendReceiptEmail {
 
                 $headers = $message->getHeaders();
                 $headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
-                $headers->addTextHeader('X-MC-Template', 'receipt');
+
+                $template = ( env('APP_ENV') != "production" ? "receipt-dev" : "receipt" );
+
+                $headers->addTextHeader('X-MC-Template', $template);
 
                 $message->from(config('squeegy.emails.from'), config('squeegy.emails.from_name'));
                 $message->bcc(config('squeegy.emails.bcc'));

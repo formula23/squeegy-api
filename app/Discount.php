@@ -56,7 +56,7 @@ class Discount extends Model {
      */
     public function active_orders()
     {
-        return $this->hasMany('App\Order')->whereIn('status', ['assign','enroute','start','done']);
+        return $this->hasMany('App\Order')->whereNotIn('status', ['cancel','request']);
     }
 
     /**

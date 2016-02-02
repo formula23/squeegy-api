@@ -1,6 +1,7 @@
 <?php namespace App\Handlers\Events;
 
 use App\Events\OrderEnroute;
+use App\Squeegy\Orders;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Queue\InteractsWithQueue;
@@ -27,12 +28,32 @@ class NotifyCustomerEnroute {
 	 */
 	public function handle(OrderEnroute $event)
 	{
-        $push_message = trans('messages.order.push_notice.enroute', [
+		$msg_key = ($event->auto) ? "enroute" : "enroute_manual" ;
+
+		if( ! $event->auto) { //get real travel time
+			$arrival_time = current_eta($event->order);
+		} else {
+			$arrival_time = eta_real_time($event->order);
+		}
+
+        $push_message = trans('messages.order.push_notice.'.$msg_key, [
             'worker_name'=>$event->order->worker->name,
-            'arrival_time'=>eta_real_time($event->order),
+            'arrival_time'=>$arrival_time,
         ]);
 
-        PushNotification::send($event->order->customer->push_token, $push_message, 1, $event->order->id);
+		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+
+		if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
+			//send sms to customer
+            try {
+                $twilio = \App::make('Aloha\Twilio\Twilio');
+                $push_message = "Squeegy Order Status: ".$push_message;
+                $twilio->message($event->order->customer->phone, $push_message);
+            } catch (\Exception $e) {
+                \Bugsnag::notifyException($e);
+            }
+
+		}
 	}
 
 }

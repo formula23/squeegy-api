@@ -8,8 +8,11 @@
 
 namespace App\Squeegy;
 
+use Illuminate\Support\Facades\Log;
+use Stripe\Refund;
 use Stripe\Stripe;
 use Stripe\Charge as StripeCharge;
+use Stripe\Customer as StripeCustomer;
 
 class Payments {
 
@@ -72,12 +75,30 @@ class Payments {
             throw new \Exception('No charge_id supplied');
         }
 
-        $params = [];
-        if($amt) {
-            $params['amount'] = $amt;
-        }
         $charge = StripeCharge::retrieve($charge_id);
-        return $charge->refund($params);
+
+        $params=[];
+        if($amt) $params['amount'] = $amt;
+
+        $re = $charge->refund($params);
+
+        return $re;
+    }
+
+    public function cards()
+    {
+        $stripe_customer = StripeCustomer::retrieve($this->customer_id);
+
+        if($stripe_customer->sources) {
+            return $stripe_customer->sources->data;
+        }
+        return [];
+    }
+
+    public function card_charged($charge_id)
+    {
+        $charge = StripeCharge::retrieve($charge_id);
+        return $charge->source;
     }
 
 }

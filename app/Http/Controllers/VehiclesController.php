@@ -2,6 +2,7 @@
 
 use App\Squeegy\Transformers\VehicleTransformer;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use Response;
 use App\Vehicle;
@@ -36,7 +37,6 @@ class VehiclesController extends Controller {
      */
 	public function index()
 	{
-
         $vehicles = Auth::user()->vehicles;
 
         return $this->response->withCollection($vehicles, new VehicleTransformer);
@@ -68,7 +68,7 @@ class VehiclesController extends Controller {
      */
 	public function show(Vehicle $vehicle)
 	{
-        if (empty($vehicle->id)) {
+        if (Auth::id() != $vehicle->user_id) {
             return $this->response->errorNotFound('Vehicle does not exist');
         }
 
@@ -85,7 +85,7 @@ class VehiclesController extends Controller {
      */
 	public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
 	{
-        if (empty($vehicle->id)) {
+        if (Auth::id() != $vehicle->user_id) {
             return $this->response->errorNotFound('Vehicle does not exist');
         }
 
@@ -103,7 +103,7 @@ class VehiclesController extends Controller {
      */
 	public function destroy(Vehicle $vehicle)
 	{
-        if (empty($vehicle->id)) {
+        if (Auth::id() != $vehicle->user_id) {
             return $this->response->errorNotFound('Vehicle does not exist');
         }
 

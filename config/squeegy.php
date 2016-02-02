@@ -25,13 +25,20 @@ return [
         'cancel' => 100,
         'request' => 1,
         'confirm' => 2,
-        'enroute' => 3,
-        'start' => 4,
-        'done' => 5,
+        'receive' => 2,
+        'schedule' => 2,
+        'assign' => 3,
+        'enroute' => 4,
+        'start' => 5,
+        'done' => 6,
     ],
     'use_worker_regions' => env('USE_WORKER_REGIONS', false),
     'worker_default_location' => [
         'lat' => 34.032817,
         'lng' => -118.432363,
+    ],
+    'referral_program' => [
+        'referrer_amt' => env('REFERRER_AMT'),
+        'referred_amt' => env('REFERRED_AMT'),
     ]
 ];

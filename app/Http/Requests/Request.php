@@ -1,13 +1,16 @@
 <?php namespace App\Http\Requests;
 
+use EllipseSynergie\ApiResponse\Laravel\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
+use League\Fractal\Manager;
 
 abstract class Request extends FormRequest {
 
 	public function forbiddenResponse()
     {
-        return new JsonResponse(['error'=>['message'=>'Not authorized for this request. Forbidden.']], 403);
+        $resp = new Response(new Manager());
+        return $resp->errorForbidden("Not authorized for this request. Forbidden.");
     }
 
     protected function getValidatorInstance()
@@ -30,6 +33,8 @@ abstract class Request extends FormRequest {
         foreach($errors as $error) {
             $err_msg .= implode(", ", $error);
         }
-        return new JsonResponse(['error'=>['message'=>$errors]], 400);
+
+        $resp = new Response(new Manager());
+        return $resp->errorWrongArgs($err_msg);
     }
 }

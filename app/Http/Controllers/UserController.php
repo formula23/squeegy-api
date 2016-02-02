@@ -2,6 +2,7 @@
 
 use Aloha\Twilio\Twilio;
 use App\Http\Requests;
+use App\PaymentMethod;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
 use App\WasherActivityLog;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Config;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -49,6 +51,10 @@ class UserController extends Controller {
             })->groupBy('users.id');
         }
 
+        if($request->input('referral_code')) {
+            $usr_qry->where('referral_code', $request->input('referral_code'));
+        }
+
         $paginator = $usr_qry->paginate($request->input('per_page', 10));
 
         return $this->response->withPaginator($paginator, new UserTransformer());
@@ -83,15 +89,26 @@ class UserController extends Controller {
         if(isset($data['push_token'])) {
 
             try {
+
+                $config_key = 'aws.sns_arn'.($request->header('X-Device')=="Android" ? '_android' : '');
                 $endpoint_arn = $sns_client->createPlatformEndpoint([
-                    'PlatformApplicationArn' => \Config::get('aws.sns_arn'),
+                    'PlatformApplicationArn' => \Config::get($config_key),
                     'Token' => $data['push_token'],
                 ]);
 
                 if (!$endpoint_arn->get('EndpointArn')) {
                     return $this->response->errorInternalError('Unable to create push token');
                 }
-                $data['push_token'] = $endpoint_arn->get('EndpointArn');
+
+                $endpoint_arn = $endpoint_arn->get('EndpointArn');
+
+                if($request->header('X-Device')=="Android") {
+                    unset($data['push_token']);
+                    $data['target_arn_gcm'] = $endpoint_arn;
+                } else {
+                    $data['push_token'] = $endpoint_arn;
+                }
+
             } catch (ValidationException $e) {
                 return $this->response->errorWrongArgs($e->getMessage());
             } catch (Exception $e) {
@@ -123,28 +140,19 @@ class UserController extends Controller {
          * stripe_token passed, add card to customer
          */
         if( ! empty($data['stripe_token'])) {
-
             try {
-                $customer_card = $customer->sources->create([
-                    "source" => $data['stripe_token']
-                ]);
+                $customer_card = $customer->sources->create(["source" => $data['stripe_token']]);
                 $customer->default_source = $customer_card->id;
-
             } catch(\Exception $e) {
                 \Bugsnag::notifyException($e);
-//                return $this->response->errorWrongArgs($e->getMessage());
             }
-
         }
 
         try {
             $customer->save();
+        } catch (\Exception $e) {
+            \Bugsnag::notifyException($e);
         }
-        catch (\Exception $e)
-        {
-            dd($e);
-        }
-
 
 // && ! empty($request->user()->phone) -- removed 9/17
 
@@ -158,6 +166,10 @@ class UserController extends Controller {
                 }
             }
 
+        }
+
+        if( ! empty($data['password'])) {
+            $data['anon_pw_reset'] = 1;
         }
 
         $original_email = $request->user()->email;

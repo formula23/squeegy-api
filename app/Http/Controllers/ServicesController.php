@@ -24,8 +24,7 @@ class ServicesController extends Controller {
      */
     public function index()
     {
-        $services = Service::all();
-
+        $services = Service::getAvailableServices();
         return $this->response->withCollection($services, new ServiceTransformer);
     }
 
@@ -77,7 +76,7 @@ class ServicesController extends Controller {
             \Bugsnag::notifyException($e);
         }
 
-        return $this->response->withItem($availability, new ServiceAvailabilityTransformer);
+        return $this->response->withItem($availability, new ServiceAvailabilityTransformer());
     }
 
 

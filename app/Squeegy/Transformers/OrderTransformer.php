@@ -8,9 +8,13 @@
 
 namespace App\Squeegy\Transformers;
 
+use App\OrderSchedule;
 use App\Squeegy\Orders;
 use App\Order;
+use App\Squeegy\Payments;
+use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
+use Stripe\Card;
 
 class OrderTransformer extends TransformerAbstract {
 
@@ -19,36 +23,45 @@ class OrderTransformer extends TransformerAbstract {
         'service',
         'worker',
         'customer',
+        'schedule',
+    ];
+
+    protected $availableIncludes = [
+        'referrer',
+        'payment_method',
     ];
 
     public function transform(Order $order)
     {
 //        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
 
-        return [
+        $resp = [
             'id' => (string)$order->id,
             'job_number' => $order->job_number,
             'status' => $order->status,
+            'is_schedule_order' => ($order->schedule?true:false),
             'location' => $order->location,
             'instructions' => $order->instructions,
             'subtotal' => (int)$order->price,
             'discount' => ($order->discount ? (int)$order->discount : null ),
+            'credit' => (($order->credit)? $order->credit : null ),
+            'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
             'promo_code' => ($order->promo_code ? $order->promo_code : null ),
-            'total' => (int)($order->price - (int)$order->discount),
             'eta_quote' => (int)$order->eta,
             'arrival_eta' => eta_real_time($order),
             'eta' => Orders::formatConfirmEta($order->eta),
-//            'eta' => 'Around '.eta_real_time($order),
             'eta_seconds' => Orders::getCurrentEta($order),
             'etc' => ($order->start_at ? $order->start_at->addMinutes($order->etc)->format('g:i a') : ""),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'rating' => $order->rating,
-            'confirm_time' => $order->confirm_at ? date("g:i:s a", strtotime($order->confirm_at)) : "",
-            'enroute_time' => $order->enroute_at ? date("g:i:s a", strtotime($order->enroute_at)) : "",
-            'start_time' => $order->start_at ? date("g:i:s a", strtotime($order->start_at)) : "",
-            'done_time' => $order->done_at ? date("g:i:s a", strtotime($order->done_at)) : "",
+            'confirm_time' => $order->confirm_at ? date("g:i a", strtotime($order->confirm_at)) : "",
+            'assign_time' => $order->assign_at ? date("g:i a", strtotime($order->assign_at)) : "",
+            'enroute_time' => $order->enroute_at ? date("g:i a", strtotime($order->enroute_at)) : "",
+            'start_time' => $order->start_at ? date("g:i a", strtotime($order->start_at)) : "",
+            'done_time' => $order->done_at ? date("g:i a", strtotime($order->done_at)) : "",
             'confirm_at' => $order->confirm_at,
+            'assign_at' => $order->assign_at,
             'enroute_at' => $order->enroute_at,
             'start_at' => $order->start_at,
             'done_at' => $order->done_at,
@@ -59,6 +72,33 @@ class OrderTransformer extends TransformerAbstract {
                 ]
             ],
         ];
+
+        if($order->schedule) {
+            $resp['eta'] = $order->scheduled_eta();
+        } else {
+            $arrival_eta = eta_real_time($order);
+            if($arrival_eta) {
+                $resp['eta'] = $arrival_eta;
+            }
+        }
+
+        $current_eta = current_eta($order);
+        if($current_eta) {
+            $resp['eta'] = $current_eta;
+        }
+
+        return $resp;
+
+    }
+
+    public function includeSchedule(Order $order)
+    {
+        $schedule = ($order->schedule?:new OrderSchedule());
+        return $this->item($schedule, new OrderScheduleTransformer);
+    }
+
+    public function includeReferrer(Order $order) {
+        return $this->item($order->referrer, new UserTransformer);
     }
 
     public function includeCustomer(Order $order) {
@@ -83,4 +123,17 @@ class OrderTransformer extends TransformerAbstract {
         $vehicle = $order->vehicle;
         return $this->item($vehicle, new VehicleTransformer);
     }
+
+    public function includePaymentMethod(Order $order)
+    {
+        $card=null;
+        $charge_id = ($order->auth_transaction ? $order->auth_transaction->charge_id : $order->stripe_charge_id );
+        if($charge_id) {
+            $payments = new Payments($order->customer->stripe_customer_id);
+            $card = $payments->card_charged($charge_id);
+        }
+
+        return $this->item($card, new PaymentMethodTransformer());
+    }
+
 }

@@ -74,7 +74,53 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-        if ($this->auth->attempt($credentials, $request->has('remember'))) {
+        if ($this->auth->attempt($credentials, $request->has('remember')))
+        {
+            if($request->header('X-Device-Identifier')) {
+
+                $this->auth->user()->device_id = $request->header('X-Device-Identifier');
+
+                $users = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
+                if($users->count()) {
+                    $latest_user = $users->first();
+                    $sns_col = ( $request->header('X-Device') == "Android" ? "target_arn_gcm" : "push_token" );
+                    if($latest_user->{$sns_col}) {
+                        $this->auth->user()->{$sns_col} = $latest_user->{$sns_col};
+                    }
+                    try {
+                        $users->limit(100);
+                        $users->delete();
+                    } catch(\Exception $e) {
+                        \Bugsnag::notifyException($e);
+                    }
+                }
+
+                $this->auth->user()->save();
+            }
+
+            //successful log
+            if($request->input('anon_email')) {
+                try {
+                    if(preg_match('/squeegyapp-tmp.com$/', $request->input('anon_email'))) {
+                        User::where('email', $request->input('anon_email'))->delete();
+                    }
+                } catch(\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                }
+            }
+
+            if($request->header('X-Application-Type'))
+            {
+                switch(strtolower($request->header('X-Application-Type'))) {
+                    case "consumer":
+                        if( ! $this->auth->user()->is('customer')) return $this->response->errorUnauthorized('Account not authorized for this application.');
+                        break;
+                    case "washer":
+                        if( ! $this->auth->user()->is('worker')) return $this->response->errorUnauthorized('Account not authorized for this application.');
+                        break;
+                }
+            }
+
             return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
@@ -108,11 +154,13 @@ class AuthController extends Controller {
         $validator = $this->registrar->validator($data);
 
         if ($validator->fails()) {
-            return $this->response->errorWrongArgs($validator->errors()->getMessages());
+            foreach($validator->errors()->getMessages() as $msgs) {
+                $msg = implode(",", (array)$msgs);
+            }
+            return $this->response->errorWrongArgs($msg);
         }
 
         try {
-
             Stripe::setApiKey(\Config::get('services.stripe.secret'));
             $customer = StripeCustomer::create([
                 "description" => $data["name"],
@@ -135,9 +183,14 @@ class AuthController extends Controller {
 
         try {
 
+            $data['referral_code'] = User::generateReferralCode();
+            $data['device_id'] = $request->header('X-Device-Identifier');
+
             $this->auth->login($this->registrar->create($data));
 
             $this->auth->user()->attachRole(3);
+
+            $user = User::find($this->auth->user()->id);
 
             if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
                 \Event::fire(new UserRegistered());
@@ -147,7 +200,7 @@ class AuthController extends Controller {
             return $this->response->errorInternalError($e->getMessage());
         }
 
-        return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
+        return $this->response->withItem($user, new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
     }
 
     /**

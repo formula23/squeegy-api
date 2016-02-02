@@ -10,6 +10,7 @@ namespace App\Squeegy;
 
 use Aws\Sns\SnsClient;
 use App\Order;
+use Illuminate\Http\Request;
 
 /**
  * Class PushNotification
@@ -28,21 +29,33 @@ class PushNotification {
      * @param int $badge
      * @param int $order_id
      */
-    public static function send($push_token, $message, $badge = 1, $order_id = 0) {
+    public static function send($push_token, $message, $badge = 1, $order_id = 0, $target="apns", $title="Squeegy") {
 
-        if( ! $push_token) return;
+        if( ! $push_token) return false;
 
         try {
 
-            $aps_payload = [
-                'aps' => [
-                    'alert' => $message,
-                    'sound' => 'default',
-                    'badge' => $badge
-                ],
-            ];
-
-            if($order_id) $aps_payload['order_id'] = (string)$order_id;
+            if($target=="apns") {
+                $platform = env('APNS');
+                $payload = [
+                    'aps' => [
+                        'alert' => $message,
+                        'sound' => 'default',
+                        'badge' => $badge
+                    ],
+                ];
+                if($order_id) $payload['order_id'] = (string)$order_id;
+            } else {
+                $platform = env('GCM');
+                $payload = [
+                    'data' => [
+                        'title' => $title,
+                        'message' => $message,
+                        'url' => "squeegy://",
+                        'order_id' => (string)$order_id
+                    ],
+                ];
+            }
 
             self::$sns_client = \App::make('Aws\Sns\SnsClient');
 
@@ -51,14 +64,17 @@ class PushNotification {
                 'MessageStructure' => 'json',
                 'Message' => json_encode([
                     'default' => $message,
-                    env('APNS') => json_encode($aps_payload)
+                    $platform => json_encode($payload)
                 ]),
             ]);
+
+            return true;
+
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
 
-        return;
+        return false;
     }
 
 }
