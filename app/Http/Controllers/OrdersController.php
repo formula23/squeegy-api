@@ -183,7 +183,7 @@ class OrdersController extends Controller {
                     $data['eta'] = $eta['time'];
                 } else {
                     \Bugsnag::notifyException(new \Exception("No schedule or ETA avialable!"));
-                    return $this->response->errorWrongArgs(trans('messages.service.error'));
+                    return $this->response->errorWrongArgs(trans('messages.service.not_available'));
                 }
             }
         } catch (\Exception $e) {
