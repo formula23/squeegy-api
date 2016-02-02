@@ -95,4 +95,10 @@ class Payments {
         return [];
     }
 
+    public function card_charged($charge_id)
+    {
+        $charge = StripeCharge::retrieve($charge_id);
+        return $charge->source;
+    }
+
 }

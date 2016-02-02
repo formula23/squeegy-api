@@ -11,8 +11,10 @@ namespace App\Squeegy\Transformers;
 use App\OrderSchedule;
 use App\Squeegy\Orders;
 use App\Order;
+use App\Squeegy\Payments;
 use Carbon\Carbon;
 use League\Fractal\TransformerAbstract;
+use Stripe\Card;
 
 class OrderTransformer extends TransformerAbstract {
 
@@ -26,6 +28,7 @@ class OrderTransformer extends TransformerAbstract {
 
     protected $availableIncludes = [
         'referrer',
+        'payment_method',
     ];
 
     public function transform(Order $order)
@@ -119,6 +122,18 @@ class OrderTransformer extends TransformerAbstract {
     {
         $vehicle = $order->vehicle;
         return $this->item($vehicle, new VehicleTransformer);
+    }
+
+    public function includePaymentMethod(Order $order)
+    {
+        $card=null;
+        $charge_id = ($order->auth_transaction ? $order->auth_transaction->charge_id : $order->stripe_charge_id );
+        if($charge_id) {
+            $payments = new Payments($order->customer->stripe_customer_id);
+            $card = $payments->card_charged($charge_id);
+        }
+
+        return $this->item($card, new PaymentMethodTransformer());
     }
 
 }

@@ -15,7 +15,9 @@ use Stripe\Card;
 class PaymentMethodTransformer
 {
 
-    public function transform(Card $card) {
+    public function transform($card) {
+
+        if( ! $card) return [];
 
         return [
 //            'identifier'=>$card->id,
