@@ -86,7 +86,8 @@ class OrdersController extends Controller {
                     ->where('email', 'like', '%formula23%')
                     ->orWhere('email', 'like', '%sinister%')
                     ->orWhere('email', 'like', '%squeegy%')
-                    ->orWhere('email', 'like', '%testing%');
+                    ->orWhere('email', 'like', '%testing%')
+                    ->orWhere('email', 'like', '%triet.luong%');
             });
         }
 
@@ -129,9 +130,8 @@ class OrdersController extends Controller {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = $request->input('limit');
         }
-//        return response()->json($orders->get());
-        $paginator = $orders->paginate($this->limit);
 
+        $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
     }
