@@ -169,7 +169,7 @@ class AuthController extends Controller {
             Log::info('Create stripe customer');
             Stripe::setApiKey(\Config::get('services.stripe.secret'));
             $customer = StripeCustomer::create([
-                "description" => $data["name"],
+                "description" => (isset($data["name"])?:""),
                 "email" => $data['email'],
             ]);
 
@@ -177,7 +177,10 @@ class AuthController extends Controller {
 
             $data['stripe_customer_id'] = $customer->id;
 
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            Log::error('Unable to create Stripe customer');
+            \Bugsnag::notifyException($e);
+        }
 
         if(isset($data['stripe_token'])) {
 

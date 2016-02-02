@@ -127,7 +127,7 @@ class UserController extends Controller {
 
         Stripe::setApiKey(\Config::get('services.stripe.secret'));
 
-        Log::info($request-user());
+        Log::info($request->user());
 
         if( ! $request->user()->stripe_customer_id) {
             Log::info('No stripe_customer_id - create stripe customer');
