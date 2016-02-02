@@ -22,6 +22,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Event;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -64,10 +65,10 @@ class OrdersController extends Controller {
     {
         $orders = Order::query();
 
-//        $orders->with('vehicle')
-//            ->with('service')
-//            ->with('worker')
-//            ->with('customer');
+        $orders->with('vehicle')
+            ->with('service')
+            ->with('worker')
+            ->with('customer');
 
         if(Auth::user()->is('customer|worker')) {
             if(Auth::user()->is('worker')) {
@@ -128,8 +129,9 @@ class OrdersController extends Controller {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = $request->input('limit');
         }
-
+//        return response()->json($orders->get());
         $paginator = $orders->paginate($this->limit);
+
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
     }
