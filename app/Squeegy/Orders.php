@@ -534,14 +534,21 @@ class Orders {
 
             $cache_key = implode(",", [$origin,$destination]);
             if(Cache::has($cache_key)) {
+                \Log::info('Retreive from cache');
                 $travel_time = Cache::get($cache_key);
             } else {
+                $start_time = microtime(true);
+                \Log::info('Start directions:'.microtime(true));
                 $response = \GoogleMaps::load('directions')
                     ->setParam([
                         'origin'=>$origin,
                         'destination'=>$destination,
                     ])
                     ->get();
+                $end_time = microtime(true);
+                \Log::info('End directions:'.$end_time);
+                \Log::info('Exec time: '.($end_time - $start_time));
+                
                 $json_resp = json_decode($response);
                 if($json_resp->status == "OK") {
                     $travel_time = round($json_resp->routes[0]->legs[0]->duration->value/60, 0);
