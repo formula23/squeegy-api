@@ -191,7 +191,7 @@ class Orders {
 
         if(Request::header('X-Application-Version') && ! is_internal() && self::open() && $data['lead_time'] > 120) {
             $data['schedule'] = true;
-        } elseif(! is_internal() && self::open() && $data['lead_time'] > 120) {
+        } elseif(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['description'] = trans('messages.service.highdemand');
             $data['accept'] = 0;
         }
