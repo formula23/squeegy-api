@@ -189,13 +189,11 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(! is_internal() && self::open() && $data['lead_time'] > 120) {
+        if(Request::header('X-Application-Version') && ! is_internal() && self::open() && $data['lead_time'] > 120) {
+            $data['schedule'] = true;
+        } elseif(! is_internal() && self::open() && $data['lead_time'] > 120) {
             $data['description'] = trans('messages.service.highdemand');
-            if(Request::header('X-Application-Version')) {
-                $data['schedule'] = true;
-            } else {
-                $data['accept'] = 0;
-            }
+            $data['accept'] = 0;
         }
         
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
