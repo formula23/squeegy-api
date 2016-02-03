@@ -189,6 +189,8 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
+        Log::info(Request::header('X-Application-Version'));
+        Log::info($data['lead_time']);
         if(Request::header('X-Application-Version') && ! is_internal() && self::open() && $data['lead_time'] > 120) {
             $data['schedule'] = true;
         } elseif(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
