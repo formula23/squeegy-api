@@ -154,7 +154,7 @@ class Orders {
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
             $data['code'] = "closed";
 
-            if(Request::header('X-Application-Version')) {
+            if(Request::header('X-Device')) {
                 $data['schedule'] = true;
                 $data['accept'] = 1;
             }
@@ -189,8 +189,6 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        Log::info(Request::header('X-Device'));
-        Log::info($data['lead_time']);
         if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 120 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
             $data['schedule'] = true;
         } elseif(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
@@ -199,8 +197,6 @@ class Orders {
         }
         
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
-
-        Log::info($lead_time_arr);
 
         return array_merge($data, $lead_time_arr);
     }
@@ -274,7 +270,7 @@ class Orders {
 
         $active_workers = $active_workers_qry->get();
 //dd($active_workers[0]->jobs);
-        if(Request::header('X-Application-Version')) {
+        if(Request::header('X-Device')) {
             if( ! $active_workers->count()) return ['schedule'=>true];
         } else {
             if( ! $active_workers->count()) return ['error_msg'=>trans('messages.service.not_available'), 'error_code'=>'not_available'];
