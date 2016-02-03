@@ -51,17 +51,55 @@ function real_time(Carbon $time, $round=10)
 function current_eta(Order $order)
 {
     $order_seq = Config::get('squeegy.order_seq');
-    if($order->worker && $order_seq[$order->status] > 3) {
-        try {
-            $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
-            $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
-            $travel_time = Orders::getRealTravelTime($origin, $destination);
-            $eta=Carbon::now()->addMinutes($travel_time);
-            return real_time($eta, 5);
-        } catch(\Exception $e) {
-        }
 
-    } else {
-        return "";
+    try {
+
+        \Log::info('Get Current ETA:');
+        \Log::info('Order status: '.$order->status);
+        $current_eta="";
+        switch($order_seq[$order->status])
+        {
+            case 4: //enroute
+
+//                try {
+                    $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
+                    $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
+                    $travel_time = Orders::getRealTravelTime($origin, $destination);
+                    \Log::info('Origin: '.$origin);
+                    \Log::info('Destination: '.$destination);
+                    \Log::info('Travel Time: '.$travel_time);
+                    $eta=Carbon::now()->addMinutes($travel_time);
+                    $current_eta = real_time($eta, 5);
+//                } catch(\Exception $e) {}
+
+                break;
+            case 5:
+            case 6:
+                $current_eta = $order->start_at->format('g:i a');
+                break;
+            default:
+                $current_eta = "";
+                break;
+        }
+        \Log::info($current_eta);
+
+    } catch (\Exception $e) {
+        \Bugsnag::notifyException($e);
     }
+
+    return $current_eta;
+
+//    if($order->worker && $order_seq[$order->status] > 3) {
+//
+//
+//        if(in_array()$order_seq[$order->status] >= 5) {
+//            \Log::info('Job status: '.$order->status);
+//            return $order->start_at->format('g:i a');
+//        }
+//
+//
+//
+//    } else {
+//        return "";
+//    }
 }
