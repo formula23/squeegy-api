@@ -53,17 +53,19 @@ class PasswordController extends Controller {
 		$credentials = $request->only('email');
 		$user = $this->passwords->getUser($credentials);
 
-		$token = $tokens->create($user);
+		if($user) {
+			$token = $tokens->create($user);
 
-		$this->passwords->emailResetLink($user, $token, function($m) use ($token) {
+			$this->passwords->emailResetLink($user, $token, function($m) use ($token) {
 
-			$headers = $m->getHeaders();
-			$mergevars=['RESET_PW_URL'=>env('WEBSITE_URL').'/password/reset/'.$token];
-			$headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
-			$headers->addTextHeader('X-MC-Template', 'password-reset');
+				$headers = $m->getHeaders();
+				$mergevars=['RESET_PW_URL'=>env('WEBSITE_URL').'/password/reset/'.$token];
+				$headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
+				$headers->addTextHeader('X-MC-Template', 'password-reset');
 
-			$m->subject($this->getEmailSubject());
-		});
+				$m->subject($this->getEmailSubject());
+			});
+		}
 
 		return $this->response->withArray(['status'=>trans(PasswordBroker::RESET_LINK_SENT)]);
 
