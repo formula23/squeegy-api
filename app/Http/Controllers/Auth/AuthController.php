@@ -92,6 +92,7 @@ class AuthController extends Controller {
                         $users->limit(100);
                         $users->delete();
                     } catch(\Exception $e) {
+                        \Log::error($e);
                         \Bugsnag::notifyException($e);
                     }
                 }

@@ -199,7 +199,11 @@ class OrdersController extends Controller {
                 if(!empty($eta['time'])) {
                     $data['eta'] = $eta['time'];
                 } else {
-                    \Bugsnag::notifyException(new \Exception("No schedule or ETA avialable!"));
+                    \Log::error(trans('messages.service.not_available'));
+                    \Log::info($eta);
+                    \Log::info("Request params:");
+                    \Log::info($data);
+                    \Bugsnag::notifyException(new \Exception(trans('messages.service.not_available')));
                     return $this->response->errorWrongArgs(trans('messages.service.not_available'));
                 }
             }
