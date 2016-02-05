@@ -341,7 +341,7 @@ class OrdersController extends Controller {
                     unset($order->receive_at);
 
                     if($order->schedule) {
-
+                        $order->confirm_at = $order->schedule->window_open;
                         $order->status = 'schedule';
                         Event::fire(new OrderScheduled($order));
 
