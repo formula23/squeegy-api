@@ -55,23 +55,20 @@ function current_eta(Order $order)
     try {
 
         \Log::info('Get Current ETA:');
-        \Log::info('Order status: '.$order->status);
+        \Log::info('Order#'.$order->id.' Status: '.$order->status);
+
         $current_eta="";
         switch($order_seq[$order->status])
         {
             case 4: //enroute
-
-//                try {
-                    $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
-                    $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
-                    $travel_time = Orders::getRealTravelTime($origin, $destination);
-                    \Log::info('Origin: '.$origin);
-                    \Log::info('Destination: '.$destination);
-                    \Log::info('Travel Time: '.$travel_time);
-                    $eta=Carbon::now()->addMinutes($travel_time);
-                    $current_eta = real_time($eta, 5);
-//                } catch(\Exception $e) {}
-
+                $origin = implode(",", [$order->worker->current_location->latitude, $order->worker->current_location->longitude]);
+                $destination = implode(",", [$order->location['lat'], $order->location['lon']]);
+                $travel_time = Orders::getRealTravelTime($origin, $destination);
+                \Log::info('Origin: '.$origin);
+                \Log::info('Destination: '.$destination);
+                \Log::info('Travel Time: '.$travel_time);
+                $eta=Carbon::now()->addMinutes($travel_time);
+                $current_eta = real_time($eta, 5);
                 break;
             case 5:
             case 6:
