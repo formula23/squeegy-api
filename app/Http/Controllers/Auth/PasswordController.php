@@ -91,6 +91,7 @@ class PasswordController extends Controller {
 
 		$response = $this->passwords->reset($credentials, function($user, $password)
 		{
+			$user->anon_pw_reset = 1;
 			$user->password = $password;
 			$user->save();
 		});
