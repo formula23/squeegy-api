@@ -44,7 +44,7 @@ class OrderTransformer extends TransformerAbstract {
             'instructions' => $order->instructions,
             'subtotal' => (int)$order->price,
             'discount' => ($order->discount ? (int)$order->discount : null ),
-            'credit' => (($order->credit)? $order->credit : null ),
+            'credit' => ($order->credit ? (int)$order->credit : null ),
             'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
             'promo_code' => ($order->promo_code ? $order->promo_code : null ),
             'eta_quote' => (int)$order->eta,
