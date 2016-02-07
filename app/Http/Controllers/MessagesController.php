@@ -16,8 +16,8 @@ class MessagesController extends Controller {
 	{
 		$data=[
 			'referral_program' => [
-				'header' => 'Invite friends. Get free washes!',
-				'body' => 'Send friends a free car* wash and you\'ll get one too, worth $15.',
+				'header' => 'Invite friends. Get free washes.',
+				'body' => 'Send friends a free car wash and you\'ll get one too, worth $15.',
 			],
 			'create_password' => [
 				'header' => 'Create a Password',
