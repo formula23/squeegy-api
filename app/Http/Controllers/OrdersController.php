@@ -557,6 +557,8 @@ class OrdersController extends Controller {
                 } else {
                     $order->discount = (int) ($order->price * ($discount->amount / 100));
                 }
+
+                if($order->discount > $order->price) $order->discount = $order->price;
             }
 
             $order->credit = min($order->price - $order->discount, $order->customer->availableCredit());
