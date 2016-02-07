@@ -89,8 +89,8 @@ class AuthController extends Controller {
                         $this->auth->user()->{$sns_col} = $latest_user->{$sns_col};
                     }
                     try {
-                        $users->limit(100);
-                        $users->delete();
+                        $users_to_delete = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
+                        $users_to_delete->delete();
                     } catch(\Exception $e) {
                         \Log::error($e);
                         \Bugsnag::notifyException($e);
