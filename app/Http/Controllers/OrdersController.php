@@ -560,7 +560,7 @@ class OrdersController extends Controller {
             }
 
             $order->credit = min($order->price - $order->discount, $order->customer->availableCredit());
-            $order->total = $order->price - $order->discount - $order->credit;
+            $order->total = max(0,$order->price - $order->discount - $order->credit);
 
         }
 
