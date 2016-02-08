@@ -154,7 +154,7 @@ class OrdersController extends Controller {
         $is_schedule = ( !empty($data['day']) && !empty($data['time_slot']) ? true : false );
 
         //does current user have any washes in progress for the requested vehicle
-        if( !$is_schedule && $request->user()->orders()->whereIn('status', ['confirm','schedule','assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
+        if( !$is_schedule && $request->user()->orders()->whereIn('status', ['assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs(trans('messages.order.exists'));
         }
 
