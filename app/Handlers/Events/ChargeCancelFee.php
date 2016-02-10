@@ -100,7 +100,7 @@ class ChargeCancelFee {
 						Log::info('Available Credit: '.$available_credit);
 
 						if($available_credit) {
-							Log::info('Avialble credit > than cancel fee. take all cancel free from credit...');
+							Log::info('There is avialable credit, use as much as possible.');
 							$credit->amount = -min($cancel_fee, $available_credit);
 						}
 

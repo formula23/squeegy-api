@@ -1,27 +1,26 @@
 <?php namespace App\Console\Commands;
 
 use App\Order;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class UtilTests extends Command {
+class StatsDaysBetweenWashes extends Command {
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'util:tests';
+	protected $name = 'stats:days_between_washes';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Command description.';
+	protected $description = 'Get the average number of days between each customers wash.';
 
 	/**
 	 * Create a new command instance.
@@ -76,8 +75,13 @@ class UtilTests extends Command {
 
 		}
 
-		$this->info(array_sum($all_days_between) / count($all_days_between));
-		dd($time_between_washes);
+		$avg_day_between = array_sum($all_days_between) / count($all_days_between);
+
+		if($this->getOutput()->getVerbosity() > 1) {
+			print_r($time_between_washes);
+		}
+
+		$this->info("Avg. days between washes: ".$avg_day_between);
 	}
 
 	/**
@@ -88,7 +92,7 @@ class UtilTests extends Command {
 	protected function getArguments()
 	{
 		return [
-//			['example', InputArgument::REQUIRED, 'An example argument.'],
+			['stat', InputArgument::OPTIONAL, 'i.e. days_between_washes, avg_order_value', 'days_between_washes'],
 		];
 	}
 

@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\PushNotification',
         'App\Console\Commands\DbBackup',
         'App\Console\Commands\UserReferralCodes',
-        'App\Console\Commands\UtilTests',
+        'App\Console\Commands\StatsDaysBetweenWashes',
 	];
 
 	/**
