@@ -40,7 +40,7 @@ class Payments {
             ];
 
             if($order) {
-                $charge['statement_descriptor'] = trans('messages.order.statement_descriptor', ['service_level'=>$order->service->name, 'job_number'=>$order->job_number]);
+                $charge_data['statement_descriptor'] = trans('messages.order.statement_descriptor', ['service_level'=>$order->service->name, 'job_number'=>$order->job_number]);
             }
 
             $charge = StripeCharge::create($charge_data);
