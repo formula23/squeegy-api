@@ -40,7 +40,8 @@ class ChargeCancelFee {
 
 			$order_charged = $event->order->charged + (!empty($credit->amount) ? abs($credit->amount) : 0 );
 
-			$cancel_fee = min(config('squeegy.cancellation_fee'), $order_charged);
+//			$cancel_fee = min(config('squeegy.cancellation_fee'), $order_charged);
+			$cancel_fee = config('squeegy.cancellation_fee');
 
 			Log::info("strip charge id: ".$stripe_charge_id);
 			Log::info("credit:" .$credit);
