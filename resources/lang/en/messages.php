@@ -17,7 +17,7 @@ return [
         'new_order_worker' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
         'new_schedule_order' => 'New Scheduled :order_service #:order_id on :scheduled_day between :scheduled_time',
         'same_status' => 'This order is already in the \':status\' state.',
-        'statement_descriptor' => 'Squeegy Car Wash - :service_level',
+        'statement_descriptor' => 'SQUEEGY: :service_level wash - :job_number',
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
             'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',

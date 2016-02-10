@@ -27,17 +27,23 @@ class Payments {
         $this->customer_id = $customer_id;
     }
 
-    public function auth($amt=0)
+    public function auth($amt=0, $order=null)
     {
         if($amt===0) return;
 
         try {
-            $charge = StripeCharge::create([
+            $charge_data = [
                 'amount' => $amt,
                 'currency' => 'usd',
                 'customer' => $this->customer_id,
                 'capture' => false,
-            ]);
+            ];
+
+            if($order) {
+                $charge['statement_descriptor'] = trans('messages.order.statement_descriptor', ['service_level'=>$order->service->name, 'job_number'=>$order->job_number]);
+            }
+
+            $charge = StripeCharge::create($charge_data);
         } catch(\Exception $e) {
             throw new \Exception(trans('messages.order.invalid_card'), 400);
         }
@@ -53,7 +59,7 @@ class Payments {
         }
 
         try {
-            $params = ['statement_descriptor' => trans('messages.order.statement_descriptor', ['service_level'=>''])];
+            $params=[];
             if($amt) $params['amount'] = $amt;
 
             $charge = StripeCharge::retrieve($charge_id);

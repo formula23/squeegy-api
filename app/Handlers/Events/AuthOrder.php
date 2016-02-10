@@ -41,7 +41,7 @@ class AuthOrder {
 		//auth customer card
 		if($order->total) { //auth the card
 			$payments = new Payments($order->customer->stripe_customer_id);
-			$charge = $payments->auth($order->total);
+			$charge = $payments->auth($order->total, $order);
 
 			$order->transactions()->create([
 				'charge_id'=>$charge->id,
