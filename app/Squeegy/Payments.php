@@ -40,12 +40,12 @@ class Payments {
             ];
 
             if($order) {
-                $charge_data['statement_descriptor'] = substr(0,20,trans('messages.order.statement_descriptor', ['job_number'=>$order->job_number]));
+                $charge_data['statement_descriptor'] = substr(trans('messages.order.statement_descriptor', ['job_number'=>$order->job_number]), 0, 20);
             }
 
             $charge = StripeCharge::create($charge_data);
         } catch(\Exception $e) {
-            Log::error($e->getMessage());
+            \Bugsnag::notifyException($e);
             throw new \Exception(trans('messages.order.invalid_card'), 400);
         }
 
