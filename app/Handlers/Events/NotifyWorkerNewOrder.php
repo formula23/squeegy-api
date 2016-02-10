@@ -33,9 +33,12 @@ class NotifyWorkerNewOrder {
         try {
 
             //get assigned worker and andrew & dan
+			$additional_usersids = [1,2];
+			if(env('APP_ENV')!='production') $additional_usersids=[1];
+
             $workers = User::workers()
                 ->where('id', $event->order->worker_id)
-                ->orWhereIn('id', [1,2])
+                ->orWhereIn('id', $additional_usersids)
                 ->get();
 
             $vehicle = $event->order->vehicle;
