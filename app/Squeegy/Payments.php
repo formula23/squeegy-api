@@ -45,6 +45,7 @@ class Payments {
 
             $charge = StripeCharge::create($charge_data);
         } catch(\Exception $e) {
+            Log::error($e->getMessage());
             throw new \Exception(trans('messages.order.invalid_card'), 400);
         }
 
