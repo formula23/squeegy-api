@@ -97,11 +97,11 @@ class ChargeCancelFee {
 						Log::info('cancel fee > than credit amount');
 
 						$available_credit = $event->order->customer->availableCredit();
-						Log::info($available_credit);
+						Log::info('Available Credit: '.$available_credit);
 
-						if($available_credit > $cancel_fee) {
+						if($available_credit) {
 							Log::info('Avialble credit > than cancel fee. take all cancel free from credit...');
-							$credit->amount = -$cancel_fee;
+							$credit->amount = -min($cancel_fee, $available_credit);
 						}
 
 						$credit->status = $type;
