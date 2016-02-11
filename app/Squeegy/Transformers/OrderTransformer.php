@@ -87,6 +87,11 @@ class OrderTransformer extends TransformerAbstract {
             $resp['eta'] = $current_eta;
         }
 
+        if($order->auth_transaction) {
+            $resp['card_type'] = $order->auth_transaction->card_type;
+            $resp['last4'] = $order->auth_transaction->last_four;
+        }
+        
         return $resp;
 
     }
