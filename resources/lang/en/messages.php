@@ -39,7 +39,7 @@ return [
             'new_customer' => 'Promotion only available for new customers',
             'out_of_region' => 'Promotion not available in your area',
             'invalid_service' => 'Promotion not available for the :service_name wash',
-            'referral_code_new_customer' => 'Referral codes are only valid for new customers.',
+            'referral_code_new_customer' => 'Referral codes can only be used by new customers.',
         ],
     ],
     'service' => [

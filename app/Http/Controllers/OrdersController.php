@@ -80,15 +80,15 @@ class OrdersController extends Controller {
             }
         } else {
             //exclude internal test orders
-            $orders->whereNotIn('user_id', function ($q) {
-                $q->select('id')
-                    ->from('users')
-                    ->where('email', 'like', '%formula23%')
-                    ->orWhere('email', 'like', '%sinister%')
-                    ->orWhere('email', 'like', '%squeegy%')
-                    ->orWhere('email', 'like', '%testing%')
-                    ->orWhere('email', 'like', '%triet.luong%');
-            });
+//            $orders->whereNotIn('user_id', function ($q) {
+//                $q->select('id')
+//                    ->from('users')
+//                    ->where('email', 'like', '%formula23%')
+//                    ->orWhere('email', 'like', '%sinister%')
+//                    ->orWhere('email', 'like', '%squeegy%')
+//                    ->orWhere('email', 'like', '%testing%')
+//                    ->orWhere('email', 'like', '%triet.luong%');
+//            });
         }
 
         if($request->input('job_number')) {
