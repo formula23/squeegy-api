@@ -88,10 +88,10 @@ class OrderTransformer extends TransformerAbstract {
         }
 
         if($order->auth_transaction) {
-            $resp['card_type'] = $order->auth_transaction->card_type;
-            $resp['last4'] = $order->auth_transaction->last_four;
+            $resp['card']['card_type'] = $order->auth_transaction->card_type;
+            $resp['card']['last4'] = $order->auth_transaction->last_four;
         }
-        
+
         return $resp;
 
     }
