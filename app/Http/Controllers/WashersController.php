@@ -29,7 +29,6 @@ class WashersController extends Controller {
         } else {
             $this->middleware('auth', ['only' => 'dutyStatus']);
         }
-
     }
 
     /**
@@ -38,7 +37,8 @@ class WashersController extends Controller {
      */
     public function locations(Request $request)
     {
-        $washer_locations_qry = WasherLocation::whereDate('washer_locations.updated_at', '=', Carbon::today()->toDateString());
+//        $washer_locations_qry = WasherLocation::whereDate('washer_locations.updated_at', '=', Carbon::today()->toDateString());
+        $washer_locations_qry = WasherLocation::query();
 
         if($request->input('status') == 'onduty') {
             $washer_locations_qry->join('washer_activity_logs', 'washer_locations.user_id' ,'=', 'washer_activity_logs.user_id')
