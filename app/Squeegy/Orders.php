@@ -462,7 +462,7 @@ class Orders {
 //        if($leadtime < 60) {
             return [
                 'time'=>(string)$leadtime,
-                'time_label'=>'mins'
+                'time_label'=>($leadtime ? 'mins': ''),
             ];
 //        }
 
