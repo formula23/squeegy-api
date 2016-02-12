@@ -44,16 +44,19 @@ class NotifyWorkerNewOrder {
             $vehicle = $event->order->vehicle;
 
             foreach($workers as $worker) {
-                $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', [
-                    'order_service' => $event->order->service->name,
-                    'order_id' => $event->order->id,
-                    'eta' => "Quoted ETA: ".$event->order->eta." | Arrival: ".eta_real_time($event->order),
-                    'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model." ".$vehicle->color,
-                    'customer_name' => $event->order->customer->name,
-                    'customer_phone' => $event->order->customer->phone,
-                    'customer_address' => "\n\n".$event->order->location['street'].", ".$event->order->location['city']." ".$event->order->location['zip'],
-                    'customer_address_lnk' => "\n\ncomgooglemaps://?q=".$event->order->location['lat'].",".$event->order->location['lon']."&views=traffic",
-                ]));
+
+				$msg_data = [
+					'order_service' => $event->order->service->name,
+					'order_id' => $event->order->id,
+					'eta' => "Quoted ETA: ".$event->order->eta." | Arrival: ".eta_real_time($event->order),
+					'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model." ".$vehicle->color,
+					'customer_name' => $event->order->customer->name,
+					'customer_phone' => $event->order->customer->phone,
+					'customer_address' => "\n\n".$event->order->location['street'].", ".( ! empty($event->order->location['city']) ? $event->order->location['city'] : "" )." ".$event->order->location['zip'],
+					'customer_address_lnk' => "\n\ncomgooglemaps://?q=".$event->order->location['lat'].",".$event->order->location['lon']."&views=traffic",
+				];
+
+                $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', $msg_data));
             }
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
