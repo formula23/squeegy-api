@@ -189,8 +189,9 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 120 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
+        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 180 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
             $data['schedule'] = true;
+            $data['lead_time'] = 0;
         } elseif(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
             $data['description'] = trans('messages.service.highdemand');
             $data['accept'] = 0;
