@@ -20,7 +20,7 @@ class Schedule
     public $open_hr;
     public $close_hr;
 //    public $available=[];
-    public $lead_hrs=3;
+    public $lead_hrs=4;
     public $days_out=6;
     public $time_slot_interval=1;
     public $current_schedule;
