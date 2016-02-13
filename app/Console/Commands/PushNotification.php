@@ -115,7 +115,7 @@ class PushNotification extends Command {
 
         $users = $users_qry->get();
 
-        $users = \DB::select('SELECT users.id, users.push_token
+        $users = \DB::select('SELECT users.id, users.push_token, users.`target_arn_gcm`
           FROM orders, users
           WHERE ((push_token IS NOT NULL AND push_token != \'\') OR target_arn_gcm IS NOT NULL)
           AND orders.user_id = users.id
@@ -128,7 +128,7 @@ class PushNotification extends Command {
 
 
         //users & non-paid cust
-        $users = \DB::select('SELECT users.id, users.`push_token`
+        $users = \DB::select('SELECT users.id, users.`push_token`, users.`target_arn_gcm`
           FROM users
           WHERE ((push_token IS NOT NULL AND `push_token` != \'\') OR `target_arn_gcm` IS NOT NULL)
           AND users.id NOT IN (
