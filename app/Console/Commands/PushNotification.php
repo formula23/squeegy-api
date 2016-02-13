@@ -90,6 +90,11 @@ class PushNotification extends Command {
             ->groupBy('user_id');
 
 
+        //custom queries
+
+
+
+
 
         //all users
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
@@ -109,6 +114,17 @@ class PushNotification extends Command {
         }
 
         $users = $users_qry->get();
+
+        $users = \DB::select('SELECT users.id, users.push_token
+          FROM orders, users
+          WHERE ((push_token IS NOT NULL AND push_token != \'\') OR target_arn_gcm IS NOT NULL)
+          AND orders.user_id = users.id
+          AND (charged > 0 OR discount_id IN (27,28,55,56,57,58))
+          AND status IN (\'assign\',\'enroute\',\'start\',\'done\')
+          AND orders.user_id NOT IN (SELECT user_id FROM orders WHERE status IN (\'enroute\', \'start\', \'done\')
+          AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK))
+          GROUP BY user_id
+          LIMIT 300, 200');
 
         $send_list = array_merge($users, $default_users);
 
