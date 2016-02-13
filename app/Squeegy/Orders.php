@@ -57,7 +57,7 @@ class Orders {
         $now = Carbon::now();
 //        $now = Carbon::create(2016,02,01,7,46,0);
 
-        if($now->dayOfWeek == 0) return false;
+//        if($now->dayOfWeek == 0) return false;
 
         $open_time = Carbon::createFromTime(config('squeegy.operating_hours.open'), 0, 0);
         $close_time = Carbon::createFromTime(config('squeegy.operating_hours.close'), env('OPERATING_MIN_CLOSE', 0), 0);
@@ -145,11 +145,10 @@ class Orders {
 
             $next_day = ($curr_hr >= env('OPERATING_HR_CLOSE') && $curr_hr <= 23 || !env('OPERATING_WKND') ? $now->addDay()->format('l') : $now->format('l') );
             
-            $next_day_is_monday = ($curr_hr >= env('OPERATING_HR_CLOSE') || ($curr_hr = env('OPERATING_HR_CLOSE') && $now->minute >= env('OPERATING_MIN_CLOSE')));
-                
-            if($day_of_week == 6 && $next_day_is_monday || $day_of_week == 0) {
-                $next_day = "Monday";
-            }
+//            $next_day_is_monday = ($curr_hr >= env('OPERATING_HR_CLOSE') || ($curr_hr = env('OPERATING_HR_CLOSE') && $now->minute >= env('OPERATING_MIN_CLOSE')));
+//            if($day_of_week == 6 && $next_day_is_monday || $day_of_week == 0) {
+//                $next_day = "Monday";
+//            }
 
             $data['description'] = trans('messages.service.closed', ['next_day' => $next_day, 'close_mins'=>(env('OPERATING_MIN_CLOSE')=='00' ? 'pm' : ':'.env('OPERATING_MIN_CLOSE').'pm' )]);
             $data['code'] = "closed";

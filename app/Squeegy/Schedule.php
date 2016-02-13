@@ -50,10 +50,10 @@ class Schedule
 
             if(empty($container)) $container=[];
 
-            if($this->now->isSunday()) {
-                $this->days_out+=1;
-                continue;
-            }
+//            if($this->now->isSunday()) {
+//                $this->days_out+=1;
+//                continue;
+//            }
 
             $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
 
