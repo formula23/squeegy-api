@@ -166,12 +166,12 @@ class PushNotification extends Command {
                 $this->info("TopicArn: ".$topic_arn);
 
                 foreach($send_list as $user) {
-                    if(empty($user->push_token)) continue;
+                    if (empty($user->push_token) && empty($user->target_arn_gcm)) continue;
 
                     $this->sns_client->Subscribe([
                         'TopicArn' => $topic_arn,
                         'Protocol' => 'application',
-                        'Endpoint' => $user->push_token,
+                        'Endpoint' => $this->push_token($user),
                     ]);
                     $this->_output($user);
                 }
@@ -182,9 +182,9 @@ class PushNotification extends Command {
             } else {
 
                 foreach ($send_list as $user) {
-                    if (empty($user->push_token)) continue;
+                    if (empty($user->push_token) && empty($user->target_arn_gcm)) continue;
 
-                    $this->publish($user->push_token);
+                    $this->publish($this->push_token($user));
                     $this->_output($user);
                 }
             }
@@ -228,7 +228,12 @@ class PushNotification extends Command {
      */
     protected function _output($user)
     {
-        $this->info('user id: ' . $user->id." -- ".$user->push_token);
+        $this->info('user id: ' . $user->id." -- ".$this->push_token($user));
+    }
+
+    private function push_token($user)
+    {
+        return ( ! empty($user->push_token) ? $user->push_token : $user->target_arn_gcm );
     }
 
     /**
@@ -236,29 +241,71 @@ class PushNotification extends Command {
      */
     private function publish($endpoint_arn)
     {
-        $aps_payload = [
-            'aps' => [
-                'alert' => $this->message,
-                'sound' => 'default',
-                'badge' => 0
-            ],
-        ];
 
-        $message = json_encode([
-            'default' => $this->message,
-            env('APNS') => json_encode($aps_payload)
-        ]);
+        $target = (preg_match('/gcm/i', $endpoint_arn) ? "gcm" : "apns" );
+
+        if($target=="apns") {
+            $platform = env('APNS');
+            $payload = [
+                'aps' => [
+                    'alert' => $this->message,
+                    'sound' => 'default',
+                    'badge' => 0
+                ],
+            ];
+
+        } else {
+            $platform = env('GCM');
+            $payload = [
+                'data' => [
+                    'title' => 'Squeegy',
+                    'message' => $this->message,
+                    'url' => "squeegy://"
+                ],
+            ];
+        }
+
+        $this->sns_client = \App::make('Aws\Sns\SnsClient');
 
         try {
             $this->sns_client->publish([
                 'TargetArn' => $endpoint_arn,
                 'MessageStructure' => 'json',
-                'Message' => $message,
+                'Message' => json_encode([
+                    'default' => $this->message,
+                    $platform => json_encode($payload)
+                ]),
             ]);
         } catch(\Exception $e) {
             $this->error($e->getMessage().' : '.$endpoint_arn);
             \Bugsnag::notifyException($e);
         }
+
+
+
+//        $aps_payload = [
+//            'aps' => [
+//                'alert' => $this->message,
+//                'sound' => 'default',
+//                'badge' => 0
+//            ],
+//        ];
+//
+//        $message = json_encode([
+//            'default' => $this->message,
+//            env('APNS') => json_encode($aps_payload)
+//        ]);
+
+//        try {
+//            $this->sns_client->publish([
+//                'TargetArn' => $endpoint_arn,
+//                'MessageStructure' => 'json',
+//                'Message' => $message,
+//            ]);
+//        } catch(\Exception $e) {
+//            $this->error($e->getMessage().' : '.$endpoint_arn);
+//            \Bugsnag::notifyException($e);
+//        }
 
         return;
     }
