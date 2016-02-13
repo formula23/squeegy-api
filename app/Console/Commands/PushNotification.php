@@ -126,6 +126,21 @@ class PushNotification extends Command {
           GROUP BY user_id
           LIMIT 200');
 
+
+        //users & non-paid cust
+        $users = \DB::select('SELECT users.email, users.`push_token`
+          FROM users
+          WHERE ((push_token IS NOT NULL AND `push_token` != \'\') OR `target_arn_gcm` IS NOT NULL)
+          AND users.id NOT IN (
+            SELECT users.id
+            FROM orders, users
+            WHERE orders.user_id = users.id
+            AND (charged > 0 OR discount_id IN (27,28,55,56,57,58))
+            AND `status` IN (\'assign\',\'enroute\',\'start\',\'done\') GROUP BY user_id)
+            LIMIT 2000
+            OFFSET 2000');
+
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("user count: ".count($send_list));
