@@ -128,7 +128,7 @@ class PushNotification extends Command {
 
 
         //users & non-paid cust
-        $users = \DB::select('SELECT users.email, users.`push_token`
+        $users = \DB::select('SELECT users.id, users.`push_token`
           FROM users
           WHERE ((push_token IS NOT NULL AND `push_token` != \'\') OR `target_arn_gcm` IS NOT NULL)
           AND users.id NOT IN (
