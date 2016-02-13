@@ -140,6 +140,7 @@ class PushNotification extends Command {
             LIMIT 2000
             OFFSET 2000');
 
+        $users=[];
 
         $send_list = array_merge($users, $default_users);
 
