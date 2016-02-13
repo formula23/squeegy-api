@@ -124,7 +124,7 @@ class PushNotification extends Command {
           AND orders.user_id NOT IN (SELECT user_id FROM orders WHERE status IN (\'enroute\', \'start\', \'done\')
           AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK))
           GROUP BY user_id
-          LIMIT 300, 200');
+          LIMIT 400 OFFSET 200');
 
         $send_list = array_merge($users, $default_users);
 
