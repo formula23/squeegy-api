@@ -98,7 +98,7 @@ class Orders {
     public static function availability($lat=null, $lng=null)
     {
         $open = self::open();
-        Log::info('Open: '.$open);
+        Log::info('Squeegy Open Hours: '.$open);
         $data = ['accept'=>0, 'schedule'=>false, 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
@@ -106,7 +106,8 @@ class Orders {
         self::$lng = $lng;
 
         $data['postal_code'] = self::$postal_code;
-        Log::info($data);
+        Log::info('Lat/Lng requested: '.self::$lat.",".self::$lng);
+        Log::info('Postal Code requested: '.self::$postal_code);
 
         if( ! $open) {
 
@@ -163,12 +164,12 @@ class Orders {
 
         $eta = self::getLeadTime($lat, $lng);
 
-        Log::info('eta');
+        Log::info('ETA:');
         Log::info($eta);
 
         $data['zip_code'] = self::$postal_code;
 
-        Log::info('data');
+        Log::info('Response Data:');
         Log::info($data);
 
         if ( ! empty($eta['error_msg'])) {
@@ -188,7 +189,7 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 150 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
+        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 180 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
             $data['schedule'] = true;
             $data['lead_time'] = 0;
         } elseif(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
