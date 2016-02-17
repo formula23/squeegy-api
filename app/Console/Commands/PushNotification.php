@@ -89,14 +89,6 @@ class PushNotification extends Command {
             })
             ->groupBy('user_id');
 
-
-        //custom queries
-
-
-
-
-
-        //all users
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
 
         //daily anonymous users push

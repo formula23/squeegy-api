@@ -169,17 +169,17 @@ class Orders {
 
         $data['zip_code'] = self::$postal_code;
 
-        Log::info('Response Data:');
-        Log::info($data);
-
         if ( ! empty($eta['error_msg'])) {
             $data['accept'] = 0;
             $data['description'] = $eta['error_msg'];
             $data['code'] = $eta['error_code'];
+            Log::info('Errors:');
+            Log::info($data);
             return $data;
         }
 
         if( !empty($eta['schedule'])) {
+            Log::info('Scheduling on!!');
             $data['accept'] = 1;
             $data['schedule'] = $eta['schedule'];
             return $data;
@@ -196,7 +196,10 @@ class Orders {
             $data['description'] = trans('messages.service.highdemand');
             $data['accept'] = 0;
         }
-        
+
+        Log::info('Response Data:');
+        Log::info($data);
+
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
 
         return array_merge($data, $lead_time_arr);

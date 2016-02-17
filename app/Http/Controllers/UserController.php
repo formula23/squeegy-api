@@ -52,6 +52,10 @@ class UserController extends Controller {
             })->groupBy('users.id');
         }
 
+        if($request->input('is_active')) {
+            $usr_qry->where('is_active', $request->input('is_active'));
+        }
+
         if($request->input('referral_code')) {
             $usr_qry->where('referral_code', $request->input('referral_code'));
         }
