@@ -58,7 +58,7 @@ class PushNotification extends Command {
         $default_users = \DB::table('users')
                 ->select(['id','push_token', 'target_arn_gcm'])
             ->where('email', 'dan@formula23.com')
-//            ->orWhere('email', 'sinisterindustries@yahoo.com')
+            ->orWhere('email', 'sinisterindustries@yahoo.com')
             ->orWhere('email', 'chas2@f23.com')
             ->get();
 
@@ -177,7 +177,6 @@ class PushNotification extends Command {
 //                }
 
         } else {
-
             foreach ($send_list as $this->user) {
                 $this->publish();
             }
@@ -226,12 +225,8 @@ class PushNotification extends Command {
         $this->info('user id: ' . $id." -- ".$push_token);
     }
 
-    /**
-     * @param $endpoint_arn
-     */
     private function publish()
     {
-
         foreach(['push_token', 'target_arn_gcm'] as $endpoint_field) {
 
             if(empty($this->user->{$endpoint_field})) return;
@@ -240,80 +235,50 @@ class PushNotification extends Command {
 
             $target = (preg_match('/gcm/i', $endpoint_arn) ? "gcm" : "apns" );
 
-            if($this->argument('env') == "test") {
-
-                $this->_output($this->user->id, $endpoint_arn);
+            if($target=="apns") {
+                $platform = env('APNS');
+                $payload = [
+                    'aps' => [
+                        'alert' => $this->message,
+                        'sound' => 'default',
+                        'badge' => 0
+                    ],
+                ];
 
             } else {
+                $platform = env('GCM');
+                $payload = [
+                    'data' => [
+                        'title' => 'Squeegy',
+                        'message' => $this->message,
+                        'url' => "squeegy://"
+                    ],
+                ];
+            }
 
-                if($target=="apns") {
-                    $platform = env('APNS');
-                    $payload = [
-                        'aps' => [
-                            'alert' => $this->message,
-                            'sound' => 'default',
-                            'badge' => 0
-                        ],
-                    ];
-
-                } else {
-                    $platform = env('GCM');
-                    $payload = [
-                        'data' => [
-                            'title' => 'Squeegy',
-                            'message' => $this->message,
-                            'url' => "squeegy://"
-                        ],
-                    ];
-                }
+            try {
 
                 $this->sns_client = \App::make('Aws\Sns\SnsClient');
 
-                try {
-                    $publish_payload = [
-                        'TargetArn' => $endpoint_arn,
-                        'MessageStructure' => 'json',
-                        'Message' => json_encode([
-                            'default' => $this->message,
-                            $platform => json_encode($payload)
-                        ]),
-                    ];
+                $publish_payload = [
+                    'TargetArn' => $endpoint_arn,
+                    'MessageStructure' => 'json',
+                    'Message' => json_encode([
+                        'default' => $this->message,
+                        $platform => json_encode($payload)
+                    ]),
+                ];
 
+                $this->_output($this->user->id, $endpoint_arn);
+
+                if($this->argument('env') == "live") {
                     $this->sns_client->publish($publish_payload);
-
-                } catch(\Exception $e) {
-                    $this->error($e->getMessage().' : '.$endpoint_arn);
                 }
+
+            } catch(\Exception $e) {
+                $this->error($e->getMessage().'- '.$this->user->id.": ".$endpoint_arn);
             }
         }
-
-
-
-
-
-//        $aps_payload = [
-//            'aps' => [
-//                'alert' => $this->message,
-//                'sound' => 'default',
-//                'badge' => 0
-//            ],
-//        ];
-//
-//        $message = json_encode([
-//            'default' => $this->message,
-//            env('APNS') => json_encode($aps_payload)
-//        ]);
-
-//        try {
-//            $this->sns_client->publish([
-//                'TargetArn' => $endpoint_arn,
-//                'MessageStructure' => 'json',
-//                'Message' => $message,
-//            ]);
-//        } catch(\Exception $e) {
-//            $this->error($e->getMessage().' : '.$endpoint_arn);
-//            \Bugsnag::notifyException($e);
-//        }
 
         return;
     }
