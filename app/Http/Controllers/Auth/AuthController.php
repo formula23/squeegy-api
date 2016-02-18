@@ -92,7 +92,7 @@ class AuthController extends Controller {
                         $users_to_delete = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
                         $users_to_delete->delete();
                     } catch(\Exception $e) {
-                        \Log::error($e);
+                        Log::error($e);
                         \Bugsnag::notifyException($e);
                     }
                 }
@@ -126,7 +126,7 @@ class AuthController extends Controller {
             return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
-        \Bugsnag::notifyException(new \Exception($credentials['email'].' - Unable to login. Attempt to Reset user account. '.$credentials['password']));
+        Log::info($credentials['email'].' - Unable to login.');
 
         //if login attempt failed -- check to see if the user record based on password is an anon user
         $anon_user_rec = User::where('email', $credentials['password']."@squeegyapp-tmp.com")->get()->first();

@@ -22,6 +22,7 @@ class PushNotification extends Command {
 
     protected $sns_client = null;
     protected $message = "";
+    protected $user=null;
 
 	/**
 	 * Create a new command instance.
@@ -54,7 +55,12 @@ class PushNotification extends Command {
             return;
         }
 
-        $default_users = \DB::table('users')->select(['id','push_token'])->where('email', 'dan@formula23.com')->orWhere('email', 'sinisterindustries@yahoo.com')->get();
+        $default_users = \DB::table('users')
+                ->select(['id','push_token', 'target_arn_gcm'])
+            ->where('email', 'dan@formula23.com')
+//            ->orWhere('email', 'sinisterindustries@yahoo.com')
+            ->orWhere('email', 'chas2@f23.com')
+            ->get();
 
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
 //            ->whereNotIn('id', function($q) {
@@ -92,31 +98,31 @@ class PushNotification extends Command {
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
 
         //daily anonymous users push
-        $users_qry = \DB::table('users')->select(['id','push_token'])->where('push_token', '!=', '')
-            ->where('email', 'like', '%squeegyapp-tmp.com%')
-            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2016-02-10')
-//            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<=', '2016-01-26')
-            ->orderBy('id');
+//        $users_qry = \DB::table('users')->select(['id','push_token'])->where('push_token', '!=', '')
+//            ->where('email', 'like', '%squeegyapp-tmp.com%')
+//            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '=', '2016-02-10')
+////            ->where(\DB::raw('DATE_FORMAT(created_at, \'%Y-%m-%d\')'), '<=', '2016-01-26')
+//            ->orderBy('id');
 
 
         ///limits
-        if($this->option('take')) {
-            if($this->option('skip')) $users_qry->skip($this->option('skip'));
-            $users_qry->take($this->option('take'));
-        }
+//        if($this->option('take')) {
+//            if($this->option('skip')) $users_qry->skip($this->option('skip'));
+//            $users_qry->take($this->option('take'));
+//        }
 
-        $users = $users_qry->get();
+//        $users = $users_qry->get();
 
-        $users = \DB::select('SELECT users.id, users.push_token, users.`target_arn_gcm`
-          FROM orders, users
-          WHERE ((push_token IS NOT NULL AND push_token != \'\') OR target_arn_gcm IS NOT NULL)
-          AND orders.user_id = users.id
-          AND (charged > 0 OR discount_id IN (27,28,55,56,57,58))
-          AND status IN (\'assign\',\'enroute\',\'start\',\'done\')
-          AND orders.user_id NOT IN (SELECT user_id FROM orders WHERE status IN (\'enroute\', \'start\', \'done\')
-          AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK))
-          GROUP BY user_id
-          LIMIT 200');
+//        $users = \DB::select('SELECT users.id, users.push_token, users.`target_arn_gcm`
+//          FROM orders, users
+//          WHERE ((push_token IS NOT NULL AND push_token != \'\') OR target_arn_gcm IS NOT NULL)
+//          AND orders.user_id = users.id
+//          AND (charged > 0 OR discount_id IN (27,28,55,56,57,58))
+//          AND status IN (\'assign\',\'enroute\',\'start\',\'done\')
+//          AND orders.user_id NOT IN (SELECT user_id FROM orders WHERE status IN (\'enroute\', \'start\', \'done\')
+//          AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK))
+//          GROUP BY user_id
+//          LIMIT 200');
 
 
         //users & non-paid cust
@@ -139,47 +145,41 @@ class PushNotification extends Command {
         $this->info("user count: ".count($send_list));
         $this->info("publish message: ".$this->message);
 
-        if($this->argument('env') == "test") {
+        $this->sns_client = \App::make('Aws\Sns\SnsClient');
 
-            foreach($send_list as $user) {
-                $this->_output($user);
-            }
+        if($type == "topic") {
+
+//                $this->info('Topic created: '.$topic_name);
+//
+//                if($this->argument('env') == "test") {
+//
+//                } else {
+//
+//                    $resp = $this->sns_client->CreateTopic(['Name' => $topic_name]);
+//
+//                    $topic_arn = $resp->get('TopicArn');
+//                    $this->info("TopicArn: ".$topic_arn);
+//
+//                    foreach($send_list as $user) {
+//                        if (empty($user->push_token) && empty($user->target_arn_gcm)) continue;
+//
+//                        $this->sns_client->Subscribe([
+//                            'TopicArn' => $topic_arn,
+//                            'Protocol' => 'application',
+//                            'Endpoint' => $this->push_token($user),
+//                        ]);
+//                        $this->_output($user);
+//                    }
+//
+//                    $this->info('Publish to TopicArn');
+//                    $this->publish($topic_arn);
+//
+//                }
 
         } else {
 
-            $this->sns_client = \App::make('Aws\Sns\SnsClient');
-
-            if($type == "topic") {
-
-                $this->info('Topic created: '.$topic_name);
-
-                $resp = $this->sns_client->CreateTopic(['Name' => $topic_name]);
-
-                $topic_arn = $resp->get('TopicArn');
-                $this->info("TopicArn: ".$topic_arn);
-
-                foreach($send_list as $user) {
-                    if (empty($user->push_token) && empty($user->target_arn_gcm)) continue;
-
-                    $this->sns_client->Subscribe([
-                        'TopicArn' => $topic_arn,
-                        'Protocol' => 'application',
-                        'Endpoint' => $this->push_token($user),
-                    ]);
-                    $this->_output($user);
-                }
-
-                $this->info('Publish to TopicArn');
-                $this->publish($topic_arn);
-
-            } else {
-
-                foreach ($send_list as $user) {
-                    if (empty($user->push_token) && empty($user->target_arn_gcm)) continue;
-
-                    $this->publish($this->push_token($user));
-                    $this->_output($user);
-                }
+            foreach ($send_list as $this->user) {
+                $this->publish();
             }
         }
 
@@ -217,62 +217,77 @@ class PushNotification extends Command {
 	}
 
     /**
-     * @param $user
+     * @param $id
+     * @param $push_token
+     * @internal param $user
      */
-    protected function _output($user)
+    protected function _output($id, $push_token)
     {
-        $this->info('user id: ' . $user->id." -- ".$this->push_token($user));
-    }
-
-    private function push_token($user)
-    {
-        return ( ! empty($user->push_token) ? $user->push_token : $user->target_arn_gcm );
+        $this->info('user id: ' . $id." -- ".$push_token);
     }
 
     /**
      * @param $endpoint_arn
      */
-    private function publish($endpoint_arn)
+    private function publish()
     {
 
-        $target = (preg_match('/gcm/i', $endpoint_arn) ? "gcm" : "apns" );
+        foreach(['push_token', 'target_arn_gcm'] as $endpoint_field) {
 
-        if($target=="apns") {
-            $platform = env('APNS');
-            $payload = [
-                'aps' => [
-                    'alert' => $this->message,
-                    'sound' => 'default',
-                    'badge' => 0
-                ],
-            ];
+            if(empty($this->user->{$endpoint_field})) return;
 
-        } else {
-            $platform = env('GCM');
-            $payload = [
-                'data' => [
-                    'title' => 'Squeegy',
-                    'message' => $this->message,
-                    'url' => "squeegy://"
-                ],
-            ];
+            $endpoint_arn = $this->user->{$endpoint_field};
+
+            $target = (preg_match('/gcm/i', $endpoint_arn) ? "gcm" : "apns" );
+
+            if($this->argument('env') == "test") {
+
+                $this->_output($this->user->id, $endpoint_arn);
+
+            } else {
+
+                if($target=="apns") {
+                    $platform = env('APNS');
+                    $payload = [
+                        'aps' => [
+                            'alert' => $this->message,
+                            'sound' => 'default',
+                            'badge' => 0
+                        ],
+                    ];
+
+                } else {
+                    $platform = env('GCM');
+                    $payload = [
+                        'data' => [
+                            'title' => 'Squeegy',
+                            'message' => $this->message,
+                            'url' => "squeegy://"
+                        ],
+                    ];
+                }
+
+                $this->sns_client = \App::make('Aws\Sns\SnsClient');
+
+                try {
+                    $publish_payload = [
+                        'TargetArn' => $endpoint_arn,
+                        'MessageStructure' => 'json',
+                        'Message' => json_encode([
+                            'default' => $this->message,
+                            $platform => json_encode($payload)
+                        ]),
+                    ];
+
+                    $this->sns_client->publish($publish_payload);
+
+                } catch(\Exception $e) {
+                    $this->error($e->getMessage().' : '.$endpoint_arn);
+                }
+            }
         }
 
-        $this->sns_client = \App::make('Aws\Sns\SnsClient');
 
-        try {
-            $this->sns_client->publish([
-                'TargetArn' => $endpoint_arn,
-                'MessageStructure' => 'json',
-                'Message' => json_encode([
-                    'default' => $this->message,
-                    $platform => json_encode($payload)
-                ]),
-            ]);
-        } catch(\Exception $e) {
-            $this->error($e->getMessage().' : '.$endpoint_arn);
-            \Bugsnag::notifyException($e);
-        }
 
 
 

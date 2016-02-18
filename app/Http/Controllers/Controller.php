@@ -193,8 +193,8 @@ abstract class Controller extends ApiGuardController {
 
                     $this->apiLog->route      = Route::currentRouteAction();
                     $this->apiLog->method     = $request->getMethod();
-//                    $this->apiLog->params     = http_build_query(Input::except('password'));
-                    $this->apiLog->params     = http_build_query(Input::all());
+                    $this->apiLog->params     = http_build_query(Input::except('password'));
+//                    $this->apiLog->params     = http_build_query(Input::all());
                     $this->apiLog->ip_address = $request->getClientIp();
                     $this->apiLog->device     = $request->header('X-Device');
                     $this->apiLog->device_os  = $request->header('X-Device-Software-Version');
