@@ -232,7 +232,7 @@ class PushNotification extends Command {
     {
         foreach(['push_token', 'target_arn_gcm'] as $endpoint_field) {
 
-            if(empty($this->user->{$endpoint_field})) return;
+            if(empty($this->user->{$endpoint_field})) continue;
 
             $endpoint_arn = $this->user->{$endpoint_field};
 
