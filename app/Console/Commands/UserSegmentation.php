@@ -87,7 +87,7 @@ class UserSegmentation extends Command {
 					$this->info('User id:'.$user->id." -- ".$user_segment->segment->name);
 
 				} else {
-					$this->info('User id:'.$user->id." -- Already segmented:".$user->user_segment->segment->name);
+					$this->info('User id:'.$user->id." -- Already segmented:".$user->segment->segment->name);
 				}
 			}
 
