@@ -9,5 +9,14 @@ class UserSegment extends Model {
     protected $dates = ['subscriber_at','user_at','customer_at','repeat_customer_at','advocate_at'];
 
 
+    public function segment()
+    {
+        return $this->belongsTo('App\Segment');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
 
 }
