@@ -59,7 +59,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function orders()
     {
-        $foreign_key = \Auth::user()->is('worker') ? 'worker_id' : null ;
+        $foreign_key = ( ! empty(\Auth::user()) && \Auth::user()->is('worker') ? 'worker_id' : null );
         return $this->hasMany('App\Order', $foreign_key);
     }
 
@@ -109,6 +109,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function zones()
     {
         return $this->belongsToMany('App\Zone');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function segment()
+    {
+        return $this->hasOne('App\UserSegment');
     }
 
     /**

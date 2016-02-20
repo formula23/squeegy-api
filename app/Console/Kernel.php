@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\UserReferralCodes',
         'App\Console\Commands\StatsDaysBetweenWashes',
         'App\Console\Commands\UpdatePassword',
+        'App\Console\Commands\UserSegmentation',
 	];
 
 	/**
