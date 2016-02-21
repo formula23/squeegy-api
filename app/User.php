@@ -151,6 +151,24 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\ActivityLog');
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function completedPaidOrders()
+    {
+        return $this->orders()
+            ->where('status', 'done')
+            ->where(function($q) {
+                $q->where('charged', '>', 0)->orWhereIn('discount_id', [27,28,55,56,57,58]);
+            })
+            ->orderBy('done_at');
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
     public function scopePastOrders($query)
     {
         return $query->whereHas('orders', function($q) {
@@ -259,6 +277,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $referral_code;
     }
 
+
+    public function is_anon()
+    {
+        return (bool)preg_match('/squeegyapp-tmp.com$/', $this->email);
+    }
 
 
 }

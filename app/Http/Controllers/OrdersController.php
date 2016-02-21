@@ -242,6 +242,8 @@ class OrdersController extends Controller {
      */
     public function update(Order $order, UpdateOrderRequest $request)
     {
+//        \DB::enableQueryLog();
+
         if(empty($order->id) || (Auth::user()->is('customer') && Auth::id()!=$order->user_id)) {
             return $this->response->errorNotFound('Order not found');
         }
@@ -427,7 +429,9 @@ class OrdersController extends Controller {
             }
         }
 
-        $order->save();
+        $order->push();
+
+//        Log::info(\DB::getQueryLog());
 
         return $this->response->withItem($order, new OrderTransformer());
     }

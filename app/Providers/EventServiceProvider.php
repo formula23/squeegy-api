@@ -19,6 +19,7 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\UserRegistered' => [
             'App\Handlers\Events\SendWelcomeEmail',
+            'App\Handlers\Events\SegmentUser',
         ],
 
         'App\Events\OrderCancelled' => [
@@ -56,6 +57,7 @@ class EventServiceProvider extends ServiceProvider {
         'App\Events\OrderDone' => [
             'App\Handlers\Events\ChargeOrder',
 			'App\Handlers\Events\CreditReferrer',
+			'App\Handlers\Events\SegmentUser',
 //			'App\Handlers\Events\MarkSingleUseDiscount',
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',

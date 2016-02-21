@@ -27,7 +27,7 @@ class ChargeOrder {
 	public function handle(OrderDone $event)
 	{
         try {
-            $order = $event->order;
+            $order =& $event->order;
 
             //if order has credits - capture them
             if($order->order_credit) {
@@ -50,7 +50,6 @@ class ChargeOrder {
             }
 
             $order->charged = $order->total;
-            $order->push();
 
             if($order->discount_record && $order->discount_record->single_use_code) {
                 $discount_code = DiscountCode::where('discount_id', $order->discount_id)->where('code', $order->promo_code)->get()->first();

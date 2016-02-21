@@ -21,7 +21,7 @@ class UserSegmentation extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Run through all the users in the datbase and segment them into their respective segments.';
+	protected $description = 'Segment all the users.';
 
 	/**
 	 * Create a new command instance.
@@ -41,14 +41,16 @@ class UserSegmentation extends Command {
 	public function fire()
 	{
 
-		User::chunk(200, function($users){
+		$segments = Segment::all()->lists('id','name');
+
+		User::chunk(200, function($users) use ($segments) {
 
 			foreach($users as $user)
 			{
 				if( ! $user->segment) {
 
 					$user_segment = new UserSegment([
-						'segment_id' => 2,
+						'segment_id' => $segments["User"],
 						'user_at' => $user->created_at,
 					]);
 
@@ -57,19 +59,20 @@ class UserSegmentation extends Command {
 						continue;
 					}
 
-					$orders_qry = $user->orders()->where('status', 'done')->orderBy('done_at');
+					//
+					$orders_qry = $user->completedPaidOrders();
 					$orders = $orders_qry->get();
+
+					if( ! $orders->count()) continue;
 
 					$first_order = $orders->first();
 
 					if($orders->count() == 1) {
-						if($first_order->charged > 0 || in_array($first_order->discount_id, [27,28,55,56,57,58])) {
-							$user_segment->segment_id = 3;
-							$user_segment->customer_at = $first_order->done_at;
+						$user_segment->segment_id = $segments["Customer"];
+						$user_segment->customer_at = $first_order->done_at;
 
-						}
 					} else if($orders->count() >= 2) {
-						$user_segment->segment_id = 4;
+						$user_segment->segment_id = $segments["Repeat Customer"];
 						$user_segment->customer_at = $first_order->done_at;
 						$user_segment->repeat_customer_at = $orders[1]->done_at;
 					}
@@ -78,7 +81,7 @@ class UserSegmentation extends Command {
 					$referral_orders = $referral_orders_qry->get();
 
 					if($referral_orders->count()) {
-						$user_segment->segment_id = 5;
+						$user_segment->segment_id = $segments["Advocate"];
 						$user_segment->advocate_at = $referral_orders->first()->done_at;
 					}
 

@@ -207,6 +207,11 @@ class Order extends Model {
         return $this->schedule->window_open->format('D n/d')." @ ".$this->scheduled_time();
     }
 
+    public function generated_revenue()
+    {
+        return ($this->charged > 0 || in_array($this->discount_id, [27,28,55,56,57,58]) ? true : false );
+    }
+
     public static function current_scheduled_orders()
     {
         $existing_scheduled_orders = self::whereIn('status', ['schedule'])->whereHas('schedule', function($q) {

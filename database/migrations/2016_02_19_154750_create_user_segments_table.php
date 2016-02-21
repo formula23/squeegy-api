@@ -16,7 +16,7 @@ class CreateUserSegmentsTable extends Migration {
 		{
 			$table->increments('id');
 			$table->integer('user_id')->unsigned()->nullable()->index();
-			$table->foreign('user_id')->references('id')->on('users');
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 			$table->integer('segment_id')->unsigned()->nullable()->index();
 			$table->foreign('segment_id')->references('id')->on('segments');
 			$table->timestamp('subscriber_at')->nullable();

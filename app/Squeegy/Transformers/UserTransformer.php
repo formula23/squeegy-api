@@ -38,7 +38,7 @@ class UserTransformer extends TransformerAbstract {
             'referral_code' => $user->referral_code,
             'is_active' => $user->is_active,
             'anon_pw_reset' => (bool)$user->anon_pw_reset,
-            'is_anon' => (bool)preg_match('/squeegyapp-tmp.com$/', $user->email),
+            'is_anon' => $user->is_anon(),
             'available_credits' => $user->availableCredit(),
         ];
     }
