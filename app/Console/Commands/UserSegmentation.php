@@ -56,6 +56,7 @@ class UserSegmentation extends Command {
 
 					if( ! $user->orders->count()) {
 						$user->segment()->save($user_segment);
+						$this->info('User id:'.$user->id." -- ".$user_segment->segment->name);
 						continue;
 					}
 
