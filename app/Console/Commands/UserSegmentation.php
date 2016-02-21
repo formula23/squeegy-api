@@ -4,6 +4,7 @@ use App\Segment;
 use App\User;
 use App\UserSegment;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -40,7 +41,6 @@ class UserSegmentation extends Command {
 	 */
 	public function fire()
 	{
-
 		$segments = Segment::all()->lists('id','name');
 
 		User::chunk(200, function($users) use ($segments) {
@@ -54,17 +54,21 @@ class UserSegmentation extends Command {
 						'user_at' => $user->created_at,
 					]);
 
+					$user->segment()->save($user_segment);
+
 					if( ! $user->orders->count()) {
-						$user->segment()->save($user_segment);
 						$this->info('User id:'.$user->id." -- ".$user_segment->segment->name);
+//						Log::info($user->id.'...No orders continue...');
 						continue;
 					}
 
-					//
 					$orders_qry = $user->completedPaidOrders();
 					$orders = $orders_qry->get();
 
-					if( ! $orders->count()) continue;
+					if( ! $orders->count()) {
+//						Log::info($user->id.'...No paid orders continue...');
+						continue;
+					}
 
 					$first_order = $orders->first();
 
@@ -88,7 +92,7 @@ class UserSegmentation extends Command {
 
 					$user->segment()->save($user_segment);
 
-					$this->info('User id:'.$user->id." -- ".$user_segment->segment->name);
+					$this->info('User id:'.$user->id." ---- ".$user_segment->segment->name);
 
 				} else {
 					$this->info('User id:'.$user->id." -- Already segmented:".$user->segment->segment->name);
