@@ -54,21 +54,21 @@ class UserSegmentation extends Command {
 						'user_at' => $user->created_at,
 					]);
 
-					$user->segment()->save($user_segment);
+//					$user->segment()->save($user_segment);
 
-					if( ! $user->orders->count()) {
-						$this->info('User id:'.$user->id." -- ".$user_segment->segment->name);
+//					if( ! $user->orders->count()) {
+//						$this->info('User id:'.$user->id." -- ".$user_segment->segment->name);
 //						Log::info($user->id.'...No orders continue...');
-						continue;
-					}
+//						continue;
+//					}
 
 					$orders_qry = $user->completedPaidOrders();
 					$orders = $orders_qry->get();
 
-					if( ! $orders->count()) {
+//					if( ! $orders->count()) {
 //						Log::info($user->id.'...No paid orders continue...');
-						continue;
-					}
+//						continue;
+//					}
 
 					$first_order = $orders->first();
 
