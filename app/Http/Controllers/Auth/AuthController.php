@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Auth;
 
+use App\Events\UserCreated;
 use App\Squeegy\Payments;
 use App\User;
 use Exception;
@@ -198,6 +199,8 @@ class AuthController extends Controller {
             if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
                 \Event::fire(new UserRegistered());
             }
+
+            \Event::fire(new UserCreated());
 
         } catch(Exception $e) {
             return $this->response->errorInternalError($e->getMessage());

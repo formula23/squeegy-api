@@ -17,9 +17,12 @@ class EventServiceProvider extends ServiceProvider {
 			'EventListener',
 		],
 
+		'App\Events\UserCreated' => [
+			'App\Handlers\Events\SegmentUser',
+		],
+		
         'App\Events\UserRegistered' => [
             'App\Handlers\Events\SendWelcomeEmail',
-            'App\Handlers\Events\SegmentUser',
         ],
 
         'App\Events\OrderCancelled' => [
