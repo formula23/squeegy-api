@@ -294,7 +294,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function is_advocate()
     {
         $referral_orders = $this->referral_orders()->where('status', 'done')->orderBy('done_at');
-        return ($this->segment->customer_at && $referral_orders->count() >= 3) ? true : false ;
+        return ( ! empty($this->segment) && $this->segment->customer_at && $referral_orders->count() >= 3) ? true : false ;
     }
 
 }
