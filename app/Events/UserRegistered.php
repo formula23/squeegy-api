@@ -3,13 +3,14 @@
 use App\Events\Event;
 use App\User;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 
 class UserRegistered extends Event {
 
 	use SerializesModels;
 
     public $twilio;
-
+	public $user;
     /**
      * Create a new event instance.
      *
@@ -18,6 +19,7 @@ class UserRegistered extends Event {
 	public function __construct()
 	{
         $this->twilio = \App::make('Aloha\Twilio\Twilio');
+		$this->user = Auth::user();
 	}
 
 }

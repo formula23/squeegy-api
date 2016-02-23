@@ -1,7 +1,5 @@
 <?php namespace App\Events;
 
-use App\Events\Event;
-
 use App\Order;
 use Illuminate\Queue\SerializesModels;
 
@@ -10,6 +8,7 @@ class OrderDone extends Event {
 	use SerializesModels;
 
     public $order;
+	public $user;
 
     /**
      * Create a new event instance.
@@ -19,6 +18,7 @@ class OrderDone extends Event {
 	public function __construct(Order $order)
 	{
 		$this->order = $order;
+		$this->user = $order->customer;
 	}
 
 }

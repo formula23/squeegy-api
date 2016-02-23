@@ -5,6 +5,7 @@ use App\User;
 use App\UserSegment;
 use Casinelli\CampaignMonitor\Facades\CampaignMonitor;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,8 +45,7 @@ class UserSegmentation extends Command {
 	{
 		$segments = Segment::all()->lists('id','name');
 
-		$list_id = 'cc0a215637276e072d025e4f2a2e2f71';
-		$subscriber = CampaignMonitor::subscribers($list_id);
+		$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
 		User::chunk(1000, function($users) use ($segments, $subscriber) {
 
@@ -81,7 +81,7 @@ class UserSegmentation extends Command {
 					$referral_orders_qry = $user->referral_orders()->where('status', 'done')->orderBy('done_at');
 					$referral_orders = $referral_orders_qry->get();
 
-					if($user_segment->customer_at && $referral_orders->count() >= 3) {
+					if($user->is_advocate() && $user_segment->segment_id != 5) {
 						$user_segment->segment_id = $segments["Advocate"];
 						$user_segment->advocate_at = $referral_orders->first()->done_at;
 					}
