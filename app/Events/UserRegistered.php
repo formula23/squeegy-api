@@ -16,10 +16,10 @@ class UserRegistered extends Event {
      *
      * @param Twilio $twilio
      */
-	public function __construct()
+	public function __construct(User $user)
 	{
         $this->twilio = \App::make('Aloha\Twilio\Twilio');
-		$this->user = Auth::user();
+		$this->user = $user;
 	}
 
 }

@@ -33,10 +33,15 @@ class SyncCampaignMonitor {
 				'CustomFields' => [
 					['Key'=>'SegmentID', 'Value'=>$customer->segment->segment_id],
 					['Key'=>'Device', 'Value'=>$customer->device()],
-					['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')],
 				]
 			];
 
+			if( ! empty($event->order)) {
+				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
+			}
+
+//			dd($subscriber_data);
+//
 			$subscriber->add($subscriber_data, false, true);
 
 		} catch(\Exception $e) {

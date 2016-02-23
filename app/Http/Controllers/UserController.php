@@ -178,7 +178,7 @@ class UserController extends Controller {
         $request->user()->update($data);
 
         if( ! empty($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
-            \Event::fire(new UserRegistered());
+            \Event::fire(new UserRegistered($request->user()));
         }
 
         return $this->response->withItem($request->user(), new UserTransformer());
