@@ -40,9 +40,13 @@ class SyncCampaignMonitor {
 				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
 			}
 
+			Log::info($subscriber_data);
+
 //			dd($subscriber_data);
 //
-			$subscriber->add($subscriber_data, false, true);
+			$result = $subscriber->add($subscriber_data, false, true);
+
+			Log::info($result);
 
 		} catch(\Exception $e) {
 			Log::info($e);
