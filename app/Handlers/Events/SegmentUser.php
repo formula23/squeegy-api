@@ -1,5 +1,6 @@
 <?php namespace App\Handlers\Events;
 
+use Carbon\Carbon;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Illuminate\Support\Facades\Auth;
