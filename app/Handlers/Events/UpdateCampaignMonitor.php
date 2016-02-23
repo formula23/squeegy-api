@@ -50,6 +50,8 @@ class UpdateCampaignMonitor {
 
 			if($result->http_status_code != 201) {
 				$err_msg = "Campaign Monitor: ".$result->response->Code." -- ".$result->response->Message;
+				Log::info("CM resp status code:".$result->http_status_code);
+				Log::info($result);
 				\Bugsnag::notifyException(new \Exception($err_msg));
 			}
 

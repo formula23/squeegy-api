@@ -182,7 +182,7 @@ class UserController extends Controller {
             \Event::fire(new UserRegistered($request->user()));
         }
 
-        if( ! preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
+        if( ! preg_match('/squeegyapp-tmp\.com$/', $original_email) &&  (! empty($data['email']) ||  ! empty($data['name']))) {
             \Event::fire(new UserUpdated($original_email, $request->user()));
         }
 
