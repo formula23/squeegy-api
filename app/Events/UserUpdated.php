@@ -1,25 +1,23 @@
 <?php namespace App\Events;
 
 use App\Events\Event;
+
 use App\User;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 
-class UserRegistered extends Event {
+class UserUpdated extends Event {
 
 	use SerializesModels;
-
-    public $twilio;
 	public $user;
-
+	public $orig_email;
 	/**
 	 * Create a new event instance.
 	 *
 	 * @param User $user
 	 */
-	public function __construct(User $user)
+	public function __construct($original_email, User $user)
 	{
-        $this->twilio = \App::make('Aloha\Twilio\Twilio');
+		$this->orig_email = $original_email;
 		$this->user = $user;
 	}
 

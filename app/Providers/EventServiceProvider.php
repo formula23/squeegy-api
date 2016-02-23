@@ -26,6 +26,10 @@ class EventServiceProvider extends ServiceProvider {
 			'App\Handlers\Events\SyncCampaignMonitor',
         ],
 
+		'App\Events\UserUpdated' => [
+			'App\Handlers\Events\UpdateCampaignMonitor',
+		],
+
         'App\Events\OrderCancelled' => [
             'App\Handlers\Events\ChargeCancelFee',
         ],

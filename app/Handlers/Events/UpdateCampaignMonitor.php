@@ -1,10 +1,14 @@
 <?php namespace App\Handlers\Events;
 
+use App\Events\UserUpdated;
+
 use Casinelli\CampaignMonitor\Facades\CampaignMonitor;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
-class SyncCampaignMonitor {
+class UpdateCampaignMonitor {
 
 	/**
 	 * Create the event handler.
@@ -12,15 +16,17 @@ class SyncCampaignMonitor {
 	 * @return void
 	 */
 	public function __construct()
-	{}
+	{
+		//
+	}
 
 	/**
 	 * Handle the event.
 	 *
-	 * @param  $event
+	 * @param  UserUpdated  $event
 	 * @return void
 	 */
-	public function handle($event)
+	public function handle(UserUpdated $event)
 	{
 		try {
 			$customer = $event->user;
@@ -40,7 +46,7 @@ class SyncCampaignMonitor {
 				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
 			}
 
-			$result = $subscriber->add($subscriber_data, false, true);
+			$result = $subscriber->update($event->orig_email, $subscriber_data, false, false);
 
 			if($result->http_status_code != 201) {
 				$err_msg = "Campaign Monitor: ".$result->response->Code." -- ".$result->response->Message;

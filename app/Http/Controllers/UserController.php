@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use Aloha\Twilio\Twilio;
+use App\Events\UserUpdated;
 use App\Http\Requests;
 use App\PaymentMethod;
 use App\Squeegy\Transformers\UserTransformer;
@@ -179,6 +180,10 @@ class UserController extends Controller {
 
         if( ! empty($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
             \Event::fire(new UserRegistered($request->user()));
+        }
+
+        if( ! preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
+            \Event::fire(new UserUpdated($original_email, $request->user()));
         }
 
         return $this->response->withItem($request->user(), new UserTransformer());
