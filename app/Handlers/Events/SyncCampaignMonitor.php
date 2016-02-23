@@ -42,11 +42,9 @@ class SyncCampaignMonitor {
 
 			Log::info($subscriber_data);
 
-//			dd($subscriber_data);
-//
 			$result = $subscriber->add($subscriber_data, false, true);
 
-			Log::info($result);
+			Log::info('CM result:', $result);
 
 		} catch(\Exception $e) {
 			Log::info($e);
