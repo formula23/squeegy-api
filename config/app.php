@@ -150,6 +150,7 @@ return [
         'Bugsnag\BugsnagLaravel\BugsnagLaravelServiceProvider',
         'GoogleMaps\ServiceProvider\GoogleMapsServiceProvider',
 		'Tymon\JWTAuth\Providers\JWTAuthServiceProvider',
+		Casinelli\CampaignMonitor\CampaignMonitorServiceProvider::class,
 	],
 
 	/*
@@ -202,6 +203,7 @@ return [
         'GoogleMaps' => 'GoogleMaps\Facade\GoogleMapsFacade',
 		'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
 		'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
+		'CampaignMonitor' => Casinelli\CampaignMonitor\Facades\CampaignMonitor::class,
 	],
 
 ];

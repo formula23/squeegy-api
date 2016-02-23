@@ -283,5 +283,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return (bool)preg_match('/squeegyapp-tmp.com$/', $this->email);
     }
 
+    public function device()
+    {
+        $device = 'iOS';
+        if($this->device_id && $this->target_arn_gcm) $device = "Android";
+        return $device;
+
+    }
+
+    public function is_advocate()
+    {
+        $referral_orders = $this->referral_orders()->where('status', 'done')->orderBy('done_at');
+        return ($this->segment->customer_at && $referral_orders->count() >= 3) ? true : false ;
+    }
 
 }
