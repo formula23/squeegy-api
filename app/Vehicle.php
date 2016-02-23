@@ -9,7 +9,7 @@ class Vehicle extends Model {
 
     protected $dates = ['deleted_at'];
 
-	protected $fillable = ['user_id', 'year', 'make', 'model', 'color', 'type', 'license_plate'];
+	protected $fillable = ['user_id', 'year', 'make', 'model', 'color', 'type', 'size', 'license_plate'];
 
     /**
      * A vehicle is owned by a user
