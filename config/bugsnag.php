@@ -25,7 +25,7 @@ return array(
     | Example: array('development', 'production')
     |
     */
-    'notify_release_stages' => ['staging', 'production'],
+    'notify_release_stages' => ['stage', 'production'],
 //    'notify_release_stages' => null,
 
     /*

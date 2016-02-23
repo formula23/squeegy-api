@@ -40,11 +40,12 @@ class SyncCampaignMonitor {
 				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
 			}
 
-			Log::info($subscriber_data);
-
 			$result = $subscriber->add($subscriber_data, false, true);
 
-			Log::info('CM result:'.print_r($result, 1));
+			if($result->http_status_code != 201) {
+				$err_msg = "Campaing Monitor: ".$result->response->Code." -- ".$result->response->Message;
+				\Bugsnag::notifyException(new \Exception($err_msg));
+			}
 
 		} catch(\Exception $e) {
 			Log::info($e);
