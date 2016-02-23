@@ -197,6 +197,7 @@ class AuthController extends Controller {
             \Event::fire(new UserCreated($this->auth->user()));
 
             if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
+                $this->auth->user()->anon_pw_reset = true;
                 \Event::fire(new UserRegistered($this->auth->user()));
             }
 
