@@ -190,6 +190,7 @@ class Orders {
         $data['worker_id'] = $eta['worker_id'];
 
         if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 180 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
+            Log::info('ETA exceeds 180:'.$data['lead_time']);
             $data['schedule'] = true;
             $data['lead_time'] = 0;
         } elseif(! is_internal() && self::open() && $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER)) {
