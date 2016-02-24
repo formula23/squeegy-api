@@ -48,9 +48,10 @@ class UpdateCampaignMonitor {
 
 			$result = $subscriber->update($event->orig_email, $subscriber_data, false, false);
 
-			if(in_array($result->http_status_code. [200,201])) {
-				$err_msg = "Campaign Monitor: ".$result->response->Code." -- ".$result->response->Message;
-				Log::info("CM resp status code:".$result->http_status_code);
+            if($result->http_status_code != 201) {
+                Log::info("CM resp status code:".$result->http_status_code);
+				$err_msg = "Campaign Monitor: ".(!empty($result->response->Code) ? $result->response->Code : '' )." -- ".( ! empty($result->response->Message) ? $result->response->Message : '');
+                Log::info($err_msg);
 				\Bugsnag::notifyException(new \Exception($err_msg));
 			}
 
