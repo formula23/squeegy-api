@@ -77,10 +77,10 @@ class PushNotification extends Command {
 
         $users_qry = \DB::table('orders')
             ->join('users', 'orders.user_id', '=', 'users.id')
-            ->select(['users.id','push_token'])
-            ->where('app_version', '1.4')
-            ->where('push_token', '!=', '')
-            ->where('status','done')
+            ->select(['users.id', 'push_token', 'target_arn_gcm'])
+//            ->where('app_version', '1.4')
+//            ->where('push_token', '!=', '')
+//            ->where('status','done')
             ->where(function($q) use ($zip_codes) {
                 if( ! empty($zip_codes)) {
                     foreach($zip_codes as $zip_code) {
@@ -93,7 +93,7 @@ class PushNotification extends Command {
                 $q->select('user_id')
                     ->from('orders')
                     ->whereIn('status', ['enroute', 'start', 'done'])
-                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 3 WEEK)'));
+                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 1 WEEK)'));
             })
             ->groupBy('user_id');
 
@@ -113,7 +113,7 @@ class PushNotification extends Command {
 //            $users_qry->take($this->option('take'));
 //        }
 
-//        $users = $users_qry->get();
+        $users = $users_qry->get();
 
 //        $users = \DB::select('SELECT users.id, users.push_token, users.`target_arn_gcm`
 //          FROM orders, users
@@ -141,17 +141,17 @@ class PushNotification extends Command {
 //            OFFSET 2000');
 
 
-        $users = \DB::select('SELECT id, push_token, `target_arn_gcm`
-                FROM users
-                WHERE users.id NOT IN (
-                    SELECT users.id
-                    FROM orders, users
-                    WHERE orders.user_id = users.id
-                    AND `status` IN (\'assign\',\'enroute\',\'start\',\'done\')
-                    AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK)
-                    GROUP BY user_id
-                )
-            ');
+//        $users = \DB::select('SELECT id, push_token, `target_arn_gcm`
+//                FROM users
+//                WHERE users.id NOT IN (
+//                    SELECT users.id
+//                    FROM orders, users
+//                    WHERE orders.user_id = users.id
+//                    AND `status` IN (\'assign\',\'enroute\',\'start\',\'done\')
+//                    AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK)
+//                    GROUP BY user_id
+//                )
+//            ');
 
         $send_list = array_merge($users, $default_users);
 
