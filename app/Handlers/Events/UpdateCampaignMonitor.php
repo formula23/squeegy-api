@@ -57,6 +57,7 @@ class UpdateCampaignMonitor {
 
 		} catch(\Exception $e) {
 			Log::info($e);
+			Log::info($result);
 			\Bugsnag::notifyException($e);
 		}
 	}
