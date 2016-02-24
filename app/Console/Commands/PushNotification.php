@@ -141,7 +141,17 @@ class PushNotification extends Command {
 //            OFFSET 2000');
 
 
-        $users = \DB::select('SELECT id, push_token, `target_arn_gcm` FROM users');
+        $users = \DB::select('SELECT id, push_token, `target_arn_gcm`
+                FROM users
+                AND users.id NOT IN (
+                    SELECT users.id
+                    FROM orders, users
+                    WHERE orders.user_id = users.id
+                    AND `status` IN (\'assign\',\'enroute\',\'start\',\'done\')
+                    AND confirm_at > DATE_SUB(NOW(), INTERVAL 1 WEEK))
+                    GROUP BY user_id
+                )
+            ');
 
         $send_list = array_merge($users, $default_users);
 
