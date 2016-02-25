@@ -94,11 +94,12 @@ class UserSegmentation extends Command {
 								['Key'=>'SegmentID', 'Value'=>$user_segment->segment_id],
 								['Key'=>'Device', 'Value'=>$user->device()],
 								['Key'=>'LastWash', 'Value'=>($last_order?$last_order->done_at->format('Y/m/d'):'')],
+                                ['Key'=>'AvailableCredit', 'Value'=>$user->availableCredit()/100],
 							]
 						];
-					}
 
-					$all_subscriber_data[] = $subscriber_data;
+						$all_subscriber_data[] = $subscriber_data;
+					}
 
 					$user->segment()->save($user_segment);
 
