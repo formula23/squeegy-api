@@ -43,7 +43,7 @@ class SyncCampaignMonitor {
 			$result = $subscriber->add($subscriber_data, false, true);
 
 			if($result->http_status_code != 201) {
-				$err_msg = "Campaign Monitor: ".$result->response->Code." -- ".$result->response->Message;
+				$err_msg = "Campaign Monitor: ".$result->http_status_code." -- ".( ! empty($result->response) ? $result->response->Message : "");
 				\Bugsnag::notifyException(new \Exception($err_msg));
 			}
 
