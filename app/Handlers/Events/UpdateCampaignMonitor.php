@@ -39,6 +39,7 @@ class UpdateCampaignMonitor {
 				'CustomFields' => [
 					['Key'=>'SegmentID', 'Value'=>$customer->segment->segment_id],
 					['Key'=>'Device', 'Value'=>$customer->device()],
+					['Key'=>'AvailableCredit', 'Value'=>$customer->availableCredit()/100],
 				]
 			];
 
