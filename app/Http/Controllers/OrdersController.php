@@ -174,7 +174,8 @@ class OrdersController extends Controller {
         $data['price'] += $service->price;
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
-
+        Log::info('OrdersController@store:117');
+        Log::info($eta);
         try {
 
             if( ! empty($eta['schedule']) && (empty($data['day']) || empty($data['time_slot']))) return $this->response->errorWrongArgs(trans('messages.service.schedule_param_req'));

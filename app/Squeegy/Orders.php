@@ -272,6 +272,8 @@ class Orders {
             return ['error_msg'=>trans('messages.service.outside_area'), 'error_code'=>'outside_area'];
         }
 
+        Log::info(self::$postal_code);
+
         $active_workers_qry = User::activeWashers(self::$postal_code);
 
         $active_workers = $active_workers_qry->get();
