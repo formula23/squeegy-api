@@ -23,7 +23,12 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\UserRegistered' => [
             'App\Handlers\Events\SendWelcomeEmail',
+			'App\Handlers\Events\SyncCampaignMonitor',
         ],
+
+		'App\Events\UserUpdated' => [
+			'App\Handlers\Events\UpdateCampaignMonitor',
+		],
 
         'App\Events\OrderCancelled' => [
             'App\Handlers\Events\ChargeCancelFee',
@@ -62,6 +67,7 @@ class EventServiceProvider extends ServiceProvider {
             'App\Handlers\Events\ChargeOrder',
 			'App\Handlers\Events\CreditReferrer',
 			'App\Handlers\Events\SegmentUser',
+			'App\Handlers\Events\SyncCampaignMonitor',
 //			'App\Handlers\Events\MarkSingleUseDiscount',
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',

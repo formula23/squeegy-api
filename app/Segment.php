@@ -6,4 +6,9 @@ class Segment extends Model {
 
 	protected $fillable = ['name', 'description'];
 
+	public function user_segment()
+	{
+		return $this->hasMany('App\UserSegment');
+	}
+
 }

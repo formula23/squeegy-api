@@ -29,12 +29,13 @@ class SendWelcomeEmail {
 	public function handle(UserRegistered $event)
 	{
         try {
-            Mail::send('emails.welcome', [], function ($message) {
+			$user = $event->user;
+            Mail::send('emails.welcome', [], function ($message) use ($user) {
 
                 $headers = $message->getHeaders();
 
                 $mergevars = [
-                    'name'=>Auth::user()->name,
+                    'name'=>$user->name,
                 ];
 
                 $headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
@@ -43,7 +44,7 @@ class SendWelcomeEmail {
                 $message->from(config('squeegy.emails.from'), config('squeegy.emails.from_name'));
                 $message->bcc(config('squeegy.emails.bcc'));
 
-                $message->to(Auth::user()->email, Auth::user()->name)->subject(trans('messages.emails.welcome.subject'));
+                $message->to($user->email, $user->name)->subject(trans('messages.emails.welcome.subject'));
             });
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));

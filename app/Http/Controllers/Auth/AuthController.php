@@ -194,13 +194,16 @@ class AuthController extends Controller {
 
             $this->auth->user()->attachRole(3);
 
-            $user = User::find($this->auth->user()->id);
+            \Event::fire(new UserCreated($this->auth->user()));
 
             if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
-                \Event::fire(new UserRegistered());
+                $this->auth->user()->anon_pw_reset = true;
+                \Event::fire(new UserRegistered($this->auth->user()));
             }
 
-            \Event::fire(new UserCreated());
+            $this->auth->user()->push();
+
+            $user = User::find($this->auth->user()->id);
 
         } catch(Exception $e) {
             return $this->response->errorInternalError($e->getMessage());

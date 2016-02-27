@@ -24,6 +24,7 @@ class CreateUserSegmentsTable extends Migration {
 			$table->timestamp('customer_at')->nullable();
 			$table->timestamp('repeat_customer_at')->nullable();
 			$table->timestamp('advocate_at')->nullable();
+			$table->timestamp('last_wash_at')->nullable();
 			$table->timestamps();
 		});
 	}
