@@ -143,7 +143,7 @@ class PayrollGenerate extends Command {
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('tech@squeegyapp.com', 'Squeegy');
 				} else {
-					$message->to($email_data['email'], $email_data['name']);
+					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
 					$message->bcc('tech@squeegyapp.com', 'Squeegy');
 				}
 
