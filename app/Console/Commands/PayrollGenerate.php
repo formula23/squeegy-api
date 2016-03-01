@@ -66,7 +66,7 @@ class PayrollGenerate extends Command {
 			$cogs_by_washer[$cog->id] = $cog->PromotionalCost;
 		}
 
-
+		$no_kit_rental = [2882];
 		$min_worker_id = [2149,2900,3198];
 
 		$orders = Order::select('id', 'vehicle_id', 'worker_id', 'service_id', 'etc', 'start_at', 'done_at', 'rating', DB::raw('TIMESTAMPDIFF(MINUTE,orders.start_at,orders.done_at) as wash_time'))
@@ -86,7 +86,7 @@ class PayrollGenerate extends Command {
 
 			@$orders_by_worker[$order->worker->id]['job_count']++;
 			@$orders_by_worker[$order->worker->id]['washer'] = ['name'=>$order->worker->name, 'email'=>$order->worker->email];
-			@$orders_by_worker[$order->worker->id]['rental'] = 25;
+			@$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $no_kit_rental) ? 0 : 25 );
 			@$orders_by_worker[$order->worker->id]['minimum'] = 0;
 
 			@$orders_by_worker[$order->worker->id]['jobs']['total'] += $this->service_price[$order->service->id];
