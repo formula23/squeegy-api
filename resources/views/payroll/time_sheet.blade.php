@@ -16,6 +16,7 @@
 
     <thead>
     <tr>
+        {{--<th></th>--}}
         <th>Order Date</th>
         <th>Year</th>
         <th>Make</th>
@@ -37,7 +38,8 @@
         @foreach($day['orders'] as $idx=>$job)
 
             <tr>
-                <td>{{ $job['date_time']  }}</td>
+                {{--<td><img width="150" src="https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders/{{ $job['id'] }}.jpg" /></td>--}}
+                <td>{{ $job['time']  }}</td>
                 <td>{{ $job['vehicle']['year']  }}</td>
                 <td>{{ $job['vehicle']['make']  }}</td>
                 <td>{{ $job['vehicle']['model']  }}</td>

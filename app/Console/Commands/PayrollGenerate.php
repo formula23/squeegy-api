@@ -92,7 +92,8 @@ class PayrollGenerate extends Command {
 			@$orders_by_worker[$order->worker->id]['jobs']['total'] += $this->service_price[$order->service->id];
 
 			$job = [];
-			$job['date_time'] = $order->start_at->format('H:i:s');
+			$job['id'] = $order->id;
+			$job['time'] = $order->start_at->format('H:i:s');
 			$job['vehicle'] = $order->vehicle->toArray();
 			$job['wash_type'] = $order->service->name;
 			$job['wash_time'] = $order->wash_time;
@@ -100,7 +101,7 @@ class PayrollGenerate extends Command {
 			$job['rating'] = $order->rating;
 			$job['pay'] = ($order->rating === null || $order->rating >= 4 ? $this->service_price[$order->service->id] : 0 );
 
-			$job_date = $order->done_at->format('m/d/Y');
+			$job_date = $order->done_at->format('m/d/Y (l)');
 
 			$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
 			@$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
