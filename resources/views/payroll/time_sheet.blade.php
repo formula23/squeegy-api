@@ -71,10 +71,12 @@
     </tr>
     @endif
 
+    @if($washer_info['rental'])
     <tr>
         <td colspan="8" class="text-right"><strong>Equipment Rental:</strong></td>
         <td>- ${{ number_format($washer_info['rental'], 2) }}</td>
     </tr>
+    @endif
 
     <tr>
         <td colspan="8" class="text-right"><strong>Total:</strong></td>
