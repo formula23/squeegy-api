@@ -64,9 +64,24 @@ class AuthController extends Controller {
      */
     public function postLogin(Request $request)
     {
-        $this->validate($request, [
-            'email' => 'required|email', 'password' => 'required'
-        ]);
+        $data_to_validate=[
+            'email' => 'required|email',
+        ];
+
+        if( ! $request->input('facebook_id')) {
+            $data_to_validate['password'] = 'required';
+        }
+
+        $this->validate($request, $data_to_validate);
+
+        $facebook_user=null;
+        if($request->input('facebook_id')) { //facebook login
+            $facebook_user = User::where('email', $request->input('email'))->where('facebook_id', $request->input('facebook_id'))->first();
+            if( ! $facebook_user) {
+                return $this->response->errorUnauthorized('You do not have an account. Please register.');
+            }
+            Auth::login($facebook_user);
+        }
 
         $credentials = $request->only('email', 'password');
 
@@ -76,7 +91,7 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-        if ($this->auth->attempt($credentials, $request->has('remember')))
+        if ($this->auth->attempt($credentials, $request->has('remember')) || $facebook_user)
         {
             if($request->header('X-Device-Identifier')) {
 
