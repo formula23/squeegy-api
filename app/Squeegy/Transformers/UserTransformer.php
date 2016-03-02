@@ -40,6 +40,7 @@ class UserTransformer extends TransformerAbstract {
             'anon_pw_reset' => (bool)$user->anon_pw_reset,
             'is_anon' => $user->is_anon(),
             'available_credits' => $user->availableCredit(),
+            'facebook_id' => $user->facebook_id,
         ];
     }
 
