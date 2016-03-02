@@ -5,6 +5,7 @@ use App\Squeegy\Payments;
 use App\User;
 use Exception;
 
+use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Aloha\Twilio\Twilio;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use SammyK\LaravelFacebookSdk\LaravelFacebookSdk;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 
@@ -60,9 +62,10 @@ class AuthController extends Controller {
 
     /**
      * @param Request $request
+     * @param LaravelFacebookSdk $fb
      * @return mixed
      */
-    public function postLogin(Request $request)
+    public function postLogin(Request $request, LaravelFacebookSdk $fb)
     {
         $data_to_validate=[
             'email' => 'required|email',
@@ -75,10 +78,22 @@ class AuthController extends Controller {
         $this->validate($request, $data_to_validate);
 
         $facebook_user=null;
-        if($request->input('facebook_id')) { //facebook login
-            $facebook_user = User::where('email', $request->input('email'))->where('facebook_id', $request->input('facebook_id'))->first();
+        if($request->input('facebook_id') && $request->input('fb_token')) { //facebook login
+
+            //verify FB token passed is valid token for user and fb app.
+            try {
+                $response = $fb->get('/me?fields=id,name,email&access_token='.$request->input('fb_token'));
+                $fb_user = $response->getGraphUser();
+                if($fb_user->getId() != $request->input('facebook_id')) {
+                    return $this->response->errorWrongArgs('Unable to login with Facebook');
+                }
+            } catch(FacebookSDKException $e) {
+                return $this->response->errorWrongArgs('Unable to login with Facebook');
+            }
+
+            $facebook_user = User::where('facebook_id', $request->input('facebook_id'))->first();
             if( ! $facebook_user) {
-                return $this->response->errorUnauthorized('You do not have an account. Please register.');
+                return $this->response->errorWrongArgs('You do not have an account. Please register.');
             }
             Auth::login($facebook_user);
         }
