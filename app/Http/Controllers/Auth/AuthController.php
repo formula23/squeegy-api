@@ -63,17 +63,8 @@ class AuthController extends Controller {
     //
     public function postLogin(Request $request, LaravelFacebookSdk $fb)
     {
-        $data_to_validate=[
-            'email' => 'required|email',
-        ];
-
-        if( ! $request->input('facebook_id')) {
-            $data_to_validate['password'] = 'required';
-        }
-
-        $this->validate($request, $data_to_validate);
-
         $facebook_user=null;
+        $std_user=null;
         if($request->input('facebook_id') && $request->input('fb_token')) { //facebook login
 
             //verify FB token passed is valid token for user and fb app.
@@ -87,22 +78,31 @@ class AuthController extends Controller {
                 return $this->response->errorWrongArgs('Unable to login with Facebook');
             }
 
-            $facebook_user = User::where('facebook_id', $request->input('facebook_id'))->first();
+            $facebook_user = User::where('facebook_id', $request->input('facebook_id'))->orderBy('created_at', 'desc')->first();
             if( ! $facebook_user) {
                 return $this->response->errorWrongArgs('You do not have an account. Please register.');
             }
             Auth::login($facebook_user);
+
+        } else {
+            $data_to_validate=[
+                'email' => 'required|email',
+                'password' => 'required',
+            ];
+            $this->validate($request, $data_to_validate);
+
+            $credentials = $request->only('email', 'password');
+
+            //little hack so that our accounts don't need to be active to log into the worker app
+            //currently ETA calculations are done by the active state of an account.. so we can't be active.
+            if( ! in_array($request->input('email'), ["dan@squeegy.com", "andrew@squeegy.com"])) {
+                $credentials['is_active'] = 1;
+            }
+
+            $std_user = $this->auth->attempt($credentials, $request->has('remember'));
         }
 
-        $credentials = $request->only('email', 'password');
-
-        //little hack so that our accounts don't need to be active to log into the worker app
-        //currently ETA calculations are done by the active state of an account.. so we can't be active.
-        if( ! in_array($request->input('email'), ["dan@squeegy.com", "andrew@squeegy.com"])) {
-            $credentials['is_active'] = 1;
-        }
-
-        if ($this->auth->attempt($credentials, $request->has('remember')) || $facebook_user)
+        if ($std_user || $facebook_user)
         {
             if($request->header('X-Device-Identifier')) {
 
