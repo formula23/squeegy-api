@@ -151,7 +151,7 @@ return [
         'GoogleMaps\ServiceProvider\GoogleMapsServiceProvider',
 		'Tymon\JWTAuth\Providers\JWTAuthServiceProvider',
 		'Casinelli\CampaignMonitor\CampaignMonitorServiceProvider',
-		'SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider',
+//		'SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider',
 	],
 
 	/*
@@ -205,7 +205,7 @@ return [
 		'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
 		'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
 		'CampaignMonitor' => 'Casinelli\CampaignMonitor\Facades\CampaignMonitor',
-		'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
+//		'Facebook' => 'SammyK\LaravelFacebookSdk\FacebookFacade',
 	],
 
 ];
