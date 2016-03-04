@@ -67,23 +67,22 @@ class AuthController extends Controller {
         if($request->input('facebook_id') && $request->input('fb_token')) { //facebook login
 
             //verify FB token passed is valid token for user and fb app.
-//            try {
-//                $response = $fb->get('/me?fields=id,name,email&access_token='.$request->input('fb_token'));
-//                $fb_user = $response->getGraphUser();
-//                if($fb_user->getId() != $request->input('facebook_id')) {
-//                    return $this->response->errorWrongArgs('Unable to login with Facebook');
-//                }
-//            } catch(FacebookSDKException $e) {
-//                return $this->response->errorWrongArgs('Unable to login with Facebook');
-//            }
-//
-//            $facebook_user = User::where('facebook_id', $request->input('facebook_id'))->orderBy('created_at', 'desc')->first();
-//            if( ! $facebook_user) {
-//                return $this->response->errorWrongArgs('You do not have an account. Please register.');
-//            }
-//            Auth::loginUsingId($facebook_user->id);
+            try {
+                $response = $fb->get('/me?fields=id,name,email&access_token='.$request->input('fb_token'));
+                $fb_user = $response->getGraphUser();
+                if($fb_user->getId() != $request->input('facebook_id')) {
+                    return $this->response->errorWrongArgs('Unable to login with Facebook');
+                }
+            } catch(FacebookSDKException $e) {
+                return $this->response->errorWrongArgs('Unable to login with Facebook');
+            }
 
-            Auth::loginUsingId(503);
+            $facebook_user = User::where('facebook_id', $request->input('facebook_id'))->orderBy('created_at', 'desc')->first();
+            if( ! $facebook_user) {
+                return $this->response->errorWrongArgs('You do not have an account. Please register.');
+            }
+            Auth::login($facebook_user);
+
             return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
 
 
