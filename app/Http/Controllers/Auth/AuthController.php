@@ -64,11 +64,11 @@ class AuthController extends Controller {
     {
         $facebook_user=null;
         $std_user=null;
-        if($request->input('facebook_id') && $request->input('fb_token')) { //facebook login
+        if($request->input('facebook_id') && $request->input('facebook_token')) { //facebook login
 
             //verify FB token passed is valid token for user and fb app.
             try {
-                $response = $fb->get('/me?fields=id,name,email&access_token='.$request->input('fb_token'));
+                $response = $fb->get('/me?fields=id,name,email&access_token='.$request->input('facebook_token'));
                 $fb_user = $response->getGraphUser();
                 if($fb_user->getId() != $request->input('facebook_id')) {
                     return $this->response->errorWrongArgs('Unable to login with Facebook');
