@@ -48,9 +48,9 @@ class UpdateUserRequest extends Request {
 
 		return [
             'name' => 'sometimes|required|min:2',
-            'email' => 'sometimes|required|email|unique_email:users,email,'.$this->user()->id,
+            'email' => 'sometimes|required|email|unique:users,email,'.$this->user()->id,
+//            'email' => 'sometimes|required|email|unique_email:users,email,'.$this->user()->id,
             'password' => 'sometimes|min:8',
-//            'email' => 'sometimes|required|email|unique:users,email,'.$this->user()->id,
             'phone' => 'sometimes|required|digits:10',
             'push_token' => 'sometimes|required',
             'facebook_id' => 'sometimes|required',

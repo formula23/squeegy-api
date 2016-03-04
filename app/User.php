@@ -315,4 +315,21 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return ( ! empty($this->segment) && $this->segment->customer_at && $referral_orders->count() >= 3) ? true : false ;
     }
 
+    public function updateFbFields($fb_user)
+    {
+        $this->facebook_id = $fb_user->getId();
+        $this->birthday = $fb_user->getBirthday();
+        $this->gender = $fb_user->getGender();
+
+        $graph_node = $fb_user->getField('age_range');
+        if($graph_node) {
+            $min_age = $graph_node->getField('min');
+            $max_age = $graph_node->getField('max');
+            $age_range = ($max_age ? $min_age."-".$max_age : $min_age."+");
+            $this->age_range = $age_range;
+        }
+        $this->save();
+        return;
+    }
+
 }

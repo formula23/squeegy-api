@@ -62,13 +62,13 @@ class AuthController extends Controller {
      */
     public function postLogin(Request $request, LaravelFacebookSdk $fb)
     {
-        $facebook_user=null;
         $std_user=null;
+        $facebook_user=null;
         if($request->input('facebook_id') && $request->input('facebook_token')) { //facebook login
 
             //verify FB token passed is valid token for user and fb app.
             try {
-                $response = $fb->get('/me?fields=id,name,email&access_token='.$request->input('facebook_token'));
+                $response = $fb->get('/me?fields=id,name,email,gender,birthday,age_range&access_token='.$request->input('facebook_token'));
                 $fb_user = $response->getGraphUser();
                 if($fb_user->getId() != $request->input('facebook_id')) {
                     return $this->response->errorWrongArgs('Unable to login with Facebook');
@@ -77,14 +77,16 @@ class AuthController extends Controller {
                 return $this->response->errorWrongArgs('Unable to login with Facebook');
             }
 
-            $facebook_user = User::where('facebook_id', $request->input('facebook_id'))->orderBy('created_at', 'desc')->first();
-            if( ! $facebook_user) {
-                return $this->response->errorWrongArgs('You do not have an account. Please register.');
-            }
+            $facebook_user_qry = User::where('facebook_id', $request->input('facebook_id'))->orderBy('created_at', 'desc');
+            if($request->input('email') && $request->input('email') == $fb_user->getEmail()) $facebook_user_qry->orWhere('email', $request->input('email'));
+
+            $facebook_user = $facebook_user_qry->first();
+
+            if( ! $facebook_user) return $this->response->errorWrongArgs('You do not have an account. Please register.');
+
+            $facebook_user->updateFbFields($fb_user);
+
             Auth::login($facebook_user);
-
-            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
-
 
         } else {
             $data_to_validate=[
@@ -130,15 +132,15 @@ class AuthController extends Controller {
             }
 
             //successful log
-            if($request->input('anon_email')) {
-                try {
-                    if(preg_match('/squeegyapp-tmp.com$/', $request->input('anon_email'))) {
-                        User::where('email', $request->input('anon_email'))->delete();
-                    }
-                } catch(\Exception $e) {
-                    \Bugsnag::notifyException($e);
-                }
-            }
+//            if($request->input('anon_email')) {
+//                try {
+//                    if(preg_match('/squeegyapp-tmp.com$/', $request->input('anon_email'))) {
+//                        User::where('email', $request->input('anon_email'))->delete();
+//                    }
+//                } catch(\Exception $e) {
+//                    \Bugsnag::notifyException($e);
+//                }
+//            }
 
             if($request->header('X-Application-Type'))
             {
@@ -262,6 +264,11 @@ class AuthController extends Controller {
             \Bugsnag::notifyException($e);
         }
         return $token;
+    }
+
+    private function updateFbInfo(&$user, $fb_user)
+    {
+
     }
 
 }
