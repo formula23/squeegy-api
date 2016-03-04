@@ -44,9 +44,11 @@ class Schedule
 
     public function availability()
     {
+        $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
         if($this->postal_code == 90015) { //downtown pilot
             $container=[];
-            $container[]['day'] = $this->now->next(3)->format('m/d/Y ()');
+            $container[]['day'] = $this->now->next(3)->format($day_format);
             $container[]['time_slots'][] = "8:00am - 6:00pm";
             return $container;
         }
@@ -64,7 +66,7 @@ class Schedule
 //                continue;
 //            }
 
-            $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
 
             if($this->now->isToday()) {
                 $day = "Today";
