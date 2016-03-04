@@ -338,7 +338,7 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    if($availability['postal_code'] == '90015' && $order->promo_code != "MOVIE20") {
+                    if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "movie20") {
                         return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
                     }
 
