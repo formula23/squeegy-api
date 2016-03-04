@@ -127,7 +127,7 @@ class Schedule
                 $idx+=1;
             }
         }
-dd($container);
+
         return $container;
     }
 
