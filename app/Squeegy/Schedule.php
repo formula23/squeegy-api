@@ -48,8 +48,8 @@ class Schedule
 
         if($this->postal_code == 90015) { //downtown pilot
             $container=[];
-            $container[]['day'] = $this->now->next(3)->format($day_format);
-            $container[]['time_slots'][] = "8:00am - 6:00pm";
+            $container[0]['day'] = $this->now->next(3)->format($day_format);
+            $container[0]['time_slots'][] = "8:00am - 6:00pm";
             return $container;
         }
 
