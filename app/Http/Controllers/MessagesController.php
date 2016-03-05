@@ -18,6 +18,8 @@ class MessagesController extends Controller {
 			'referral_program' => [
 				'header' => 'Invite friends. Get free washes.',
 				'body' => 'Give a friend $10 credit towards their first car wash and earn a $10 credit yourself.',
+				'share_msg' => 'Hey, I use Squeegy to wash my car on-demand and want to send you $10 to try it. Use my referral code:',
+				'share_link' => 'Download the app here: https://www.squeegyapp.com/free-washes/',
 			],
 			'create_password' => [
 				'header' => 'Create a Password',
