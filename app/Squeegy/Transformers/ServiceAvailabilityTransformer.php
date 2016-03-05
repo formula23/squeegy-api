@@ -32,7 +32,7 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
         ];
 
         if($data['schedule']) {
-            $schedule = new Schedule();
+            $schedule = new Schedule($data['postal_code']);
             $resp['available_schedule'] = $schedule->availability();
         }
 

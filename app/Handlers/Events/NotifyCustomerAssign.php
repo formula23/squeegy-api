@@ -31,6 +31,12 @@ class NotifyCustomerAssign extends BaseEventHandler {
 			'window_time'=>$event->order->scheduled_time(),
 		]);
 
+		if($event->order->location['zip'] == '90015') {
+			$push_message = trans('messages.order.push_notice_corp.assign', [
+				'worker_name'=>$event->order->worker->name,
+			]);
+		}
+
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 
 		if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {

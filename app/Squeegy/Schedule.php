@@ -24,9 +24,12 @@ class Schedule
     public $days_out=6;
     public $time_slot_interval=1;
     public $current_schedule;
+    public $postal_code;
 
-    public function __construct()
+    public function __construct($postal_code=null)
     {
+        if($postal_code) $this->postal_code = $postal_code;
+
         $this->current_schedule();
 
         $this->now = Carbon::now();
@@ -41,6 +44,14 @@ class Schedule
 
     public function availability()
     {
+        $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
+        if($this->postal_code == 90015) { //downtown pilot
+            $container=[];
+            $container[0]['day'] = $this->now->next(3)->format($day_format);
+            $container[0]['time_slots'][] = "8:00am - 6:00pm";
+            return $container;
+        }
 
 
         $idx=0;
@@ -55,7 +66,7 @@ class Schedule
 //                continue;
 //            }
 
-            $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
 
             if($this->now->isToday()) {
                 $day = "Today";

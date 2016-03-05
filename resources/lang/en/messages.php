@@ -20,13 +20,18 @@ return [
         'statement_descriptor' => 'SQUEEGY #:job_number',
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
-            'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
             'schedule' => 'We have received your scheduled wash, a washer will be assigned to you approximately one hour before your scheduled window. Thank you for using Squeegy!',
+            'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',
             'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don\'t forget to rate your wash. Thanks for using Squeegy!',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
+        ],
+        'push_notice_corp' => [
+            'schedule' => 'We have received your car wash order for :schedule_day. Thank you for using Squeegy!',
+            'assign' => ':worker_name has added your vehicle to today\'s job queue.',
+            'enroute' => ':worker_name is about to start your car wash. :interior',
         ],
         'cancel_reason' => [
             '1' => 'Customer not here',

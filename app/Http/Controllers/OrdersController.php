@@ -332,9 +332,14 @@ class OrdersController extends Controller {
                     }
 
                     $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+
                     Log::info('RECEIVE', $availability);
                     if( ! $availability['accept']) {
                         return $this->response->errorWrongArgs($availability['description']);
+                    }
+
+                    if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "movie20") {
+                        return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
                     }
 
                     $order->confirm_at = Carbon::now();
