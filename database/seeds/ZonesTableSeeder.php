@@ -23,6 +23,12 @@ class ZonesTableSeeder extends Seeder
             'name' => 'South Bay',
             'code' => '002',
         ]);
+
+        Zone::create([
+            'name' => 'Downtown',
+            'code' => '003',
+        ]);
+
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

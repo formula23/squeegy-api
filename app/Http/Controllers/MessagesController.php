@@ -4,6 +4,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class MessagesController extends Controller {
 
@@ -14,10 +15,14 @@ class MessagesController extends Controller {
 	 */
 	public function getIndex()
 	{
+		$ref_prog_amts = Config::get('squeegy.referral_program');
+
 		$data=[
 			'referral_program' => [
 				'header' => 'Invite friends. Get free washes.',
-				'body' => 'Give a friend $10 credit towards their first car wash and earn a $10 credit yourself.',
+				'body' => 'Give a friend $'.($ref_prog_amts['referred_amt']/100).' credit towards their first car wash and earn a $'.($ref_prog_amts['referrer_amt']/100).' credit yourself.',
+				'share_msg' => 'Hey, I use Squeegy to wash my car on-demand and want to send you $'.($ref_prog_amts['referred_amt']/100).' to try it. Use my referral code:',
+				'share_link' => 'Download the app here: https://www.squeegyapp.com/free-washes/',
 			],
 			'create_password' => [
 				'header' => 'Create a Password',
