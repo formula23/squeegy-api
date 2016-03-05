@@ -44,6 +44,7 @@ class NotifyCustomerEnroute {
 		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.enroute', [
 				'worker_name'=>$event->order->worker->name,
+				'interior'=>$event->order->service_id == 2 ? "Please open your vehicle if it is not already." : "",
 			]);
 		}
 

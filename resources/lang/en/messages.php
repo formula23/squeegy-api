@@ -31,7 +31,7 @@ return [
         'push_notice_corp' => [
             'schedule' => 'We have received your car wash order for :schedule_day. Thank you for using Squeegy!',
             'assign' => ':worker_name has added your vehicle to today\'s job queue.',
-            'enroute' => ':worker_name is about to start your car wash. Please open your vehicle if he needs access to the interior.',
+            'enroute' => ':worker_name is about to start your car wash. :interior',
         ],
         'cancel_reason' => [
             '1' => 'Customer not here',
