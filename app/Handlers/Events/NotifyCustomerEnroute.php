@@ -41,7 +41,7 @@ class NotifyCustomerEnroute {
             'arrival_time'=>$arrival_time,
         ]);
 
-		if($event->order->location->zip == '90015') {
+		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.enroute', [
 				'worker_name'=>$event->order->worker->name,
 			]);

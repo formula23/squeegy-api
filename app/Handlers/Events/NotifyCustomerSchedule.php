@@ -21,7 +21,7 @@ class NotifyCustomerSchedule {
 	{
 		$push_message = trans('messages.order.push_notice.schedule');
 
-		if($event->order->location->zip == '90015') {
+		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.schedule', [
 				'schedule_day' => $event->order->schedule->window_open->format('l, F jS'),
 			]);
