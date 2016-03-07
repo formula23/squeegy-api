@@ -23,6 +23,7 @@ class MessagesController extends Controller {
 				'body' => 'Give a friend $'.($ref_prog_amts['referred_amt']/100).' credit towards their first car wash and earn a $'.($ref_prog_amts['referrer_amt']/100).' credit yourself.',
 				'share_msg' => 'Hey, I use Squeegy to wash my car on-demand and want to send you $'.($ref_prog_amts['referred_amt']/100).' to try it. Use my referral code:',
 				'share_link' => 'Download the app here: https://www.squeegyapp.com/free-washes/',
+				'email_subject' => 'Get $'.($ref_prog_amts['referred_amt']/100).' off your first car wash using Squeegy on-demand car wash!',
 			],
 			'create_password' => [
 				'header' => 'Create a Password',
