@@ -50,7 +50,7 @@ class ServiceCoordsTableSeeder extends Seeder
 
             ////*** *END ** ////
 
-            "34.076205"=>"-118.284431", //hoover & beverly
+            "34.076200"=>"-118.284431", //hoover & beverly
             "34.076087"=>"-118.327304", //beverly & rossmore
 
             "34.061691"=>"-118.327341",
