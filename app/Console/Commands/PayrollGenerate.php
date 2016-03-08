@@ -47,7 +47,7 @@ class PayrollGenerate extends Command {
 		Carbon::setWeekStartsAt(Carbon::SUNDAY);
 		Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
-		$now_date = Carbon::now()->format('-m-d-Y');
+		$now_date = Carbon::now()->format('m-d-Y');
 
 		//COGs query
 		$cogs = DB::select('SELECT worker.id, worker.name,

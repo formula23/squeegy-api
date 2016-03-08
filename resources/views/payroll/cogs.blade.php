@@ -9,7 +9,7 @@
 <body>
 <h3>Squeegy COGs - Week of {{$week_of}}</h3>
 
-<table>
+<table class="table table-condensed">
 
     <tr>
         <th>Washer Name</th>
