@@ -110,7 +110,7 @@ class PayrollGenerate extends Command {
 			$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
 			@$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
 
-			if(in_array($order->worker->id, (array)$min_worker_id) && $orders_by_worker[$order->worker->id]['jobs']['total'] < $min_worker_id[$order->worker_id]) {
+			if(in_array($order->worker->id, array_keys($min_worker_id)) && $orders_by_worker[$order->worker->id]['jobs']['total'] < $min_worker_id[$order->worker_id]) {
 				@$orders_by_worker[$order->worker->id]['minimum'] = max(0, $min_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
 			}
 
