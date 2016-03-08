@@ -158,9 +158,13 @@ class PayrollGenerate extends Command {
 		}
 
 		$data=[];
-		foreach($orders_by_worker as $w) {
+		foreach($orders_by_worker as $worker_id => $w) {
+
 			$total = ($w['jobs']['total'] + $w['minimum']) - $w['rental'];
-			$data['cogs'][] = [$w['washer']['name'], $w['promotional'], $total];
+			$cog = ($w['jobs']['total'] + $w['minimum']) - $w['promotional'];
+			$kit_rental = (in_array($worker_id, $no_kit_rental) ? 0 : 25);
+
+			$data['cogs'][] = [$w['washer']['name'], $cog, $w['promotional'], $w['rental'], $total];
 		}
 
 		$view = view('payroll.cogs', $data);
