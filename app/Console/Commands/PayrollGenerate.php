@@ -67,7 +67,11 @@ class PayrollGenerate extends Command {
 		}
 
 		$no_kit_rental = [2882];
-		$min_worker_id = [2149,2900,3198];
+		$min_worker_id = [
+			2149 => 500,
+			2900 => 500,
+			3198 => 600,
+		];
 
 		$orders = Order::select('id', 'vehicle_id', 'worker_id', 'service_id', 'etc', 'start_at', 'done_at', 'rating', DB::raw('TIMESTAMPDIFF(MINUTE,orders.start_at,orders.done_at) as wash_time'))
 			->with('worker')
@@ -106,8 +110,8 @@ class PayrollGenerate extends Command {
 			$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
 			@$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
 
-			if(in_array($order->worker->id, (array)$min_worker_id) && $orders_by_worker[$order->worker->id]['jobs']['total'] < 500) {
-				@$orders_by_worker[$order->worker->id]['minimum'] = max(0, 500 - $orders_by_worker[$order->worker->id]['jobs']['total']);
+			if(in_array($order->worker->id, (array)$min_worker_id) && $orders_by_worker[$order->worker->id]['jobs']['total'] < $min_worker_id[$order->worker_id]) {
+				@$orders_by_worker[$order->worker->id]['minimum'] = max(0, $min_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
 			}
 
 		}
