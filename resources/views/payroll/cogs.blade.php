@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h3>Squeegy Payroll for {{ $washer_info['washer']['name'] }} - Week of {{$week_of}}</h3>
+<h3>Squeegy COGs - Week of {{$week_of}}</h3>
 
 <table>
 
@@ -36,7 +36,6 @@
         </tr>
 
     @endforeach
-
 
 </table>
 
