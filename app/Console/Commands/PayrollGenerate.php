@@ -47,6 +47,8 @@ class PayrollGenerate extends Command {
 		Carbon::setWeekStartsAt(Carbon::SUNDAY);
 		Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
+		$now_date = Carbon::now()->format('-m-d-Y');
+
 		//COGs query
 		$cogs = DB::select('SELECT worker.id, worker.name,
 				sum(IF(services.id = \'1\', \'2000\', IF(services.id=3,\'1000\',\'3000\')) - IF(orders.discount_id=55, 900, IF(orders.discount_id=56,1200,IF(orders.discount_id=57,756,IF(orders.discount_id=58,900,IF(orders.discount_id=27,750,IF(orders.discount_id=28,950,charged)))))))/100 AS PromotionalCost
@@ -129,7 +131,7 @@ class PayrollGenerate extends Command {
 
 			$view = view('payroll.time_sheet', $data);
 
-			$file_name = $worker['washer']['name'];
+			$file_name = $worker['washer']['name']."-".$now_date;
 			$dir_path['file'] = $file_name.".html";
 
 			$disk->put(implode("/", $dir_path), $view->render());
@@ -168,7 +170,7 @@ class PayrollGenerate extends Command {
 		}
 
 		$view = view('payroll.cogs', $data);
-		$dir_path['file'] = "COGs.txt";
+		$dir_path['file'] = "COGs-$now_date.html";
 		$disk->put(implode("/", $dir_path), $view->render());
 
 		$email_data['time_sheet'] = $disk->getDriver()->getAdapter()->getPathPrefix().implode("/", $dir_path);
