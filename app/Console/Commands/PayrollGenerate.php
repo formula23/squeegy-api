@@ -158,11 +158,11 @@ class PayrollGenerate extends Command {
 		}
 
 		$data=[];
+		$data['week_of'] = $week_of;
 		foreach($orders_by_worker as $worker_id => $w) {
 
 			$total = ($w['jobs']['total'] + $w['minimum']) - $w['rental'];
 			$cog = ($w['jobs']['total'] + $w['minimum']) - $w['promotional'];
-			$kit_rental = (in_array($worker_id, $no_kit_rental) ? 0 : 25);
 
 			$data['cogs'][] = [$w['washer']['name'], $cog, $w['promotional'], $w['rental'], $total];
 		}
