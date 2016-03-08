@@ -153,7 +153,7 @@ class PushNotification extends Command {
 //                )
 //            ');
 
-        $users = \DB::select('SELECT id, push_token, `target_arn_gcm`
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
                 FROM users, `user_segments`
                 WHERE users.id = `user_segments`.user_id
                 AND `segment_id` = 2
