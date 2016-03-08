@@ -30,19 +30,20 @@ class PasswordController extends Controller {
 	 * @param  \Illuminate\Contracts\Auth\PasswordBroker  $passwords
 	 * @return void
 	 */
-	public function __construct(Guard $auth, PasswordBroker $passwords)
+	public function __construct()
 	{
 		parent::__construct();
 
-		$this->auth = $auth;
-		$this->passwords = $passwords;
+//		$this->auth = $auth;
+//		$this->passwords = $passwords;
 
 	}
 
 	/**
 	 * Send a reset link to the given user.
 	 *
-	 * @param  Request  $request
+	 * @param  Request $request
+	 * @param TokenRepositoryInterface $tokens
 	 * @return Response
 	 */
 	public function postEmail(Request $request, TokenRepositoryInterface $tokens)

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Aloha\Twilio\Twilio;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 
@@ -46,11 +47,11 @@ class AuthController extends Controller {
 	 * @param  \Illuminate\Contracts\Auth\Registrar  $registrar
 	 * @return void
 	 */
-	public function __construct(Guard $auth, Registrar $registrar)
+	public function __construct()
 	{
         parent::__construct();
-		$this->auth = $auth;
-		$this->registrar = $registrar;
+//		$this->auth = $auth;
+//		$this->registrar = $registrar;
 
 //        $this->middleware('auth.api');
 
@@ -222,6 +223,43 @@ class AuthController extends Controller {
         return $this->response->withArray([
             'message' => 'Success',
             'status_code' => 200
+        ]);
+    }
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    public function validator(array $data)
+    {
+        return Validator::make($data, [
+//			'name' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:8',
+//            'phone' => 'required|digits:10',
+        ]);
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return User
+     */
+    public function create(array $data)
+    {
+
+        return User::create([
+            'name' => ! empty($data['name']) ? $data['name'] : '',
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'phone' => ! empty($data['phone']) ? $data['phone'] : '',
+            'stripe_customer_id' => (isset($data['stripe_customer_id']) ? $data['stripe_customer_id']:null),
+            'push_token' => ! empty($data['push_token']) ? $data['push_token'] : '',
+            'referral_code' => ! empty($data['referral_code']) ? $data['referral_code'] : User::generateReferralCode(),
+            'device_id' => ! empty($data['device_id']) ? $data['device_id'] : '',
         ]);
     }
 
