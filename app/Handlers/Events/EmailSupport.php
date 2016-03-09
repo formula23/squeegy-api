@@ -39,10 +39,10 @@ class EmailSupport {
 
             \Mail::send('emails.bad_rating', $email_content, function ($message) use ($order) {
 
-            $message->from(config('squeegy.emails.from'), config('squeegy.emails.from_name'));
+				$message->from(config('squeegy.emails.from'), config('squeegy.emails.from_name'));
 
-            $message->to(config('squeegy.emails.support'))
-                ->subject(trans('messages.emails.bad_rating.subject'));
+				$message->to(config('squeegy.emails.support'))->cc("dan@squeegyapp.com")
+					->subject(trans('messages.emails.bad_rating.subject'));
 
             });
 

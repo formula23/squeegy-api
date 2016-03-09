@@ -19,7 +19,7 @@ class VehiclesTableSeeder extends Seeder {
         foreach(range(1, 50) as $index)
         {
             //get random user to assign to car
-            $user_ids = User::lists('id');
+            $user_ids = User::lists('id')->all();
 
             $vehicle_make = $faker->randomElement(['Honda','Mercedes','BMW', 'Infiniti']);
             $vehicle_models = ['Honda'=>'Accord', 'Mercedes'=>'C300', 'BMW'=>'535i', 'Infiniti'=>'G37S'];

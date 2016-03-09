@@ -258,6 +258,7 @@ class OrdersController extends Controller {
 
         if( ! empty($request_data['rating']))
         {
+
             $order->rating = $request_data['rating'];
             $order->rating_comment = (!empty($request_data['rating_comment'])?$request_data['rating_comment']:"");
 
@@ -493,7 +494,7 @@ class OrdersController extends Controller {
 
                 if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
 
-                if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
+                if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id')->all())) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
 
                 $scope_discount = true;
                 $frequency_rate = 0;

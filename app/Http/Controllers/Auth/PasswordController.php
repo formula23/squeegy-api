@@ -30,13 +30,11 @@ class PasswordController extends Controller {
 	 * @param  \Illuminate\Contracts\Auth\PasswordBroker  $passwords
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(PasswordBroker $passwords)
 	{
 		parent::__construct();
 
-//		$this->auth = $auth;
-//		$this->passwords = $passwords;
-
+		$this->passwords = $passwords;
 	}
 
 	/**

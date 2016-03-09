@@ -5,8 +5,7 @@ use App\Squeegy\Payments;
 use App\User;
 use Exception;
 
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\Registrar;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Http\Request;
 
 use Aloha\Twilio\Twilio;
@@ -31,6 +30,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  */
 class AuthController extends Controller {
 
+    use AuthenticatesAndRegistersUsers;
+
     protected $apiMethods = [
         'postLogin' => [
             'logged' => true,
@@ -40,23 +41,16 @@ class AuthController extends Controller {
         ]
     ];
 
+    protected $user;
+
 	/**
 	 * Create a new authentication controller instance.
 	 *
-	 * @param  \Illuminate\Contracts\Auth\Guard  $auth
-	 * @param  \Illuminate\Contracts\Auth\Registrar  $registrar
 	 * @return void
 	 */
 	public function __construct()
 	{
         parent::__construct();
-//		$this->auth = $auth;
-//		$this->registrar = $registrar;
-
-//        $this->middleware('auth.api');
-
-//		$this->middleware('guest', ['except' => ['postLogin', 'getLogout']]);
-//        $this->middleware('auth', ['except' => ['postLogin', 'postRegister']]);
 	}
 
     /**
@@ -77,18 +71,18 @@ class AuthController extends Controller {
             $credentials['is_active'] = 1;
         }
 
-        if ($this->auth->attempt($credentials, $request->has('remember')))
+        if (Auth::attempt($credentials, $request->has('remember')))
         {
             if($request->header('X-Device-Identifier')) {
 
-                $this->auth->user()->device_id = $request->header('X-Device-Identifier');
+                $this->user()->device_id = $request->header('X-Device-Identifier');
 
                 $users = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
                 if($users->count()) {
                     $latest_user = $users->first();
                     $sns_col = ( $request->header('X-Device') == "Android" ? "target_arn_gcm" : "push_token" );
                     if($latest_user->{$sns_col}) {
-                        $this->auth->user()->{$sns_col} = $latest_user->{$sns_col};
+                        $this->user()->{$sns_col} = $latest_user->{$sns_col};
                     }
                     try {
                         $users_to_delete = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
@@ -99,7 +93,7 @@ class AuthController extends Controller {
                     }
                 }
 
-                $this->auth->user()->save();
+                $this->user()->save();
             }
 
             //successful log
@@ -117,15 +111,15 @@ class AuthController extends Controller {
             {
                 switch(strtolower($request->header('X-Application-Type'))) {
                     case "consumer":
-                        if( ! $this->auth->user()->is('customer')) return $this->response->errorUnauthorized('Account not authorized for this application.');
+                        if( ! $this->user()->is('customer')) return $this->response->errorUnauthorized('Account not authorized for this application.');
                         break;
                     case "washer":
-                        if( ! $this->auth->user()->is('worker')) return $this->response->errorUnauthorized('Account not authorized for this application.');
+                        if( ! $this->user()->is('worker')) return $this->response->errorUnauthorized('Account not authorized for this application.');
                         break;
                 }
             }
 
-            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
+            return $this->response->withItem($this->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
         Log::info($credentials['email'].' - Unable to login.');
@@ -140,7 +134,7 @@ class AuthController extends Controller {
             //manual login
             Auth::login($anon_user_rec);
 
-            return $this->response->withItem($this->auth->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
+            return $this->response->withItem($this->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
         return $this->response->errorUnauthorized('Unauthorized to login.');
@@ -155,7 +149,7 @@ class AuthController extends Controller {
     {
         $data = $request->all();
 
-        $validator = $this->registrar->validator($data);
+        $validator = $this->validator($data);
 
         if ($validator->fails()) {
             foreach($validator->errors()->getMessages() as $msgs) {
@@ -191,20 +185,20 @@ class AuthController extends Controller {
             $data['referral_code'] = User::generateReferralCode();
             $data['device_id'] = $request->header('X-Device-Identifier');
 
-            $this->auth->login($this->registrar->create($data));
+            Auth::login($this->create($data));
 
-            $this->auth->user()->attachRole(3);
+            $this->user()->attachRole(3);
 
-            \Event::fire(new UserCreated($this->auth->user()));
+            \Event::fire(new UserCreated($this->user()));
 
             if( ! empty($data['email']) && ! preg_match('/squeegyapp-tmp.com$/', $data['email'])) {
-                $this->auth->user()->anon_pw_reset = true;
-                \Event::fire(new UserRegistered($this->auth->user()));
+                $this->user()->anon_pw_reset = true;
+                \Event::fire(new UserRegistered($this->user()));
             }
 
-            $this->auth->user()->push();
+            $this->user()->push();
 
-            $user = User::find($this->auth->user()->id);
+            $user = User::find($this->user()->id);
 
         } catch(Exception $e) {
             return $this->response->errorInternalError($e->getMessage());
@@ -218,7 +212,7 @@ class AuthController extends Controller {
      */
     public function getLogout()
     {
-        $this->auth->logout();
+        $this->logout();
 
         return $this->response->withArray([
             'message' => 'Success',
@@ -267,11 +261,16 @@ class AuthController extends Controller {
     {
         $token="";
         try {
-            $token = JWTAuth::fromUser($this->auth->user());
+            $token = JWTAuth::fromUser($this->user());
         } catch (JWTException $e) {
             \Bugsnag::notifyException($e);
         }
         return $token;
+    }
+
+    protected function user()
+    {
+        return Auth::user();
     }
 
 }

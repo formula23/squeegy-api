@@ -147,7 +147,7 @@ return [
 		'App\Providers\RouteServiceProvider',
         'Chrisbjr\ApiGuard\Providers\ApiGuardServiceProvider',
         'Aloha\Twilio\Support\Laravel\ServiceProvider',
-        'Bican\Roles\RolesServiceProvider',
+        Bican\Roles\RolesServiceProvider::class,
         'Bugsnag\BugsnagLaravel\BugsnagLaravelServiceProvider',
         'GoogleMaps\ServiceProvider\GoogleMapsServiceProvider',
 		'Tymon\JWTAuth\Providers\JWTAuthServiceProvider',
