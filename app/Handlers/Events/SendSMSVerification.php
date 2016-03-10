@@ -3,8 +3,6 @@
 use Aloha\Twilio\Twilio;
 use App\Events\UserRegistered;
 use Auth;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class SendSMSVerification {
 

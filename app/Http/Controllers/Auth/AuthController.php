@@ -212,7 +212,7 @@ class AuthController extends Controller {
      */
     public function getLogout()
     {
-        $this->logout();
+        Auth::logout();
 
         return $this->response->withArray([
             'message' => 'Success',

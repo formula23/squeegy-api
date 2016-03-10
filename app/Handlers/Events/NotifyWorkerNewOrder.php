@@ -3,8 +3,6 @@
 use App\Events\OrderConfirmed;
 
 use App\User;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 /**
  * Class NotifyWorkerNewOrder

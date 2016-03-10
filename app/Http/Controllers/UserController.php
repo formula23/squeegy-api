@@ -7,15 +7,12 @@ use App\PaymentMethod;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
 use App\WasherActivityLog;
-use App\WasherLocation;
 use Carbon\Carbon;
 use Guzzle\Service\Exception\ValidationException;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -86,11 +83,13 @@ class UserController extends Controller {
      *
      * @param UpdateUserRequest $request
      * @param SnsClient $sns_client
+     * @param Twilio $twilio
      * @return Response
      */
 	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio)
 	{
         $data = $request->all();
+
         if(isset($data['push_token'])) {
 
             try {

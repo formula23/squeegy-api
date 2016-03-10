@@ -3,8 +3,6 @@
 use App\Events\UserUpdated;
 
 use Casinelli\CampaignMonitor\Facades\CampaignMonitor;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 

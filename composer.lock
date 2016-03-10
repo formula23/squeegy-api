@@ -349,16 +349,16 @@
         },
         {
             "name": "bugsnag/bugsnag",
-            "version": "v2.6.1",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bugsnag/bugsnag-php.git",
-                "reference": "76e628b9f5b0fb4766c3ca2451207a1c4159225d"
+                "reference": "9bae5c7f8940a390f8c3ef1b7b83f23419a2cd0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bugsnag/bugsnag-php/zipball/76e628b9f5b0fb4766c3ca2451207a1c4159225d",
-                "reference": "76e628b9f5b0fb4766c3ca2451207a1c4159225d",
+                "url": "https://api.github.com/repos/bugsnag/bugsnag-php/zipball/9bae5c7f8940a390f8c3ef1b7b83f23419a2cd0c",
+                "reference": "9bae5c7f8940a390f8c3ef1b7b83f23419a2cd0c",
                 "shasum": ""
             },
             "require": {
@@ -393,20 +393,20 @@
                 "logging",
                 "tracking"
             ],
-            "time": "2016-01-28 17:35:26"
+            "time": "2016-03-09 20:12:51"
         },
         {
             "name": "bugsnag/bugsnag-laravel",
-            "version": "v1.6.3",
+            "version": "v1.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bugsnag/bugsnag-laravel.git",
-                "reference": "13bc98495ae9c1baea8a78619556beff9452222b"
+                "reference": "a354622693b2f9d2907bf28405e4f47715f995b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bugsnag/bugsnag-laravel/zipball/13bc98495ae9c1baea8a78619556beff9452222b",
-                "reference": "13bc98495ae9c1baea8a78619556beff9452222b",
+                "url": "https://api.github.com/repos/bugsnag/bugsnag-laravel/zipball/a354622693b2f9d2907bf28405e4f47715f995b4",
+                "reference": "a354622693b2f9d2907bf28405e4f47715f995b4",
                 "shasum": ""
             },
             "require": {
@@ -440,7 +440,7 @@
                 "logging",
                 "tracking"
             ],
-            "time": "2016-01-08 20:01:35"
+            "time": "2016-03-09 19:00:14"
         },
         {
             "name": "campaignmonitor/createsend-php",
@@ -3066,7 +3066,7 @@
         },
         {
             "name": "symfony/polyfill-php56",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php56.git",
@@ -3122,7 +3122,7 @@
         },
         {
             "name": "symfony/polyfill-util",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-util.git",

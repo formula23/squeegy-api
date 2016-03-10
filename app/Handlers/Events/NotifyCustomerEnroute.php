@@ -1,11 +1,7 @@
 <?php namespace App\Handlers\Events;
 
 use App\Events\OrderEnroute;
-use App\Squeegy\Orders;
 use Auth;
-use Carbon\Carbon;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use App\Squeegy\PushNotification;
 
 class NotifyCustomerEnroute {

@@ -2,8 +2,6 @@
 
 use App\Events\BadRating;
 
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class EmailSupport {
 
