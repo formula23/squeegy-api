@@ -33,7 +33,6 @@ class OrderTransformer extends TransformerAbstract {
 
     public function transform(Order $order)
     {
-//        $eta = Orders::getLeadTime($order->location['lat'], $order->location['lon']);
 
         $resp = [
             'id' => (string)$order->id,
@@ -55,16 +54,19 @@ class OrderTransformer extends TransformerAbstract {
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'rating' => $order->rating,
+
             'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:i a') : $order->confirm_at->format('g:i a') ) : "",
             'assign_time' => $order->assign_at ? date("g:i a", strtotime($order->assign_at)) : "",
             'enroute_time' => $order->enroute_at ? date("g:i a", strtotime($order->enroute_at)) : "",
             'start_time' => $order->start_at ? date("g:i a", strtotime($order->start_at)) : "",
             'done_time' => $order->done_at ? date("g:i a", strtotime($order->done_at)) : "",
-            'confirm_at' => $order->confirm_at,
-            'assign_at' => $order->assign_at,
-            'enroute_at' => $order->enroute_at,
-            'start_at' => $order->start_at,
-            'done_at' => $order->done_at,
+
+            'confirm_at' => $order->confirm_at ? (object) ["date"=>$order->confirm_at->format("Y-m-d H:i:s")] : null,
+            'assign_at' => $order->assign_at ? (object) ["date"=>$order->assign_at->format("Y-m-d H:i:s")] : null,
+            'enroute_at' => $order->enroute_at ? (object) ["date"=>$order->enroute_at->format("Y-m-d H:i:s")] : null,
+            'start_at' => $order->start_at ? (object) ["date"=>$order->start_at->format("Y-m-d H:i:s")] : null,
+            'done_at' => $order->done_at ? (object) ["date"=>$order->done_at->format("Y-m-d H:i:s")] : null,
+
             'links' => [
                 [
                     'rel' => 'self',

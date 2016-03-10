@@ -1,8 +1,6 @@
 <?php namespace App\Handlers\Events;
 
 use App\Events\OrderCancelledByWorker;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use App\Squeegy\PushNotification;
 
 class NotifyCustomerCancel extends BaseEventHandler {

@@ -2,8 +2,6 @@
 
 use App\Events\OrderConfirmed;
 use App\Squeegy\Payments;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class AuthOrder {
 

@@ -1,5 +1,6 @@
 <?php
 
+
 return [
 
     /*
@@ -16,10 +17,11 @@ return [
     | http://docs.aws.amazon.com/aws-sdk-php-2/guide/latest/configuration.html
     |
     */
-    'key'    => env('AWS_ACCESS_KEY_ID'),
-    'secret' => env('AWS_SECRET_ACCESS_KEY'),
-    'sns_arn' => env('AWS_ARN'),
-    'sns_arn_android' => env('AWS_ARN_ANDROID'),
+
+    'credentials' => [
+        'key'    => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -33,6 +35,15 @@ return [
     |
     */
     'region' => env('AWS_REGION', 'us-east-1'),
+    'version' => 'latest',
+
+    'sns_arn' => env('AWS_ARN'),
+    'sns_arn_android' => env('AWS_ARN_ANDROID'),
+
+    // You can override settings for specific services
+    'Sns' => [
+        'version' => '2010-03-31',
+    ],
 
     /*
     |--------------------------------------------------------------------------

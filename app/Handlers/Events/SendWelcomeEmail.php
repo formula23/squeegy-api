@@ -2,8 +2,6 @@
 
 use App\Events\UserRegistered;
 
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Illuminate\Support\Facades\Mail;
 use Auth;
 

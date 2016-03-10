@@ -16,8 +16,8 @@ class WasherActivityLogTransformer extends TransformerAbstract {
     public function transform(WasherActivityLog $washerActivityLog)
     {
         return [
-            'log_on' => $washerActivityLog->log_on,
-            'log_off' => $washerActivityLog->log_off,
+            'log_on' => $washerActivityLog->log_on ? (object) ["date"=>$washerActivityLog->log_on->format("Y-m-d H:i:s")] : null,
+            'log_off' => $washerActivityLog->log_off ? (object) ["date"=>$washerActivityLog->log_off->format("Y-m-d H:i:s")] : null,
         ];
     }
 

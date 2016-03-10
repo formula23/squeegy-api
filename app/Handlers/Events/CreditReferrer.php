@@ -3,9 +3,6 @@
 use App\Credit;
 use App\Events\OrderDone;
 
-use App\User;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Illuminate\Support\Facades\Config;
 
 class CreditReferrer {

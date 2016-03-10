@@ -3,8 +3,6 @@
 use App\Events\OrderCancelled;
 use App\Squeegy\Orders;
 use App\Squeegy\Payments;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 

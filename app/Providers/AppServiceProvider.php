@@ -1,6 +1,7 @@
 <?php namespace App\Providers;
 
 use Aloha\Twilio\Twilio;
+use Aws\Laravel\AwsFacade;
 use Aws\Sns\SnsClient;
 use Illuminate\Support\ServiceProvider;
 
@@ -42,12 +43,7 @@ class AppServiceProvider extends ServiceProvider {
         });
 
         $this->app->bind('\Aws\Sns\SnsClient', function() {
-            $aws_config = \Config::get('aws');
-            return SnsClient::factory(array(
-                'key' => $aws_config['key'],
-                'secret' => $aws_config['secret'],
-                'region'  => $aws_config['region']
-            ));
+			return AwsFacade::createClient('sns');
         });
 
 	}

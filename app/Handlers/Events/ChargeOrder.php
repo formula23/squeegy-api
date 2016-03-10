@@ -3,8 +3,6 @@
 use App\DiscountCode;
 use App\Events\OrderDone;
 use App\Squeegy\Payments;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class ChargeOrder {
 
