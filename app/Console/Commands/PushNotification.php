@@ -160,6 +160,15 @@ class PushNotification extends Command {
                 AND email LIKE \'%squeegyapp-tmp.com\'
             ');
 
+//  10% off - SUNNY10
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `users`, user_segments
+                WHERE `user_segments`.user_id = users.id
+                AND `last_wash_at` >= DATE_SUB(NOW(), INTERVAL 4 WEEK) AND `last_wash_at` <= DATE_SUB(NOW(), INTERVAL 2 WEEK)
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
+                ORDER BY `last_wash_at`
+            ');
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("user count: ".count($send_list));
