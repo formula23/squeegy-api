@@ -47,9 +47,10 @@ class Schedule
         $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
 
         if($this->postal_code == 90015) { //downtown pilot
+            $day = ( $this->now->dayOfWeek == 3 && $this->now->hour < 18 ? $this->now->format($day_format) : $this->now->next(3)->format($day_format) );
             $container=[];
-            $container[0]['day'] = $this->now->next(3)->format($day_format);
-            $container[0]['time_slots'][] = "8:00am - 6:00pm";
+            $container[0]['day'] = $day;
+            $container[0]['time_slots'][] = "10:00am - 6:00pm";
             return $container;
         }
 

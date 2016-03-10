@@ -1,9 +1,10 @@
-<?php namespace App;
+<?php
 
-use Bican\Roles\Contracts\HasRoleAndPermissionContract;
+
+namespace App;
 
 use Bican\Roles\Traits\HasRoleAndPermission;
-//use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
+use Bican\Roles\Contracts\HasRoleAndPermission as HasRoleAndPermissionContract;
 
 use Carbon\Carbon;
 use Illuminate\Auth\Authenticatable;

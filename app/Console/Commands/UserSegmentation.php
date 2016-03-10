@@ -43,7 +43,7 @@ class UserSegmentation extends Command {
 	 */
 	public function fire()
 	{
-		$segments = Segment::all()->lists('id','name');
+		$segments = Segment::lists('id','name')->all();
 
 		$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 

@@ -258,6 +258,7 @@ class OrdersController extends Controller {
 
         if( ! empty($request_data['rating']))
         {
+
             $order->rating = $request_data['rating'];
             $order->rating_comment = (!empty($request_data['rating_comment'])?$request_data['rating_comment']:"");
 
@@ -338,7 +339,7 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "movie20") {
+                    if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "joymode20") {
                         return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
                     }
 
@@ -493,7 +494,7 @@ class OrdersController extends Controller {
 
                 if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
 
-                if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id'))) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
+                if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id')->all())) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
 
                 $scope_discount = true;
                 $frequency_rate = 0;

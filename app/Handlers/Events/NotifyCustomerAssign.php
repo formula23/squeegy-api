@@ -3,8 +3,6 @@
 use App\Events\OrderAssign;
 
 use App\Squeegy\PushNotification;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class NotifyCustomerAssign extends BaseEventHandler {
 

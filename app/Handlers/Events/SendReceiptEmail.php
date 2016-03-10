@@ -2,8 +2,6 @@
 
 use App\Events\OrderDone;
 use Mail;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 use Stripe\Card;
 use Stripe\Customer;
 use Stripe\Stripe;
@@ -20,12 +18,11 @@ class SendReceiptEmail {
 		//
 	}
 
-	/**
-	 * Handle the event.
-	 *
-	 * @param  OrderComplete  $event
-	 * @return void
-	 */
+    /**
+     * Handle the event.
+     *
+     * @param OrderDone $event
+     */
 	public function handle(OrderDone $event)
 	{
         $order = $event->order;

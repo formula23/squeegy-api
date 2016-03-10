@@ -2,8 +2,6 @@
 
 use App\Events\OrderStart;
 use App\Squeegy\PushNotification;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class NotifyCustomerStart extends BaseEventHandler {
 

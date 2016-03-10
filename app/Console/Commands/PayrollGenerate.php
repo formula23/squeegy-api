@@ -47,6 +47,8 @@ class PayrollGenerate extends Command {
 		Carbon::setWeekStartsAt(Carbon::SUNDAY);
 		Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
+		$now_date = Carbon::now()->format('m-d-Y');
+
 		//COGs query
 		$cogs = DB::select('SELECT worker.id, worker.name,
 				sum(IF(services.id = \'1\', \'2000\', IF(services.id=3,\'1000\',\'3000\')) - IF(orders.discount_id=55, 900, IF(orders.discount_id=56,1200,IF(orders.discount_id=57,756,IF(orders.discount_id=58,900,IF(orders.discount_id=27,750,IF(orders.discount_id=28,950,charged)))))))/100 AS PromotionalCost
@@ -67,7 +69,11 @@ class PayrollGenerate extends Command {
 		}
 
 		$no_kit_rental = [2882];
-		$min_worker_id = [2149,2900,3198];
+		$min_worker_id = [
+			2149 => 500,
+			2900 => 500,
+			3198 => 600,
+		];
 
 		$orders = Order::select('id', 'vehicle_id', 'worker_id', 'service_id', 'etc', 'start_at', 'done_at', 'rating', DB::raw('TIMESTAMPDIFF(MINUTE,orders.start_at,orders.done_at) as wash_time'))
 			->with('worker')
@@ -106,8 +112,8 @@ class PayrollGenerate extends Command {
 			$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
 			@$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
 
-			if(in_array($order->worker->id, (array)$min_worker_id) && $orders_by_worker[$order->worker->id]['jobs']['total'] < 500) {
-				@$orders_by_worker[$order->worker->id]['minimum'] = max(0, 500 - $orders_by_worker[$order->worker->id]['jobs']['total']);
+			if(in_array($order->worker->id, array_keys($min_worker_id)) && $orders_by_worker[$order->worker->id]['jobs']['total'] < $min_worker_id[$order->worker_id]) {
+				@$orders_by_worker[$order->worker->id]['minimum'] = max(0, $min_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
 			}
 
 		}
@@ -125,7 +131,7 @@ class PayrollGenerate extends Command {
 
 			$view = view('payroll.time_sheet', $data);
 
-			$file_name = $worker['washer']['name'];
+			$file_name = $worker['washer']['name']."-".$now_date;
 			$dir_path['file'] = $file_name.".html";
 
 			$disk->put(implode("/", $dir_path), $view->render());
@@ -154,13 +160,17 @@ class PayrollGenerate extends Command {
 		}
 
 		$data=[];
-		foreach($orders_by_worker as $w) {
+		$data['week_of'] = $week_of;
+		foreach($orders_by_worker as $worker_id => $w) {
+
 			$total = ($w['jobs']['total'] + $w['minimum']) - $w['rental'];
-			$data['cogs'][] = [$w['washer']['name'], $w['promotional'], $total];
+			$cog = ($w['jobs']['total'] + $w['minimum']) - $w['promotional'];
+
+			$data['cogs'][] = [$w['washer']['name'], $cog, $w['promotional'], $w['rental'], $total];
 		}
 
 		$view = view('payroll.cogs', $data);
-		$dir_path['file'] = "COGs.txt";
+		$dir_path['file'] = "COGs-$now_date.html";
 		$disk->put(implode("/", $dir_path), $view->render());
 
 		$email_data['time_sheet'] = $disk->getDriver()->getAdapter()->getPathPrefix().implode("/", $dir_path);

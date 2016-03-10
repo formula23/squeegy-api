@@ -53,7 +53,6 @@ class Order extends Model {
         'status' => 'request'
     );
 
-
     protected $dates = [
         'confirm_at',
         'assign_at',

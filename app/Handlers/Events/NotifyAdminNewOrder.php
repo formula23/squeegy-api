@@ -3,8 +3,6 @@
 use App\Events\OrderScheduled;
 
 use App\User;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class NotifyAdminNewOrder {
 
