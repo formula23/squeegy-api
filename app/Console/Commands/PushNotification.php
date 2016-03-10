@@ -166,7 +166,7 @@ class PushNotification extends Command {
                 WHERE `user_segments`.user_id = users.id
                 AND `last_wash_at` >= DATE_SUB(NOW(), INTERVAL 4 WEEK) AND `last_wash_at` <= DATE_SUB(NOW(), INTERVAL 2 WEEK)
                 AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
-                ORDER BY `last_wash_at`
+                ORDER BY users.id
             ');
 
         $send_list = array_merge($users, $default_users);
