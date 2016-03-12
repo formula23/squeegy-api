@@ -26,7 +26,7 @@ class NotifyAdminNewOrder {
 	{
 		try {
 			//get assigned worker and andrew & dan
-			$admins = User::whereIn('id', [1,2])->get();
+			$admins = User::whereIn('id', [1,2,6119])->get();
 
 			foreach($admins as $admin) {
 				$event->twilio->message($admin->phone, trans('messages.order.new_schedule_order', [
