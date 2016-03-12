@@ -79,7 +79,7 @@ class AuthController extends Controller {
                 return $this->response->errorWrongArgs('Unable to login with Facebook');
             }
 
-            $facebook_user_qry = User::where('facebook_id', $request->input('facebook_id'))->orderBy('created_at', 'desc');
+            $facebook_user_qry = User::where('facebook_id', $request->input('facebook_id'))->where('tmp_fb', 0)->orderBy('created_at', 'desc');
             if($request->input('email') && $request->input('email') == $fb_user->getEmail()) $facebook_user_qry->orWhere('email', $request->input('email'));
 
             $facebook_user = $facebook_user_qry->first();
