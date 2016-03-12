@@ -47,7 +47,7 @@ class UserSegmentation extends Command {
 
 		$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
-		User::chunk(1000, function($users) use ($segments, $subscriber) {
+		User::customers()->chunk(1000, function($users) use ($segments, $subscriber) {
 
 			$all_subscriber_data=[];
 
