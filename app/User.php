@@ -299,7 +299,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function is_anon()
     {
-        return (bool)preg_match('/squeegyapp-tmp.com$/', $this->email);
+        return (bool)(preg_match('/squeegyapp-tmp.com$/', $this->email) || $this->tmp_fb);
     }
 
     public function device()

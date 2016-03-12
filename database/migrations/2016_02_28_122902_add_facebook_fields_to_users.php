@@ -17,6 +17,7 @@ class AddFacebookFieldsToUsers extends Migration {
 			$table->string('age_range', 50)->nullable()->after('facebook_id');
 			$table->string('birthday', 50)->nullable()->after('age_range');
 			$table->string('gender', 50)->nullable()->after('birthday');
+			$table->tinyInteger('tmp_fb')->default(0)->after('gender');
 		});
 	}
 
@@ -32,6 +33,7 @@ class AddFacebookFieldsToUsers extends Migration {
 			$table->dropColumn('age_range');
 			$table->dropColumn('birthday');
 			$table->dropColumn('gender');
+			$table->dropColumn('tmp_fb');
 		});
 	}
 

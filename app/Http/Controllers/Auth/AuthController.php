@@ -84,7 +84,14 @@ class AuthController extends Controller {
 
             $facebook_user = $facebook_user_qry->first();
 
-            if( ! $facebook_user) return $this->response->errorWrongArgs('You do not have an account. Please register.');
+            if( ! $facebook_user) {
+                $anon_user = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc')->first();
+                if($anon_user) {
+                    $anon_user->tmp_fb = 1;
+                    $anon_user->updateFbFields($fb_user);
+                }
+                return $this->response->errorWrongArgs('You do not have an account. Please register.');
+            }
 
             $facebook_user->updateFbFields($fb_user);
 

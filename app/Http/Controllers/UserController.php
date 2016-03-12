@@ -171,6 +171,7 @@ class UserController extends Controller {
 
         if( ! empty($data['password']) || ! empty($data['facebook_id'])) {
             $data['anon_pw_reset'] = 1;
+            $data['tmp_fb'] = 0;
         }
 
         $original_email = $request->user()->email;
