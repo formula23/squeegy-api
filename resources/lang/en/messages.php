@@ -6,6 +6,9 @@
  * Time: 16:49
  */
 
+use Illuminate\Support\Facades\Config;
+
+
 return [
     'profile' => [
         'phone_verify' => 'Squeegy verification code: :verify_code',
@@ -14,7 +17,8 @@ return [
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
-        'new_order_worker' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
+        'new_order_admin' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
+        'new_order_worker' => ':order_service #:order_id - :eta',
         'new_schedule_order' => 'New Scheduled :order_service #:order_id on :scheduled_day between :scheduled_time',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'SQUEEGY #:job_number',
@@ -70,5 +74,18 @@ return [
         'bad_rating' => [
             'subject' => 'Squeegy Bad Rating!',
         ]
-    ]
+    ],
+    'app_copy' => [
+        'referral_program' => [
+            'header' => 'Invite friends. Get free washes.',
+            'body' => 'Give a friend $'.(Config::get('squeegy.referral_program')['referred_amt']/100).' credit towards their first car wash and earn a $'.(Config::get('squeegy.referral_program')['referrer_amt']/100).' credit yourself.',
+            'share_msg' => 'Hey, I use Squeegy to wash my car on-demand and want to send you $'.(Config::get('squeegy.referral_program')['referred_amt']/100).' to try it. Use my referral code:',
+            'share_link' => 'Download the app here: https://www.squeegyapp.com/free-washes/',
+            'email_subject' => 'Get $'.(Config::get('squeegy.referral_program')['referred_amt']/100).' off your first car wash using Squeegy on-demand car wash!',
+        ],
+        'create_password' => [
+            'header' => 'Create a Password',
+            'body' => 'We\'ve added many new features to this version of Squeegy. To continue, please add a password to your account.',
+        ],
+    ],
 ];

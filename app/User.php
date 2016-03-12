@@ -85,7 +85,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function availableCredit()
     {
-        return (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
+        $avail_credits = (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
+        return ($avail_credits < 0 ? 0 : $avail_credits );
     }
 
     /**

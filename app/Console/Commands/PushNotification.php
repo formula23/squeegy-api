@@ -62,6 +62,7 @@ class PushNotification extends Command {
             ->where('email', 'dan@formula23.com')
             ->orWhere('email', 'sinisterindustries@yahoo.com')
             ->orWhere('email', 'chas2@f23.com')
+            ->orWhere('email', 'benjamin.grodsky@gmail.com')
             ->get();
 
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
@@ -158,6 +159,43 @@ class PushNotification extends Command {
                 WHERE users.id = `user_segments`.user_id
                 AND `segment_id` = 2
                 AND email LIKE \'%squeegyapp-tmp.com\'
+            ');
+
+        //  10% off - SUNNY10
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `users`, user_segments
+                WHERE `user_segments`.user_id = users.id
+                AND `last_wash_at` >= DATE_SUB(NOW(), INTERVAL 4 WEEK) AND `last_wash_at` <= DATE_SUB(NOW(), INTERVAL 2 WEEK)
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
+                ORDER BY users.id
+            ');
+
+        //  10% off - Thursday10
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `users`, user_segments
+                WHERE `user_segments`.user_id = users.id
+                AND `last_wash_at` >= DATE_SUB(NOW(), INTERVAL 8 WEEK)
+                AND `last_wash_at` <= DATE_SUB(NOW(), INTERVAL 4 WEEK)
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
+                ORDER BY users.id
+            ');
+
+        // 15% off - thursday15
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `users`, user_segments
+                WHERE `user_segments`.user_id = users.id
+                AND `last_wash_at` <= DATE_SUB(NOW(), INTERVAL 8 WEEK)
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
+                ORDER BY users.id
+            ');
+
+        // saturday15 - all anon past 2 weeks
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `user_segments`, users
+                WHERE `user_segments`.user_id = users.id
+                AND segment_id = 2
+                AND user_at >= DATE_SUB(NOW(), INTERVAL 2 WEEK)
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
             ');
 
         $send_list = array_merge($users, $default_users);

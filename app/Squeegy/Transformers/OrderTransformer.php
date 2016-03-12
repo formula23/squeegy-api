@@ -50,7 +50,7 @@ class OrderTransformer extends TransformerAbstract {
             'arrival_eta' => eta_real_time($order),
             'eta' => Orders::formatConfirmEta($order->eta),
             'eta_seconds' => Orders::getCurrentEta($order),
-            'etc' => ($order->start_at ? $order->start_at->addMinutes($order->etc)->format('g:i a') : ""),
+            'etc' => ($order->start_at ? real_time($order->start_at->addMinutes($order->etc)) : ""),
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'rating' => $order->rating,
