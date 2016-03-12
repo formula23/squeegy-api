@@ -152,6 +152,7 @@ return [
 		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 		Casinelli\CampaignMonitor\CampaignMonitorServiceProvider::class,
 		Aws\Laravel\AwsServiceProvider::class,
+        GeneaLabs\LaravelMixpanel\Providers\LaravelMixpanelServiceProvider::class,
 	],
 
 	/*
