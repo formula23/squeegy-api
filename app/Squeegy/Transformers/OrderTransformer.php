@@ -56,11 +56,11 @@ class OrderTransformer extends TransformerAbstract {
             'rating' => $order->rating,
             'platform' => $order->push_platform,
 
-            'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:i a') : $order->confirm_at->format('g:i a') ) : "",
-            'assign_time' => $order->assign_at ? date("g:i a", strtotime($order->assign_at)) : "",
-            'enroute_time' => $order->enroute_at ? date("g:i a", strtotime($order->enroute_at)) : "",
-            'start_time' => $order->start_at ? date("g:i a", strtotime($order->start_at)) : "",
-            'done_time' => $order->done_at ? date("g:i a", strtotime($order->done_at)) : "",
+            'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:ia') : $order->confirm_at->format('g:ia') ) : "",
+            'assign_time' => $order->assign_at ? date("g:ia", strtotime($order->assign_at)) : "",
+            'enroute_time' => $order->enroute_at ? date("g:ia", strtotime($order->enroute_at)) : "",
+            'start_time' => $order->start_at ? date("g:ia", strtotime($order->start_at)) : "",
+            'done_time' => $order->done_at ? date("g:ia", strtotime($order->done_at)) : "",
 
             'confirm_at' => $order->confirm_at ? (object) ["date"=>$order->confirm_at->format("Y-m-d H:i:s")] : null,
             'assign_at' => $order->assign_at ? (object) ["date"=>$order->assign_at->format("Y-m-d H:i:s")] : null,

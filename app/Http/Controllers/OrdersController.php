@@ -428,6 +428,7 @@ class OrdersController extends Controller {
         $update_fields = [
             'start_at',
             'done_at',
+            'worker_id',
         ];
 
         foreach($update_fields as $update_field) {
