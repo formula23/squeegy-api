@@ -54,6 +54,7 @@ class OrderTransformer extends TransformerAbstract {
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'rating' => $order->rating,
+            'platform' => $order->push_platform,
 
             'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:i a') : $order->confirm_at->format('g:i a') ) : "",
             'assign_time' => $order->assign_at ? date("g:i a", strtotime($order->assign_at)) : "",
