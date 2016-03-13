@@ -115,7 +115,7 @@ class OrdersController extends Controller {
 
             } else if($request->input($status_time.'_before') || $request->input($status_time.'_after')) {
 
-                foreach(['before'=>'<', 'after'=>'>'] as $when=>$operator) {
+                foreach(['before'=>'<=', 'after'=>'>='] as $when=>$operator) {
                     if( ! $request->input($status_time.'_'.$when)) continue;
                     $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $operator, $request->input($status_time.'_'.$when));
                 }
@@ -428,6 +428,7 @@ class OrdersController extends Controller {
         $update_fields = [
             'start_at',
             'done_at',
+            'worker_id',
         ];
 
         foreach($update_fields as $update_field) {
