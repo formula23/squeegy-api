@@ -85,7 +85,7 @@ class PayrollGenerate extends Command {
 
 		$orders_by_worker = [];
 
-		$week_of = $orders->first()->done_at->startOfWeek()->format("M dS");
+		$week_of = $orders->first()->done_at->startOfWeek()->format("M jS");
 
 		foreach($orders as $order) {
 
@@ -154,7 +154,8 @@ class PayrollGenerate extends Command {
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
 					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
-					$message->bcc('tech@squeegyapp.com', 'Squeegy');
+					$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
+					$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
 				}
 
 				$message->subject("Squeegy Pay - Week of ".$email_data['week_of']);
