@@ -146,10 +146,14 @@ class PayrollGenerate extends Command {
 
 			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
 			{
+				$message->from('payments@squeegyapp.com', 'Squeegy Payments');
+                $message->replyTo('tech@squeegyapp.com', 'Squeegy');
+
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('tech@squeegyapp.com', 'Squeegy');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
+					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
 					$message->bcc('tech@squeegyapp.com', 'Squeegy');
 				}
 
