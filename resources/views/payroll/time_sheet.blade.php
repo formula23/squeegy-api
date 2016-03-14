@@ -66,7 +66,7 @@
 
     @if($washer_info['minimum'])
     <tr>
-        <td colspan="8" class="text-right"><strong>Supplement weekly min. ($500):</strong></td>
+        <td colspan="8" class="text-right"><strong>Supplement weekly min. (${{ $weekly_min }}):</strong></td>
         <td>${{ number_format($washer_info['minimum'], 2) }}</td>
     </tr>
     @endif
