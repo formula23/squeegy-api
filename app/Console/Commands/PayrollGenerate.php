@@ -71,7 +71,7 @@ class PayrollGenerate extends Command {
 		$no_kit_rental = [2882];
 		$min_worker_id = [
 			2149 => 500,
-			2900 => 500,
+//			2900 => 500,
 			3198 => 600,
 		];
 
