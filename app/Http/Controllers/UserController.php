@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -173,6 +174,9 @@ class UserController extends Controller {
             $data['anon_pw_reset'] = 1;
             $data['tmp_fb'] = 0;
         }
+
+        Log::info('Data object:');
+        Log::info($data);
 
         $original_email = $request->user()->email;
 
