@@ -51,6 +51,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         'app_version',
         'referral_code',
         'anon_pw_reset',
+        'tmp_fb',
         'device_id',
     ];
 
