@@ -23,8 +23,6 @@ class Orders {
 
     const CLOSING_THRESHOLD = 20;
     const BASE_LEAD_TIME = 20;
-    const SUV_SURCHARGE = 500;
-    const SUV_SURCHARGE_MULTIPLIER = 2;
     const CLOSING_BUFFER = 10;
 
     protected static $travel_time = 30;
@@ -211,26 +209,26 @@ class Orders {
      * @param Order $order
      * @return int
      */
-    public static function getPrice(Order $order)
-    {
-        return $order->service->price;
-
-        $base_price = $order->service->price;
-
-        switch($order->vehicle->type)
-        {
-            case "SUV":
-                $base_price += self::SUV_SURCHARGE;
-                break;
-            case "SUV+":
-            case "Truck":
-            case "Van":
-                $base_price += self::SUV_SURCHARGE * self::SUV_SURCHARGE_MULTIPLIER;
-                break;
-        }
-
-        return $base_price;
-    }
+//    public static function getPrice(Order $order)
+//    {
+//        return $order->service->price;
+//
+//        $base_price = $order->service->price;
+//
+//        switch($order->vehicle->type)
+//        {
+//            case "SUV":
+//                $base_price += self::SUV_SURCHARGE;
+//                break;
+//            case "SUV+":
+//            case "Truck":
+//            case "Van":
+//                $base_price += self::SUV_SURCHARGE * self::SUV_SURCHARGE_MULTIPLIER;
+//                break;
+//        }
+//
+//        return $base_price;
+//    }
 
     /**
      * @param Order $order

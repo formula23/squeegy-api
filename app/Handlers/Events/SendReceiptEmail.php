@@ -49,7 +49,7 @@ class SendReceiptEmail {
                 $mergevars = [
                     'ORDER_ID' => $order->id,
                     'ORDER_DATE' => $order->done_at->format('m/d/Y'),
-                    'ORDER_TIME' => $order->done_at->format('g:i a'),
+                    'ORDER_TIME' => $order->done_at->format('g:ia'),
                     'ORDER_NUMBER' => $order->job_number,
                     'SERVICE' => $order->service->name.' Wash',
                     'SERVICE_PRICE' => number_format($order->price/100, 2),
@@ -65,6 +65,7 @@ class SendReceiptEmail {
                     'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
                     'LICENSE_PLATE' => $vehicle->license_plate,
                     'ADDRESS' => $location['street'].", ".( ! empty($location['city']) ? $location['city'].", " : "" ).$location['state']." ".$location['zip'],
+                    'ORDER_DETAILS' => view('emails.partials.receipt_details', compact(['order']))->render(),
                 ];
 
                 if($default_card) {
