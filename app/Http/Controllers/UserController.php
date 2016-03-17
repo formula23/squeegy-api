@@ -175,9 +175,6 @@ class UserController extends Controller {
             $data['tmp_fb'] = 0;
         }
 
-        Log::info('Data object:');
-        Log::info($data);
-
         $original_email = $request->user()->email;
 
         $request->user()->update($data);
