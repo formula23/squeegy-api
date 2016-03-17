@@ -221,15 +221,13 @@ class OrdersController extends Controller {
             $data['total'] -= $data['credit'];
         }
 
-//        \DB::enableQueryLog();
-
         $order = new Order($data);
         $request->user()->orders()->save($order);
 
         if($surcharge = $order->vehicleSurCharge()) {
             $order->price += $surcharge;
             $order->total = $order->price;
-            $order_details[] = new OrderDetail(['name'=>'Surcharge', 'amount'=>$surcharge]);
+            $order_details[] = new OrderDetail(['name'=>$order->vehicle->type.' Surcharge', 'amount'=>$surcharge]);
         }
 
         $order->order_details()->saveMany($order_details);
@@ -239,8 +237,6 @@ class OrdersController extends Controller {
         }
 
         $order->save();
-
-//        dd(\DB::getQueryLog());
 
         return $this->response->withItem($order, new OrderTransformer());
 
