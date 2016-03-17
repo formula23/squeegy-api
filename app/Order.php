@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -61,6 +62,8 @@ class Order extends Model {
         'done_at',
         'cancel_at',
     ];
+
+//    public $hasSurcharge = false;
 
     /**
      * @param $value
@@ -241,6 +244,14 @@ class Order extends Model {
             return $q->get();
         }
         return $collection;
+    }
+
+    public function vehicleSurCharge()
+    {
+        if($this->vehicle->hasSurCharge()) {
+            return (int)Config::get('squeegy.vehicle_surcharge.'.$this->service->id);
+        }
+        return 0;
     }
 
 }

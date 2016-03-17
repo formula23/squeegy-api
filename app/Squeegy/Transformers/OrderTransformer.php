@@ -116,6 +116,9 @@ class OrderTransformer extends TransformerAbstract {
     public function includeService(Order $order)
     {
         $service = $order->service;
+        if($order->vehicle->hasSurCharge()) {
+            $service->name .= " + $".number_format($order->vehicleSurCharge()/100)."(".$order->vehicle->type.")";
+        }
         return $this->item($service, new ServiceTransformer);
     }
 
