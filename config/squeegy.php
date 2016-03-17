@@ -40,5 +40,10 @@ return [
     'referral_program' => [
         'referrer_amt' => env('REFERRER_AMT'),
         'referred_amt' => env('REFERRED_AMT'),
+    ],
+    'vehicle_surcharge' => [
+        '1' => env('EXPRESS_SURCHARGE'),
+        '2' => env('CLASSIC_SURCHARGE'),
+        '3' => env('SQUEEGY_SURCHARGE'),
     ]
 ];
