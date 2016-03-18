@@ -146,8 +146,14 @@ class OrderTransformer extends TransformerAbstract {
             $card->exp_month=null;
             $card->exp_year=null;
         } else {
-            $payments = new Payments($order->customer->stripe_customer_id);
-            $card = $payments->card_charged($order->stripe_charge_id);
+            try {
+                $payments = new Payments($order->customer->stripe_customer_id);
+                $card = $payments->card_charged($order->stripe_charge_id);
+            } catch (\Exception $e) {
+                Log::info($e->getMessage());
+                Log::info($order->id);
+            }
+
         }
 //        $charge_id = ($order->auth_transaction ? $order->auth_transaction->charge_id : $order->stripe_charge_id );
 //        if($charge_id) {
