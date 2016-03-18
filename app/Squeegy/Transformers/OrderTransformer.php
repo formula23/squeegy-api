@@ -13,6 +13,7 @@ use App\Squeegy\Orders;
 use App\Order;
 use App\Squeegy\Payments;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
 use Stripe\Card;
 
@@ -116,8 +117,9 @@ class OrderTransformer extends TransformerAbstract {
     public function includeService(Order $order)
     {
         $service = $order->service;
+
         if($order->vehicle->hasSurCharge()) {
-            $service->name .= " + $".number_format($order->vehicleSurCharge()/100)."(".$order->vehicle->type.")";
+            $service->name = $service->getOriginal('name')." + $".number_format($order->vehicleSurCharge()/100)."(".$order->vehicle->type.")";
         }
         return $this->item($service, new ServiceTransformer);
     }

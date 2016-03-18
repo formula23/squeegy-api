@@ -72,7 +72,7 @@ function current_eta(Order $order)
                 break;
             case 5:
             case 6:
-                $current_eta = $order->start_at->format('g:i a');
+                $current_eta = $order->start_at->format('g:ia');
                 break;
             default:
                 $current_eta = "";
