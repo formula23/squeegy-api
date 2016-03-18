@@ -38,7 +38,7 @@ class OrdersController extends Controller {
      */
     protected $order_seq = null;
 
-    protected $limit = null;
+    protected $limit = 100;
 
     /**
      * @param Request $request
