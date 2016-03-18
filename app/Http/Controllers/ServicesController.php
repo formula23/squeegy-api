@@ -63,7 +63,7 @@ class ServicesController extends Controller {
         $availability = Orders::availability($request->input('lat'), $request->input('lng'));
 
         try {
-            $eta_log = new EtaLog([
+            $etalog_data = [
                 'eta' => $availability["time"],
                 'city' => Orders::$city,
                 'state' => Orders::$state,
@@ -72,8 +72,11 @@ class ServicesController extends Controller {
                 'longitude' => Orders::$lng,
                 'message' => $availability["code"],
                 'ip_address' => $request->getClientIp(),
-            ]);
-            Auth::user()->eta_logs()->save($eta_log);
+            ];
+            if(Auth::user()) {
+                $etalog_data['user_id'] = Auth::user()->id;
+            }
+            EtaLog::create($etalog_data);
 
         } catch(\Exception $e) {
             \Bugsnag::notifyException($e);
