@@ -108,6 +108,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return ($avail_credits < 0 ? 0 : $avail_credits );
     }
 
+    public function eta_logs()
+    {
+        return $this->hasMany('App\EtaLog');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

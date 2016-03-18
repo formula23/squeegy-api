@@ -5,6 +5,7 @@ use Illuminate\Foundation\Bus\DispatchesCommands;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Chrisbjr\ApiGuard\Repositories\ApiKeyRepository;
 use Chrisbjr\ApiGuard\Repositories\ApiLogRepository;
+use Illuminate\Support\Facades\Auth;
 use League\Fractal\Manager;
 use EllipseSynergie\ApiResponse\Laravel\Response;
 use Input;
@@ -207,6 +208,12 @@ abstract class Controller extends ApiGuardController {
                     $this->apiLog->app_version = $request->header('X-Application-Version');
                     $this->apiLog->save();
 
+                    if($this->apiLog->app_version != Auth::user()->app_version) {
+                        Auth::user()->app_version = $this->apiLog->app_version;
+                        Auth::user()->save();
+                    }
+
+                    $request->api_log_id = $this->apiLog->id;
                 }
             }
             $this->initialize();
@@ -214,7 +221,6 @@ abstract class Controller extends ApiGuardController {
         }, ['apiMethods' => $this->apiMethods]);
 
     }
-
 
     public function buildFailedValidationResponse(Request $request, array $errors)
     {
