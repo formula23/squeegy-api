@@ -17,7 +17,7 @@ class PaymentMethodTransformer
 
     public function transform($card) {
 
-        if( ! $card) return [];
+        if(!$card->brand || !$card->last4) return [];
 
         $data = [
             'brand'=>$card->brand,
