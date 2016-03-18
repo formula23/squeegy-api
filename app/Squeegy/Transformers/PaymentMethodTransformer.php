@@ -19,12 +19,16 @@ class PaymentMethodTransformer
 
         if( ! $card) return [];
 
-        return [
-//            'identifier'=>$card->id,
+        $data = [
             'brand'=>$card->brand,
             'last4'=>$card->last4,
-            'exp'=>str_pad($card->exp_month,2,'0',STR_PAD_LEFT)."/".substr($card->exp_year,-2),
         ];
+
+        if($card->exp_month && $card->exp_year) {
+            $data['exp'] = str_pad($card->exp_month,2,'0',STR_PAD_LEFT)."/".substr($card->exp_year,-2);
+        }
+
+        return $data;
 
     }
 

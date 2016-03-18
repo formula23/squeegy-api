@@ -139,12 +139,21 @@ class OrderTransformer extends TransformerAbstract {
 
     public function includePaymentMethod(Order $order)
     {
-        $card=null;
-        $charge_id = ($order->auth_transaction ? $order->auth_transaction->charge_id : $order->stripe_charge_id );
-        if($charge_id) {
+        $card= new \stdClass();
+        if($order->auth_transaction) {
+            $card->brand = $order->auth_transaction->card_type;
+            $card->last4 = $order->auth_transaction->last_four;
+            $card->exp_month=null;
+            $card->exp_year=null;
+        } else {
             $payments = new Payments($order->customer->stripe_customer_id);
-            $card = $payments->card_charged($charge_id);
+            $card = $payments->card_charged($order->stripe_charge_id);
         }
+//        $charge_id = ($order->auth_transaction ? $order->auth_transaction->charge_id : $order->stripe_charge_id );
+//        if($charge_id) {
+//            $payments = new Payments($order->customer->stripe_customer_id);
+//            $card = $payments->card_charged($charge_id);
+//        }
 
         return $this->item($card, new PaymentMethodTransformer());
     }
