@@ -215,12 +215,6 @@ class OrdersController extends Controller {
 
         $data['total'] = $data['price'];
 
-        ///use available credits
-        if($request->user()->availableCredit()) {
-            $data['credit'] = min($service->price, $request->user()->availableCredit());
-            $data['total'] -= $data['credit'];
-        }
-
 //        \DB::enableQueryLog();
 
         $order = new Order($data);
@@ -230,6 +224,12 @@ class OrdersController extends Controller {
             $order->price += $surcharge;
             $order->total = $order->price;
             $order_details[] = new OrderDetail(['name'=>'Surcharge', 'amount'=>$surcharge]);
+        }
+
+        ///use available credits
+        if($request->user()->availableCredit()) {
+            $order->credit = min($order->total, $request->user()->availableCredit());
+            $order->total -= $order->credit;
         }
 
         $order->order_details()->saveMany($order_details);
