@@ -223,7 +223,7 @@ class OrdersController extends Controller {
         if($surcharge = $order->vehicleSurCharge()) {
             $order->price += $surcharge;
             $order->total = $order->price;
-            $order_details[] = new OrderDetail(['name'=>'Surcharge', 'amount'=>$surcharge]);
+            $order_details[] = new OrderDetail(['name'=>$order->vehicle->type.' Surcharge', 'amount'=>$surcharge]);
         }
 
         ///use available credits
@@ -239,8 +239,6 @@ class OrdersController extends Controller {
         }
 
         $order->save();
-
-//        dd(\DB::getQueryLog());
 
         return $this->response->withItem($order, new OrderTransformer());
 

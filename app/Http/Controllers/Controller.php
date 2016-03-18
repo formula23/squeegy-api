@@ -15,6 +15,8 @@ use Illuminate\Support\Str;
 use App;
 use Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 abstract class Controller extends ApiGuardController {
 
@@ -212,4 +214,11 @@ abstract class Controller extends ApiGuardController {
         }, ['apiMethods' => $this->apiMethods]);
 
     }
+
+
+    public function buildFailedValidationResponse(Request $request, array $errors)
+    {
+        return new JsonResponse($errors, 422);
+    }
+
 }
