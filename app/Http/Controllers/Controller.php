@@ -208,10 +208,13 @@ abstract class Controller extends ApiGuardController {
                     $this->apiLog->app_version = $request->header('X-Application-Version');
                     $this->apiLog->save();
 
-                    if($this->apiLog->app_version != Auth::user()->app_version) {
-                        Auth::user()->app_version = $this->apiLog->app_version;
-                        Auth::user()->save();
-                    }
+                    try {
+                        if($this->apiLog->app_version != Auth::user()->app_version) {
+                            Auth::user()->app_version = $this->apiLog->app_version;
+                            Auth::user()->save();
+                        }
+                    } catch (\Exception $e) {}
+
 
                     $request->api_log_id = $this->apiLog->id;
                 }
