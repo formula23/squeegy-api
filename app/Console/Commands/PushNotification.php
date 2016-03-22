@@ -198,6 +198,26 @@ class PushNotification extends Command {
                 AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
             ');
 
+        // test eta - first half - 4931 total at this time - 3/22/16
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND `segment_id` = 2
+                AND email LIKE \'%squeegyapp-tmp.com\'
+                order by email
+                limit 2465
+            ');
+
+        // test eta - second half
+//        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+//                FROM users, `user_segments`
+//                WHERE users.id = `user_segments`.user_id
+//                AND `segment_id` = 2
+//                AND email LIKE \'%squeegyapp-tmp.com\'
+//                order by email
+//                limit 2466, 2465
+//            ');
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("user count: ".count($send_list));
