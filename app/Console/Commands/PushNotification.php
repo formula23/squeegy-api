@@ -225,7 +225,7 @@ class PushNotification extends Command {
                 AND last_wash_at < \'2016-02-07\'
 				ORDER BY last_wash_at
             ');
-        
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("user count: ".count($send_list));

@@ -66,6 +66,7 @@ class SendReceiptEmail {
                     'LICENSE_PLATE' => $vehicle->license_plate,
                     'ADDRESS' => $location['street'].", ".( ! empty($location['city']) ? $location['city'].", " : "" ).$location['state']." ".$location['zip'],
                     'ORDER_DETAILS' => view('emails.partials.receipt_details', compact(['order']))->render(),
+                    'REFERRAL_CODE' => $customer->referral_code,
                 ];
 
                 if($default_card) {
