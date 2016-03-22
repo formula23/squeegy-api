@@ -272,6 +272,11 @@ class Orders {
 
         Log::info(self::$postal_code);
 
+        $next_available=[];
+        $next_available['time']=8;
+        $next_available['worker_id']=1847;
+        return $next_available;
+
         $active_workers_qry = User::activeWashers(self::$postal_code);
 
         $active_workers = $active_workers_qry->get();

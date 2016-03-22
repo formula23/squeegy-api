@@ -82,9 +82,6 @@ class ServicesController extends Controller {
             \Bugsnag::notifyException($e);
         }
 
-        $availability['lead_time'] = 13;
-        $availability['worker_id'] = 1847;
-        
         \Log::info($availability);
 
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer());
