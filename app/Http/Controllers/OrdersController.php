@@ -347,6 +347,10 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
+                    if( $availability['accept'] && $availability['schedule'] && ! $order->schedule ) {
+                        return $this->response->errorWrongArgs(trans("messages.service.only_schedule"));
+                    }
+
                     if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "joymode20") {
                         return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
                     }

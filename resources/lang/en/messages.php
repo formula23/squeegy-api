@@ -24,7 +24,7 @@ return [
         'statement_descriptor' => 'SQUEEGY #:job_number',
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
-            'schedule' => 'We have received your scheduled wash, a washer will be assigned to you approximately one hour before your scheduled window. Thank you for using Squeegy!',
+            'schedule' => 'We have received your scheduled wash, a washer will be assigned to you at least one hour prior your scheduled window. Thank you for using Squeegy!',
             'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
@@ -59,6 +59,7 @@ return [
         'not_available' => 'Squeegy not available at this time. Please try again later.',
         'error' => 'There was an error. Please try again.',
         'schedule_param_req' => 'To schedule an order, please select a day and time.',
+        'only_schedule' => 'Only scheduling available at this time. Please try again.',
         'schedule_in_past' => 'A wash can\'t be scheduled in the past.',
     ],
     'emails' => [
