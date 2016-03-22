@@ -59,7 +59,7 @@ return [
         'not_available' => 'Squeegy not available at this time. Please try again later.',
         'error' => 'There was an error. Please try again.',
         'schedule_param_req' => 'To schedule an order, please select a day and time.',
-        'only_schedule' => 'Only scheduling available at this time. Please try again.',
+        'only_schedule' => 'Only scheduling available at this time. Please go back and try again.',
         'schedule_in_past' => 'A wash can\'t be scheduled in the past.',
     ],
     'emails' => [
