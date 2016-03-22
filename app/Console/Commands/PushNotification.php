@@ -218,6 +218,14 @@ class PushNotification extends Command {
                 limit 2466, 2465
             ');
 
+        // 3/22/16 - 363 users that haven't had a wash in 6 weeks.
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND last_wash_at < \'2016-02-07\'
+				ORDER BY last_wash_at
+            ');
+        
         $send_list = array_merge($users, $default_users);
 
         $this->info("user count: ".count($send_list));
