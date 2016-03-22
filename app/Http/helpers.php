@@ -45,7 +45,7 @@ function eta_real_time(Order $order, $round = 5)
 function real_time(Carbon $time, $round=5)
 {
     $arrival_time = Carbon::createFromTimestamp(ceil(strtotime($time->format('Y-m-d H:i')) / ($round * 60)) * ($round * 60));
-    return $arrival_time->format('g:i a');
+    return $arrival_time->format('g:ia');
 }
 
 function current_eta(Order $order)

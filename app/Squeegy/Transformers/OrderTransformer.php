@@ -62,12 +62,14 @@ class OrderTransformer extends TransformerAbstract {
             'enroute_time' => $order->enroute_at ? date("g:ia", strtotime($order->enroute_at)) : "",
             'start_time' => $order->start_at ? date("g:ia", strtotime($order->start_at)) : "",
             'done_time' => $order->done_at ? date("g:ia", strtotime($order->done_at)) : "",
+            'cancel_time' => $order->cancel_at ? date("g:ia", strtotime($order->cancel_at)) : "",
 
             'confirm_at' => $order->confirm_at ? (object) ["date"=>$order->confirm_at->format("Y-m-d H:i:s")] : null,
             'assign_at' => $order->assign_at ? (object) ["date"=>$order->assign_at->format("Y-m-d H:i:s")] : null,
             'enroute_at' => $order->enroute_at ? (object) ["date"=>$order->enroute_at->format("Y-m-d H:i:s")] : null,
             'start_at' => $order->start_at ? (object) ["date"=>$order->start_at->format("Y-m-d H:i:s")] : null,
             'done_at' => $order->done_at ? (object) ["date"=>$order->done_at->format("Y-m-d H:i:s")] : null,
+            'cancel_at' => $order->cancel_at ? (object) ["date"=>$order->cancel_at->format("Y-m-d H:i:s")] : null,
 
             'links' => [
                 [
