@@ -24,6 +24,10 @@ class PushNotification extends Command {
     protected $message = "";
     protected $user=null;
 
+    protected $total_count=0;
+    protected $send_success=0;
+    protected $send_fail=0;
+
 	/**
 	 * Create a new command instance.
 	 *
@@ -226,9 +230,10 @@ class PushNotification extends Command {
 				ORDER BY last_wash_at
             ');
 
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm` from users where id = 71');
+
         $send_list = array_merge($users, $default_users);
 
-        $this->info("user count: ".count($send_list));
         $this->info("publish message: ".$this->message);
 
         $this->sns_client = \App::make('Aws\Sns\SnsClient');
@@ -268,6 +273,9 @@ class PushNotification extends Command {
             }
         }
 
+        $this->info("Total: ".count($send_list));
+        $this->info("Success:".$this->send_success);
+        $this->info("Failed:".$this->send_fail);
         $this->info("Done!");
 
 	}
@@ -359,9 +367,10 @@ class PushNotification extends Command {
                 }
 
                 $this->_output($this->user->id, $endpoint_arn);
-
+                $this->send_success++;
             } catch(\Exception $e) {
-                $this->error($e->getMessage().'- '.$this->user->id.": ".$endpoint_arn);
+                $this->send_fail++;
+                $this->error('Error - '.$this->user->id.": ".$endpoint_arn);
             }
         }
 

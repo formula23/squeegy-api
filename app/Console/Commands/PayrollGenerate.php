@@ -153,6 +153,8 @@ class PayrollGenerate extends Command {
 					$message->to('tech@squeegyapp.com', 'Squeegy');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
+					$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
+					$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
 					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
 					$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
 					$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
