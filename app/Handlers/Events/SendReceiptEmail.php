@@ -81,6 +81,7 @@ class SendReceiptEmail {
 
                 $headers->addTextHeader('X-MC-Template', $template);
 
+                $message->replyTo(config('squeegy.emails.support'), config('squeegy.emails.support_name'));
                 $message->from(config('squeegy.emails.from'), config('squeegy.emails.from_name'));
                 $message->bcc(config('squeegy.emails.bcc'));
 
