@@ -27,6 +27,7 @@ class PushNotification extends Command {
     protected $total_count=0;
     protected $send_success=0;
     protected $send_fail=0;
+    protected $succes_ids=[];
 
 	/**
 	 * Create a new command instance.
@@ -230,7 +231,11 @@ class PushNotification extends Command {
 				ORDER BY last_wash_at
             ');
 
-        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm` from users where id = 71');
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `user_segments`
+                WHERE last_wash_at >= \'2016-02-08\'
+                AND last_wash_at <= \'2016-03-11 23:59:59\'
+                ORDER BY last_wash_at');
 
         $send_list = array_merge($users, $default_users);
 
@@ -276,6 +281,8 @@ class PushNotification extends Command {
         $this->info("Total: ".count($send_list));
         $this->info("Success:".$this->send_success);
         $this->info("Failed:".$this->send_fail);
+        $this->info("Success Ids:");
+        $this->info(implode(",", $this->succes_ids));
         $this->info("Done!");
 
 	}
@@ -368,6 +375,8 @@ class PushNotification extends Command {
 
                 $this->_output($this->user->id, $endpoint_arn);
                 $this->send_success++;
+                $this->succes_ids[] = $this->user->id;
+
             } catch(\Exception $e) {
                 $this->send_fail++;
                 $this->error('Error - '.$this->user->id.": ".$endpoint_arn);
