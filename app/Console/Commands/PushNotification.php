@@ -232,8 +232,9 @@ class PushNotification extends Command {
             ');
 
         $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
-                FROM `user_segments`
-                WHERE last_wash_at >= \'2016-02-08\'
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND last_wash_at >= \'2016-02-08\'
                 AND last_wash_at <= \'2016-03-11 23:59:59\'
                 ORDER BY last_wash_at');
 
