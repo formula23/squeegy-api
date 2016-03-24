@@ -59,7 +59,12 @@ class WashersController extends Controller {
     {
         $latest_duty_status = Auth::user()->activity_logs()->orderBy('updated_at', 'desc')->first();
 //dd($latest_duty_status->toArray());
-        return $this->response->withArray(['status'=>($latest_duty_status->log_off ? "off" : "on" ), 'login'=>$latest_duty_status->login, 'logout'=>$latest_duty_status->logout, 'log_on'=>$latest_duty_status->log_on, 'log_off'=>$latest_duty_status->log_off]);
+        return $this->response->withArray([
+            'status'=>($latest_duty_status->log_off || !$latest_duty_status->log_on ? "off" : "on" ),
+            'login'=>$latest_duty_status->login,
+            'logout'=>$latest_duty_status->logout,
+            'log_on'=>$latest_duty_status->log_on,
+            'log_off'=>$latest_duty_status->log_off]);
 
     }
 
