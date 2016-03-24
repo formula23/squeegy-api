@@ -42,11 +42,13 @@ class WashersController extends Controller {
 
         if($request->input('status') == 'onduty') {
             $washer_locations_qry->join('washer_activity_logs', 'washer_locations.user_id' ,'=', 'washer_activity_logs.user_id')
-                ->whereNull('washer_activity_logs.log_off');
+                ->whereNotNull('washer_activity_logs.login')
+                ->whereNull('washer_activity_logs.logout')
+                ->groupby('washer_locations.user_id');
         }
 
         $washer_locations = $washer_locations_qry->get();
-
+//dd($washer_locations);
         return $this->response->withCollection($washer_locations, new WasherLocationTransformer());
     }
 
@@ -56,8 +58,8 @@ class WashersController extends Controller {
     public function dutyStatus()
     {
         $latest_duty_status = Auth::user()->activity_logs()->orderBy('updated_at', 'desc')->first();
-
-        return $this->response->withArray(['status'=>($latest_duty_status->log_off ? "off" : "on" ), 'log_on'=>$latest_duty_status->log_on, 'log_off'=>$latest_duty_status->log_off]);
+//dd($latest_duty_status->toArray());
+        return $this->response->withArray(['status'=>($latest_duty_status->log_off ? "off" : "on" ), 'login'=>$latest_duty_status->login, 'logout'=>$latest_duty_status->logout, 'log_on'=>$latest_duty_status->log_on, 'log_off'=>$latest_duty_status->log_off]);
 
     }
 

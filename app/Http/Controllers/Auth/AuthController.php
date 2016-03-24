@@ -3,6 +3,7 @@
 use App\Events\UserCreated;
 use App\Squeegy\Payments;
 use App\User;
+use Carbon\Carbon;
 use Exception;
 
 use Facebook\Exceptions\FacebookSDKException;
@@ -164,6 +165,16 @@ class AuthController extends Controller {
                 }
             }
 
+            //if washer - update login record on activity table
+            if(Auth::user()->can('set.duty')) {
+                Auth::user()->activity_logs()->whereNull('logout')->update([
+                    'logout' => Carbon::now(),
+                    'log_on' => Carbon::now(),
+                    'log_off' => Carbon::now(),
+                ]);
+                Auth::user()->activity_logs()->create(['login' => Carbon::now()]);
+            }
+
             return $this->response->withItem($this->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 
@@ -256,6 +267,10 @@ class AuthController extends Controller {
      */
     public function getLogout()
     {
+        Auth::user()->activity_logs()->whereNull('logout')->update([
+            'logout' => Carbon::now(),
+        ]);
+
         Auth::logout();
 
         return $this->response->withArray([
@@ -311,7 +326,6 @@ class AuthController extends Controller {
         }
         return $token;
     }
-
 
     protected function user()
     {
