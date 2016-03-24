@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
@@ -169,8 +170,9 @@ class UserController extends Controller {
             }
         }
 
-        if( ! empty($data['password'])) {
+        if( ! empty($data['password']) || ! empty($data['facebook_id'])) {
             $data['anon_pw_reset'] = 1;
+            $data['tmp_fb'] = 0;
         }
 
         $original_email = $request->user()->email;

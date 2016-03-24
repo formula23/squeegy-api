@@ -10,6 +10,7 @@ use App\Squeegy\Transformers\ServiceCoordTransformer;
 use App\Service;
 use App\ServiceCoord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Lang;
 
@@ -62,7 +63,7 @@ class ServicesController extends Controller {
         $availability = Orders::availability($request->input('lat'), $request->input('lng'));
 
         try {
-            EtaLog::create([
+            $etalog_data = [
                 'eta' => $availability["time"],
                 'city' => Orders::$city,
                 'state' => Orders::$state,
@@ -71,7 +72,12 @@ class ServicesController extends Controller {
                 'longitude' => Orders::$lng,
                 'message' => $availability["code"],
                 'ip_address' => $request->getClientIp(),
-            ]);
+            ];
+            if(Auth::user()) {
+                $etalog_data['user_id'] = Auth::user()->id;
+            }
+            EtaLog::create($etalog_data);
+
         } catch(\Exception $e) {
             \Bugsnag::notifyException($e);
         }

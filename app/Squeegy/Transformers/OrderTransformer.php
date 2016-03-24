@@ -13,6 +13,7 @@ use App\Squeegy\Orders;
 use App\Order;
 use App\Squeegy\Payments;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
 use Stripe\Card;
 
@@ -54,18 +55,21 @@ class OrderTransformer extends TransformerAbstract {
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'rating' => $order->rating,
+            'platform' => $order->push_platform,
 
-            'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:i a') : $order->confirm_at->format('g:i a') ) : "",
-            'assign_time' => $order->assign_at ? date("g:i a", strtotime($order->assign_at)) : "",
-            'enroute_time' => $order->enroute_at ? date("g:i a", strtotime($order->enroute_at)) : "",
-            'start_time' => $order->start_at ? date("g:i a", strtotime($order->start_at)) : "",
-            'done_time' => $order->done_at ? date("g:i a", strtotime($order->done_at)) : "",
+            'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:ia') : $order->confirm_at->format('g:ia') ) : "",
+            'assign_time' => $order->assign_at ? date("g:ia", strtotime($order->assign_at)) : "",
+            'enroute_time' => $order->enroute_at ? date("g:ia", strtotime($order->enroute_at)) : "",
+            'start_time' => $order->start_at ? date("g:ia", strtotime($order->start_at)) : "",
+            'done_time' => $order->done_at ? date("g:ia", strtotime($order->done_at)) : "",
+            'cancel_time' => $order->cancel_at ? date("g:ia", strtotime($order->cancel_at)) : "",
 
             'confirm_at' => $order->confirm_at ? (object) ["date"=>$order->confirm_at->format("Y-m-d H:i:s")] : null,
             'assign_at' => $order->assign_at ? (object) ["date"=>$order->assign_at->format("Y-m-d H:i:s")] : null,
             'enroute_at' => $order->enroute_at ? (object) ["date"=>$order->enroute_at->format("Y-m-d H:i:s")] : null,
             'start_at' => $order->start_at ? (object) ["date"=>$order->start_at->format("Y-m-d H:i:s")] : null,
             'done_at' => $order->done_at ? (object) ["date"=>$order->done_at->format("Y-m-d H:i:s")] : null,
+            'cancel_at' => $order->cancel_at ? (object) ["date"=>$order->cancel_at->format("Y-m-d H:i:s")] : null,
 
             'links' => [
                 [
@@ -115,6 +119,10 @@ class OrderTransformer extends TransformerAbstract {
     public function includeService(Order $order)
     {
         $service = $order->service;
+
+        if($order->vehicle->hasSurCharge()) {
+            $service->name = $service->getOriginal('name')." + $".number_format($order->vehicleSurCharge()/100)."(".$order->vehicle->type.")";
+        }
         return $this->item($service, new ServiceTransformer);
     }
 
@@ -133,11 +141,17 @@ class OrderTransformer extends TransformerAbstract {
 
     public function includePaymentMethod(Order $order)
     {
-        $card=null;
-        $charge_id = ($order->auth_transaction ? $order->auth_transaction->charge_id : $order->stripe_charge_id );
-        if($charge_id) {
-            $payments = new Payments($order->customer->stripe_customer_id);
-            $card = $payments->card_charged($charge_id);
+        $card= new \stdClass();
+        if($order->auth_transaction) {
+            $card->brand = $order->auth_transaction->card_type;
+            $card->last4 = $order->auth_transaction->last_four;
+            $card->exp_month=null;
+            $card->exp_year=null;
+        } else {
+            if($order->stripe_charge_id) {
+                $payments = new Payments($order->customer->stripe_customer_id);
+                $card = $payments->card_charged($order->stripe_charge_id);
+            }
         }
 
         return $this->item($card, new PaymentMethodTransformer());

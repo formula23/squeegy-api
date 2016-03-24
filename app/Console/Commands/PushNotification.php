@@ -24,6 +24,11 @@ class PushNotification extends Command {
     protected $message = "";
     protected $user=null;
 
+    protected $total_count=0;
+    protected $send_success=0;
+    protected $send_fail=0;
+    protected $succes_ids=[];
+
 	/**
 	 * Create a new command instance.
 	 *
@@ -198,9 +203,43 @@ class PushNotification extends Command {
                 AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
             ');
 
+        // test eta - first half - 4931 total at this time - 3/22/16
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND `segment_id` = 2
+                AND email LIKE \'%squeegyapp-tmp.com\'
+                order by email
+                limit 2465
+            ');
+
+        // test eta - second half
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND `segment_id` = 2
+                AND email LIKE \'%squeegyapp-tmp.com\'
+                order by email
+                limit 2466, 2465
+            ');
+
+        // 3/22/16 - 363 users that haven't had a wash in 6 weeks.
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND last_wash_at < \'2016-02-07\'
+				ORDER BY last_wash_at
+            ');
+
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users, `user_segments`
+                WHERE users.id = `user_segments`.user_id
+                AND last_wash_at >= \'2016-02-08\'
+                AND last_wash_at <= \'2016-03-11 23:59:59\'
+                ORDER BY last_wash_at');
+
         $send_list = array_merge($users, $default_users);
 
-        $this->info("user count: ".count($send_list));
         $this->info("publish message: ".$this->message);
 
         $this->sns_client = \App::make('Aws\Sns\SnsClient');
@@ -240,6 +279,11 @@ class PushNotification extends Command {
             }
         }
 
+        $this->info("Total: ".count($send_list));
+        $this->info("Success:".$this->send_success);
+        $this->info("Failed:".$this->send_fail);
+        $this->info("Success Ids:");
+        $this->info(implode(",", $this->succes_ids));
         $this->info("Done!");
 
 	}
@@ -331,9 +375,12 @@ class PushNotification extends Command {
                 }
 
                 $this->_output($this->user->id, $endpoint_arn);
+                $this->send_success++;
+                $this->succes_ids[] = $this->user->id;
 
             } catch(\Exception $e) {
-                $this->error($e->getMessage().'- '.$this->user->id.": ".$endpoint_arn);
+                $this->send_fail++;
+                $this->error('Error - '.$this->user->id.": ".$endpoint_arn);
             }
         }
 

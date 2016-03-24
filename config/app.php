@@ -139,6 +139,7 @@ return [
 		/*
 		 * Application Service Providers...
 		 */
+
 		App\Providers\AppServiceProvider::class,
 		App\Providers\BusServiceProvider::class,
 		App\Providers\ConfigServiceProvider::class,
@@ -153,6 +154,7 @@ return [
 		Casinelli\CampaignMonitor\CampaignMonitorServiceProvider::class,
 		Aws\Laravel\AwsServiceProvider::class,
         GeneaLabs\LaravelMixpanel\Providers\LaravelMixpanelServiceProvider::class,
+		SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 	],
 
 	/*
@@ -206,6 +208,7 @@ return [
 		'JWTAuth'	 => Tymon\JWTAuth\Facades\JWTAuth::class,
 		'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 		'CampaignMonitor' => Casinelli\CampaignMonitor\Facades\CampaignMonitor::class,
+		'Facebook' => SammyK\LaravelFacebookSdk\FacebookFacade::class,
 		'AWS' 		=> Aws\Laravel\AwsFacade::class,
 	],
 

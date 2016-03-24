@@ -21,4 +21,12 @@ class Vehicle extends Model {
         return $this->belongsTo('App\User');
     }
 
+    public function hasSurCharge()
+    {
+        if($this->type == "Car") return false;
+        if(in_array($this->type, ['SUV','Truck']) && $this->size == "Large") return true;
+        if(in_array($this->type, ['Minivan','Van'])) return true;
+        return false;
+    }
+
 }

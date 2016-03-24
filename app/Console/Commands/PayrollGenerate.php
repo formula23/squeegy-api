@@ -60,8 +60,7 @@ class PayrollGenerate extends Command {
 			AND WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)
 			AND IF(services.id = \'1\', \'2000\', IF(services.id=3,\'1000\',\'3000\')) - IF(orders.discount_id=55, 900, IF(orders.discount_id=56,1200,IF(orders.discount_id=57,756,IF(orders.discount_id=58,900,IF(orders.discount_id=27,750,IF(orders.discount_id=28,950,charged)))))) - charged > 0
 			GROUP BY worker.id
-			ORDER BY orders.created_at;
-			');
+			ORDER BY orders.created_at');
 
 		$cogs_by_washer=[];
 		foreach($cogs as $cog) {
@@ -70,8 +69,8 @@ class PayrollGenerate extends Command {
 
 		$no_kit_rental = [2882];
 		$min_worker_id = [
-			2149 => 500,
-			2900 => 500,
+//			2149 => 500,
+//			2900 => 500,
 			3198 => 600,
 		];
 
@@ -86,7 +85,7 @@ class PayrollGenerate extends Command {
 
 		$orders_by_worker = [];
 
-		$week_of = $orders->first()->done_at->startOfWeek()->format("M dS");
+		$week_of = $orders->first()->done_at->startOfWeek()->format("M jS");
 
 		foreach($orders as $order) {
 
@@ -128,6 +127,7 @@ class PayrollGenerate extends Command {
 			$data=[];
 			$data['week_of'] = $week_of;
 			$data['washer_info'] = $worker;
+			$data['weekly_min'] = ( ! empty($min_worker_id[$worker_id]) ? $min_worker_id[$worker_id] : 0 );
 
 			$view = view('payroll.time_sheet', $data);
 
@@ -146,11 +146,18 @@ class PayrollGenerate extends Command {
 
 			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
 			{
+				$message->from('payments@squeegyapp.com', 'Squeegy Payments');
+                $message->replyTo('tech@squeegyapp.com', 'Squeegy');
+
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('tech@squeegyapp.com', 'Squeegy');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
-					$message->bcc('tech@squeegyapp.com', 'Squeegy');
+					$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
+					$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
+					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
+					$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
+					$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
 				}
 
 				$message->subject("Squeegy Pay - Week of ".$email_data['week_of']);

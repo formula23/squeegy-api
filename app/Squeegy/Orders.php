@@ -23,15 +23,13 @@ class Orders {
 
     const CLOSING_THRESHOLD = 20;
     const BASE_LEAD_TIME = 20;
-    const SUV_SURCHARGE = 500;
-    const SUV_SURCHARGE_MULTIPLIER = 2;
     const CLOSING_BUFFER = 10;
 
     protected static $travel_time = 30;
     protected static $travel_time_buffer = 5;
     protected static $travel_time_buffer_pct = 1.2;
     protected static $open_orders;
-    protected static $bypass_time = 15;
+    protected static $bypass_time = 8;
     protected static $mph = 13;
     protected static $last_job = null;
     protected static $final_location = null;
@@ -211,26 +209,26 @@ class Orders {
      * @param Order $order
      * @return int
      */
-    public static function getPrice(Order $order)
-    {
-        return $order->service->price;
-
-        $base_price = $order->service->price;
-
-        switch($order->vehicle->type)
-        {
-            case "SUV":
-                $base_price += self::SUV_SURCHARGE;
-                break;
-            case "SUV+":
-            case "Truck":
-            case "Van":
-                $base_price += self::SUV_SURCHARGE * self::SUV_SURCHARGE_MULTIPLIER;
-                break;
-        }
-
-        return $base_price;
-    }
+//    public static function getPrice(Order $order)
+//    {
+//        return $order->service->price;
+//
+//        $base_price = $order->service->price;
+//
+//        switch($order->vehicle->type)
+//        {
+//            case "SUV":
+//                $base_price += self::SUV_SURCHARGE;
+//                break;
+//            case "SUV+":
+//            case "Truck":
+//            case "Van":
+//                $base_price += self::SUV_SURCHARGE * self::SUV_SURCHARGE_MULTIPLIER;
+//                break;
+//        }
+//
+//        return $base_price;
+//    }
 
     /**
      * @param Order $order
@@ -273,6 +271,11 @@ class Orders {
         }
 
         Log::info(self::$postal_code);
+
+//        $next_available=[];
+//        $next_available['time']=8;
+//        $next_available['worker_id']=1847;
+//        return $next_available;
 
         $active_workers_qry = User::activeWashers(self::$postal_code);
 

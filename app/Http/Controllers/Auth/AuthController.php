@@ -5,13 +5,17 @@ use App\Squeegy\Payments;
 use App\User;
 use Exception;
 
+use Facebook\Exceptions\FacebookSDKException;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Http\Request;
 
 use Aloha\Twilio\Twilio;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+
+use SammyK\LaravelFacebookSdk\LaravelFacebookSdk;
 use Illuminate\Support\Facades\Validator;
+
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 
@@ -55,23 +59,64 @@ class AuthController extends Controller {
 
     /**
      * @param Request $request
+     * @param LaravelFacebookSdk $fb
      * @return mixed
      */
-    public function postLogin(Request $request)
+    public function postLogin(Request $request, LaravelFacebookSdk $fb)
     {
-        $this->validate($request, [
-            'email' => 'required|email', 'password' => 'required'
-        ]);
+        $std_user=null;
+        $facebook_user=null;
+        if($request->input('facebook_id') && $request->input('facebook_token')) { //facebook login
 
-        $credentials = $request->only('email', 'password');
+            //verify FB token passed is valid token for user and fb app.
+            try {
+                $response = $fb->get('/me?fields=id,name,email,gender,birthday,age_range&access_token='.$request->input('facebook_token'));
+                $fb_user = $response->getGraphUser();
+                if($fb_user->getId() != $request->input('facebook_id')) {
+                    return $this->response->errorWrongArgs('Unable to login with Facebook');
+                }
+            } catch(FacebookSDKException $e) {
+                return $this->response->errorWrongArgs('Unable to login with Facebook');
+            }
 
-        //little hack so that our accounts don't need to be active to log into the worker app
-        //currently ETA calculations are done by the active state of an account.. so we can't be active.
-        if( ! in_array($request->input('email'), ["dan@squeegy.com", "andrew@squeegy.com"])) {
-            $credentials['is_active'] = 1;
+            $facebook_user_qry = User::where('facebook_id', $request->input('facebook_id'))->where('tmp_fb', 0)->orderBy('created_at', 'desc');
+            if($request->input('email') && $request->input('email') == $fb_user->getEmail()) $facebook_user_qry->orWhere('email', $request->input('email'));
+
+            $facebook_user = $facebook_user_qry->first();
+
+            if( ! $facebook_user) {
+                $anon_user = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc')->first();
+                if($anon_user) {
+                    $anon_user->tmp_fb = 1;
+                    $anon_user->email = $fb_user->getEmail();
+                    $anon_user->updateFbFields($fb_user);
+                }
+                return $this->response->errorWrongArgs('You do not have an account. Please register.');
+            }
+
+            $facebook_user->updateFbFields($fb_user);
+
+            Auth::login($facebook_user);
+
+        } else {
+            $data_to_validate=[
+                'email' => 'required|email',
+                'password' => 'required',
+            ];
+            $this->validate($request, $data_to_validate);
+
+            $credentials = $request->only('email', 'password');
+
+            //little hack so that our accounts don't need to be active to log into the worker app
+            //currently ETA calculations are done by the active state of an account.. so we can't be active.
+            if( ! in_array($request->input('email'), ["dan@squeegy.com", "andrew@squeegy.com"])) {
+                $credentials['is_active'] = 1;
+            }
+
+            $std_user = Auth::attempt($credentials, $request->has('remember'));
         }
 
-        if (Auth::attempt($credentials, $request->has('remember')))
+        if ($std_user || $facebook_user)
         {
             if($request->header('X-Device-Identifier')) {
 
@@ -97,15 +142,15 @@ class AuthController extends Controller {
             }
 
             //successful log
-            if($request->input('anon_email')) {
-                try {
-                    if(preg_match('/squeegyapp-tmp.com$/', $request->input('anon_email'))) {
-                        User::where('email', $request->input('anon_email'))->delete();
-                    }
-                } catch(\Exception $e) {
-                    \Bugsnag::notifyException($e);
-                }
-            }
+//            if($request->input('anon_email')) {
+//                try {
+//                    if(preg_match('/squeegyapp-tmp.com$/', $request->input('anon_email'))) {
+//                        User::where('email', $request->input('anon_email'))->delete();
+//                    }
+//                } catch(\Exception $e) {
+//                    \Bugsnag::notifyException($e);
+//                }
+//            }
 
             if($request->header('X-Application-Type'))
             {
@@ -142,7 +187,6 @@ class AuthController extends Controller {
 
     /**
      * @param Request $request
-     * @param Twilio $twilio
      * @return mixed
      */
     public function postRegister(Request $request)
@@ -267,6 +311,7 @@ class AuthController extends Controller {
         }
         return $token;
     }
+
 
     protected function user()
     {

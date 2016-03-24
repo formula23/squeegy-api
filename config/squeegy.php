@@ -13,7 +13,8 @@ return [
     "sms_verification" => "6538",
     "cancellation_fee" => 1000,
     'emails' => [
-        'support' => 'feedback@squeegyapp.com',
+        'support' => 'support@squeegyapp.com',
+        'support_name' => 'Squeegy Support',
         'bcc' => 'orders@squeegyapp.com',
         'from' => 'team@squeegyapp.com',
         'from_name' => 'Team Squeegy',
@@ -40,5 +41,10 @@ return [
     'referral_program' => [
         'referrer_amt' => env('REFERRER_AMT'),
         'referred_amt' => env('REFERRED_AMT'),
+    ],
+    'vehicle_surcharge' => [
+        '1' => env('EXPRESS_SURCHARGE'),
+        '2' => env('CLASSIC_SURCHARGE'),
+        '3' => env('SQUEEGY_SURCHARGE'),
     ]
 ];

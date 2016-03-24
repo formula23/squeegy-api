@@ -21,7 +21,7 @@ function is_internal()
         '127.0.0.1',
         '76.94.204.22', //dan home wifi
         '104.32.54.86', //squeegy office
-        '24.205.12.22', //kevin
+        '24.205.11.225', //kevin
         '24.199.45.29', //saleh hotel
     ]);
 }
@@ -45,7 +45,7 @@ function eta_real_time(Order $order, $round = 5)
 function real_time(Carbon $time, $round=5)
 {
     $arrival_time = Carbon::createFromTimestamp(ceil(strtotime($time->format('Y-m-d H:i')) / ($round * 60)) * ($round * 60));
-    return $arrival_time->format('g:i a');
+    return $arrival_time->format('g:ia');
 }
 
 function current_eta(Order $order)
@@ -72,7 +72,7 @@ function current_eta(Order $order)
                 break;
             case 5:
             case 6:
-                $current_eta = $order->start_at->format('g:i a');
+                $current_eta = $order->start_at->format('g:ia');
                 break;
             default:
                 $current_eta = "";

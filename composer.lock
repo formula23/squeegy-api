@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "90a07dcdf62fb346ab7bac14eede2dcb",
+    "hash": "45ec28b993e1a04929952af2ae3078f6",
     "packages": [
         {
             "name": "alexpechkarev/geometry-library",
@@ -168,16 +168,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.15.9",
+            "version": "3.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5f27941e2f1ac1700e667cfcf9d9da44c1d9b612"
+                "reference": "4853bf1f865f6c6df44db0cd5664319ae806f319"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5f27941e2f1ac1700e667cfcf9d9da44c1d9b612",
-                "reference": "5f27941e2f1ac1700e667cfcf9d9da44c1d9b612",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4853bf1f865f6c6df44db0cd5664319ae806f319",
+                "reference": "4853bf1f865f6c6df44db0cd5664319ae806f319",
                 "shasum": ""
             },
             "require": {
@@ -244,7 +244,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2016-03-11 00:44:20"
+            "time": "2016-03-17 23:57:52"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -505,12 +505,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Casinelli/Laravel-CampaignMonitor.git",
-                "reference": "a7173a4e41c3eae9fe178db8ec7e3d1c588fa876"
+                "reference": "37e141ff35382f1badbe38c8c6a800601d86bb56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Casinelli/Laravel-CampaignMonitor/zipball/a7173a4e41c3eae9fe178db8ec7e3d1c588fa876",
-                "reference": "a7173a4e41c3eae9fe178db8ec7e3d1c588fa876",
+                "url": "https://api.github.com/repos/Casinelli/Laravel-CampaignMonitor/zipball/37e141ff35382f1badbe38c8c6a800601d86bb56",
+                "reference": "37e141ff35382f1badbe38c8c6a800601d86bb56",
                 "shasum": ""
             },
             "require": {
@@ -547,7 +547,7 @@
                 "newsletter",
                 "wrapper"
             ],
-            "time": "2015-10-12 21:09:09"
+            "time": "2016-03-14 06:41:39"
         },
         {
             "name": "chrisbjr/api-guard",
@@ -1267,50 +1267,59 @@
             "time": "2015-03-19 17:10:02"
         },
         {
-            "name": "genealabs/laravel-mixpanel",
-            "version": "0.4.14",
+            "name": "facebook/php-sdk-v4",
+            "version": "5.1.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/GeneaLabs/laravel-mixpanel.git",
-                "reference": "e2e60e64400f2f5021806402510cf90c2c8cb864"
+                "url": "https://github.com/facebook/facebook-php-sdk-v4.git",
+                "reference": "2c42fb3002953355f12d3c6e8003a9fd5af563d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/GeneaLabs/laravel-mixpanel/zipball/e2e60e64400f2f5021806402510cf90c2c8cb864",
-                "reference": "e2e60e64400f2f5021806402510cf90c2c8cb864",
+                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/2c42fb3002953355f12d3c6e8003a9fd5af563d9",
+                "reference": "2c42fb3002953355f12d3c6e8003a9fd5af563d9",
                 "shasum": ""
             },
             "require": {
-                "illuminate/config": "~5.1",
-                "illuminate/events": "^5.1",
-                "illuminate/routing": "^5.1",
-                "illuminate/support": "~5.1",
-                "mixpanel/mixpanel-php": "~2.0",
-                "nesbot/carbon": "^1.19",
-                "php": ">=5.5.0",
-                "sinergi/browser-detector": "~5.0"
+                "ext-mbstring": "*",
+                "php": ">=5.4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.*"
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "GeneaLabs\\LaravelMixpanel\\": "src/"
+                    "Facebook\\": "src/Facebook/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "Facebook Platform"
             ],
             "authors": [
                 {
-                    "name": "Mike Bronner",
-                    "email": "hello@genealabs.com"
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/facebook-php-sdk-v4/contributors"
                 }
             ],
-            "description": "MixPanel wrapper for Laravel 5.",
-            "time": "2015-11-17 19:28:02"
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/facebook-php-sdk-v4",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "time": "2015-11-19 21:07:36"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1758,16 +1767,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.19",
+            "version": "1.0.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "635ee279a522233a567984756bf9da1db243d9bf"
+                "reference": "e87a786e3ae12a25cf78a71bb07b4b384bfaa83a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/635ee279a522233a567984756bf9da1db243d9bf",
-                "reference": "635ee279a522233a567984756bf9da1db243d9bf",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/e87a786e3ae12a25cf78a71bb07b4b384bfaa83a",
+                "reference": "e87a786e3ae12a25cf78a71bb07b4b384bfaa83a",
                 "shasum": ""
             },
             "require": {
@@ -1837,7 +1846,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2016-03-12 19:04:33"
+            "time": "2016-03-14 21:54:11"
         },
         {
             "name": "league/fractal",
@@ -1903,62 +1912,17 @@
             "time": "2015-03-19 15:16:43"
         },
         {
-            "name": "mixpanel/mixpanel-php",
-            "version": "2.6.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mixpanel/mixpanel-php.git",
-                "reference": "7031e213554436793e0927184f41be72dcd63eb6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mixpanel/mixpanel-php/zipball/7031e213554436793e0927184f41be72dcd63eb6",
-                "reference": "7031e213554436793e0927184f41be72dcd63eb6",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.0"
-            },
-            "require-dev": {
-                "phpdocumentor/phpdocumentor": "2.*",
-                "phpunit/phpunit": "3.7.*"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "lib/Mixpanel.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mixpanel <dev@mixpanel.com>",
-                    "homepage": "https://mixpanel.com/"
-                }
-            ],
-            "description": "The Official PHP library for Mixpanel",
-            "homepage": "https://mixpanel.com/help/reference/php",
-            "keywords": [
-                "mixpanel",
-                "mixpanel php"
-            ],
-            "time": "2014-06-11 19:10:51"
-        },
-        {
             "name": "monolog/monolog",
-            "version": "1.18.0",
+            "version": "1.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "e19b764b5c855580e8ffa7e615f72c10fd2f99cc"
+                "reference": "a5f2734e8c16f3aa21b3da09715d10e15b4d2d45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/e19b764b5c855580e8ffa7e615f72c10fd2f99cc",
-                "reference": "e19b764b5c855580e8ffa7e615f72c10fd2f99cc",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/a5f2734e8c16f3aa21b3da09715d10e15b4d2d45",
+                "reference": "a5f2734e8c16f3aa21b3da09715d10e15b4d2d45",
                 "shasum": ""
             },
             "require": {
@@ -2023,7 +1987,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2016-03-01 18:00:40"
+            "time": "2016-03-13 16:08:35"
         },
         {
             "name": "mtdowling/cron-expression",
@@ -2274,16 +2238,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v1.2.2",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "b3313b618f4edd76523572531d5d7e22fe747430"
+                "reference": "ff76e1a660669bb56ba74ba0583fd8d41417bf39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/b3313b618f4edd76523572531d5d7e22fe747430",
-                "reference": "b3313b618f4edd76523572531d5d7e22fe747430",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/ff76e1a660669bb56ba74ba0583fd8d41417bf39",
+                "reference": "ff76e1a660669bb56ba74ba0583fd8d41417bf39",
                 "shasum": ""
             },
             "require": {
@@ -2318,7 +2282,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-03-11 19:54:08"
+            "time": "2016-03-17 16:11:57"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -2578,34 +2542,38 @@
             "time": "2016-03-09 05:03:14"
         },
         {
-            "name": "sinergi/browser-detector",
-            "version": "5.1.2",
+            "name": "sammyk/laravel-facebook-sdk",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sinergi/php-browser-detector.git",
-                "reference": "47806b0ec01048b002abdb062fea51a17d554dec"
+                "url": "https://github.com/SammyK/LaravelFacebookSdk.git",
+                "reference": "39dffd94c7dfcb1b858b218a774ad96352769d36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sinergi/php-browser-detector/zipball/47806b0ec01048b002abdb062fea51a17d554dec",
-                "reference": "47806b0ec01048b002abdb062fea51a17d554dec",
+                "url": "https://api.github.com/repos/SammyK/LaravelFacebookSdk/zipball/39dffd94c7dfcb1b858b218a774ad96352769d36",
+                "reference": "39dffd94c7dfcb1b858b218a774ad96352769d36",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "facebook/php-sdk-v4": "~5.0|~5.1|~5.2",
+                "illuminate/auth": "~5.0|~5.1|~5.2",
+                "illuminate/config": "~5.0|~5.1|~5.2",
+                "illuminate/database": "~5.0|~5.1|~5.2",
+                "illuminate/routing": "~5.0|~5.1|~5.2",
+                "illuminate/session": "~5.0|~5.1|~5.2",
+                "illuminate/support": "~5.0|~5.1|~5.2",
+                "php": ">=5.5.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "mockery/mockery": "~0.9",
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "~2.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "5.0-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
-                    "Sinergi\\BrowserDetector\\": "src"
+                    "SammyK\\LaravelFacebookSdk\\": "src/LaravelFacebookSdk"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -2614,24 +2582,23 @@
             ],
             "authors": [
                 {
-                    "name": "Chris Schuld",
-                    "email": "chris@chrisschuld.com",
-                    "homepage": "http://chrisschuld.com"
-                },
-                {
-                    "name": "Gabriel Bull",
-                    "email": "me@gabrielbull.com"
+                    "name": "Sammy Kaye Powers",
+                    "email": "me@sammyk.me",
+                    "homepage": "http://sammyk.me",
+                    "role": "Developer"
                 }
             ],
-            "description": "Detecting the user's browser, operating system and language.",
+            "description": "Fully unit tested Facebook SDK v5 integration for Laravel & Lumen 5.x",
+            "homepage": "https://github.com/SammyK/LaravelFacebookSdk",
             "keywords": [
-                "browser",
-                "detection",
-                "language",
-                "operating system",
-                "os"
+                "facebook",
+                "facebook sdk v4",
+                "facebook sdk v5",
+                "laravel",
+                "lumen",
+                "sdk"
             ],
-            "time": "2016-01-08 19:53:07"
+            "time": "2016-02-09 21:04:15"
         },
         {
             "name": "stripe/stripe-php",
@@ -4392,16 +4359,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.23",
+            "version": "4.8.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6e351261f9cd33daf205a131a1ba61c6d33bd483"
+                "reference": "a1066c562c52900a142a0e2bbf0582994671385e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6e351261f9cd33daf205a131a1ba61c6d33bd483",
-                "reference": "6e351261f9cd33daf205a131a1ba61c6d33bd483",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a1066c562c52900a142a0e2bbf0582994671385e",
+                "reference": "a1066c562c52900a142a0e2bbf0582994671385e",
                 "shasum": ""
             },
             "require": {
@@ -4460,7 +4427,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-02-11 14:56:33"
+            "time": "2016-03-14 06:16:08"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

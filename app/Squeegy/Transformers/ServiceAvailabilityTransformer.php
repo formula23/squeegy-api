@@ -31,7 +31,7 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
             'service_area' => $data['service_area'],
         ];
 
-        if($data['schedule']) {
+        if($data['schedule']||true) {
             $schedule = new Schedule($data['postal_code']);
             $resp['available_schedule'] = $schedule->availability();
         }

@@ -34,7 +34,26 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @var array
 	 */
 
-	protected $fillable = ['name', 'email', 'password', 'phone', 'photo', 'stripe_customer_id', 'push_token', 'target_arn_gcm', 'facebook_id', 'is_active', 'app_version', 'referral_code', 'anon_pw_reset', 'device_id'];
+	protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'photo',
+        'stripe_customer_id',
+        'push_token',
+        'target_arn_gcm',
+        'facebook_id',
+        'age_range',
+        'birthday',
+        'gender',
+        'is_active',
+        'app_version',
+        'referral_code',
+        'anon_pw_reset',
+        'tmp_fb',
+        'device_id',
+    ];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -87,6 +106,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $avail_credits = (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
         return ($avail_credits < 0 ? 0 : $avail_credits );
+    }
+
+    public function eta_logs()
+    {
+        return $this->hasMany('App\EtaLog');
     }
 
     /**
@@ -282,7 +306,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function is_anon()
     {
-        return (bool)preg_match('/squeegyapp-tmp.com$/', $this->email);
+        return (bool)(preg_match('/squeegyapp-tmp.com$/', $this->email) || $this->tmp_fb);
     }
 
     public function device()
@@ -297,6 +321,23 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $referral_orders = $this->referral_orders()->where('status', 'done')->orderBy('done_at');
         return ( ! empty($this->segment) && $this->segment->customer_at && $referral_orders->count() >= 3) ? true : false ;
+    }
+
+    public function updateFbFields($fb_user)
+    {
+        $this->facebook_id = $fb_user->getId();
+        $this->birthday = $fb_user->getBirthday();
+        $this->gender = $fb_user->getGender();
+
+        $graph_node = $fb_user->getField('age_range');
+        if($graph_node) {
+            $min_age = $graph_node->getField('min');
+            $max_age = $graph_node->getField('max');
+            $age_range = ($max_age ? $min_age."-".$max_age : $min_age."+");
+            $this->age_range = $age_range;
+        }
+        $this->save();
+        return;
     }
 
 }

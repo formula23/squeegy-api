@@ -38,7 +38,7 @@ class OrdersController extends Controller {
      */
     protected $order_seq = null;
 
-    protected $limit = null;
+    protected $limit = 100;
 
     /**
      * @param Request $request
@@ -115,7 +115,7 @@ class OrdersController extends Controller {
 
             } else if($request->input($status_time.'_before') || $request->input($status_time.'_after')) {
 
-                foreach(['before'=>'<', 'after'=>'>'] as $when=>$operator) {
+                foreach(['before'=>'<=', 'after'=>'>='] as $when=>$operator) {
                     if( ! $request->input($status_time.'_'.$when)) continue;
                     $orders->where(\DB::raw('date_format('.$status_time.'_at, "%Y-%m-%d")'), $operator, $request->input($status_time.'_'.$when));
                 }
@@ -169,7 +169,7 @@ class OrdersController extends Controller {
 
         $data['price'] = 0;
 
-        $order_details = [];
+        $order_details=[];
         $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price]);
         $data['price'] += $service->price;
 
@@ -215,14 +215,22 @@ class OrdersController extends Controller {
 
         $data['total'] = $data['price'];
 
-        ///use available credits
-        if($request->user()->availableCredit()) {
-            $data['credit'] = min($service->price, $request->user()->availableCredit());
-            $data['total'] -= $data['credit'];
-        }
+//        \DB::enableQueryLog();
 
         $order = new Order($data);
         $request->user()->orders()->save($order);
+
+        if($surcharge = $order->vehicleSurCharge()) {
+            $order->price += $surcharge;
+            $order->total = $order->price;
+            $order_details[] = new OrderDetail(['name'=>$order->vehicle->type.' Surcharge', 'amount'=>$surcharge]);
+        }
+
+        ///use available credits
+        if($request->user()->availableCredit()) {
+            $order->credit = min($order->total, $request->user()->availableCredit());
+            $order->total -= $order->credit;
+        }
 
         $order->order_details()->saveMany($order_details);
 
@@ -339,6 +347,10 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
+                    if( $availability['accept'] && $availability['schedule'] && ! $order->schedule ) {
+                        return $this->response->errorWrongArgs(trans("messages.service.only_schedule"));
+                    }
+
                     if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "joymode20") {
                         return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
                     }
@@ -428,6 +440,7 @@ class OrdersController extends Controller {
         $update_fields = [
             'start_at',
             'done_at',
+            'worker_id',
         ];
 
         foreach($update_fields as $update_field) {
