@@ -166,7 +166,7 @@ class AuthController extends Controller {
             }
 
             //if washer - update login record on activity table
-            if(Auth::user()->can('set.duty')) {
+            if(Auth::user()->is('worker')) {
                 Auth::user()->activity_logs()->whereNull('logout')->update([
                     'logout' => Carbon::now(),
                     'log_on' => Carbon::now(),
