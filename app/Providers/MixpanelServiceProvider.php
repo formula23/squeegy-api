@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use GeneaLabs\LaravelMixpanel\LaravelMixpanel;
+use GeneaLabs\LaravelMixpanel\Listeners\LaravelMixpanelUserObserver;
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
 class MixpanelServiceProvider extends ServiceProvider
@@ -11,9 +14,9 @@ class MixpanelServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Request $request, LaravelMixpanel $mixPanel)
     {
-        //
+        $this->app->make(config('auth.model'))->observe(new LaravelMixpanelUserObserver($request, $mixPanel));
     }
 
     /**
