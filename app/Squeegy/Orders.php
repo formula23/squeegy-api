@@ -456,6 +456,7 @@ class Orders {
         if($leadtime < 60) {
             return $leadtime." minutes";
         }
+        return "60+ minutes";
 
         $hrs = (int)floor($leadtime/60);
         $mins = (int)($leadtime % 60);
