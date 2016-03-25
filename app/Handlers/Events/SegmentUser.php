@@ -1,6 +1,7 @@
 <?php namespace App\Handlers\Events;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SegmentUser {
 
@@ -21,6 +22,7 @@ class SegmentUser {
 	{
 
 		try {
+			Log::info("Start Segment User....");
 			$customer =& $event->user;
 			$segment = $customer->segment;
 
@@ -58,6 +60,8 @@ class SegmentUser {
 					$segment->repeat_customer_at = $order->done_at;
 				}
 			}
+
+			Log::info($segment);
 
 		} catch (\Exception $e) {
 			\Log::info($e);
