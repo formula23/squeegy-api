@@ -241,7 +241,7 @@ class PushNotification extends Command {
         $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
                 FROM users
                 ORDER BY email
-                LIMIT 1000 OFFSET 0');
+                LIMIT 1000 OFFSET 1000');
 
         $send_list = array_merge($users, $default_users);
 

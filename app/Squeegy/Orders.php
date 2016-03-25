@@ -187,7 +187,7 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 180 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
+        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
             Log::info('Current ETA:'.$data['lead_time']);
             Log::info('Remaining Bus mins: '.(self::remainingBusinessTime() + self::CLOSING_BUFFER));
             $data['schedule'] = true;
@@ -469,9 +469,10 @@ class Orders {
      */
     public static function formatLeadTime($leadtime)
     {
+
 //        if($leadtime < 60) {
             return [
-                'time'=>(string)$leadtime,
+                'time'=>(string)($leadtime > 60 ? "60+" : $leadtime),
                 'time_label'=>($leadtime ? 'mins': ''),
             ];
 //        }
