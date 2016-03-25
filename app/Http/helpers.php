@@ -22,7 +22,7 @@ function is_internal()
         '76.94.204.22', //dan home wifi
         '104.32.54.86', //squeegy office
         '24.205.11.225', //kevin
-        '24.199.45.29', //saleh hotel
+        '172.56.6.161', //saleh hotel
     ]);
 }
 
