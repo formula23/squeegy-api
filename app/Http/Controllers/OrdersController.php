@@ -429,9 +429,7 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
-//                    if($this->order_seq[$original_status] < 6) {
-                        Event::fire(new OrderDone($order));
-//                    }
+                    Event::fire(new OrderDone($order));
 
                     break;
             }
