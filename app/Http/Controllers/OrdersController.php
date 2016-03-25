@@ -321,7 +321,7 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs($availability['description']);
                     }
 
-                    $order->eta = $availability['time'];
+                    $order->eta = $availability['actual_time'];
                     $order->etc = $order->service->time;
                     $order->worker_id = $availability['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
@@ -370,7 +370,7 @@ class OrdersController extends Controller {
 
                         $order->status = 'assign';
                         $order->assign_at = Carbon::now();
-                        $order->eta = $availability['time'];
+                        $order->eta = $availability['actual_time'];
                         $order->worker_id = $availability['worker_id'];
 
                         Event::fire(new OrderConfirmed($order));
@@ -392,7 +392,7 @@ class OrdersController extends Controller {
                     } else {
                         $availability = Orders::availability($order->location['lat'], $order->location['lon']);
                         try {
-                            $order->eta = $availability['time'];
+                            $order->eta = $availability['actual_time'];
                             $order->worker_id = $availability['worker_id'];
                         } catch(\Exception $e) {
                             return $this->response->errorWrongArgs('Unable to assign order.');
