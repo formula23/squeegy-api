@@ -238,6 +238,11 @@ class PushNotification extends Command {
                 AND last_wash_at <= \'2016-03-11 23:59:59\'
                 ORDER BY last_wash_at');
 
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users
+                ORDER BY email
+                LIMIT 1000 OFFSET 0');
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("publish message: ".$this->message);
