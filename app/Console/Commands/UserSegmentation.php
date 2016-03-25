@@ -111,8 +111,6 @@ class UserSegmentation extends Command {
 
 			}
 
-			return;
-
 			///Save subscribers to Campaign Monitor
 			$import_resp = $subscriber->import($all_subscriber_data, false, false, false);
 

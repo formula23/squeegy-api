@@ -3,6 +3,7 @@
 use App\DiscountCode;
 use App\Events\OrderDone;
 use App\Squeegy\Payments;
+use Illuminate\Support\Facades\Log;
 
 class ChargeOrder {
 
@@ -25,6 +26,7 @@ class ChargeOrder {
 	public function handle(OrderDone $event)
 	{
         try {
+            Log::info("start charge order");
             $order =& $event->order;
 
             //if order has credits - capture them
@@ -54,7 +56,7 @@ class ChargeOrder {
                 $discount_code->is_active = 0;
                 $discount_code->save();
             }
-
+            Log::info("end charge order");
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }

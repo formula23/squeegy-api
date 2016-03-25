@@ -23,6 +23,7 @@ class SyncCampaignMonitor {
 	public function handle($event)
 	{
 		try {
+			Log::info("Start sync Campaing monitor");
 			$customer = $event->user;
 
 			$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
@@ -40,6 +41,8 @@ class SyncCampaignMonitor {
 			if( ! empty($event->order)) {
 				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
 			}
+
+			Log::info($subscriber_data);
 
 			$result = $subscriber->add($subscriber_data, false, true);
 
