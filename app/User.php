@@ -242,7 +242,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             $q->select('user_id', 'latitude', 'longitude');
         }])
         ->whereHas('activity_logs', function($q) {
-            $q->whereNull('log_off');
+            $q->whereNotNull('log_on')->whereNull('log_off');
         })
         ->whereHas('zones.regions', function($q) use ($postal_code) {
             $q->where('postal_code', $postal_code);
