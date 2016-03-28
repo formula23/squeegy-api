@@ -67,7 +67,7 @@ class PayrollGenerate extends Command {
 			$cogs_by_washer[$cog->id] = $cog->PromotionalCost;
 		}
 
-		$no_kit_rental = [2882];
+		$no_kit_rental = [2882, 6349];
 		$min_worker_id = [
 //			2149 => 500,
 //			2900 => 500,
@@ -150,7 +150,8 @@ class PayrollGenerate extends Command {
                 $message->replyTo('tech@squeegyapp.com', 'Squeegy');
 
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
-					$message->to('tech@squeegyapp.com', 'Squeegy');
+					$message->to('dan@squeegyapp.com', 'Dan Schultz');
+					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
 					$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
