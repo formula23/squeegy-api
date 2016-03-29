@@ -154,8 +154,6 @@ class PayrollGenerate extends Command {
 					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
-					$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
-					$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
 					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
 					$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
 					$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
@@ -185,7 +183,17 @@ class PayrollGenerate extends Command {
 
 		Mail::raw('COGs Attached', function($message) use ($email_data)
 		{
-			$message->to('tech@squeegyapp.com', 'Squeegy');
+			if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
+				$message->to('dan@squeegyapp.com', 'Dan Schultz');
+				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
+			} else {
+				$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
+				$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
+				$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
+				$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
+				$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
+			}
+
 			$message->subject("Squeegy Pay - COGs Week of ".$email_data['week_of']);
 			$message->attach($email_data['time_sheet']);
 		});
