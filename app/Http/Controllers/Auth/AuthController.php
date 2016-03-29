@@ -3,6 +3,7 @@
 use App\Events\UserCreated;
 use App\Squeegy\Payments;
 use App\User;
+use Carbon\Carbon;
 use Exception;
 
 use Facebook\Exceptions\FacebookSDKException;
@@ -256,6 +257,10 @@ class AuthController extends Controller {
      */
     public function getLogout()
     {
+        Auth::user()->activity_logs()->whereNull('logout')->update([
+            'logout' => Carbon::now(),
+        ]);
+
         Auth::logout();
 
         return $this->response->withArray([
@@ -311,7 +316,6 @@ class AuthController extends Controller {
         }
         return $token;
     }
-
 
     protected function user()
     {

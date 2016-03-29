@@ -16,6 +16,8 @@ class WasherActivityLogTransformer extends TransformerAbstract {
     public function transform(WasherActivityLog $washerActivityLog)
     {
         return [
+            'login' => $washerActivityLog->login,
+            'logout' => $washerActivityLog->logout,
             'log_on' => $washerActivityLog->log_on,
             'log_off' => $washerActivityLog->log_off,
         ];
