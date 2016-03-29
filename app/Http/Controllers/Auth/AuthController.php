@@ -165,16 +165,6 @@ class AuthController extends Controller {
                 }
             }
 
-            //if washer - update login record on activity table
-            if(Auth::user()->is('worker')) {
-                Auth::user()->activity_logs()->whereNull('logout')->update([
-                    'logout' => Carbon::now(),
-                    'log_on' => Carbon::now(),
-                    'log_off' => Carbon::now(),
-                ]);
-                Auth::user()->activity_logs()->create(['login' => Carbon::now()]);
-            }
-
             return $this->response->withItem($this->user(), new UserTransformer())->header('X-Auth-Token', $this->getAuthToken());
         }
 

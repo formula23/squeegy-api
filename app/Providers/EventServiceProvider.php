@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -87,7 +88,14 @@ class EventServiceProvider extends ServiceProvider {
 	{
 		parent::boot($events);
 
-		//
+		$events->listen('auth.login', function($user, $remember) {
+            if($user->is('worker')) {
+                $activity_log = $user->activity_logs()->whereNotNull('login')->whereNull('logout')->get();
+                if( ! $activity_log->count()) {
+                    $user->activity_logs()->create(['login' => Carbon::now()]);
+                }
+            }
+		});
 	}
 
 }
