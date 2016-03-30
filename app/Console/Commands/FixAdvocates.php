@@ -42,6 +42,7 @@ class FixAdvocates extends Command
 
             foreach($users as $user) {
 
+                $this->info($user->id);
                 if($user->is_advocate()) {
                     $this->info($user->id);
                 }
