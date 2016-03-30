@@ -38,13 +38,15 @@ class FixAdvocates extends Command
      */
     public function handle()
     {
-        User::customers()->chunk(1000, function($users) {
+        $i=1;
+        User::customers()->chunk(1000, function($users) use (&$i) {
 
             foreach($users as $user) {
 
-//                $this->info($user->id);
                 if($user->is_advocate()) {
-                    $this->info($user->id);
+
+                    $this->info($i."-".$user->name."-".$user->email."--".$user->id. "-".$user->completedPaidOrders()->get()->last()->done_at->format('Y/m/d'));
+                    $i++;
                 }
             }
 

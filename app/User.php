@@ -327,10 +327,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function is_advocate()
     {
-        return ( ! empty($this->segment) &&
+        return (($this->segment &&
                     $this->segment->customer_at &&
                     $this->completedReferralOrders()->count() >= 1 &&
-                    $this->completedPaidOrders()->count() >= 1) ? true : false ;
+                    $this->completedPaidOrders()->count() >= 3) ? true : false );
     }
 
     public function updateFbFields($fb_user)
