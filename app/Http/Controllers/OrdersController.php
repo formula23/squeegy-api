@@ -251,10 +251,6 @@ class OrdersController extends Controller {
 //        \DB::enableQueryLog();
 
         $user = $request->user();
-        if($request->input('user_id')) {
-            $user = User::find($request->input('user_id'));
-            if( ! $user) return $this->response->errorWrongArgs('User not found');
-        }
 
         if(empty($order->id) || ($user->is('customer') && $user->id != $order->user_id)) {
             return $this->response->errorNotFound('Order not found');
@@ -339,7 +335,8 @@ class OrdersController extends Controller {
                     break;
 
                 case "receive": //v1.5 uses this status
-                    if( ! $user->is('customer')) {
+
+                    if( ! $user->is('admin') && ! $user->is('customer')) {
                         return $this->response->errorUnauthorized();
                     }
 
