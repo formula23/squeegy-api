@@ -58,6 +58,8 @@ class SendReceiptEmail {
                     'PROMO' => $order->promo_code,
                     'DISCOUNT_AMOUNT' => number_format($order->discount/100, 2),
                     'CHARGED' => number_format($order->charged/100, 2),
+                    'SUBSCRIPTION' => ($order->isSubscription() ? number_format($order->total/100, 2) : null ),
+                    'TOTAL' => number_format($order->total/100, 2),
                     'CREDIT_AMOUNT' => number_format($order->credit/100, 2),
                     'SHOW_CHARGE' => ($order->charged ? true : false),
                     'CUSTOMER_NAME' => $customer->name,

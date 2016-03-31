@@ -25,19 +25,22 @@ return [
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
             'schedule' => 'We have received your scheduled wash, a washer will be assigned to you at least one hour prior your scheduled window. Thank you for using Squeegy!',
-            'schedule_subscription' => 'Your next car wash has been scheduled for :subsription_schedule_time. If you have any questions please contact concierge@squeegyapp.com. Thank you for using Squeegy!',
             'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
-            'assign_subscription' => ':worker_name will be arriving :window_time to complete your car wash. If you have any questions please contact concierge@squeegyapp.com. Thank you for using Squeegy!',
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',
-            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don\'t forget to rate your wash. Thanks for using Squeegy!',
+            'done' => ':worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don\'t forget to rate your wash. Thank you for using Squeegy!',
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
         ],
         'push_notice_corp' => [
             'schedule' => 'We have received your car wash order for :schedule_day. Thank you for using Squeegy!',
             'assign' => ':worker_name has added your vehicle to today\'s job queue.',
             'enroute' => ':worker_name is about to start your car wash. :interior',
+        ],
+        'push_notice_subscription' => [
+            'schedule' => 'Your next car wash has been scheduled for :subsription_schedule_time. If you have any questions please contact concierge@squeegyapp.com. Thank you for using Squeegy!',
+            'assign' => ':worker_name will be arriving :window_time to complete your car wash. If you have any questions please contact concierge@squeegyapp.com. Thank you for using Squeegy!',
+            'done' => ':worker_name is done washing your car. We have emailed you a receipt. Don\'t forget to rate your wash. Thank you for using Squeegy!',
         ],
         'cancel_reason' => [
             '1' => 'Customer not here',

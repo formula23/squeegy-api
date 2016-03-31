@@ -22,7 +22,7 @@ class NotifyCustomerSchedule {
 		$push_message = trans('messages.order.push_notice.schedule');
 
 		if($event->order->isSubscription()) {
-			$push_message = trans('messages.order.push_notice.schedule_subscription', [
+			$push_message = trans('messages.order.push_notice_subscription.schedule', [
 				'subsription_schedule_time' => $event->order->schedule->window_open->format('l, F jS ga'),
 			]);
 		}

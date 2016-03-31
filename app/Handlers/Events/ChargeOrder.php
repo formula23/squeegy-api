@@ -47,9 +47,8 @@ class ChargeOrder {
                     'last_four'=>$charge->source->last4,
                     'card_type'=>$charge->source->brand,
                 ]);
+                $order->charged = $order->total;
             }
-
-            $order->charged = $order->total;
 
             if($order->discount_record && $order->discount_record->single_use_code) {
                 $discount_code = DiscountCode::where('discount_id', $order->discount_id)->where('code', $order->promo_code)->get()->first();
