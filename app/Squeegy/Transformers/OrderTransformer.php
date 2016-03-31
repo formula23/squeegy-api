@@ -47,6 +47,7 @@ class OrderTransformer extends TransformerAbstract {
             'discount' => ($order->discount ? (int)$order->discount : null ),
             'credit' => ($order->credit ? (int)$order->credit : 0 ),
             'total' => (int)($order->price - (int)$order->discount - (int)$order->credit),
+            'charged' => (int)($order->charged),
             'promo_code' => ($order->promo_code ? $order->promo_code : null ),
             'eta_quote' => (int)$order->eta,
             'arrival_eta' => eta_real_time($order),
