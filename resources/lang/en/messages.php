@@ -25,9 +25,9 @@ return [
         'invalid_card' => 'Please enter a valid credit card.',
         'push_notice' => [
             'schedule' => 'We have received your scheduled wash, a washer will be assigned to you at least one hour prior your scheduled window. Thank you for using Squeegy!',
-            'schedule_subscription' => 'Your next car wash has been scheduled for :subsription_schedule_time. Thank you for using Squeegy!',
+            'schedule_subscription' => 'Your next car wash has been scheduled for :subsription_schedule_time. If you have any questions please contact concierge@squeegyapp.com. Thank you for using Squeegy!',
             'assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
-            'assign_subscription' => ':worker_name will be arriving :window_time to complete your car wash. You have any questions please contact concierge@squeegyapp.com',
+            'assign_subscription' => ':worker_name will be arriving :window_time to complete your car wash. If you have any questions please contact concierge@squeegyapp.com. Thank you for using Squeegy!',
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your car.',

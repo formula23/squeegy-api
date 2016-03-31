@@ -14,13 +14,19 @@ class OrderSchedule extends Model {
         return $this->belongsTo('App\Order');
     }
 
+    public function display_day()
+    {
+        if( ! $this->window_open) return null;
+        return $this->window_open->format('l');
+    }
+
     public function display_time()
     {
         if( ! $this->window_open) return null;
         if($this->type=='one-time') {
             return $this->window_open->format('g')."-".$this->window_close->format('ga');
         } else {
-            return $this->window_open->format('l ga');
+            return $this->window_open->format('ga');
         }
     }
 
