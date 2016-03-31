@@ -21,6 +21,12 @@ class NotifyCustomerSchedule {
 	{
 		$push_message = trans('messages.order.push_notice.schedule');
 
+		if($event->order->isSubscription()) {
+			$push_message = trans('messages.order.push_notice.schedule_subscription', [
+				'subsription_schedule_time' => $event->order->schedule->window_open->format('l, F jS ga'),
+			]);
+		}
+
 		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.schedule', [
 				'schedule_day' => $event->order->schedule->window_open->format('l, F jS'),

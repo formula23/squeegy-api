@@ -37,7 +37,7 @@ class AuthOrder {
 		$charged=0;
 
 		//auth customer card
-		if($order->total) { //auth the card
+		if($order->total && (! $order->isSubscription())) { //auth the card
 			$payments = new Payments($order->customer->stripe_customer_id);
 			$charge = $payments->auth($order->total, $order);
 

@@ -29,6 +29,13 @@ class NotifyCustomerAssign extends BaseEventHandler {
 			'window_time'=>$event->order->scheduled_time(),
 		]);
 
+		if($event->order->schedule && $event->order->schedule->type=='subscription') {
+			$push_message = trans('messages.order.push_notice.assign_subscription', [
+				'worker_name'=>$event->order->worker->name,
+				'window_time'=>$event->order->scheduled_time(),
+			]);
+		}
+
 		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.assign', [
 				'worker_name'=>$event->order->worker->name,

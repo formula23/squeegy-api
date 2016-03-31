@@ -13,7 +13,7 @@ class AddTestSubscribeStatusToOrders extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            \DB::statement("ALTER TABLE `orders` CHANGE `status` `status` ENUM('test', 'request','confirm','receive','schedule','subscribe','assign','enroute','start','done','cancel')");
+            \DB::statement("ALTER TABLE `orders` CHANGE `status` `status` ENUM('test', 'request','confirm','receive','schedule','assign','enroute','start','done','cancel')");
         });
     }
 
