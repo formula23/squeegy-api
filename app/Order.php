@@ -214,6 +214,11 @@ class Order extends Model {
         return ($this->charged > 0 || in_array($this->discount_id, [27,28,55,56,57,58]) ? true : false );
     }
 
+    public function arrival_eta()
+    {
+        return eta_real_time($this);
+    }
+
     public static function current_scheduled_orders()
     {
         $existing_scheduled_orders = self::whereIn('status', ['schedule'])->whereHas('schedule', function($q) {
