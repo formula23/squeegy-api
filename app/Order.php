@@ -199,26 +199,38 @@ class Order extends Model {
      */
     public function scheduled_time()
     {
-        if(!$this->schedule) return null;
+        if(!$this->schedule->window_close) return null;
         return $this->schedule->window_open->format('g')."-".$this->schedule->window_close->format('ga');
     }
 
+    /**
+     * @return null|string
+     */
     public function scheduled_eta()
     {
         if(!$this->schedule) return null;
         return $this->schedule->window_open->format('D n/d')." @ ".$this->scheduled_time();
     }
 
+    /**
+     * @return bool
+     */
     public function generated_revenue()
     {
         return ($this->charged > 0 || in_array($this->discount_id, [27,28,55,56,57,58]) ? true : false );
     }
 
+    /**
+     * @return string
+     */
     public function arrival_eta()
     {
         return eta_real_time($this);
     }
 
+    /**
+     * @return array
+     */
     public static function current_scheduled_orders()
     {
         $existing_scheduled_orders = self::whereIn('status', ['schedule'])->whereHas('schedule', function($q) {
@@ -236,6 +248,11 @@ class Order extends Model {
 
     }
 
+    /**
+     * @param null $col
+     * @param null $val
+     * @return static
+     */
     public static function device_orders($col=null, $val=null)
     {
         $collection = Collection::make([]);
@@ -251,6 +268,9 @@ class Order extends Model {
         return $collection;
     }
 
+    /**
+     * @return int
+     */
     public function vehicleSurCharge()
     {
         if($this->vehicle->hasSurCharge()) {
