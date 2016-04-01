@@ -22,7 +22,7 @@ class NotifyCustomerAssign extends BaseEventHandler {
 	 * @param  OrderAssign  $event
 	 * @return void
 	 */
-	public function handle(OrderAssign $event)
+	public function handle($event)
 	{
 		$push_message = trans('messages.order.push_notice.assign', [
 			'worker_name'=>$event->order->worker->name,
