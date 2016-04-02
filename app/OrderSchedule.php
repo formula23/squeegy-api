@@ -29,5 +29,5 @@ class OrderSchedule extends Model {
             return $this->window_open->format('ga');
         }
     }
-    
+
 }
