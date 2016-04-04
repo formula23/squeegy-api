@@ -1,5 +1,6 @@
 <?php namespace App\Console\Commands;
 
+use Aloha\Twilio\Twilio;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,15 +20,27 @@ class PushNotification extends Command {
 	 * @var string
 	 */
 	protected $description = 'Send Push Notification';
+    protected $twilio;
 
     protected $sns_client = null;
     protected $message = "";
     protected $user=null;
 
     protected $total_count=0;
+
     protected $send_success=0;
     protected $send_fail=0;
-    protected $succes_ids=[];
+
+    protected $sms_success=0;
+    protected $sms_fail=0;
+
+    protected $gilt_ids_count=0;
+
+    protected $success_ids=[];
+    protected $fail_ids=[];
+
+    protected $all_gilt_ids=[];
+    protected $gilt_ids=[];
 
 	/**
 	 * Create a new command instance.
@@ -37,6 +50,9 @@ class PushNotification extends Command {
 	public function __construct()
 	{
 		parent::__construct();
+
+        $this->twilio = \App::make('Aloha\Twilio\Twilio');
+
 	}
 
 	/**
@@ -159,6 +175,9 @@ class PushNotification extends Command {
 //                )
 //            ');
 
+        $this->all_gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58)');
+
+
         $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
                 FROM users, `user_segments`
                 WHERE users.id = `user_segments`.user_id
@@ -243,13 +262,12 @@ class PushNotification extends Command {
                 ORDER BY email
                 LIMIT 3000 OFFSET 4000');
 
-        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`, phone
                 FROM `user_segments`, users
                 WHERE `user_segments`.user_id = users.id
                 AND `last_wash_at` <= \'2016-03-21\'
                 ORDER BY last_wash_at DESC
-                LIMIT 200 OFFSET 0');
-
+                LIMIT 200 OFFSET 200');
 
 
         $send_list = array_merge($users, $default_users);
@@ -294,10 +312,19 @@ class PushNotification extends Command {
         }
 
         $this->info("Total: ".count($send_list));
-        $this->info("Success:".$this->send_success);
-        $this->info("Failed:".$this->send_fail);
+        $this->info("Push Success:".count($this->success_ids));
+        $this->info("Push Failed:".count($this->fail_ids));
+
+        $this->info("SMS Success:".$this->sms_success);
+        $this->info("SMS Failed:".$this->sms_fail);
+
+        $this->info("Gilt Ids:".implode(",", $this->gilt_ids));
+        $this->info("Gilt Id Count:". count($this->gilt_ids));
+
         $this->info("Success Ids:");
-        $this->info(implode(",", $this->succes_ids));
+        $this->info(implode(",", $this->success_ids));
+        $this->info("Failed Ids:");
+        $this->info(implode(",", $this->fail_ids));
         $this->info("Done!");
 
 	}
@@ -347,6 +374,11 @@ class PushNotification extends Command {
 
             if(empty($this->user->{$endpoint_field})) continue;
 
+            if(in_array($this->user->id, $this->all_gilt_ids)) {
+                $this->gilt_ids[] = $this->user->id;
+                continue;
+            }
+
             $endpoint_arn = $this->user->{$endpoint_field};
 
             $target = (preg_match('/gcm/i', $endpoint_arn) ? "gcm" : "apns" );
@@ -390,11 +422,21 @@ class PushNotification extends Command {
 
                 $this->_output($this->user->id, $endpoint_arn);
                 $this->send_success++;
-                $this->succes_ids[] = $this->user->id;
+                $this->success_ids[] = $this->user->id;
 
             } catch(\Exception $e) {
                 $this->send_fail++;
+                $this->fail_ids[] = $this->user->id;
                 $this->error('Error - '.$this->user->id.": ".$endpoint_arn);
+
+                try {
+                    $this->twilio->message($this->user->phone, $this->message);
+                    $this->sms_success++;
+                } catch (\Exception $e) {
+                    $this->error('Error - '.$this->user->phone);
+                    $this->sms_fail++;
+                }
+                
             }
         }
 
