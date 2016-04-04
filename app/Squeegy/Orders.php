@@ -609,8 +609,10 @@ class Orders {
     {
         try {
 
+            Log::info($latlng);
             if(Cache::has($latlng)) {
                 $results = Cache::get($latlng);
+                Log::info($results);
                 self::parse_add_components($results);
             } else {
                 $response = \GoogleMaps::load('geocoding')->setParam (['latlng' => $latlng])->get();
