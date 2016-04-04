@@ -608,12 +608,11 @@ class Orders {
     public static function geocode($latlng)
     {
         try {
-
             if(Cache::has($latlng)) {
                 $results = Cache::get($latlng);
                 self::parse_add_components($results);
             } else {
-                $response = \GoogleMaps::load('geocoding')->setParam (['latlng' => $latlng])->get();
+                $response = \GoogleMaps::load('geocoding')->setParam(['latlng' => $latlng])->get();
                 $json_resp = json_decode($response);
                 if($json_resp->status == "OK") {
                     self::parse_add_components($json_resp->results);
