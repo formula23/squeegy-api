@@ -615,10 +615,10 @@ class Orders {
                 Log::info($results);
                 self::parse_add_components($results);
             } else {
-                $response = \GoogleMaps::load('geocoding')->setParam (['latlng' => $latlng])->get();
+                $response = \GoogleMaps::load('geocoding')->setParam(['latlng' => $latlng])->get();
                 Log::info($response);
                 $json_resp = json_decode($response);
-                Log::info($json_resp);
+//                Log::info($json_resp);
                 if($json_resp->status == "OK") {
                     self::parse_add_components($json_resp->results);
                     Cache::forever($latlng, $json_resp->results);
