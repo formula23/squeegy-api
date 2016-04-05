@@ -78,17 +78,6 @@ class OrdersController extends Controller {
             } else {
                 $orders->where('user_id', Auth::user()->id);
             }
-        } else {
-            //exclude internal test orders
-//            $orders->whereNotIn('user_id', function ($q) {
-//                $q->select('id')
-//                    ->from('users')
-//                    ->where('email', 'like', '%formula23%')
-//                    ->orWhere('email', 'like', '%sinister%')
-//                    ->orWhere('email', 'like', '%squeegy%')
-//                    ->orWhere('email', 'like', '%testing%')
-//                    ->orWhere('email', 'like', '%triet.luong%');
-//            });
         }
 
         if($request->input('job_number')) {
@@ -153,13 +142,19 @@ class OrdersController extends Controller {
 
         $is_schedule = ( !empty($data['day']) && !empty($data['time_slot']) ? true : false );
 
+        $user = $request->user();
+        if($request->input('user_id')) {
+            $user = User::find($request->input('user_id'));
+            if( ! $user) return $this->response->errorWrongArgs('User not found');
+        }
+
         //does current user have any washes in progress for the requested vehicle
-        if( !$is_schedule && $request->user()->orders()->whereIn('status', ['assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
+        if( !$is_schedule && $user->orders()->whereIn('status', ['assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs(trans('messages.order.exists'));
         }
 
         //does the vehicle being sent belong to this user
-        if( ! $request->user()->vehicles()->where('id', '=', $data['vehicle_id'])->get()->count()) {
+        if( ! $user->vehicles()->where('id', '=', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs(trans('messages.order.vehicle_invalid'));
         }
 
@@ -184,17 +179,18 @@ class OrdersController extends Controller {
 
                 list($window_open, $window_close) = explode("-", $data['time_slot']);
 
-                $schedule_data = [
-                    'window_open' => new Carbon($data['day']." ".$window_open),
-                    'window_close' => new Carbon($data['day']." ".$window_close),
-                ];
+                $schedule_data = [];
+                $schedule_data['window_open'] = new Carbon($data['day']." ".$window_open);
+
+                if($window_close) {
+                    $schedule_data['window_close'] = new Carbon($data['day']." ".$window_close);
+                } else {
+                    $schedule_data['type'] = 'subscription';
+                }
 
                 if($schedule_data['window_open']->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
-                $order_schedule = OrderSchedule::create([
-                    'window_open' => new Carbon($data['day']." ".$window_open),
-                    'window_close' => new Carbon($data['day']." ".$window_close),
-                ]);
+                $order_schedule = OrderSchedule::create($schedule_data);
 
             } else { //on-demand
                 if(!empty($eta['time'])) {
@@ -218,7 +214,8 @@ class OrdersController extends Controller {
 //        \DB::enableQueryLog();
 
         $order = new Order($data);
-        $request->user()->orders()->save($order);
+
+        $user->orders()->save($order);
 
         if($surcharge = $order->vehicleSurCharge()) {
             $order->price += $surcharge;
@@ -227,8 +224,8 @@ class OrdersController extends Controller {
         }
 
         ///use available credits
-        if($request->user()->availableCredit()) {
-            $order->credit = min($order->total, $request->user()->availableCredit());
+        if($user->availableCredit()) {
+            $order->credit = min($order->total, $user->availableCredit());
             $order->total -= $order->credit;
         }
 
@@ -253,7 +250,9 @@ class OrdersController extends Controller {
     {
 //        \DB::enableQueryLog();
 
-        if(empty($order->id) || (Auth::user()->is('customer') && Auth::id()!=$order->user_id)) {
+        $user = $request->user();
+
+        if(empty($order->id) || ($user->is('customer') && $user->id != $order->user_id)) {
             return $this->response->errorNotFound('Order not found');
         }
 
@@ -312,7 +311,7 @@ class OrdersController extends Controller {
                     break;
                 case "confirm": //v1.4 uses this status
 
-                    if( ! $request->user()->is('customer')) {
+                    if( ! $user->is('customer')) {
                         return $this->response->errorUnauthorized();
                     }
 
@@ -336,7 +335,8 @@ class OrdersController extends Controller {
                     break;
 
                 case "receive": //v1.5 uses this status
-                    if( ! $request->user()->is('customer')) {
+
+                    if( ! $user->is('admin') && ! $user->is('customer')) {
                         return $this->response->errorUnauthorized();
                     }
 
@@ -379,7 +379,7 @@ class OrdersController extends Controller {
                     break;
                 case "assign":
 
-                    if( ! $request->user()->is('admin')) {
+                    if( ! $user->is('admin')) {
                         return $this->response->errorUnauthorized();
                     }
 
@@ -404,18 +404,18 @@ class OrdersController extends Controller {
                     break;
                 case "enroute":
 
-                    if( ! $request->user()->can('order.status')) {
+                    if( ! $user->can('order.status')) {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $order->worker_id = $request->user()->id;
+                    $order->worker_id = $user->id;
 
                     Event::fire(new OrderEnroute($order, false));
 
                     break;
                 case "start":
 
-                    if( ! $request->user()->can('order.status') || $request->user()->id != $order->worker_id) {
+                    if( ! $user->can('order.status') || $user->id != $order->worker_id) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
@@ -425,7 +425,7 @@ class OrdersController extends Controller {
 
                 case "done":
 
-                    if( ! $request->user()->can('order.status') || $request->user()->id != $order->worker_id) {
+                    if( ! $user->can('order.status') || $user->id != $order->worker_id) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 

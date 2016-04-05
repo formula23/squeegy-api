@@ -23,6 +23,7 @@ class OrderScheduleTransformer extends TransformerAbstract
             'day' => ($orderSchedule->window_open ? $orderSchedule->window_open->format('D') : null),
             'date' => ($orderSchedule->window_open ? $orderSchedule->window_open->format('n/d') : null),
             'time_slot' => $orderSchedule->display_time(),
+            'type' => $orderSchedule->type,
         ];
 
     }

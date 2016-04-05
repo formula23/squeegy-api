@@ -28,6 +28,7 @@ return [
         'confirm' => 2,
         'receive' => 2,
         'schedule' => 2,
+        'subscribe' => 2,
         'assign' => 3,
         'enroute' => 4,
         'start' => 5,

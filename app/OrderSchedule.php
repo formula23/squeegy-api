@@ -5,7 +5,7 @@ use Carbon\Carbon;
 
 class OrderSchedule extends Model {
 
-	protected $fillable = ['order_id', 'window_open', 'window_close'];
+	protected $fillable = ['order_id', 'window_open', 'window_close', 'type'];
 
     protected $dates = ['window_open', 'window_close'];
 
@@ -28,6 +28,12 @@ class OrderSchedule extends Model {
         } else {
             return $this->window_open->format('ga');
         }
+    }
+
+    public function start_date_time()
+    {
+        if( ! $this->window_open) return null;
+        return $this->window_open->format('l, F jS @ ga');
     }
 
 }

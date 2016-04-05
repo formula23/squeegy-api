@@ -28,13 +28,23 @@ class NotifyAdminNewOrder {
 			//get assigned worker and andrew & dan
 			$admins = User::whereIn('id', [1,2,6119])->get();
 
-			foreach($admins as $admin) {
-				$event->twilio->message($admin->phone, trans('messages.order.new_schedule_order', [
-					'order_service' => $event->order->service->name,
-					'order_id' => $event->order->id,
-					'scheduled_day' => $event->order->scheduled_day().", ".$event->order->scheduled_date(),
-					'scheduled_time' => $event->order->scheduled_time(),
-				]));
+			$message = trans('messages.order.new_schedule_order', [
+                'order_service' => $event->order->service->name,
+                'order_id' => $event->order->id,
+                'scheduled_day' => $event->order->scheduled_day().", ".$event->order->scheduled_date(),
+                'scheduled_time' => $event->order->scheduled_time(),
+            ]);
+
+            if($event->order->schedule && $event->order->schedule->type=='subscription') {
+                $message = trans('messages.order.new_subscription_schedule_order', [
+                    'order_service' => $event->order->service->name,
+                    'order_id' => $event->order->id,
+                    'subsription_schedule_time' => $event->order->schedule->start_date_time(),
+                ]);
+            }
+
+            foreach($admins as $admin) {
+				$event->twilio->message($admin->phone, $message);
 			}
 		} catch(\Exception $e) {
 			\Bugsnag::notifyException(new \Exception($e->getMessage()));

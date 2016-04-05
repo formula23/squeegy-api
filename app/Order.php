@@ -195,12 +195,30 @@ class Order extends Model {
     }
 
     /**
+     * @return bool|null
+     */
+    public function isSubscription()
+    {
+        if(!$this->schedule) return null;
+        return ($this->schedule->type=='subscription') ? true : false;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isSchedule()
+    {
+        if(!$this->schedule) return null;
+        return ($this->schedule->type=='one-time') ? true : false;
+    }
+
+    /**
      * @return null|string
      */
     public function scheduled_time()
     {
-        if(!$this->schedule->window_close) return null;
-        return $this->schedule->window_open->format('g')."-".$this->schedule->window_close->format('ga');
+        if(!$this->schedule->window_open) return null;
+        return $this->schedule->display_time();
     }
 
     /**
