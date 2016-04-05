@@ -26,7 +26,7 @@ class AuthOrder {
 		$order = $event->order;
 
 		//if there is credit store save to credit DB
-		if($order->credit && !$order->order_credit) {
+		if($order->credit && !$order->order_credit && (! $order->isSubscription())) {
 			$order->order_credit()->create([
 				'user_id'=>$order->user_id,
 				'amount'=> -($order->credit),
