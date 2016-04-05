@@ -4,7 +4,7 @@ use App\Events\OrderEnroute;
 use Auth;
 use App\Squeegy\PushNotification;
 
-class NotifyCustomerEnroute {
+class NotifyCustomerEnroute extends BaseEventHandler {
 
 	/**
 	 * Create the event handler.
@@ -50,7 +50,7 @@ class NotifyCustomerEnroute {
 			//send sms to customer
             try {
                 $twilio = \App::make('Aloha\Twilio\Twilio');
-                $push_message = "Squeegy Order Status: ".$push_message;
+                $push_message = $this->_text_msg.$push_message;
                 $twilio->message($event->order->customer->phone, $push_message);
             } catch (\Exception $e) {
                 \Bugsnag::notifyException($e);

@@ -11,6 +11,6 @@ namespace App\Handlers\Events;
 
 class BaseEventHandler
 {
-    protected $_text_msg = 'Squeegy Order Status:\n';
+    protected $_text_msg = "Squeegy Order Status:\n";
 
 }
