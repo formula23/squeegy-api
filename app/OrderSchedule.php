@@ -30,4 +30,10 @@ class OrderSchedule extends Model {
         }
     }
 
+    public function start_date_time()
+    {
+        if( ! $this->window_open) return null;
+        return $this->window_open->format('l, F jS @ ga');
+    }
+
 }

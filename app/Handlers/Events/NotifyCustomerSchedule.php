@@ -2,7 +2,7 @@
 
 use App\Events\OrderScheduled;
 
-class NotifyCustomerSchedule {
+class NotifyCustomerSchedule extends BaseEventHandler {
 
 	/**
 	 * Create the event handler.
@@ -23,7 +23,7 @@ class NotifyCustomerSchedule {
 
 		if($event->order->isSubscription()) {
 			$push_message = trans('messages.order.push_notice_subscription.schedule', [
-				'subsription_schedule_time' => $event->order->schedule->window_open->format('l, F jS ga'),
+				'subsription_schedule_time' => $event->order->schedule->start_date_time(),
 			]);
 		}
 
@@ -34,7 +34,7 @@ class NotifyCustomerSchedule {
 		}
 
 		try {
-			$push_message = "Squeegy Order Status: ".$push_message;
+			$push_message = $this->_text_msg.$push_message;
 			$event->twilio->message($event->order->customer->phone, $push_message);
 		} catch (\Exception $e) {
 			\Bugsnag::notifyException($e);

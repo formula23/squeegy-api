@@ -217,7 +217,7 @@ class Order extends Model {
      */
     public function scheduled_time()
     {
-        if(!$this->schedule->window_close) return null;
+        if(!$this->schedule->window_open) return null;
         return $this->schedule->display_time();
     }
 
