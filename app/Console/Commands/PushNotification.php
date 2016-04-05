@@ -31,10 +31,8 @@ class PushNotification extends Command {
     protected $send_success=0;
     protected $send_fail=0;
 
-    protected $sms_success=0;
-    protected $sms_fail=0;
-
-    protected $gilt_ids_count=0;
+    protected $sms_success_ids=[];
+    protected $sms_fail_ids=[];
 
     protected $success_ids=[];
     protected $fail_ids=[];
@@ -79,7 +77,7 @@ class PushNotification extends Command {
         }
 
         $default_users = \DB::table('users')
-                ->select(['id','push_token', 'target_arn_gcm'])
+                ->select(['id','push_token', 'target_arn_gcm', 'phone'])
             ->where('email', 'dan@formula23.com')
             ->orWhere('email', 'sinisterindustries@yahoo.com')
             ->orWhere('email', 'chas2@f23.com')
@@ -175,8 +173,10 @@ class PushNotification extends Command {
 //                )
 //            ');
 
-        $this->all_gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58)');
-
+        $gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58)');
+        foreach($gilt_ids as $gilt_id) {
+            $this->all_gilt_ids[] = $gilt_id->user_id;
+        }
 
         $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
                 FROM users, `user_segments`
@@ -267,7 +267,7 @@ class PushNotification extends Command {
                 WHERE `user_segments`.user_id = users.id
                 AND `last_wash_at` <= \'2016-03-21\'
                 ORDER BY last_wash_at DESC
-                LIMIT 200 OFFSET 200');
+                LIMIT 200 OFFSET 400');
 
 
         $send_list = array_merge($users, $default_users);
@@ -315,8 +315,8 @@ class PushNotification extends Command {
         $this->info("Push Success:".count($this->success_ids));
         $this->info("Push Failed:".count($this->fail_ids));
 
-        $this->info("SMS Success:".$this->sms_success);
-        $this->info("SMS Failed:".$this->sms_fail);
+        $this->info("SMS Success:".count($this->sms_success_ids));
+        $this->info("SMS Failed:".count($this->sms_fail_ids));
 
         $this->info("Gilt Ids:".implode(",", $this->gilt_ids));
         $this->info("Gilt Id Count:". count($this->gilt_ids));
@@ -325,6 +325,12 @@ class PushNotification extends Command {
         $this->info(implode(",", $this->success_ids));
         $this->info("Failed Ids:");
         $this->info(implode(",", $this->fail_ids));
+
+        $this->info("SMS Success Ids:");
+        $this->info(implode(",", $this->sms_success_ids));
+        $this->info("SMS Failed Ids:");
+        $this->info(implode(",", $this->sms_fail_ids));
+
         $this->info("Done!");
 
 	}
@@ -431,10 +437,10 @@ class PushNotification extends Command {
 
                 try {
                     $this->twilio->message($this->user->phone, $this->message);
-                    $this->sms_success++;
+                    $this->sms_success_ids[] = $this->user->id;
                 } catch (\Exception $e) {
-                    $this->error('Error - '.$this->user->phone);
-                    $this->sms_fail++;
+                    $this->error('SMS Error - '.$this->user->id);
+                    $this->sms_fail_ids[] = $this->user->id;
                 }
                 
             }
