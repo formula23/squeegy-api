@@ -24,6 +24,11 @@ class NotifyCustomerEnroute extends BaseEventHandler {
 	 */
 	public function handle(OrderEnroute $event)
 	{
+
+		if($event->order->schedule && $event->order->schedule->type=='subscription') { //surpress notifications for subscribed orders
+			return;
+		}
+
 		$msg_key = ($event->auto) ? "enroute" : "enroute_manual" ;
 
 		if( ! $event->auto) { //get real travel time

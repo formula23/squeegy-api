@@ -23,6 +23,10 @@ class NotifyCustomerStart extends BaseEventHandler {
 	 */
 	public function handle(OrderStart $event)
 	{
+		if($event->order->schedule && $event->order->schedule->type=='subscription') { //surpress notifications for subscribed orders
+			return;
+		}
+
         $push_message = trans('messages.order.push_notice.start',['worker_name'=>$event->order->worker->name]);
 
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm");
