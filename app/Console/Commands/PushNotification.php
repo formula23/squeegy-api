@@ -179,7 +179,7 @@ class PushNotification extends Command {
 //                )
 //            ');
 
-        $gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58)');
+        $gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58) and `status` = \'done\'');
         foreach($gilt_ids as $gilt_id) {
             $this->all_gilt_ids[] = $gilt_id->user_id;
         }
