@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\PayrollGenerate',
         'App\Console\Commands\FixAdvocates',
         'App\Console\Commands\UserLocations',
+        'App\Console\Commands\UpdateCM',
 	];
 
 	/**
