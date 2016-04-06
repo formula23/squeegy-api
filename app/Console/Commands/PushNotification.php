@@ -26,6 +26,8 @@ class PushNotification extends Command {
     protected $message = "";
     protected $user=null;
 
+    protected $test_user_ids=[];
+
     protected $total_count=0;
 
     protected $send_success=0;
@@ -83,6 +85,10 @@ class PushNotification extends Command {
             ->orWhere('email', 'chas2@f23.com')
             ->orWhere('email', 'benjamin.grodsky@gmail.com')
             ->get();
+
+        foreach($default_users as $default_user) {
+            $this->test_user_ids[] = $default_user->id;
+        }
 
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
 //            ->whereNotIn('id', function($q) {
@@ -269,6 +275,14 @@ class PushNotification extends Command {
                 ORDER BY last_wash_at DESC
                 LIMIT 200 OFFSET 400');
 
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `user_segments`, users
+                WHERE `user_segments`.user_id = users.id
+                AND segment_id = 2
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
+                order by users.email
+                limit '.$this->option('take').' offset '.$this->option('skip').'
+            ');
 
         $send_list = array_merge($users, $default_users);
 
@@ -359,8 +373,8 @@ class PushNotification extends Command {
 			['message', null, InputOption::VALUE_REQUIRED, 'The message to send.', null],
 			['topic_name', null, InputOption::VALUE_OPTIONAL, 'Topic name.', null],
 			['zip_codes', null, InputOption::VALUE_OPTIONAL, 'Zip codes', null],
-            ['skip', null, InputOption::VALUE_OPTIONAL, 'Skip', null],
-            ['take', null, InputOption::VALUE_OPTIONAL, 'Take', null],
+            ['skip', null, InputOption::VALUE_OPTIONAL, 'Skip', 0],
+            ['take', null, InputOption::VALUE_OPTIONAL, 'Take', 0],
 		];
 	}
 
@@ -391,7 +405,7 @@ class PushNotification extends Command {
 
             try {
 
-                if($this->argument('env') == "live") {
+                if($this->argument('env') == "live" || in_array($this->user->id, $this->test_user_ids)) {
 
                     if($target=="apns") {
                         $platform = env('APNS');
@@ -436,8 +450,13 @@ class PushNotification extends Command {
                 $this->error('Error - '.$this->user->id.": ".$endpoint_arn);
 
                 try {
-                    $this->twilio->message($this->user->phone, $this->message);
-                    $this->sms_success_ids[] = $this->user->id;
+                    if($this->user->phone) {
+                        $this->twilio->message($this->user->phone, $this->message);
+                        $this->sms_success_ids[] = $this->user->id;
+                    } else {
+                        $this->error($this->user->id." - No phone number");
+                    }
+
                 } catch (\Exception $e) {
                     $this->error('SMS Error - '.$this->user->id);
                     $this->sms_fail_ids[] = $this->user->id;
