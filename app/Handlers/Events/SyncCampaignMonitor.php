@@ -35,6 +35,7 @@ class SyncCampaignMonitor {
 					['Key'=>'SegmentID', 'Value'=>$customer->segment->segment_id],
 					['Key'=>'Device', 'Value'=>$customer->device()],
 					['Key'=>'AvailableCredit', 'Value'=>$customer->availableCredit()/100],
+					['Key'=>'ReferralCode', 'Value'=>$customer->referral_code],
 				]
 			];
 
