@@ -22,7 +22,8 @@ function is_internal()
         '76.94.204.22', //dan home wifi
         '104.32.54.86', //squeegy office
         '24.205.11.225', //kevin
-        '24.199.45.29', //saleh hotel
+        '172.56.6.161', //saleh hotel
+        '50.84.165.37', //saleh wifi
     ]);
 }
 
@@ -31,7 +32,16 @@ function eta_real_time(Order $order, $round = 5)
     try {
         if( ! empty($order->confirm_at)) {
             $exact_eta = $order->confirm_at->addMinutes($order->eta);
-            return real_time($exact_eta, $round);
+            if($order->schedule) {
+                return $order->schedule->display_time();
+//                if($order->schedule->type=='one-time') {
+//                    return $order->schedule->window_open->format('g')."-".$order->schedule->window_close->format('ga');
+//                } else {
+//                    return $order->schedule->window_open->format('ga');
+//                }
+            } else {
+                return real_time($exact_eta, $round);
+            }
 //            $arrival_time = Carbon::createFromTimestamp(ceil(strtotime($exact_eta->format('Y-m-d H:i')) / ($round * 60)) * ($round * 60));
 //            return $arrival_time->format('g:i a');
         }

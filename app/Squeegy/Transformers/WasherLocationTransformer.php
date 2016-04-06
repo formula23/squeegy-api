@@ -8,6 +8,7 @@
 
 namespace App\Squeegy\Transformers;
 
+use App\WasherActivityLog;
 use App\WasherLocation;
 use League\Fractal\TransformerAbstract;
 
@@ -15,6 +16,7 @@ class WasherLocationTransformer extends TransformerAbstract {
 
     protected $defaultIncludes = [
         'washer',
+        'activity_log',
     ];
 
     public function transform(WasherLocation $washerLocation)
@@ -23,6 +25,16 @@ class WasherLocationTransformer extends TransformerAbstract {
             'latitude' => $washerLocation->latitude,
             'longitude' => $washerLocation->longitude,
         ];
+    }
+
+    public function includeActivityLog(WasherLocation $washerLocation)
+    {
+        $washer_log = new WasherActivityLog();
+        $washer_log->login = $washerLocation->login;
+        $washer_log->logout = $washerLocation->logout;
+        $washer_log->log_on = $washerLocation->log_on;
+        $washer_log->log_off = $washerLocation->log_off;
+        return $this->item($washer_log, new WasherActivityLogTransformer());
     }
 
     public function includeWasher(WasherLocation $washerLocation)

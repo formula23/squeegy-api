@@ -4,7 +4,7 @@ use App\Events\OrderEnroute;
 use Auth;
 use App\Squeegy\PushNotification;
 
-class NotifyCustomerEnroute {
+class NotifyCustomerEnroute extends BaseEventHandler {
 
 	/**
 	 * Create the event handler.
@@ -24,6 +24,11 @@ class NotifyCustomerEnroute {
 	 */
 	public function handle(OrderEnroute $event)
 	{
+
+		if($event->order->schedule && $event->order->schedule->type=='subscription') { //surpress notifications for subscribed orders
+			return;
+		}
+
 		$msg_key = ($event->auto) ? "enroute" : "enroute_manual" ;
 
 		if( ! $event->auto) { //get real travel time
@@ -50,7 +55,7 @@ class NotifyCustomerEnroute {
 			//send sms to customer
             try {
                 $twilio = \App::make('Aloha\Twilio\Twilio');
-                $push_message = "Squeegy Order Status: ".$push_message;
+                $push_message = $this->_text_msg.$push_message;
                 $twilio->message($event->order->customer->phone, $push_message);
             } catch (\Exception $e) {
                 \Bugsnag::notifyException($e);

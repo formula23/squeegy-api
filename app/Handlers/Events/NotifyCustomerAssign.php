@@ -22,12 +22,27 @@ class NotifyCustomerAssign extends BaseEventHandler {
 	 * @param  OrderAssign  $event
 	 * @return void
 	 */
-	public function handle(OrderAssign $event)
+	public function handle($event)
 	{
 		$push_message = trans('messages.order.push_notice.assign', [
 			'worker_name'=>$event->order->worker->name,
-			'window_time'=>$event->order->scheduled_time(),
+			'window_time'=>$event->order->arrival_eta(),
 		]);
+
+        if($event->order->schedule && $event->order->schedule->window_open) {
+            $push_message = trans('messages.order.push_notice.schedule_assign', [
+                'worker_name'=>$event->order->worker->name,
+                'window_time'=>$event->order->scheduled_time(),
+            ]);
+        }
+
+        if($event->order->schedule && $event->order->schedule->type=='subscription') {
+            return;
+//            $push_message = trans('messages.order.push_notice_subscription.assign', [
+//                'worker_name'=>$event->order->worker->name,
+//                'window_time'=>$event->order->schedule->display_day()." @ ".$event->order->scheduled_time(),
+//            ]);
+        }
 
 		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.assign', [

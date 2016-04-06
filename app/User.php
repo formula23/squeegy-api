@@ -192,6 +192,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
+     * @return mixed
+     */
+    public function completedReferralOrders()
+    {
+        return $this->referral_orders()->where('status', 'done')->orderBy('done_at');
+    }
+
+    /**
      * @param $query
      * @return mixed
      */
@@ -242,7 +250,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             $q->select('user_id', 'latitude', 'longitude');
         }])
         ->whereHas('activity_logs', function($q) {
-            $q->whereNull('log_off');
+            $q->whereNotNull('log_on')->whereNull('log_off');
         })
         ->whereHas('zones.regions', function($q) use ($postal_code) {
             $q->where('postal_code', $postal_code);
@@ -319,8 +327,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function is_advocate()
     {
-        $referral_orders = $this->referral_orders()->where('status', 'done')->orderBy('done_at');
-        return ( ! empty($this->segment) && $this->segment->customer_at && $referral_orders->count() >= 3) ? true : false ;
+        return (($this->segment &&
+                    $this->segment->customer_at &&
+                    $this->completedReferralOrders()->count() >= 1 &&
+                    $this->completedPaidOrders()->count() >= 3) ? true : false );
     }
 
     public function updateFbFields($fb_user)

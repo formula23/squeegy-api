@@ -25,6 +25,12 @@ class NotifyCustomerDone extends BaseEventHandler {
 	{
         $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 2)]);
 
+		if($event->order->schedule && $event->order->schedule->type=='subscription') {
+			$push_message = trans('messages.order.push_notice_subscription.done', [
+				'worker_name'=>$event->order->worker->name,
+			]);
+		}
+
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 
         if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {

@@ -1,5 +1,6 @@
 <?php namespace App\Console\Commands;
 
+use Aloha\Twilio\Twilio;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,15 +20,27 @@ class PushNotification extends Command {
 	 * @var string
 	 */
 	protected $description = 'Send Push Notification';
+    protected $twilio;
 
     protected $sns_client = null;
     protected $message = "";
     protected $user=null;
 
+    protected $test_user_ids=[];
+
     protected $total_count=0;
+
     protected $send_success=0;
     protected $send_fail=0;
-    protected $succes_ids=[];
+
+    protected $sms_success_ids=[];
+    protected $sms_fail_ids=[];
+
+    protected $success_ids=[];
+    protected $fail_ids=[];
+
+    protected $all_gilt_ids=[];
+    protected $gilt_ids=[];
 
 	/**
 	 * Create a new command instance.
@@ -37,6 +50,9 @@ class PushNotification extends Command {
 	public function __construct()
 	{
 		parent::__construct();
+
+        $this->twilio = \App::make('Aloha\Twilio\Twilio');
+
 	}
 
 	/**
@@ -63,12 +79,16 @@ class PushNotification extends Command {
         }
 
         $default_users = \DB::table('users')
-                ->select(['id','push_token', 'target_arn_gcm'])
+                ->select(['id','push_token', 'target_arn_gcm', 'phone'])
             ->where('email', 'dan@formula23.com')
             ->orWhere('email', 'sinisterindustries@yahoo.com')
             ->orWhere('email', 'chas2@f23.com')
             ->orWhere('email', 'benjamin.grodsky@gmail.com')
             ->get();
+
+        foreach($default_users as $default_user) {
+            $this->test_user_ids[] = $default_user->id;
+        }
 
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')
 //            ->whereNotIn('id', function($q) {
@@ -159,6 +179,11 @@ class PushNotification extends Command {
 //                )
 //            ');
 
+        $gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58) and `status` = \'done\'');
+        foreach($gilt_ids as $gilt_id) {
+            $this->all_gilt_ids[] = $gilt_id->user_id;
+        }
+
         $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
                 FROM users, `user_segments`
                 WHERE users.id = `user_segments`.user_id
@@ -238,6 +263,27 @@ class PushNotification extends Command {
                 AND last_wash_at <= \'2016-03-11 23:59:59\'
                 ORDER BY last_wash_at');
 
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM users
+                ORDER BY email
+                LIMIT 3000 OFFSET 4000');
+
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`, phone
+                FROM `user_segments`, users
+                WHERE `user_segments`.user_id = users.id
+                AND `last_wash_at` <= \'2016-03-21\'
+                ORDER BY last_wash_at DESC
+                LIMIT 200 OFFSET 400');
+
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
+                FROM `user_segments`, users
+                WHERE `user_segments`.user_id = users.id
+                AND segment_id = 2
+                AND users.id NOT IN (SELECT user_id FROM orders WHERE `status` IN (\'assign\',\'enroute\',\'start\'))
+                order by users.email
+                limit '.$this->option('take').' offset '.$this->option('skip').'
+            ');
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("publish message: ".$this->message);
@@ -280,10 +326,25 @@ class PushNotification extends Command {
         }
 
         $this->info("Total: ".count($send_list));
-        $this->info("Success:".$this->send_success);
-        $this->info("Failed:".$this->send_fail);
+        $this->info("Push Success:".count($this->success_ids));
+        $this->info("Push Failed:".count($this->fail_ids));
+
+        $this->info("SMS Success:".count($this->sms_success_ids));
+        $this->info("SMS Failed:".count($this->sms_fail_ids));
+
+        $this->info("Gilt Ids:".implode(",", $this->gilt_ids));
+        $this->info("Gilt Id Count:". count($this->gilt_ids));
+
         $this->info("Success Ids:");
-        $this->info(implode(",", $this->succes_ids));
+        $this->info(implode(",", $this->success_ids));
+        $this->info("Failed Ids:");
+        $this->info(implode(",", $this->fail_ids));
+
+        $this->info("SMS Success Ids:");
+        $this->info(implode(",", $this->sms_success_ids));
+        $this->info("SMS Failed Ids:");
+        $this->info(implode(",", $this->sms_fail_ids));
+
         $this->info("Done!");
 
 	}
@@ -312,8 +373,8 @@ class PushNotification extends Command {
 			['message', null, InputOption::VALUE_REQUIRED, 'The message to send.', null],
 			['topic_name', null, InputOption::VALUE_OPTIONAL, 'Topic name.', null],
 			['zip_codes', null, InputOption::VALUE_OPTIONAL, 'Zip codes', null],
-            ['skip', null, InputOption::VALUE_OPTIONAL, 'Skip', null],
-            ['take', null, InputOption::VALUE_OPTIONAL, 'Take', null],
+            ['skip', null, InputOption::VALUE_OPTIONAL, 'Skip', 0],
+            ['take', null, InputOption::VALUE_OPTIONAL, 'Take', 0],
 		];
 	}
 
@@ -333,13 +394,18 @@ class PushNotification extends Command {
 
             if(empty($this->user->{$endpoint_field})) continue;
 
+            if(in_array($this->user->id, $this->all_gilt_ids)) {
+                $this->gilt_ids[] = $this->user->id;
+                continue;
+            }
+
             $endpoint_arn = $this->user->{$endpoint_field};
 
             $target = (preg_match('/gcm/i', $endpoint_arn) ? "gcm" : "apns" );
 
             try {
 
-                if($this->argument('env') == "live") {
+                if($this->argument('env') == "live" || in_array($this->user->id, $this->test_user_ids)) {
 
                     if($target=="apns") {
                         $platform = env('APNS');
@@ -376,11 +442,26 @@ class PushNotification extends Command {
 
                 $this->_output($this->user->id, $endpoint_arn);
                 $this->send_success++;
-                $this->succes_ids[] = $this->user->id;
+                $this->success_ids[] = $this->user->id;
 
             } catch(\Exception $e) {
                 $this->send_fail++;
+                $this->fail_ids[] = $this->user->id;
                 $this->error('Error - '.$this->user->id.": ".$endpoint_arn);
+
+                try {
+                    if($this->user->phone) {
+                        $this->twilio->message($this->user->phone, $this->message);
+                        $this->sms_success_ids[] = $this->user->id;
+                    } else {
+                        $this->error($this->user->id." - No phone number");
+                    }
+
+                } catch (\Exception $e) {
+                    $this->error('SMS Error - '.$this->user->id);
+                    $this->sms_fail_ids[] = $this->user->id;
+                }
+                
             }
         }
 

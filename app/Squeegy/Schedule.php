@@ -21,7 +21,7 @@ class Schedule
     public $close_hr;
 //    public $available=[];
     public $lead_hrs=4;
-    public $days_out=6;
+    public $days_out=14;
     public $time_slot_interval=1;
     public $current_schedule;
     public $postal_code;
@@ -62,20 +62,23 @@ class Schedule
 
             if(empty($container)) $container=[];
 
+            if($this->now->format('Y-m-d') == '2016-03-27') { //easter
+                $this->days_out+=1;
+                continue;
+            }
+
 //            if($this->now->isSunday()) {
 //                $this->days_out+=1;
 //                continue;
 //            }
 
-
-
-            if($this->now->isToday()) {
-                $day = "Today";
-            } elseif($this->now->isTomorrow()) {
-                $day = "Tomorrow";
-            } else {
+//            if($this->now->isToday()) {
+//                $day = "Today (".$this->now->format('m/d').")";
+//            } elseif($this->now->isTomorrow()) {
+//                $day = "Tomorrow (".$this->now->format('m/d').")";
+//            } else {
                 $day = $this->now->format($day_format);
-            }
+//            }
 
             $container[$idx] = ['day'=>$day];
 

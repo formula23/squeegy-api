@@ -11,7 +11,7 @@ class CreateOrderRequest extends Request {
 	 */
 	public function authorize()
 	{
-        return \Auth::user()->is('customer');
+        return \Auth::user()->is('admin|customer');
 	}
 
 	/**

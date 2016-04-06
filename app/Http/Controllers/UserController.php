@@ -13,12 +13,16 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateUserRequest;
 use Aws\Sns\SnsClient;
 use App\Events\UserRegistered;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Stripe\Customer as StripeCustomer;
 use Exception;
 
 class UserController extends Controller {
+
+    protected $limit = 100;
 
     /**
      * @param Request $request
@@ -46,7 +50,7 @@ class UserController extends Controller {
         $usr_qry = User::$type();
 
         if($type=="workers") { //get activity log
-            $usr_qry->leftJoin(\DB::raw("(select user_id, log_on, log_off from washer_activity_logs where log_off is null) as wal"), function($q) {
+            $usr_qry->leftJoin(\DB::raw("(select user_id, login, logout, log_on, log_off from washer_activity_logs where log_off is null) as wal"), function($q) {
                 $q->on('users.id', '=', 'wal.user_id');
             })->groupBy('users.id');
         }
@@ -59,7 +63,12 @@ class UserController extends Controller {
             $usr_qry->where('referral_code', $request->input('referral_code'));
         }
 
-        $paginator = $usr_qry->paginate($request->input('per_page', 10));
+        if($request->input('limit')) {
+            if((int)$request->input('limit') < 1) $this->limit = 1;
+            else $this->limit = $request->input('limit');
+        }
+
+        $paginator = $usr_qry->paginate($request->input('per_page', $this->limit));
 
         return $this->response->withPaginator($paginator, new UserTransformer());
     }
@@ -213,15 +222,36 @@ class UserController extends Controller {
             return $this->response->errorUnauthorized();
         }
 
-        $worker_id = ($request->input('user_id') ? $request->input('user_id') : \Auth::user()->id );
-
-        WasherActivityLog::where('user_id', $worker_id)->whereNull('log_off')->update(['log_off' => Carbon::now()]);
+//        $worker_id = ($request->input('user_id') ? $request->input('user_id') : \Auth::user()->id );
+//        WasherActivityLog::where('user_id', $worker_id)->whereNull('log_off')->update(['log_off' => Carbon::now()]);
 
         switch($request->input('status')) {
             case "on":
-                User::find($worker_id)->activity_logs()->create(['log_on' => Carbon::now()]);
+                $activity_log = Auth::user()->activity_logs()->whereNull('logout')->orderby('login', 'desc')->first();
+
+                if($activity_log->log_on === null) {
+                    $activity_log->update(['log_'.$request->input('status') => Carbon::now()]);
+                } else {
+                    $copy_activity_log = $activity_log->replicate();
+                    $copy_activity_log->log_on = Carbon::now();
+                    $copy_activity_log->log_off = null;
+                    $copy_activity_log->save();
+                }
+
+                break;
+            case "off":
+                Auth::user()->activity_logs()->whereNull('log_off')->update(['log_off' => Carbon::now()]);
                 break;
         }
+
+//        Auth::user()
+//        Auth::user()->activity_logs()->whereNull('logout')->update(['log_'.$request->input('status') => Carbon::now()]);
+//        switch($request->input('status')) {
+//            case "on":
+//
+////                User::find($worker_id)->activity_logs()->create(['log_on' => Carbon::now()]);
+//                break;
+//        }
 
         return $this->response->withArray(['success'=>1]);
 

@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -23,11 +24,11 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\UserRegistered' => [
             'App\Handlers\Events\SendWelcomeEmail',
-//			'App\Handlers\Events\SyncCampaignMonitor',
+			'App\Handlers\Events\SyncCampaignMonitor',
         ],
 
 		'App\Events\UserUpdated' => [
-//			'App\Handlers\Events\UpdateCampaignMonitor',
+			'App\Handlers\Events\UpdateCampaignMonitor',
 		],
 
         'App\Events\OrderCancelled' => [
@@ -41,6 +42,7 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\OrderConfirmed' => [
             'App\Handlers\Events\AuthOrder',
+            'App\Handlers\Events\NotifyCustomerAssign',
             'App\Handlers\Events\NotifyWorkerNewOrder',
         ],
 
@@ -67,8 +69,7 @@ class EventServiceProvider extends ServiceProvider {
             'App\Handlers\Events\ChargeOrder',
 			'App\Handlers\Events\CreditReferrer',
 			'App\Handlers\Events\SegmentUser',
-//			'App\Handlers\Events\SyncCampaignMonitor',
-//			'App\Handlers\Events\MarkSingleUseDiscount',
+			'App\Handlers\Events\SyncCampaignMonitor',
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',
         ],
@@ -88,7 +89,14 @@ class EventServiceProvider extends ServiceProvider {
 	{
 		parent::boot($events);
 
-		//
+		$events->listen('auth.login', function($user, $remember) {
+            if($user->is('worker')) {
+                $activity_log = $user->activity_logs()->whereNotNull('login')->whereNull('logout')->get();
+                if( ! $activity_log->count()) {
+                    $user->activity_logs()->create(['login' => Carbon::now()]);
+                }
+            }
+		});
 	}
 
 }

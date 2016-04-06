@@ -78,7 +78,7 @@ class UserSegmentation extends Command {
 						$user_segment->repeat_customer_at = $orders[1]->done_at;
 					}
 
-					$referral_orders_qry = $user->referral_orders()->where('status', 'done')->orderBy('done_at');
+					$referral_orders_qry = $user->completedReferralOrders();
 					$referral_orders = $referral_orders_qry->get();
 
 					if($user->is_advocate() && $user_segment->segment_id != 5) {
@@ -110,8 +110,6 @@ class UserSegmentation extends Command {
 				}
 
 			}
-
-			return;
 
 			///Save subscribers to Campaign Monitor
 			$import_resp = $subscriber->import($all_subscriber_data, false, false, false);

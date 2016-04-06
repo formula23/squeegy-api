@@ -23,6 +23,10 @@ class NotifyCustomerStart extends BaseEventHandler {
 	 */
 	public function handle(OrderStart $event)
 	{
+		if($event->order->schedule && $event->order->schedule->type=='subscription') { //surpress notifications for subscribed orders
+			return;
+		}
+
         $push_message = trans('messages.order.push_notice.start',['worker_name'=>$event->order->worker->name]);
 
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm");
@@ -30,7 +34,7 @@ class NotifyCustomerStart extends BaseEventHandler {
         if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
 			try {
 				$twilio = \App::make('Aloha\Twilio\Twilio');
-				$push_message = "Squeegy Order Status: ".$push_message;
+				$push_message = $this->_text_msg.$push_message;
 				$twilio->message($event->order->customer->phone, $push_message);
 			} catch (\Exception $e) {
 				\Bugsnag::notifyException($e);

@@ -14,25 +14,29 @@
     <tr>
         <th>Washer Name</th>
         <th>Pay Date</th>
-        <th>Total Pay</th>
+        <th>COGs</th>
+        <th>Promotional</th>
+        <th>Jobs Pay</th>
+        <th>Promo. Min. Pay</th>
         <th>Referral Program</th>
         <th>Training</th>
         <th>Kit Rental</th>
-        <th>COGs</th>
-        <th>Promotional</th>
+        <th>Total Pay</th>
     </tr>
 
-    @foreach($cogs as $cog)
+    @foreach($orders_by_worker as $worker)
 
         <tr>
-            <td>{{ $cog[0] }}</td>
+            <td>{{ $worker["washer"]["name"] }}</td>
             <td>{{ date("m/d/Y") }}</td>
-            <td>${{ number_format($cog[4], 2) }}</td>
-            <td></td>
-            <td></td>
-            <td>${{ number_format($cog[3], 2) }}</td>
-            <td>${{ number_format($cog[1], 2) }}</td>
-            <td>${{ number_format($cog[2], 2) }}</td>
+            <td>${{ number_format($worker['jobs']['total_cog'], 2) }}</td>
+            <td>${{ number_format($worker['jobs']['total_promotional'], 2) }}</td>
+            <td>${{ number_format($worker['jobs']['total_cog']+$worker['jobs']['total_promotional'], 2) }}</td>
+            <td>${{ number_format($worker['minimum'], 2) }}</td>
+            <td>{{ number_format($worker['bonus'], 2) }}</td>
+            <td>${{ number_format($worker['training'], 2) }}</td>
+            <td>${{ number_format($worker['rental'], 2) }}</td>
+            <td>${{ number_format($worker['total_pay'], 2) }}</td>
         </tr>
 
     @endforeach

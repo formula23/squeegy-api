@@ -26,7 +26,7 @@ class AuthOrder {
 		$order = $event->order;
 
 		//if there is credit store save to credit DB
-		if($order->credit && !$order->order_credit) {
+		if($order->credit && !$order->order_credit && (! $order->isSubscription())) {
 			$order->order_credit()->create([
 				'user_id'=>$order->user_id,
 				'amount'=> -($order->credit),
@@ -37,7 +37,7 @@ class AuthOrder {
 		$charged=0;
 
 		//auth customer card
-		if($order->total) { //auth the card
+		if($order->total && (! $order->isSubscription())) { //auth the card
 			$payments = new Payments($order->customer->stripe_customer_id);
 			$charge = $payments->auth($order->total, $order);
 

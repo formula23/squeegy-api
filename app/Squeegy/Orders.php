@@ -187,7 +187,7 @@ class Orders {
         $data['lead_time'] = $eta['time'];
         $data['worker_id'] = $eta['worker_id'];
 
-        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > 180 || $data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
+        if(Request::header('X-Device') && ! is_internal() && self::open() && ($data['lead_time'] > (self::remainingBusinessTime() + self::CLOSING_BUFFER))) {
             Log::info('Current ETA:'.$data['lead_time']);
             Log::info('Remaining Bus mins: '.(self::remainingBusinessTime() + self::CLOSING_BUFFER));
             $data['schedule'] = true;
@@ -456,6 +456,7 @@ class Orders {
         if($leadtime < 60) {
             return $leadtime." minutes";
         }
+        return "60+ minutes";
 
         $hrs = (int)floor($leadtime/60);
         $mins = (int)($leadtime % 60);
@@ -469,9 +470,11 @@ class Orders {
      */
     public static function formatLeadTime($leadtime)
     {
+
 //        if($leadtime < 60) {
             return [
-                'time'=>(string)$leadtime,
+                'time'=>(string)($leadtime > 60 ? "60+" : $leadtime),
+                'actual_time'=>$leadtime,
                 'time_label'=>($leadtime ? 'mins': ''),
             ];
 //        }
@@ -605,12 +608,11 @@ class Orders {
     public static function geocode($latlng)
     {
         try {
-
             if(Cache::has($latlng)) {
                 $results = Cache::get($latlng);
                 self::parse_add_components($results);
             } else {
-                $response = \GoogleMaps::load('geocoding')->setParam (['latlng' => $latlng])->get();
+                $response = \GoogleMaps::load('geocoding')->setParam(['latlng' => $latlng])->get();
                 $json_resp = json_decode($response);
                 if($json_resp->status == "OK") {
                     self::parse_add_components($json_resp->results);
