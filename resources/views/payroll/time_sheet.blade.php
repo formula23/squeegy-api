@@ -25,14 +25,19 @@
         <th>Wash Time</th>
         <th>ETC</th>
         <th>Rating</th>
-        <th>Pay</th>
+        @if(@$washer_info['comp_type']=='comm')
+            <th>Total</th>
+            <th>Gross Pay<br/><span class="hint">@ 75%</span></th>
+            <th>Txn Fee</th>
+        @endif
+        <th>Net Pay</th>
     </tr>
     </thead>
 
     @foreach($washer_info['jobs']['days'] as $date=>$day)
 
         <tr>
-            <td colspan="9"><strong>{{ $date }}</strong></td>
+            <td colspan="{{ $colspan + 1 }}"><strong>{{ $date }}</strong></td>
         </tr>
 
         @foreach($day['orders'] as $idx=>$job)
@@ -47,40 +52,61 @@
                 <td>{{ $job['wash_time']  }}</td>
                 <td>{{ $job['etc']  }}</td>
                 <td>{{ $job['rating']  }}</td>
+
+                @if(@$washer_info['comp_type']=='comm')
+                    <td>${{ number_format($job['price'], 2)  }}</td>
+                    <td>${{ number_format($job['price'] - $job['squeegy'], 2)  }}</td>
+                    <td>(${{ number_format($job['txn'], 2)  }})</td>
+                @endif
+
                 <td>${{ number_format($job['pay'], 2)  }}</td>
             </tr>
 
         @endforeach
 
         <tr>
-            <td colspan="8" class="text-right"><strong>Subtotal:</strong></td>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
             <td>${{ number_format($day['pay'], 2)  }}</td>
 
         </tr>
 
         <tr>
-            <td colspan="9">&nbsp;</td>
+            <td colspan="{{ $colspan + 1 }}">&nbsp;</td>
         </tr>
 
     @endforeach
 
     @if($washer_info['minimum'])
     <tr>
-        <td colspan="8" class="text-right"><strong>Supplement weekly min. (${{ $weekly_min }}):</strong></td>
+        <td colspan="{{ $colspan }}" class="text-right"><strong>Supplement weekly min. (${{ $weekly_min }}):</strong></td>
         <td>${{ number_format($washer_info['minimum'], 2) }}</td>
     </tr>
     @endif
 
     @if($washer_info['rental'])
     <tr>
-        <td colspan="8" class="text-right"><strong>Equipment Rental:</strong></td>
+        <td colspan="{{ $colspan }}" class="text-right"><strong>Equipment Rental:</strong></td>
         <td>- ${{ number_format($washer_info['rental'], 2) }}</td>
     </tr>
     @endif
 
+    @if(@$washer_info['training'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Training:</strong></td>
+            <td>${{ number_format($washer_info['training'], 2) }}</td>
+        </tr>
+    @endif
+
+    @if(@$washer_info['bonus'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Bonus:</strong></td>
+            <td>${{ number_format($washer_info['bonus'], 2) }}</td>
+        </tr>
+    @endif
+
     <tr>
-        <td colspan="8" class="text-right"><strong>Total:</strong></td>
-        <td><strong>${{ number_format((($washer_info['jobs']['total'] + $washer_info['minimum']) - $washer_info['rental']), 2) }}</strong></td>
+        <td colspan="{{ $colspan }}" class="text-right"><strong>Total:</strong></td>
+        <td><strong>${{ number_format($washer_info['total_pay'], 2) }}</strong></td>
     </tr>
 
 </table>
