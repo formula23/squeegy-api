@@ -254,7 +254,7 @@ class PayrollGenerate extends Command {
 
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('dan@squeegyapp.com', 'Dan Schultz');
-//					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
+					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
 					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
@@ -290,7 +290,7 @@ class PayrollGenerate extends Command {
 		{
 			if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 				$message->to('dan@squeegyapp.com', 'Dan Schultz');
-//				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
+				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 			} else {
 				$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
 				$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
