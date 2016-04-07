@@ -16,7 +16,7 @@
         "guzzlehttp/guzzle": "~6.0",
 		"alexpechkarev/google-maps": "1.0.4",
 		"tymon/jwt-auth": "0.5.*",
-		"casinelli/laravel-campaignmonitor": "dev-master",
+		"campaignmonitor/createsend-php": "4.1.1",
 		"sammyk/laravel-facebook-sdk": "^3.0"
 	},
 	"require-dev": {

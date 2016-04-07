@@ -26,6 +26,7 @@ class SendWelcomeEmail {
 	 */
 	public function handle(UserRegistered $event)
 	{
+		return;
         try {
 			$user = $event->user;
             Mail::send('emails.welcome', [], function ($message) use ($user) {

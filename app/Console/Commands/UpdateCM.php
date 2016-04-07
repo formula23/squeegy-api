@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\User;
 use App\UserSegment;
-use Casinelli\CampaignMonitor\Facades\CampaignMonitor;
+use CampaignMonitor;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 
