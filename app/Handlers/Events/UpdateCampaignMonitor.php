@@ -2,7 +2,7 @@
 
 use App\Events\UserUpdated;
 
-use Casinelli\CampaignMonitor\Facades\CampaignMonitor;
+use CampaignMonitor;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 

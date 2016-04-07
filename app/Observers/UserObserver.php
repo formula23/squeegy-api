@@ -64,10 +64,13 @@ class UserObserver
                     : null),
                 "Available Credits"=>$user->availableCredit()/100,
                 "Referral Code" =>$user->referral_code,
-                "Segment ID" =>$user->segment->segment_id,
+                "Segment ID" =>$user->segment?$user->segment->segment_id:0,
                 'Is Anonymous' => false,
-                '$ios_devices' => ["90d2346ba8db9466f074159a13515735e277fd77eca24eb6e3036353203dcd53"],
             ];
+        }
+
+        if($this->request->input('push_token')) {
+            $data['$ios_devices'] = [$this->request->input('push_token')];
         }
 
         array_filter($data);
