@@ -46,19 +46,30 @@ class UserObserver
             $firstName = implode(' ', $nameParts);
         }
 
-        $data = [
-            '$first_name' => $firstName,
-            '$last_name' => $lastName,
-            '$name' => $user->name,
-            '$email' => $user->email,
-            '$phone' => substr($user->phone, 2),
-            '$created' => ($user->created_at
-                ? $user->created_at->format('Y-m-d\Th:i:s')
-                : null),
-            "Available Credits"=>$user->availableCredit()/100,
-            "Referral Code" =>$user->referral_code,
-            "Segment ID" =>$user->segment->segment_id,
-        ];
+        if($user->is_anon()) {
+            $data = [
+                '$email' => $user->email,
+                'Is Anonymous' => true,
+            ];
+        } else {
+            $data = [
+                '$email' => $user->email,
+                '$first_name' => $firstName,
+                '$last_name' => $lastName,
+                '$name' => $user->name,
+
+                '$phone' => substr($user->phone, 2),
+                '$created' => ($user->created_at
+                    ? $user->created_at->format('Y-m-d\Th:i:s')
+                    : null),
+                "Available Credits"=>$user->availableCredit()/100,
+                "Referral Code" =>$user->referral_code,
+                "Segment ID" =>$user->segment->segment_id,
+                'Is Anonymous' => false,
+                '$ios_devices' => ["90d2346ba8db9466f074159a13515735e277fd77eca24eb6e3036353203dcd53"],
+            ];
+        }
+
         array_filter($data);
 
         Log::info('User Observer - Saved...');
