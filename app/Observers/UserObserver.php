@@ -46,19 +46,33 @@ class UserObserver
             $firstName = implode(' ', $nameParts);
         }
 
-        $data = [
-            '$first_name' => $firstName,
-            '$last_name' => $lastName,
-            '$name' => $user->name,
-            '$email' => $user->email,
-            '$phone' => substr($user->phone, 2),
-            '$created' => ($user->created_at
-                ? $user->created_at->format('Y-m-d\Th:i:s')
-                : null),
-            "Available Credits"=>$user->availableCredit()/100,
-            "Referral Code" =>$user->referral_code,
-            "Segment ID" =>$user->segment->segment_id,
-        ];
+        if($user->is_anon()) {
+            $data = [
+                '$email' => $user->email,
+                'Is Anonymous' => true,
+            ];
+        } else {
+            $data = [
+                '$email' => $user->email,
+                '$first_name' => $firstName,
+                '$last_name' => $lastName,
+                '$name' => $user->name,
+
+                '$phone' => substr($user->phone, 2),
+                '$created' => ($user->created_at
+                    ? $user->created_at->format('Y-m-d\Th:i:s')
+                    : null),
+                "Available Credits"=>$user->availableCredit()/100,
+                "Referral Code" =>$user->referral_code,
+                "Segment ID" =>$user->segment?$user->segment->segment_id:0,
+                'Is Anonymous' => false,
+            ];
+        }
+
+        if($this->request->input('push_token')) {
+            $data['$ios_devices'] = [$this->request->input('push_token')];
+        }
+
         array_filter($data);
 
         Log::info('User Observer - Saved...');
