@@ -87,6 +87,7 @@ class UserObserver
 
     public function deleting(Model $user)
     {
+        Log::info("*******************************************************************************");
         Log::info('Deleting');
         Log::info($user);
 
