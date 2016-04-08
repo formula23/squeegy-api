@@ -85,9 +85,9 @@ class UserObserver
         }
     }
 
-    public function deleted(Model $user)
+    public function deleting(Model $user)
     {
-        Log::info('Deleted');
+        Log::info('Deleting');
         Log::info($user);
 
         $this->mixPanel->people->deleteUser($user->getKey());
