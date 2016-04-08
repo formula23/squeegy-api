@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class UserObserver
+class MixPanelUserObserver
 {
 
     protected $request;
@@ -29,11 +29,6 @@ class UserObserver
     {
         $this->request = $request;
         $this->mixPanel = $mixpanel;
-    }
-
-    public function saving(Model $user)
-    {
-        Log::info("********** saving **********");
     }
 
     /**
@@ -62,10 +57,9 @@ class UserObserver
                 '$first_name' => $firstName,
                 '$last_name' => $lastName,
                 '$name' => $user->name,
-
                 '$phone' => substr($user->phone, 2),
                 '$created' => ($user->created_at
-                    ? $user->created_at->format('Y-m-d\Th:i:s')
+                    ? $user->created_at->toAtomString()
                     : null),
                 "Available Credits"=>$user->availableCredit()/100,
                 "Referral Code" =>$user->referral_code,
@@ -88,6 +82,7 @@ class UserObserver
         if (count($data)) {
             Log::info('User key:'.$user->getKey());
             $result = $this->mixPanel->people->set($user->getKey(), $data, $this->request->ip());
+            Log::info('Result:');
             Log::info($result);
         }
     }
