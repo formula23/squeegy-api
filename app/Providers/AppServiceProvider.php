@@ -47,13 +47,6 @@ class AppServiceProvider extends ServiceProvider {
         $this->app->bind('\Aws\Sns\SnsClient', function() {
 			return AwsFacade::createClient('sns');
         });
-
-
-		User::deleting(function ($user) {
-			Log::info("^^^^^^^^^^^^^^^^^^^^^^^^^^ deleting in app service provider ^^^^^^^^^^^^^^^^^^^");
-			Log::info($user->id);
-		});
-
 	}
 
 }

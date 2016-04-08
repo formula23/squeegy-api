@@ -71,6 +71,8 @@ class UserObserver
                 "Referral Code" =>$user->referral_code,
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
                 'Is Anonymous' => false,
+                "Lash Wash At" => $user->segment->last_wash_at,
+                "Lash Wash Type" => $user->lastWash()->service->name,
             ];
         }
 
@@ -80,8 +82,8 @@ class UserObserver
 
         array_filter($data);
 
-        Log::info('User Observer - Saved...');
-        Log::info($data);
+//        Log::info('User Observer - Saved...');
+//        Log::info($data);
 
         if (count($data)) {
             Log::info('User key:'.$user->getKey());
@@ -90,18 +92,8 @@ class UserObserver
         }
     }
 
-    public function deleted($u)
-    {
-        Log::info("*******************************************************************************");
-        Log::info('Deleted');
-    }
-
     public function deleting(Model $user)
     {
-        Log::info("*******************************************************************************");
-        Log::info('Deleting');
-//        Log::info($user);
-
         $this->mixPanel->people->deleteUser($user->getKey());
     }
 

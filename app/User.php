@@ -191,6 +191,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             ->orderBy('done_at');
     }
 
+    public function lastWash()
+    {
+        return $this->orders()->where('status','done')->orderBy('done_at', 'desc')->first();
+    }
+
     /**
      * @return mixed
      */
