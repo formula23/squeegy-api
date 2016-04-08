@@ -31,6 +31,11 @@ class UserObserver
         $this->mixPanel = $mixpanel;
     }
 
+    public function saving(Model $user)
+    {
+        Log::info("********** saving **********");
+    }
+
     /**
      * @param Model $user
      */
