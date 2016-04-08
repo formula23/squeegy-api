@@ -90,11 +90,17 @@ class UserObserver
         }
     }
 
+    public function deleted($u)
+    {
+        Log::info("*******************************************************************************");
+        Log::info('Deleted');
+    }
+
     public function deleting(Model $user)
     {
         Log::info("*******************************************************************************");
         Log::info('Deleting');
-        Log::info($user);
+//        Log::info($user);
 
         $this->mixPanel->people->deleteUser($user->getKey());
     }
