@@ -132,8 +132,12 @@ class AuthController extends Controller {
                     }
                     try {
                         Log::info("******************* AUTH CONTROLLER ************************************************************");
-                        $users_to_delete = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc');
-                        $users_to_delete->delete();
+                        User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc')->get()->each(function($row){
+                            $row->delete();
+                        });
+//
+//                        User::where('id','=',$id)->get()
+//                        $users_to_delete->delete();
                     } catch(\Exception $e) {
                         Log::error($e);
                         \Bugsnag::notifyException($e);
