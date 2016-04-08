@@ -1,8 +1,10 @@
 <?php namespace App\Providers;
 
 use Aloha\Twilio\Twilio;
+use App\User;
 use Aws\Laravel\AwsFacade;
 use Aws\Sns\SnsClient;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -45,6 +47,12 @@ class AppServiceProvider extends ServiceProvider {
         $this->app->bind('\Aws\Sns\SnsClient', function() {
 			return AwsFacade::createClient('sns');
         });
+
+
+		User::deleting(function ($user) {
+			Log::info("^^^^^^^^^^^^^^^^^^^^^^^^^^ deleting in app service provider ^^^^^^^^^^^^^^^^^^^");
+			Log::info($user->id);
+		});
 
 	}
 
