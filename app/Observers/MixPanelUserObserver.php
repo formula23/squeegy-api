@@ -36,6 +36,8 @@ class MixPanelUserObserver
      */
     public function saved(Model $user)
     {
+        if($user->is('worker')) return;
+
         $firstName = $user->first_name;
         $lastName = $user->last_name;
 
@@ -50,6 +52,10 @@ class MixPanelUserObserver
             $data = [
                 '$email' => $user->email,
                 'Is Anonymous' => true,
+                '$created' => ($user->created_at
+                    ? $user->created_at->toAtomString()
+                    : null),
+                "Segment ID" =>$user->segment?$user->segment->segment_id:0,
             ];
         } else {
             $data = [
@@ -65,7 +71,7 @@ class MixPanelUserObserver
                 "Referral Code" =>$user->referral_code,
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
                 'Is Anonymous' => false,
-                "Lash Wash At" => $user->segment->last_wash_at->toAtomString(),
+                "Lash Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
                 "Lash Wash Type" => $user->lastWash()->service->name,
             ];
         }
