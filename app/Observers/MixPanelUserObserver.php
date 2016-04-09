@@ -71,7 +71,8 @@ class MixPanelUserObserver
         }
 
         if($this->request->input('push_token')) {
-            $data['$ios_devices'] = [$this->request->input('push_token')];
+            $key_prop = ( $user->device() == 'iOS' ? '$ios_devices' : '$android_devices' );
+            $data[$key_prop] = [$this->request->input('push_token')];
         }
 
         array_filter($data);
