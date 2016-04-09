@@ -70,6 +70,7 @@ class EventServiceProvider extends ServiceProvider {
 			'App\Handlers\Events\CreditReferrer',
 			'App\Handlers\Events\SegmentUser',
 			'App\Handlers\Events\SyncCampaignMonitor',
+			'App\Handlers\Events\UpdateMixPanel',
             'App\Handlers\Events\NotifyCustomerDone',
             'App\Handlers\Events\SendReceiptEmail',
         ],

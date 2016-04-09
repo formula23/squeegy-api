@@ -47,5 +47,13 @@ return [
         '1' => env('EXPRESS_SURCHARGE'),
         '2' => env('CLASSIC_SURCHARGE'),
         '3' => env('SQUEEGY_SURCHARGE'),
+    ],
+    'groupon_gilt_promotions' => [
+        27 => 750,
+        28 => 950,
+        55 => 900,
+        56 => 1200,
+        57 => 756,
+        58 => 900,
     ]
 ];

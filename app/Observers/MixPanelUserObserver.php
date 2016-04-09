@@ -48,12 +48,15 @@ class MixPanelUserObserver
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
             ];
         } else {
+
             $data = [
                 '$email' => $user->email,
-                '$first_name' => $user->firstName(),
-                '$last_name' => $user->lastName(),
+                '$first_name' => $user->first_name(),
+                '$last_name' => $user->last_name(),
                 '$name' => $user->name,
                 '$phone' => substr($user->phone, 2),
+                'Gender' => $user->gender,
+                'Age Range' => $user->age_range,
                 '$created' => ($user->created_at
                     ? $user->created_at->toAtomString()
                     : null),
@@ -62,7 +65,7 @@ class MixPanelUserObserver
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
                 'Is Anonymous' => false,
                 "Lash Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
-                "Lash Wash Type" => $user->lastWash()->service->name,
+                "Lash Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
             ];
         }
 
@@ -78,7 +81,7 @@ class MixPanelUserObserver
 
         if (count($data)) {
 //            Log::info('User key:'.$user->getKey());
-            $result = $this->mixPanel->people->set($user->getKey(), $data, $this->request->ip());
+            $this->mixPanel->people->set($user->getKey(), $data, $this->request->ip());
 //            Log::info('Result:');
 //            Log::info($result);
         }
