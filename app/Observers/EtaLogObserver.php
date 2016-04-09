@@ -34,8 +34,6 @@ class EtaLogObserver
             'Last Known Zip' => $eta_log->postal_code,
         ];
 
-        Log::info($data);
-
         $this->mixPanel->people->set($eta_log->user_id, $data);
     }
 

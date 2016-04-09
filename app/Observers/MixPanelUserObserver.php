@@ -50,6 +50,10 @@ class MixPanelUserObserver
             $data = [
                 '$email' => $user->email,
                 'Is Anonymous' => true,
+                '$created' => ($user->created_at
+                    ? $user->created_at->toAtomString()
+                    : null),
+                "Segment ID" =>$user->segment?$user->segment->segment_id:0,
             ];
         } else {
             $data = [
