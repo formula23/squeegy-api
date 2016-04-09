@@ -153,6 +153,8 @@ return [
 		Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 		App\Providers\CampaignMonitorServiceProvider::class,
 		Aws\Laravel\AwsServiceProvider::class,
+//        GeneaLabs\LaravelMixpanel\Providers\LaravelMixpanelServiceProvider::class,
+		App\Providers\MixpanelServiceProvider::class,
 		SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 	],
 

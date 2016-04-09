@@ -34,4 +34,8 @@ return [
 		'secret' => env('STRIPE_API_KEY', ''),
 	],
 
+	'mixpanel' => [
+		'token' => env('MIXPANEL_TOKEN'),
+	],
+
 ];

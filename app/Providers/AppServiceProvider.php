@@ -1,8 +1,11 @@
 <?php namespace App\Providers;
 
 use Aloha\Twilio\Twilio;
+use App\Observers\EtaLogObserver;
 use Aws\Laravel\AwsFacade;
 use Aws\Sns\SnsClient;
+use GeneaLabs\LaravelMixpanel\LaravelMixpanel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -12,9 +15,9 @@ class AppServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
-	public function boot()
+	public function boot(LaravelMixpanel $mixpanel)
 	{
-		//
+        $this->app->make('App\EtaLog')->observe(new EtaLogObserver($mixpanel));
 	}
 
 	/**
@@ -28,6 +31,7 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+
 		$this->app->bind(
 			'Illuminate\Contracts\Auth\Registrar',
 			'App\Services\Registrar'
@@ -45,6 +49,8 @@ class AppServiceProvider extends ServiceProvider {
         $this->app->bind('\Aws\Sns\SnsClient', function() {
 			return AwsFacade::createClient('sns');
         });
+
+
 
 	}
 
