@@ -11,6 +11,7 @@ namespace app\Observers;
 
 use GeneaLabs\LaravelMixpanel\LaravelMixpanel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class EtaLogObserver
 {
@@ -32,6 +33,9 @@ class EtaLogObserver
             'Last Known City' => $eta_log->city,
             'Last Known Zip' => $eta_log->postal_code,
         ];
+
+        Log::info($data);
+
         $this->mixPanel->people->set($eta_log->user_id, $data);
     }
 
