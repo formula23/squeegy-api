@@ -36,15 +36,6 @@ class MixPanelUserObserver
      */
     public function saved(Model $user)
     {
-        $firstName = $user->first_name;
-        $lastName = $user->last_name;
-
-        if ($user->name) {
-            $nameParts = explode(' ', $user->name);
-            array_filter($nameParts);
-            $lastName = array_pop($nameParts);
-            $firstName = implode(' ', $nameParts);
-        }
 
         if($user->is_anon()) {
             $data = [
@@ -54,8 +45,8 @@ class MixPanelUserObserver
         } else {
             $data = [
                 '$email' => $user->email,
-                '$first_name' => $firstName,
-                '$last_name' => $lastName,
+                '$first_name' => $user->firstName(),
+                '$last_name' => $user->lastName(),
                 '$name' => $user->name,
                 '$phone' => substr($user->phone, 2),
                 '$created' => ($user->created_at
@@ -77,14 +68,14 @@ class MixPanelUserObserver
 
         array_filter($data);
 
-        Log::info('User Observer - Saved...');
-        Log::info($data);
+//        Log::info('User Observer - Saved...');
+//        Log::info($data);
 
         if (count($data)) {
-            Log::info('User key:'.$user->getKey());
+//            Log::info('User key:'.$user->getKey());
             $result = $this->mixPanel->people->set($user->getKey(), $data, $this->request->ip());
-            Log::info('Result:');
-            Log::info($result);
+//            Log::info('Result:');
+//            Log::info($result);
         }
     }
 
