@@ -46,7 +46,7 @@ class ImportMixpanel extends Command
     public function handle()
     {
 
-        User::customers()->where('email','tz6@test.com')->chunk(1000, function($users) {
+        User::customers()->chunk(1000, function($users) {
 
             foreach($users as $user) {
 //                $this->info($user->id);
@@ -61,8 +61,10 @@ class ImportMixpanel extends Command
                     }
 
                     $this->mixpanel->people->trackCharge($user->id, ($charged/100), $order->done_at->timestamp);
-                }
 
+
+                }
+                sleep(1);
                 $this->info($user->id." -- ".$user->email." -- Updated");
             }
 
