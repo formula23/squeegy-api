@@ -72,7 +72,7 @@ class MixPanelUserObserver
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
                 'Is Anonymous' => false,
                 "Lash Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
-                "Lash Wash Type" => $user->lastWash()->service->name,
+                "Lash Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
             ];
         }
 
