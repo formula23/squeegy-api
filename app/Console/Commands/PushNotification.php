@@ -454,7 +454,7 @@ class PushNotification extends Command {
 
                 try {
                     if($this->user->phone) {
-                        $this->twilio->message($this->user->phone, $this->message);
+                        $this->twilio->message($this->user->phone, "Squeegy App: ".$this->message);
                         $this->sms_success_ids[] = $this->user->id;
                     } else {
                         $this->error($this->user->id." - No phone number");
