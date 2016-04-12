@@ -52,6 +52,7 @@ class PayrollGenerate extends Command {
 
     protected $no_kit_rental = [
         6349, //Melvyn
+        2882, //Juan
     ];
 
     protected $min_worker_id = [
