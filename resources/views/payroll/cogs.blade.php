@@ -18,6 +18,7 @@
         <th>Promotional</th>
         <th>Jobs Pay</th>
         <th>Promo. Min. Pay</th>
+        <th>Daily. Min. Pay</th>
         <th>Referral Program</th>
         <th>Training</th>
         <th>Kit Rental</th>
@@ -33,6 +34,7 @@
             <td>${{ number_format($worker['jobs']['total_promotional'], 2) }}</td>
             <td>${{ number_format($worker['jobs']['total_cog']+$worker['jobs']['total_promotional'], 2) }}</td>
             <td>${{ number_format($worker['minimum'], 2) }}</td>
+            <td>${{ number_format($worker['daily_min_pay'], 2) }}</td>
             <td>{{ number_format($worker['bonus'], 2) }}</td>
             <td>${{ number_format($worker['training'], 2) }}</td>
             <td>${{ number_format($worker['rental'], 2) }}</td>

@@ -64,10 +64,16 @@
 
         @endforeach
 
+        @if(isset($day['min']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Minimum:</strong></td>
+                <td>${{ number_format($day['min'], 2)  }}</td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'], 2)  }}</td>
-
+            <td>${{ number_format($day['pay'] + @$day['min'], 2)  }}</td>
         </tr>
 
         <tr>
