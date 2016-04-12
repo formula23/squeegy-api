@@ -3,6 +3,7 @@
 use App\Order;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -95,26 +96,6 @@ class PayrollGenerate extends Command {
 
 		$now_date = Carbon::now()->format('m-d-Y');
 
-        $start_day = Carbon::parse('2 sundays ago');
-
-		//COGs query
-//		$cogs = DB::select('SELECT worker.id, worker.name,
-//				sum(IF(services.id = \'1\', \'2000\', IF(services.id=3,\'1000\',\'3000\')) - IF(orders.discount_id=55, 900, IF(orders.discount_id=56,1200,IF(orders.discount_id=57,756,IF(orders.discount_id=58,900,IF(orders.discount_id=27,750,IF(orders.discount_id=28,950,charged)))))))/100 AS PromotionalCost
-//			FROM orders, users, services, users AS worker
-//			WHERE orders.user_id = users.id
-//			AND orders.`worker_id` = worker.id
-//			AND orders.service_id = services.id
-//			AND `status` IN (\'done\')
-//			AND WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)
-//			AND IF(services.id = \'1\', \'2000\', IF(services.id=3,\'1000\',\'3000\')) - IF(orders.discount_id=55, 900, IF(orders.discount_id=56,1200,IF(orders.discount_id=57,756,IF(orders.discount_id=58,900,IF(orders.discount_id=27,750,IF(orders.discount_id=28,950,charged)))))) - charged > 0
-//			GROUP BY worker.id
-//			ORDER BY orders.created_at');
-//
-//		$cogs_by_washer=[];
-//		foreach($cogs as $cog) {
-//			$cogs_by_washer[$cog->id] = $cog->PromotionalCost;
-//		}
-
 		$orders = Order::select('id', 'vehicle_id', 'worker_id', 'service_id', 'etc', 'discount_id', 'start_at', 'price', 'charged', 'done_at', 'rating', DB::raw('TIMESTAMPDIFF(MINUTE,orders.start_at,orders.done_at) as wash_time'))
 			->with('worker')
 			->with('service')
@@ -123,9 +104,8 @@ class PayrollGenerate extends Command {
 			->where('status', 'done')
 			->whereRaw('WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
 			->orderBy('done_at')->get();
-//        print $orders->toSql();
-//        ->get();
 
+        $start_day = Carbon::parse('2 sundays ago');
         $init_days = [];
         for($day_count=0; $day_count<7; $day_count++) {
             $day_of_week = clone $start_day->addDay(($day_count > 1 ? 1 : $day_count ));
@@ -137,113 +117,95 @@ class PayrollGenerate extends Command {
 
 		$week_of = $orders->first()->done_at->startOfWeek()->format("M jS");
 
-        foreach ($orders as $order) {
+        foreach ($orders as $order)
+        {
+            if (in_array($order->worker->id, $this->ignore_ids)) continue;
 
-                if (in_array($order->worker->id, $this->ignore_ids)) continue;
+            @$orders_by_worker[$order->worker->id]['job_count']++;
+            @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $order->worker->name, 'email' => $order->worker->email];
+            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : 25);
+            @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
+            @$orders_by_worker[$order->worker->id]['minimum'] = 0;
+            @$orders_by_worker[$order->worker->id]['daily_min_pay'] = 0;
+            @$orders_by_worker[$order->worker->id]['comp_type'] = 'flat';
+            @$orders_by_worker[$order->worker->id]['full_price_rev'] += $order->price / 100;
 
-                @$orders_by_worker[$order->worker->id]['job_count']++;
-                @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $order->worker->name, 'email' => $order->worker->email];
-                @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : 25);
-                @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
-                @$orders_by_worker[$order->worker->id]['minimum'] = 0;
-                @$orders_by_worker[$order->worker->id]['daily_min_pay'] = 0;
-                @$orders_by_worker[$order->worker->id]['comp_type'] = 'flat';
-                @$orders_by_worker[$order->worker->id]['full_price_rev'] += $order->price / 100;
-
-                @$orders_by_worker[$order->worker->id]['training'] = 0;
-                if (isset($this->training[$order->worker->id])) {
-                    @$orders_by_worker[$order->worker->id]['training'] = (int)@$this->training[$order->worker->id];
-                }
-
-                @$orders_by_worker[$order->worker->id]['bonus'] = 0;
-                if (isset($this->bonus[$order->worker->id])) {
-                    @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
-                }
-
-                $job = [];
-                $job['id'] = $order->id;
-                $job['time'] = $order->start_at->format('H:i') . " - " . $order->done_at->format('H:i');
-                $job['vehicle'] = $order->vehicle->toArray();
-                $job['wash_type'] = $order->service->name;
-
-                if ($order->vehicleSurCharge()) {
-                    $job['wash_type'] .= " + $" . number_format($order->vehicleSurCharge() / 100) . "(" . $order->vehicle->type . ")";
-                }
-
-                $job['wash_time'] = $order->wash_time;
-                $job['etc'] = $order->etc;
-                $job['rating'] = $order->rating;
-
-                $job['price'] = $order->price / 100;
-                $job['squeegy'] = ($order->price * $this->commission_pct['squeegy']) / 100;
-                $job['txn'] = ($order->price * $this->commission_pct['txn']) / 100;
-
-                $job['rev'] = $order->charged;
-
-                if (in_array($order->discount_id, [27, 28, 55, 56, 57, 58])) { //groupon & gilt
-                    switch ($order->discount_id) {
-                        case 27:
-                            $job['rev'] = 750;
-                            break;
-                        case 28:
-                            $job['rev'] = 950;
-                            break;
-                        case 55:
-                        case 58:
-                            $job['rev'] = 900;
-                            break;
-                        case 56:
-                            $job['rev'] = 1200;
-                            break;
-                        case 57:
-                            $job['rev'] = 756;
-                            break;
-                    }
-                }
-
-                if ($order->schedule && $order->schedule->type == 'subscription') {
-                    $job['rev'] = $order->price;
-                }
-
-                $job['rev'] = $job['rev'] / 100;
-
-                if (in_array($order->worker_id, $this->commission_userids)) {
-                    @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
-                    $job['pay'] = (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2);
-                } else {
-                    $job['pay'] = ($order->rating === null || $order->rating >= 4 ? $this->service_price[$order->service->id] : 0);
-                }
-
-                $job['promotional_cost'] = ($job['pay'] > $job['rev'] ? $job['pay'] - $job['rev'] : 0);
-                $job['cog'] = ($job['rev'] > $job['pay'] ? $job['pay'] : $job['rev']);
-
-                @$orders_by_worker[$order->worker->id]['jobs']['total_promotional'] += $job['promotional_cost'];
-                @$orders_by_worker[$order->worker->id]['jobs']['total_cog'] += $job['cog'];
-
-                @$orders_by_worker[$order->worker->id]['jobs']['total'] += $job['pay'];
-
-
-                $job_date = $order->done_at->format('m/d/Y (l)');
-
-                if( ! isset($orders_by_worker[$order->worker->id]['jobs']['days']) && isset($this->min_day_worker_id[$order->worker->id])) {
-                    $orders_by_worker[$order->worker->id]['jobs']['days'] = $init_days;
-                }
-
-                $orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
-                @$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
-
-                if (in_array($order->worker->id, array_keys($this->min_worker_id)) &&
-                    $orders_by_worker[$order->worker->id]['jobs']['total'] < $this->min_worker_id[$order->worker_id]) {
-                    @$orders_by_worker[$order->worker->id]['minimum'] = max(0, $this->min_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
-                }
-
-                @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
-                    $orders_by_worker[$order->worker->id]['minimum'] +
-                    $orders_by_worker[$order->worker->id]['training'] +
-                    $orders_by_worker[$order->worker->id]['bonus'] -
-                    $orders_by_worker[$order->worker->id]['rental']);
-
+            @$orders_by_worker[$order->worker->id]['training'] = 0;
+            if (isset($this->training[$order->worker->id])) {
+                @$orders_by_worker[$order->worker->id]['training'] = (int)@$this->training[$order->worker->id];
             }
+
+            @$orders_by_worker[$order->worker->id]['bonus'] = 0;
+            if (isset($this->bonus[$order->worker->id])) {
+                @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
+            }
+
+            $job = [];
+            $job['id'] = $order->id;
+            $job['time'] = $order->start_at->format('H:i') . " - " . $order->done_at->format('H:i');
+            $job['vehicle'] = $order->vehicle->toArray();
+            $job['wash_type'] = $order->service->name;
+
+            if ($order->vehicleSurCharge()) {
+                $job['wash_type'] .= " + $" . number_format($order->vehicleSurCharge() / 100) . "(" . $order->vehicle->type . ")";
+            }
+
+            $job['wash_time'] = $order->wash_time;
+            $job['etc'] = $order->etc;
+            $job['rating'] = $order->rating;
+
+            $job['price'] = $order->price / 100;
+            $job['squeegy'] = ($order->price * $this->commission_pct['squeegy']) / 100;
+            $job['txn'] = ($order->price * $this->commission_pct['txn']) / 100;
+
+            $job['rev'] = $order->charged;
+
+            if (in_array($order->discount_id, array_keys($promo_costs = Config::get('squeegy.groupon_gilt_promotions')))) { //groupon & gilt
+                $job['rev'] = $promo_costs[$order->discount_id];
+            }
+
+            if ($order->schedule && $order->schedule->type == 'subscription') {
+                $job['rev'] = $order->price;
+            }
+
+            $job['rev'] = $job['rev'] / 100;
+
+            if (in_array($order->worker_id, $this->commission_userids)) {
+                @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
+                $job['pay'] = (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2);
+            } else {
+                $job['pay'] = ($order->rating === null || $order->rating >= 4 ? $this->service_price[$order->service->id] : 0);
+            }
+
+            $job['promotional_cost'] = ($job['pay'] > $job['rev'] ? $job['pay'] - $job['rev'] : 0);
+            $job['cog'] = ($job['rev'] > $job['pay'] ? $job['pay'] : $job['rev']);
+
+            @$orders_by_worker[$order->worker->id]['jobs']['total_promotional'] += $job['promotional_cost'];
+            @$orders_by_worker[$order->worker->id]['jobs']['total_cog'] += $job['cog'];
+
+            @$orders_by_worker[$order->worker->id]['jobs']['total'] += $job['pay'];
+
+            $job_date = $order->done_at->format('m/d/Y (l)');
+
+            if( ! isset($orders_by_worker[$order->worker->id]['jobs']['days']) && isset($this->min_day_worker_id[$order->worker->id])) {
+                $orders_by_worker[$order->worker->id]['jobs']['days'] = $init_days;
+            }
+
+            $orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
+            @$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
+
+            if (in_array($order->worker->id, array_keys($this->min_worker_id)) &&
+                $orders_by_worker[$order->worker->id]['jobs']['total'] < $this->min_worker_id[$order->worker_id]) {
+                @$orders_by_worker[$order->worker->id]['minimum'] = max(0, $this->min_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
+            }
+
+            @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
+                $orders_by_worker[$order->worker->id]['minimum'] +
+                $orders_by_worker[$order->worker->id]['training'] +
+                $orders_by_worker[$order->worker->id]['bonus'] -
+                $orders_by_worker[$order->worker->id]['rental']);
+
+        }
 
         foreach($this->min_day_worker_id as $worker_id=>$worker_min_details) {
 
@@ -261,6 +223,7 @@ class PayrollGenerate extends Command {
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
+        $cogs_by_washer=[];
 
 		foreach($orders_by_worker as $worker_id => &$worker) {
 
@@ -294,7 +257,7 @@ class PayrollGenerate extends Command {
 
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('dan@squeegyapp.com', 'Dan Schultz');
-//					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
+					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
 					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
@@ -308,16 +271,7 @@ class PayrollGenerate extends Command {
 
 		}
 
-//		$data=[];
-//		$data['week_of'] = $week_of;
-//		foreach($orders_by_worker as $worker_id => $w) {
-//
-//			$total = ($w['jobs']['total'] + $w['minimum']) - $w['rental'];
-//			$cog = ($w['jobs']['total'] + $w['minimum']) - $w['promotional'];
-//
-//			$data['cogs'][] = [$w['washer']['name'], $cog, $w['promotional'], $w['rental'], $total];
-//		}
-
+        ///generate COGs file and email
         $email_data['orders_by_worker'] = $orders_by_worker;
 
 		$view = view('payroll.cogs', $email_data);
@@ -330,7 +284,7 @@ class PayrollGenerate extends Command {
 		{
 			if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 				$message->to('dan@squeegyapp.com', 'Dan Schultz');
-//				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
+				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 			} else {
 				$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
 				$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
