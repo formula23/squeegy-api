@@ -38,16 +38,6 @@ class MixPanelUserObserver
     {
         if($user->is('worker')) return;
 
-        $firstName = $user->first_name;
-        $lastName = $user->last_name;
-
-        if ($user->name) {
-            $nameParts = explode(' ', $user->name);
-            array_filter($nameParts);
-            $lastName = array_pop($nameParts);
-            $firstName = implode(' ', $nameParts);
-        }
-
         if($user->is_anon()) {
             $data = [
                 '$email' => $user->email,
@@ -58,12 +48,15 @@ class MixPanelUserObserver
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
             ];
         } else {
+
             $data = [
                 '$email' => $user->email,
-                '$first_name' => $firstName,
-                '$last_name' => $lastName,
+                '$first_name' => $user->first_name(),
+                '$last_name' => $user->last_name(),
                 '$name' => $user->name,
                 '$phone' => substr($user->phone, 2),
+                'Gender' => $user->gender,
+                'Age Range' => $user->age_range,
                 '$created' => ($user->created_at
                     ? $user->created_at->toAtomString()
                     : null),
@@ -83,14 +76,14 @@ class MixPanelUserObserver
 
         array_filter($data);
 
-        Log::info('User Observer - Saved...');
-        Log::info($data);
+//        Log::info('User Observer - Saved...');
+//        Log::info($data);
 
         if (count($data)) {
-            Log::info('User key:'.$user->getKey());
-            $result = $this->mixPanel->people->set($user->getKey(), $data, $this->request->ip());
-            Log::info('Result:');
-            Log::info($result);
+//            Log::info('User key:'.$user->getKey());
+            $this->mixPanel->people->set($user->getKey(), $data, $this->request->ip());
+//            Log::info('Result:');
+//            Log::info($result);
         }
     }
 

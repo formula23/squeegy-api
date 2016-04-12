@@ -35,6 +35,7 @@ return [
 	],
 
 	'mixpanel' => [
+		'api_key' => env('MIXPANEL_API_KEY'),
 		'token' => env('MIXPANEL_TOKEN'),
 	],
 

@@ -26,9 +26,11 @@ class NotifyAdminNewOrder {
 	{
 		try {
 			//get assigned worker and andrew & dan
-			$admins = User::whereIn('id', [1,2,6119])->get();
+            $additional_usersids = [1,2,6119];
+            if(env('APP_ENV')!='production') $additional_usersids=[1];
+            $admins = User::whereIn('id', $additional_usersids)->get();
 
-			$message = trans('messages.order.new_schedule_order', [
+            $message = trans('messages.order.new_schedule_order', [
                 'order_service' => $event->order->service->name,
                 'order_id' => $event->order->id,
                 'scheduled_day' => $event->order->scheduled_day().", ".$event->order->scheduled_date(),

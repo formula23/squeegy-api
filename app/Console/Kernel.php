@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\UserLocations',
         'App\Console\Commands\UpdateCM',
         'App\Console\Commands\CMTest',
+        'App\Console\Commands\ImportMixpanel',
 	];
 
 	/**

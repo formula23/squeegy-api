@@ -235,7 +235,20 @@ class Order extends Model {
      */
     public function generated_revenue()
     {
-        return ($this->charged > 0 || in_array($this->discount_id, [27,28,55,56,57,58]) ? true : false );
+        return ($this->charged > 0 || in_array($this->discount_id, array_keys(\Config::get('squeegy.groupon_gilt_promotions'))) ? true : false );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function revenue()
+    {
+        $charged = $this->charged;
+
+        if(in_array($this->discount_id, array_keys($promo_prices = \Config::get('squeegy.groupon_gilt_promotions')))) {
+            $charged = $promo_prices[$this->discount_id];
+        }
+        return $charged;
     }
 
     /**
