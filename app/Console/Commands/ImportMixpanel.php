@@ -109,7 +109,7 @@ class ImportMixpanel extends Command
             'form_params' => [
                 'data'=>$base64,
                 'verbose'=>1,
-                'api_key'=>'c148ee495312677a9489acecf65e01b8',
+                'api_key'=>config('services.mixpanel.api_key'),
             ]
         ]);
 
