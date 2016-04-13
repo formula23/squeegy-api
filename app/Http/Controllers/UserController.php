@@ -50,7 +50,7 @@ class UserController extends Controller {
         $usr_qry = User::$type();
 
         if($type=="workers") { //get activity log
-            $usr_qry->leftJoin(\DB::raw("(select user_id, login, logout, log_on, log_off from washer_activity_logs where log_on is null) as wal"), function($q) {
+            $usr_qry->leftJoin(\DB::raw("(select user_id, login, logout, log_on, log_off from washer_activity_logs where log_out is null) as wal"), function($q) {
                 $q->on('users.id', '=', 'wal.user_id');
             })->groupBy('users.id');
         }
