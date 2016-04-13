@@ -21,6 +21,9 @@ class Vehicle extends Model {
         return $this->belongsTo('App\User');
     }
 
+    /**
+     * @return bool
+     */
     public function hasSurCharge()
     {
         if($this->type == "Car") return false;

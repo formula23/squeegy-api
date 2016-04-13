@@ -304,10 +304,21 @@ class Order extends Model {
      */
     public function vehicleSurCharge()
     {
-        if($this->vehicle->hasSurCharge()) {
-            return (int)Config::get('squeegy.vehicle_surcharge.'.$this->service->id);
-        }
-        return 0;
+        if(empty($this->vehicle->type)) $this->vehicle->type = "Car";
+        if(empty($this->vehicle->size)) $this->vehicle->size = "Midsize";
+        
+        $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
+        return $service_attrib->surcharge;
+//        if($this->vehicle->hasSurCharge()) {
+//            return (int)Config::get('squeegy.vehicle_surcharge.'.$this->service->id);
+//        }
+//        return 0;
+    }
+
+    public function get_etc()
+    {
+        $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
+        return $service_attrib->etc;
     }
 
 }
