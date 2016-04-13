@@ -71,6 +71,7 @@ class CreateUser extends Command {
 				];
 
 				$new_user->default_location()->create($zone_location[$this->option('zone')]);
+				$new_user->current_location()->create($zone_location[$this->option('zone')]);
 				$new_user->zones()->attach($this->option('zone'));
 			}
         }
