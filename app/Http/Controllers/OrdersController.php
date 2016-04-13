@@ -321,7 +321,7 @@ class OrdersController extends Controller {
                     }
 
                     $order->eta = $availability['actual_time'];
-                    $order->etc = $order->service->time;
+                    $order->etc = $order->get_etc();
                     $order->worker_id = $availability['worker_id'];
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
 
@@ -354,10 +354,10 @@ class OrdersController extends Controller {
                     if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "joymode20") {
                         return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
                     }
-
+                    
                     $order->confirm_at = Carbon::now();
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
-                    $order->etc = $order->service->time;
+                    $order->etc = $order->get_etc();
 
                     unset($order->receive_at);
 
