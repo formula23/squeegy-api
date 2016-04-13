@@ -35,7 +35,7 @@ class ServicesTableSeeder extends Seeder {
             'vehicle_type' => 'Non-Car',
             'vehicle_size' => 'Midsize',
             'etc' => 35,
-            'surcharge' => 0,
+            'surcharge' => 400,
         ]);
 
         $express->attribs()->create([
@@ -68,7 +68,7 @@ class ServicesTableSeeder extends Seeder {
             'vehicle_type' => 'Non-Car',
             'vehicle_size' => 'Midsize',
             'etc' => 60,
-            'surcharge' => 0,
+            'surcharge' => 600,
         ]);
 
         $classic->attribs()->create([
@@ -101,7 +101,7 @@ class ServicesTableSeeder extends Seeder {
             'vehicle_type' => 'Non-Car',
             'vehicle_size' => 'Midsize',
             'etc' => 30,
-            'surcharge' => 0,
+            'surcharge' => 200,
         ]);
 
         $squeegy->attribs()->create([
