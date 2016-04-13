@@ -97,6 +97,10 @@ class OrdersController extends Controller {
             }
         }
 
+        if($request->input('zip')) {
+            $orders->where('location' ,'like', "%".$request->input('zip')."%");
+        }
+
         foreach(['confirm', 'assign', 'enroute', 'start', 'done', 'cancel', 'created', 'updated'] as $status_time) {
             if($request->input($status_time.'_on')) {
 
