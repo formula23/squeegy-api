@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Order;
+use App\Squeegy\Emails\ReceiptEmail;
+use App\User;
 use Illuminate\Console\Command;
 
 use CampaignMonitor;
@@ -40,6 +43,14 @@ class CMTest extends Command
      */
     public function handle()
     {
+
+        $user = User::find(155);
+        $order = Order::find(1009);
+
+        dd(
+            (new ReceiptEmail)->withData(['data' => $order])->sendTo($user)
+        );
+
 
         $cm = CampaignMonitor::smartSend('ad8fc689-263b-4856-bc25-acad275475eb');
 

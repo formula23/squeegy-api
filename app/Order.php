@@ -98,6 +98,9 @@ class Order extends Model {
         return $this->hasMany('App\Transaction');
     }
 
+    /**
+     * @return mixed
+     */
     public function auth_transaction()
     {
         return $this->hasOne('App\Transaction')->where('type', 'auth');
