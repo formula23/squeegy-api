@@ -59,55 +59,54 @@ class UserSegmentation extends Command {
 						'segment_id' => $segments["User"],
 						'user_at' => $user->created_at,
 					]);
-
-					$orders_qry = $user->completedPaidOrders();
-					$orders = $orders_qry->get();
-
-					$first_order = $orders->first();
-					$last_order = $orders->last();
-dd($last_order);
-					if($last_order) $user_segment->last_wash_at = $last_order->done_at;
-
-					if($orders->count() == 1) {
-						$user_segment->segment_id = $segments["Customer"];
-						$user_segment->customer_at = $first_order->done_at;
-
-					} else if($orders->count() >= 2) {
-						$user_segment->segment_id = $segments["Repeat Customer"];
-						$user_segment->customer_at = $first_order->done_at;
-						$user_segment->repeat_customer_at = $orders[1]->done_at;
-					}
-
-					$referral_orders_qry = $user->completedReferralOrders();
-					$referral_orders = $referral_orders_qry->get();
-
-					if($user->is_advocate() && $user_segment->segment_id != 5) {
-						$user_segment->segment_id = $segments["Advocate"];
-						$user_segment->advocate_at = $referral_orders->first()->done_at;
-					}
-
-					if( ! $user->is_anon()) {
-						$subscriber_data = [
-							'EmailAddress' => $user->email,
-							'Name' => $user->name,
-							'CustomFields' => [
-								['Key'=>'SegmentID', 'Value'=>$user_segment->segment_id],
-								['Key'=>'Device', 'Value'=>$user->device()],
-								['Key'=>'LastWash', 'Value'=>($last_order?$last_order->done_at->format('Y/m/d'):'')],
-                                ['Key'=>'AvailableCredit', 'Value'=>$user->availableCredit()/100],
-							]
-						];
-
-						$all_subscriber_data[] = $subscriber_data;
-					}
-
-					$user->segment()->save($user_segment);
-
-					$this->info('User id:'.$user->id." ---- ".$user_segment->segment->name);
-
 				} else {
-					$this->info('User id:'.$user->id." -- Already segmented:".$user->segment->segment->name);
+					$user_segment = $user->segment;
 				}
+
+                $orders_qry = $user->completedPaidOrders();
+                $orders = $orders_qry->get();
+
+                $first_order = $orders->first();
+                $last_order = $orders->last();
+dd($last_order);
+                if($last_order) $user_segment->last_wash_at = $last_order->done_at;
+
+                if($orders->count() == 1) {
+                    $user_segment->segment_id = $segments["Customer"];
+                    $user_segment->customer_at = $first_order->done_at;
+
+                } else if($orders->count() >= 2) {
+                    $user_segment->segment_id = $segments["Repeat Customer"];
+                    $user_segment->customer_at = $first_order->done_at;
+                    $user_segment->repeat_customer_at = $orders[1]->done_at;
+                }
+
+                $referral_orders_qry = $user->completedReferralOrders();
+                $referral_orders = $referral_orders_qry->get();
+
+                if($user->is_advocate() && $user_segment->segment_id != 5) {
+                    $user_segment->segment_id = $segments["Advocate"];
+                    $user_segment->advocate_at = $referral_orders->first()->done_at;
+                }
+
+                if( ! $user->is_anon()) {
+                    $subscriber_data = [
+                        'EmailAddress' => $user->email,
+                        'Name' => $user->name,
+                        'CustomFields' => [
+                            ['Key'=>'SegmentID', 'Value'=>$user_segment->segment_id],
+                            ['Key'=>'Device', 'Value'=>$user->device()],
+                            ['Key'=>'LastWash', 'Value'=>($last_order?$last_order->done_at->format('Y/m/d'):'')],
+                            ['Key'=>'AvailableCredit', 'Value'=>$user->availableCredit()/100],
+                        ]
+                    ];
+
+                    $all_subscriber_data[] = $subscriber_data;
+                }
+
+                $user->segment()->save($user_segment);
+
+                $this->info('User id:'.$user->id." ---- ".$user_segment->segment->name);
 
 			}
 
