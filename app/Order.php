@@ -4,6 +4,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -306,8 +307,9 @@ class Order extends Model {
     {
         if(empty($this->vehicle->type)) $this->vehicle->type = "Car";
         if(empty($this->vehicle->size)) $this->vehicle->size = "Midsize";
-        
         $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
+        Log::info("Service Attrib:");
+        Log::info($service_attrib);
         return ($service_attrib && $service_attrib->surcharge?:0);
     }
 
