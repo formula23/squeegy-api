@@ -68,7 +68,7 @@ class UserSegmentation extends Command {
 
                 $first_order = $orders->first();
                 $last_order = $orders->last();
-dd($last_order);
+dd($first_order);
                 if($last_order) $user_segment->last_wash_at = $last_order->done_at;
 
                 if($orders->count() == 1) {
