@@ -305,6 +305,8 @@ class Order extends Model {
      */
     public function vehicleSurCharge()
     {
+        if( ! $this->vehicle->hasSurCharge()) return 0;
+        
         if(empty($this->vehicle->type)) $this->vehicle->type = "Car";
         if(empty($this->vehicle->size)) $this->vehicle->size = "Midsize";
         $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
