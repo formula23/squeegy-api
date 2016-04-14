@@ -45,7 +45,7 @@ class CMTest extends Command
     {
 
         $user = User::find(155);
-        $order = Order::find(1009);
+        $order = Order::find(377);
 
         dd(
             (new ReceiptEmail)->withData(['data' => $order])->sendTo($user)
