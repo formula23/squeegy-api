@@ -55,7 +55,7 @@ class PayrollGenerate extends Command {
         2882, //Juan
     ];
 
-    protected $min_worker_id = [
+    protected $min_weekly_worker_id = [
         //2149 => 500,
         //2900 => 500,
 //        3198 => 600,
@@ -64,7 +64,11 @@ class PayrollGenerate extends Command {
 	protected $min_day_worker_id = [
 		3198 => [
 			'min' => 100,
-			'days' => [1,2,3,4,5,6]
+			'days' => [1,2,3,4,5,6],
+		],
+		6633 => [
+			'min' => 120,
+			'days' => [3],
 		]
 	];
 
@@ -195,9 +199,9 @@ class PayrollGenerate extends Command {
             $orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
             @$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
 
-            if (in_array($order->worker->id, array_keys($this->min_worker_id)) &&
-                $orders_by_worker[$order->worker->id]['jobs']['total'] < $this->min_worker_id[$order->worker_id]) {
-                @$orders_by_worker[$order->worker->id]['minimum'] = max(0, $this->min_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
+            if (in_array($order->worker->id, array_keys($this->min_weekly_worker_id)) &&
+                $orders_by_worker[$order->worker->id]['jobs']['total'] < $this->min_weekly_worker_id[$order->worker_id]) {
+                @$orders_by_worker[$order->worker->id]['minimum'] = max(0, $this->min_weekly_worker_id[$order->worker_id] - $orders_by_worker[$order->worker->id]['jobs']['total']);
             }
 
             @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
@@ -233,7 +237,7 @@ class PayrollGenerate extends Command {
 			$data=[];
 			$data['week_of'] = $week_of;
 			$data['washer_info'] = $worker;
-			$data['weekly_min'] = ( ! empty($min_worker_id[$worker_id]) ? $min_worker_id[$worker_id] : 0 );
+			$data['weekly_min'] = ( ! empty($min_weekly_worker_id[$worker_id]) ? $min_weekly_worker_id[$worker_id] : 0 );
             $data['colspan'] = ($worker['comp_type']=="flat" ? 8 : 11 );
 
 			$view = view('payroll.time_sheet', $data);
