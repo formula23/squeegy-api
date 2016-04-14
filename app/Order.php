@@ -308,15 +308,13 @@ class Order extends Model {
         if(empty($this->vehicle->type)) $this->vehicle->type = "Car";
         if(empty($this->vehicle->size)) $this->vehicle->size = "Midsize";
         $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
-        Log::info("Service Attrib:");
-        Log::info($service_attrib);
         return ($service_attrib && $service_attrib->surcharge?:0);
     }
 
     public function get_etc()
     {
         $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
-        return $service_attrib->etc;
+        return ($service_attrib ? $service_attrib->etc : $this->service->time );
     }
 
 }
