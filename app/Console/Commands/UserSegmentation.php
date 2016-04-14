@@ -47,7 +47,7 @@ class UserSegmentation extends Command {
 
 		$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
-		User::customers()->chunk(1000, function($users) use ($segments, $subscriber) {
+		User::customers()->where('id',5590)->chunk(1000, function($users) use ($segments, $subscriber) {
 
 			$all_subscriber_data=[];
 
@@ -65,7 +65,7 @@ class UserSegmentation extends Command {
 
 					$first_order = $orders->first();
 					$last_order = $orders->last();
-
+dd($last_order);
 					if($last_order) $user_segment->last_wash_at = $last_order->done_at;
 
 					if($orders->count() == 1) {
