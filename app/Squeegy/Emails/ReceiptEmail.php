@@ -24,6 +24,11 @@ class ReceiptEmail extends Email
         $vehicle =& $order->vehicle;
         $location = $order->location;
 
+        $order_details = $order->order_details->toArray();
+        array_walk( $order_details, function(&$val) {
+            $val['amount'] = "$".number_format($val['amount']/100, 2);
+        });
+
         $vars = [
             'ORDER_ID' => $order->id,
             'ORDER_DATE' => $order->done_at->format('m/d/Y'),
@@ -44,12 +49,7 @@ class ReceiptEmail extends Email
             'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
             'LICENSE_PLATE' => ($vehicle->license_plate?:null),
             'ADDRESS' => $location['street'].", ".( ! empty($location['city']) ? $location['city'].", " : "" ).$location['state']." ".$location['zip'],
-//            'ORDER_DETAILS' => view('emails.partials.receipt_details', compact(['order']))->render(),
-            'ORDER_DETAILS' => array_walk($order->order_details, function(&$val, $key) {
-                if($key=="amount") {
-                    $val = "$".number_format($val/100, 2);
-                }
-            }),
+            'ORDER_DETAILS' => $order_details,
             'REFERRAL_CODE' => $user->referral_code,
             'CURRENT_YEAR' => Carbon::now()->year,
         ];
