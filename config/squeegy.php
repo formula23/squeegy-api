@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "website_url" => env('WEBSITE_URL', "https://www.squeegyapp.com"),
     "operating_hours" => [
         "open" => env('OPERATING_HR_OPEN', 10),
         "close" => env('OPERATING_HR_CLOSE', 18),
