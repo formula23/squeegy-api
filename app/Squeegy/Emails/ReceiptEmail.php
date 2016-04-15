@@ -45,7 +45,11 @@ class ReceiptEmail extends Email
             'LICENSE_PLATE' => ($vehicle->license_plate?:null),
             'ADDRESS' => $location['street'].", ".( ! empty($location['city']) ? $location['city'].", " : "" ).$location['state']." ".$location['zip'],
 //            'ORDER_DETAILS' => view('emails.partials.receipt_details', compact(['order']))->render(),
-            'ORDER_DETAILS' => $order->order_details,
+            'ORDER_DETAILS' => array_walk($order->order_details, function(&$val, $key) {
+                if($key=="amount") {
+                    $val = "$".number_format($val/100, 2);
+                }
+            }),
             'REFERRAL_CODE' => $user->referral_code,
             'CURRENT_YEAR' => Carbon::now()->year,
         ];
