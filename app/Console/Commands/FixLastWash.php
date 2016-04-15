@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\User;
 use Illuminate\Console\Command;
 use CampaignMonitor;
-
+use Config;
 use GeneaLabs\LaravelMixpanel\LaravelMixpanel;
 use GuzzleHttp\Client;
 
