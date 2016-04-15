@@ -39,6 +39,7 @@ abstract class Email
 
         return $mailer->send([
             'To' => $user->email,
+            'Bcc' => config('squeegy.emails.bcc'),
             'Data'=> $data,
         ]);
     }
