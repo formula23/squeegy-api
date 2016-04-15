@@ -13,7 +13,7 @@ use CampaignMonitor;
 abstract class Email
 {
     protected $data = [];
-
+    protected $bcc=[];
     /**
      * @param array $data
      * @return $this
@@ -21,6 +21,12 @@ abstract class Email
     public function withData($data)
     {
         $this->data = $data;
+        return $this;
+    }
+
+    public function withBCC($bcc)
+    {
+        $this->bcc = $bcc;
         return $this;
     }
 
@@ -37,11 +43,16 @@ abstract class Email
             array_merge(compact('user'), $this->data)
         );
 
-        return $mailer->send([
+        $payload = [
             'To' => $user->email,
-            'Bcc' => config('squeegy.emails.bcc'),
             'Data'=> $data,
-        ]);
+        ];
+
+        if($this->bcc) {
+            $payload['Bcc'] = $this->bcc;
+        }
+        
+        return $mailer->send($payload);
     }
 
     /**

@@ -34,7 +34,10 @@ class SendReceiptEmail {
 
         try {
 
-            (new ReceiptEmail)->withData(['data' => $order])->sendTo($order->customer);
+            (new ReceiptEmail)
+                ->withBCC(config('squeegy.emails.bcc'))
+				->withData(['data' => $order])
+				->sendTo($order->customer);
 
 
 //            Mail::send('emails.receipt', $email_content, function ($message) use ($order) {
