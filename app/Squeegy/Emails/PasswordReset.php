@@ -19,7 +19,8 @@ class PasswordReset extends Email
     public function variables($user, $token)
     {
         return [
-            'RESET_PW_URL'=>config('squeegy.website_url').'/password/reset/'.$token
+            'RESET_PW_URL'=>config('squeegy.website_url').'/password/reset/'.$token,
+            'CURRENT_YEAR'=>date("Y"),
         ];
 
     }
