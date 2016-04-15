@@ -89,6 +89,7 @@ class FixLastWash extends Command
 
                 if(count($mixpanel_batch)==50) {
                     $this->send_batch($mixpanel_batch);
+                    $mixpanel_batch=[];
                 }
 
             }
