@@ -44,7 +44,8 @@ class ReceiptEmail extends Email
             'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
             'LICENSE_PLATE' => ($vehicle->license_plate?:null),
             'ADDRESS' => $location['street'].", ".( ! empty($location['city']) ? $location['city'].", " : "" ).$location['state']." ".$location['zip'],
-            'ORDER_DETAILS' => view('emails.partials.receipt_details', compact(['order']))->render(),
+//            'ORDER_DETAILS' => view('emails.partials.receipt_details', compact(['order']))->render(),
+            'ORDER_DETAILS' => $order->order_details,
             'REFERRAL_CODE' => $user->referral_code,
             'CURRENT_YEAR' => Carbon::now()->year,
         ];
