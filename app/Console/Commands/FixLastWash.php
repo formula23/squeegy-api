@@ -53,7 +53,8 @@ class FixLastWash extends Command
      */
     public function handle()
     {
-        $rows = \DB::select('SELECT * FROM user_segments, orders WHERE user_segments.user_id = orders.user_id AND last_wash_at IS NULL AND orders.done_at IS NOT NULL GROUP BY user_segments.user_id');
+//        $rows = \DB::select('SELECT * FROM user_segments, orders WHERE user_segments.user_id = orders.user_id AND last_wash_at IS NULL AND orders.done_at IS NOT NULL GROUP BY user_segments.user_id');
+        $rows = \DB::select('SELECT * FROM `user_segments` WHERE updated_at >= \'2016-04-14 17:03:56\'');
 
         $subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
