@@ -6,7 +6,7 @@
  * Time: 20:55
  */
 
-namespace app\Squeegy\Emails;
+namespace App\Squeegy\Emails;
 
 
 class PasswordReset extends Email
