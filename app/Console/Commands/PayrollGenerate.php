@@ -253,6 +253,8 @@ class PayrollGenerate extends Command {
 
 			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
 			{
+                $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
+                
 				$message->from('payments@squeegyapp.com', 'Squeegy Payments');
                 $message->replyTo('tech@squeegyapp.com', 'Squeegy');
 
@@ -283,6 +285,8 @@ class PayrollGenerate extends Command {
 
 		Mail::raw('COGs Attached', function($message) use ($email_data)
 		{
+            $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll COGs');
+            
 			if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 				$message->to('dan@squeegyapp.com', 'Dan Schultz');
 				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
