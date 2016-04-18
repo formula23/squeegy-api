@@ -227,16 +227,16 @@ class OrdersController extends Controller {
             $order_details[] = new OrderDetail(['name'=>$order->vehicle->type.' Surcharge', 'amount'=>$surcharge]);
         }
 
-        ///use available credits
-        if($user->availableCredit()) {
-            $order->credit = min($order->total, $user->availableCredit());
-            $order->total -= $order->credit;
-        }
-
         $order->order_details()->saveMany($order_details);
 
         if( ! empty($order_schedule)) {
             $order->schedule()->save($order_schedule);
+        }
+
+        ///use available credits
+        if($user->availableCredit() && !$order->isSubscription()) {
+            $order->credit = min($order->total, $user->availableCredit());
+            $order->total -= $order->credit;
         }
 
         $order->save();
