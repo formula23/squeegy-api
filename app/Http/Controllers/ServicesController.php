@@ -61,7 +61,7 @@ class ServicesController extends Controller {
     public function availability(Request $request)
     {
         $availability = Orders::availability($request->input('lat'), $request->input('lng'));
-
+dd($availability);
         try {
             $etalog_data = [
                 'eta' => $availability["time"],

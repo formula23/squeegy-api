@@ -360,7 +360,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         if(!$this->name) return '';
         $nameParts = explode(' ', $this->name);
         array_filter($nameParts);
-        $lastName = array_pop($nameParts);
+        $lastName = array_pop($nameParts); //remove last name
         return implode(' ', $nameParts);
     }
 

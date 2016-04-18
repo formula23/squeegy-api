@@ -161,7 +161,7 @@ class Orders {
         }
 
         $eta = self::getLeadTime($lat, $lng);
-
+dd($eta);
         Log::info('ETA:');
         Log::info($eta);
 
