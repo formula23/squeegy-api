@@ -20,7 +20,7 @@ class PayrollGenerate extends Command {
 	protected $name = 'payroll:generate';
 
     protected $training = [
-//        6633=>192,
+        6861=>93, //angel
     ];
 
     protected $bonus = [
@@ -47,7 +47,10 @@ class PayrollGenerate extends Command {
         6349, //Melvyn
         6633, //Rob
         2882, //Juan
-        3198, //david
+        3198, //David
+        6861, //Angel
+        1847, //Ricardo
+        2149, //Daniel
     ];
 
     protected $no_kit_rental = [
@@ -58,18 +61,18 @@ class PayrollGenerate extends Command {
     protected $min_weekly_worker_id = [
         //2149 => 500,
         //2900 => 500,
-//        3198 => 600,
+        //3198 => 600,
     ];
 
 	protected $min_day_worker_id = [
-		3198 => [
+		3198 => [ //david
 			'min' => 100,
 			'days' => [1,2,3,4,5,6],
 		],
-		6633 => [
+		6633 => [ //rob
 			'min' => 120,
 			'days' => [3],
-		]
+		],
 	];
 
 	/**
