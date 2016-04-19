@@ -169,8 +169,8 @@ class OrdersController extends Controller {
         $data['price'] = 0;
 
         $order_details=[];
-        $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price]);
-        $data['price'] += $service->price;
+        $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price()]);
+        $data['price'] += $service->price();
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
         Log::info('OrdersController@store:117');

@@ -29,7 +29,6 @@ class SendReceiptEmail {
         $order = $event->order;
 
         try {
-
             (new Receipt)
                 ->withBCC(config('squeegy.emails.bcc'))
 				->withData(['data' => $order])

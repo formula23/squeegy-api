@@ -1,17 +1,34 @@
 <?php namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model {
 
     protected $fillable = ['name', 'price', 'details', 'time', 'time_label', 'sequence', 'is_active'];
 
+    protected $date;
+
+    protected $mid_week_special = [
+        1 => 1800,
+        2 => 2500,
+        3 => 1500,
+    ];
+
+    public function __construct(array $attributes)
+    {
+        parent::__construct($attributes);
+        $this->date = Carbon::now();
+    }
+
     /**
      * @return mixed
      */
     public static function getAvailableServices()
     {
-        return Service::where('is_active', 1)->orderBy('sequence')->get();
+        $services = Service::where('is_active', 1)->orderBy('sequence')->get();
+
+        return $services;
     }
 
     /**
@@ -38,6 +55,20 @@ class Service extends Model {
     {
         return $this->hasMany('App\ServiceAttrib');
     }
+
+    /**
+     * @param Carbon $date
+     * @return mixed
+     */
+    public function price(Carbon $date=null)
+    {
+        if($date) $this->date = $date;
+        if($this->isMidWeekSpecial()) {
+            return $this->mid_week_special[$this->id];
+        } else {
+            return $this->price;
+        }
+    }
     
     /**
      * @param $query
@@ -50,4 +81,14 @@ class Service extends Model {
         $type = ($type!="Car" ? "Non-Car" : $type);
         return $this->attribs()->where('vehicle_type', $type)->where('vehicle_size', $size);
     }
+
+    /**
+     * @return bool
+     */
+    public function isMidWeekSpecial()
+    {
+        return in_array($this->date->dayOfWeek, [2,3]) ? true : false ;
+    }
+
+
 }
