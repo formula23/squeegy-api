@@ -40,6 +40,8 @@ class OrdersController extends Controller {
 
     protected $limit = 100;
 
+    protected $order_date;
+
     /**
      * @param Request $request
      */
@@ -166,11 +168,6 @@ class OrdersController extends Controller {
 
         $service = Service::find($data['service_id']);
 
-        $data['price'] = 0;
-
-        $order_details=[];
-        $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price()]);
-        $data['price'] += $service->price();
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
         Log::info('OrdersController@store:117');
@@ -195,8 +192,10 @@ class OrdersController extends Controller {
                 if($schedule_data['window_open']->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
                 $order_schedule = OrderSchedule::create($schedule_data);
+                $this->order_date = $schedule_data['window_open'];
 
             } else { //on-demand
+                $this->order_date = Carbon::now();
                 if(!empty($eta['time'])) {
                     $data['eta'] = $eta['time'];
                 } else {
@@ -212,6 +211,12 @@ class OrdersController extends Controller {
             \Bugsnag::notifyException($e);
             return $this->response->errorWrongArgs(trans('messages.service.error'));
         }
+
+        $order_details=[];
+        $order_details[] = new OrderDetail(['name'=>$service->name, 'amount'=>$service->price($this->order_date)]);
+
+        $data['price'] = 0;
+        $data['price'] += $service->price($this->order_date);
 
         $data['total'] = $data['price'];
 

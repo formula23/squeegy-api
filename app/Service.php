@@ -15,9 +15,9 @@ class Service extends Model {
         3 => 1500,
     ];
 
-    public function __construct(array $attributes)
+    public function __construct()
     {
-        parent::__construct($attributes);
+        parent::__construct();
         $this->date = Carbon::now();
     }
 
@@ -87,7 +87,7 @@ class Service extends Model {
      */
     public function isMidWeekSpecial()
     {
-        return in_array($this->date->dayOfWeek, [2,3]) ? true : false ;
+        return in_array($this->date->dayOfWeek, [1,2,3]) ? true : false ;
     }
 
 

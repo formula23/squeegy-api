@@ -15,6 +15,11 @@ class ServiceTransformer extends TransformerAbstract {
 
     public function transform(Service $service)
     {
+        if ($service->id == 1) {
+            dd($service->price());
+        }
+
+
         return [
             'id' => (string)$service->id,
             'name' => $service->name,
