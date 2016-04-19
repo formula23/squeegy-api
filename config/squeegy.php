@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "website_url" => env('WEBSITE_URL', "https://www.squeegyapp.com"),
     "operating_hours" => [
         "open" => env('OPERATING_HR_OPEN', 10),
         "close" => env('OPERATING_HR_CLOSE', 18),
@@ -20,7 +21,7 @@ return [
         'from_name' => 'Team Squeegy',
         'receipt' => [
             'photo_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders' . (app()->environment('production') ? "/" : "-dev/" ),
-        ]
+        ],
     ],
     'order_seq' => [
         'cancel' => 100,
