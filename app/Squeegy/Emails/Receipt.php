@@ -11,7 +11,7 @@ namespace App\Squeegy\Emails;
 
 use Carbon\Carbon;
 
-class ReceiptEmail extends Email
+class Receipt extends Email
 {
 
     public function getEmailId()
@@ -52,6 +52,7 @@ class ReceiptEmail extends Email
             'ORDER_DETAILS' => $order_details,
             'REFERRAL_CODE' => $user->referral_code,
             'CURRENT_YEAR' => Carbon::now()->year,
+            'SUBSCRIPTION' => $order->isSubscription(),
         ];
 
         if($order->auth_transaction) {

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Order;
-use App\Squeegy\Emails\ReceiptEmail;
+use App\Squeegy\Emails\Receipt;
 use App\User;
 use Illuminate\Console\Command;
 
@@ -45,25 +45,25 @@ class CMTest extends Command
     public function handle()
     {
 
-        $email_data=[];
+//        $email_data=[];
+//        Mail::send('payroll.email', ['washer'=>"Dan", 'week_of'=>"sadf"], function($message) use ($email_data)
+//        {
+//            $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
+//
+//            $message->from('payments@squeegyapp.com', 'Squeegy Payments');
+//            $message->replyTo('tech@squeegyapp.com', 'Squeegy');
+//            $message->to('dan@squeegyapp.com', 'Dan Schultz');
+//
+//            $message->subject("Squeegy Pay - Week of ");
+////            $message->attach($email_data['time_sheet']);
+//        });
+//        dd("sent.....");
 
-        Mail::send('payroll.email', ['washer'=>"Dan", 'week_of'=>"sadf"], function($message) use ($email_data)
-        {
-            $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
-            
-            $message->from('payments@squeegyapp.com', 'Squeegy Payments');
-            $message->replyTo('tech@squeegyapp.com', 'Squeegy');
-            $message->to('dan@squeegyapp.com', 'Dan Schultz');
-
-            $message->subject("Squeegy Pay - Week of ");
-//            $message->attach($email_data['time_sheet']);
-        });
-        dd("sent.....");
-        $user = User::find(155);
-        $order = Order::find(377);
-
+        $user = User::find(4412);
+        $order = Order::find(4770);
+        
         dd(
-            (new ReceiptEmail)->withData(['data' => $order])->sendTo($user)
+            (new Receipt)->withData(['data' => $order])->sendTo($user)
         );
 
 
