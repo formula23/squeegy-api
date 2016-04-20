@@ -39,7 +39,7 @@ class ChargeOrder {
 
             if($stripe_charge_id) {
                 $payments = new Payments($event->order->customer->stripe_customer_id);
-                $charge = $payments->capture($stripe_charge_id);
+                $charge = $payments->capture($stripe_charge_id, $order->charged);
                 $order->transactions()->create([
                     'charge_id'=>$charge->id,
                     'amount'=>$charge->amount,
