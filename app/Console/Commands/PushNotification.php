@@ -245,7 +245,7 @@ class PushNotification extends Command {
                 AND `segment_id` = 2
                 AND email LIKE \'%squeegyapp-tmp.com\'
                 order by email
-                limit 2466, 2465
+                limit '.$this->option('take').' offset '.$this->option('skip').'
             ');
 
         // 3/22/16 - 363 users that haven't had a wash in 6 weeks.

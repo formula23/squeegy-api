@@ -25,6 +25,7 @@ return [
     ],
     'order_seq' => [
         'cancel' => 100,
+        'test' => 0,
         'request' => 1,
         'confirm' => 2,
         'receive' => 2,
