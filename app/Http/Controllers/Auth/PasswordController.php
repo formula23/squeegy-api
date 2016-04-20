@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Squeegy\Emails\PasswordReset;
 use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\PasswordBroker;
@@ -55,15 +56,17 @@ class PasswordController extends Controller {
 		if($user) {
 			$token = $tokens->create($user);
 
-			$this->passwords->emailResetLink($user, $token, function($m) use ($token) {
-
-				$headers = $m->getHeaders();
-				$mergevars=['RESET_PW_URL'=>env('WEBSITE_URL').'/password/reset/'.$token];
-				$headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
-				$headers->addTextHeader('X-MC-Template', 'password-reset');
-
-				$m->subject($this->getEmailSubject());
-			});
+			(new PasswordReset())->withData(['data'=>$token])->sendTo($user);
+			
+//			$this->passwords->emailResetLink($user, $token, function($m) use ($token) {
+//
+//				$headers = $m->getHeaders();
+//				$mergevars=['RESET_PW_URL'=>env('WEBSITE_URL').'/password/reset/'.$token];
+//				$headers->addTextHeader('X-MC-MergeVars', json_encode($mergevars));
+//				$headers->addTextHeader('X-MC-Template', 'password-reset');
+//
+//				$m->subject($this->getEmailSubject());
+//			});
 		}
 
 		return $this->response->withArray(['status'=>trans(PasswordBroker::RESET_LINK_SENT)]);

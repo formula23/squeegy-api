@@ -17,8 +17,8 @@
         <th>COGs</th>
         <th>Promotional</th>
         <th>Jobs Pay</th>
-        <th>Promo. Min. Pay</th>
-        <th>Daily. Min. Pay</th>
+        <th>Weekly Min. Pay</th>
+        <th>Daily Min. Pay</th>
         <th>Referral Program</th>
         <th>Training</th>
         <th>Kit Rental</th>

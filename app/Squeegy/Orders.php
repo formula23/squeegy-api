@@ -207,31 +207,6 @@ dd($eta);
 
     /**
      * @param Order $order
-     * @return int
-     */
-//    public static function getPrice(Order $order)
-//    {
-//        return $order->service->price;
-//
-//        $base_price = $order->service->price;
-//
-//        switch($order->vehicle->type)
-//        {
-//            case "SUV":
-//                $base_price += self::SUV_SURCHARGE;
-//                break;
-//            case "SUV+":
-//            case "Truck":
-//            case "Van":
-//                $base_price += self::SUV_SURCHARGE * self::SUV_SURCHARGE_MULTIPLIER;
-//                break;
-//        }
-//
-//        return $base_price;
-//    }
-
-    /**
-     * @param Order $order
      * @return mixed
      */
     public static function getCurrentEta(Order $order)
