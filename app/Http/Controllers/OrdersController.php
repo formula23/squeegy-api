@@ -95,7 +95,14 @@ class OrdersController extends Controller {
             $order_bys=explode(",", $request->input('order_by'));
             foreach($order_bys as $order_by) {
                 $order_pts = explode(":", $order_by);
-                $orders->orderBy($order_pts[0], ( ! empty($order_pts[1])?$order_pts[1]:''));
+
+                if($order_pts[0]=="confirm_at") {
+                    $orderby = \DB::raw('IF(orders.eta, confirm_at + INTERVAL orders.eta MINUTE, confirm_at)');
+                } else {
+                    $orderby = $order_pts[0];
+                }
+                
+                $orders->orderBy($orderby, ( ! empty($order_pts[1])?$order_pts[1]:''));
             }
         }
 
@@ -126,6 +133,7 @@ class OrdersController extends Controller {
             else $this->limit = $request->input('limit');
         }
 
+//dd($orders->get());
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
