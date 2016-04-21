@@ -56,7 +56,9 @@ class DbBackup extends Command {
             env('MYSQL_BIN')."/mysqldump",
             "-u".$db_creds['username'],
             "-p'".$db_creds['password']."'",
-            $db_creds['database']." > ",
+            $db_creds['database'],
+            "--ignore-table=".$db_creds['database'].".cache",
+			" > ",
             $this->dir."/".$db_creds['database'].".".Carbon::now()->format("H").".sql",
         ];
 
