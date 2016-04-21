@@ -2,6 +2,7 @@
 
 use App\Discount;
 use App\Events\BadRating;
+use App\Events\ChangeWasher;
 use App\Events\OrderAssign;
 use App\Events\OrderCancelled;
 use App\Events\OrderCancelledByWorker;
@@ -493,17 +494,12 @@ class OrdersController extends Controller {
     {
         if( ! $order->exists) return $this->response->errorNotFound();
 
-        $new_worker_id = $request->input('worker_id');
-        $new_worker = User::workers()->find($new_worker_id);
+        $order->worker_id = $new_worker_id = $request->input('worker_id');
 
-        if(empty($new_worker)) return $this->response->errorWrongArgs('Worker id invalid');
+        Event::fire(new ChangeWasher($order));
 
-        $original_worker = $order->worker;
-
-        
-
-        dd($original_worker);
-        dd($order);
+//        $order->save();
+        return $this->response->withItem($order, new OrderTransformer());
     }
     
     /**

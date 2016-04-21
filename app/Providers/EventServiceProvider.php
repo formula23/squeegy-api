@@ -79,7 +79,10 @@ class EventServiceProvider extends ServiceProvider {
             'App\Handlers\Events\EmailSupport',
         ],
 
-//		'App\Events\'
+		'App\Events\ChangeWasher' => [
+            'App\Listeners\NotifyWasher',
+            'App\Listeners\NotifyCustomer',
+        ]
 	];
 
 	/**
