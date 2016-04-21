@@ -43,9 +43,18 @@ class ChargeOrder {
                 $amt_to_capture = $order->charged;
 
                 if($amt_to_capture > $transaction->amount) {
-//                    $additional_charge = $order->charged - $transaction->amount;
-//                    $charge = $payments->capture($stripe_charge_id);
-                    $amt_to_capture = 0;
+                    $additional_charge = $order->charged - $transaction->amount;
+
+                    $amt_to_capture = $order->charged - $additional_charge;
+
+                    $charge = $payments->sale($additional_charge, $order);
+                    $order->transactions()->create([
+                        'charge_id'=>$charge->id,
+                        'amount'=>$charge->amount,
+                        'type'=>'sale',
+                        'last_four'=>$charge->source->last4,
+                        'card_type'=>$charge->source->brand,
+                    ]);
                 }
 
                 $charge = $payments->capture($stripe_charge_id, $amt_to_capture);

@@ -27,7 +27,7 @@ class Payments {
         $this->customer_id = $customer_id;
     }
 
-    public function auth($amt=0, $order=null)
+    public function auth($amt=0, $order=null, $capture=false)
     {
         if($amt===0) return;
 
@@ -36,7 +36,7 @@ class Payments {
                 'amount' => $amt,
                 'currency' => 'usd',
                 'customer' => $this->customer_id,
-                'capture' => false,
+                'capture' => $capture,
             ];
 
             if($order) {
@@ -51,6 +51,11 @@ class Payments {
 
 
         return $charge;
+    }
+
+    public function sale($amt=0, $order=null)
+    {
+        return $this->auth($amt, $order, true);
     }
 
     public function capture($charge_id, $amt=0)
