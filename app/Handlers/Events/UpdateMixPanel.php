@@ -34,8 +34,8 @@ class UpdateMixPanel
         $data = [
             "Available Credits"=>$user->availableCredit()/100,
             "Segment ID" =>$user->segment?$user->segment->segment_id:0,
-            "Lash Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
-            "Lash Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
+            "Last Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
+            "Last Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
         ];
 
         $this->mixpanel->people->set($user->id, $data);

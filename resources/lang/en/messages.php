@@ -35,8 +35,8 @@ return [
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
             'change_washer' => [
                 'customer' => 'Your wash has been re-assigned to :worker_name.',
-                'original_washer' => 'Order# :order_id has been removed from your queue. Refresh your washer app.',
-                'new_washer' => ':order_service #:order_id. Refresh your washer app.',
+                'original_washer' => 'Order#:order_id has been removed from your queue. Refresh your washer app.',
+                'new_washer' => 'You have been assigned :order_service #:order_id. Refresh your washer app.',
             ],
         ],
         'push_notice_corp' => [

@@ -494,11 +494,11 @@ class OrdersController extends Controller {
     {
         if( ! $order->exists) return $this->response->errorNotFound();
 
-        $order->worker_id = $new_worker_id = $request->input('worker_id');
+        $order->worker_id = $request->input('worker_id');
 
         Event::fire(new ChangeWasher($order));
 
-//        $order->save();
+        $order->save();
         return $this->response->withItem($order, new OrderTransformer());
     }
     

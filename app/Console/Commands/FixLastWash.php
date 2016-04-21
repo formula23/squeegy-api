@@ -85,7 +85,7 @@ class FixLastWash extends Command
                     '$ignore_time'=> true,
                     '$ignore_alias'=> true,
                     '$ip'=> 0,
-                    '$set'=> ["Lash Wash At" => $last_wash->done_at->toAtomString()]
+                    '$set'=> ["Last Wash At" => $last_wash->done_at->toAtomString()]
                 ];
 
                 if(count($mixpanel_batch)==50) {

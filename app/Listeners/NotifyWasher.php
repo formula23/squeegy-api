@@ -2,12 +2,16 @@
 
 namespace App\Listeners;
 
+use Aloha\Twilio\Twilio;
 use App\Events\ChangeWasher;
+use App\Handlers\Events\BaseEventHandler;
 use App\Squeegy\PushNotification;
+use App\User;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
-class NotifyWasher
+class NotifyWasher extends BaseEventHandler
 {
     /**
      * Create the event listener.
@@ -27,32 +31,30 @@ class NotifyWasher
      */
     public function handle($event)
     {
-
+        $msg_data = [
+            'order_id' => $event->order->id,
+            'order_service' => $event->order->service->name,
+        ];
         foreach(['original_washer', 'new_washer'] as $washer_type) {
 
             switch ($washer_type) {
                 case "original_washer":
-                    $message = trans('messages.order.push_notice.change_washer.'.$washer_type, ['worker_name'=>$event->order->worker->name]);
+                    $message = trans('messages.order.push_notice.change_washer.'.$washer_type, $msg_data);
+                    $worker = User::find($event->order->getOriginal('worker_id'));
+
                     break;
                 case "new_washer":
-                    $message = trans('messages.order.push_notice.change_washer.'.$washer_type, ['worker_name'=>$event->order->worker->name]);
+                    $message = trans('messages.order.push_notice.change_washer.'.$washer_type, $msg_data);
+                    $worker = $event->order->worker;
                     break;
             }
-        }
 
-        $push_message = trans('messages.order.push_notice.change_washer.',['worker_name'=>$event->order->worker->name]);
-
-        $arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm");
-
-        if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
             try {
                 $twilio = \App::make('Aloha\Twilio\Twilio');
-                $push_message = $this->_text_msg.$push_message;
-                $twilio->message($event->order->customer->phone, $push_message);
+                $twilio->message($worker->phone, $message);
             } catch (\Exception $e) {
                 \Bugsnag::notifyException($e);
             }
         }
-        
     }
 }

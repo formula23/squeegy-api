@@ -211,6 +211,7 @@ return [
 		'CampaignMonitor' => App\Squeegy\Facades\CampaignMonitor::class,
 		'Facebook' => SammyK\LaravelFacebookSdk\FacebookFacade::class,
 		'AWS' 		=> Aws\Laravel\AwsFacade::class,
+		'Twilio' 		=> Aloha\Twilio\Twilio::class,
 	],
 
 ];
