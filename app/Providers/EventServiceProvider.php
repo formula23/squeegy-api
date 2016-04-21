@@ -77,7 +77,9 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\BadRating' => [
             'App\Handlers\Events\EmailSupport',
-        ]
+        ],
+
+//		'App\Events\'
 	];
 
 	/**

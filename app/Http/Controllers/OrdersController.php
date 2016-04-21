@@ -489,6 +489,23 @@ class OrdersController extends Controller {
         return $this->response->withItem($order, new OrderTransformer);
     }
 
+    public function changeWasher(Request $request, Order $order)
+    {
+        if( ! $order->exists) return $this->response->errorNotFound();
+
+        $new_worker_id = $request->input('worker_id');
+        $new_worker = User::workers()->find($new_worker_id);
+
+        if(empty($new_worker)) return $this->response->errorWrongArgs('Worker id invalid');
+
+        $original_worker = $order->worker;
+
+        
+
+        dd($original_worker);
+        dd($order);
+    }
+    
     /**
      * @param Order $order
      * @param $request_data
