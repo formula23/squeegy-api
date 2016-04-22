@@ -287,6 +287,9 @@ class PushNotification extends Command {
                 limit '.$this->option('take').' offset '.$this->option('skip')
         );
 
+
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm` FROM users');
+
         $send_list = array_merge($users, $default_users);
 
         $this->info("publish message: ".$this->message);
