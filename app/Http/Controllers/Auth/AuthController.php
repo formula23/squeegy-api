@@ -110,9 +110,9 @@ class AuthController extends Controller {
 
             //little hack so that our accounts don't need to be active to log into the worker app
             //currently ETA calculations are done by the active state of an account.. so we can't be active.
-            if( ! in_array($request->input('email'), ["dan@squeegy.com", "andrew@squeegy.com"])) {
-                $credentials['is_active'] = 1;
-            }
+//            if( ! in_array($request->input('email'), ["dan@squeegy.com", "andrew@squeegy.com"])) {
+//                $credentials['is_active'] = 1;
+//            }
 
             $std_user = Auth::attempt($credentials, $request->has('remember'));
         }
