@@ -3,11 +3,12 @@
 namespace App\Listeners;
 
 use App\Events\ChangeWasher;
+use App\Handlers\Events\BaseEventHandler;
 use App\Squeegy\PushNotification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class NotifyCustomer
+class NotifyCustomer extends BaseEventHandler
 {
     /**
      * Create the event listener.
