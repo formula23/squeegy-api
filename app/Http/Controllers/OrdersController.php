@@ -492,6 +492,7 @@ class OrdersController extends Controller {
 
     public function changeWasher(Request $request, Order $order)
     {
+        Log::info($order);
         if( ! $order->exists) return $this->response->errorNotFound();
 
         $order->worker_id = $request->input('worker_id');
