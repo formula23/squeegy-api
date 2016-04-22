@@ -77,6 +77,11 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\BadRating' => [
             'App\Handlers\Events\EmailSupport',
+        ],
+
+		'App\Events\ChangeWasher' => [
+            'App\Listeners\NotifyWasher',
+            'App\Listeners\NotifyCustomer',
         ]
 	];
 

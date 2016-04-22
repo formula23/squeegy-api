@@ -33,6 +33,11 @@ return [
             'start' => ':worker_name started washing your car.',
             'done' => ":worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
+            'change_washer' => [
+                'customer' => 'Your wash has been re-assigned to :worker_name.',
+                'original_washer' => 'Order#:order_id has been removed from your queue. Refresh your washer app.',
+                'new_washer' => 'You have been assigned :order_service #:order_id. Refresh your washer app.',
+            ],
         ],
         'push_notice_corp' => [
             'schedule' => "We have received your car wash order for :schedule_day.\nThank you for using Squeegy!",

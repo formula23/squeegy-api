@@ -2,6 +2,7 @@
 
 use App\Discount;
 use App\Events\BadRating;
+use App\Events\ChangeWasher;
 use App\Events\OrderAssign;
 use App\Events\OrderCancelled;
 use App\Events\OrderCancelledByWorker;
@@ -489,6 +490,18 @@ class OrdersController extends Controller {
         return $this->response->withItem($order, new OrderTransformer);
     }
 
+    public function changeWasher(Request $request, Order $order)
+    {
+        if( ! $order->exists) return $this->response->errorNotFound();
+
+        $order->worker_id = $request->input('worker_id');
+
+        Event::fire(new ChangeWasher($order));
+
+        $order->save();
+        return $this->response->withItem($order, new OrderTransformer());
+    }
+    
     /**
      * @param Order $order
      * @param $request_data

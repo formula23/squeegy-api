@@ -47,10 +47,13 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::get('orders', 'OrdersController@index');
     Route::get('orders-all-locations', 'OrdersController@all_locations');
+
     Route::post('orders', 'OrdersController@store');
 
-    Route::put('orders/{orders}', 'OrdersController@update');    
+    Route::put('orders/{orders}', 'OrdersController@update');
     Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
+
+    Route::post('orders/{orders}/change-washer', 'OrdersController@changeWasher');
 
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');
