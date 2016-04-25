@@ -36,6 +36,8 @@
 
     @foreach($washer_info['jobs']['days'] as $date=>$day)
 
+        @if($job['pay'])
+
         <tr>
             <td colspan="{{ $colspan + 1 }}"><strong>{{ $date }}</strong></td>
         </tr>
@@ -86,6 +88,8 @@
         <tr>
             <td colspan="{{ $colspan + 1 }}">&nbsp;</td>
         </tr>
+
+        @endif
 
     @endforeach
 
