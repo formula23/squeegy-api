@@ -36,8 +36,8 @@
             <td>${{ number_format($worker['jobs']['total_cog']+$worker['jobs']['total_promotional'], 2) }}</td>
             <td>${{ number_format($worker['minimum'], 2) }}</td>
             <td>${{ number_format($worker['daily_min_pay'] + $worker['total_bonus'], 2) }}</td>
-            <td>${{ number_format($worker['training'], 2) }}</td>
             <td>${{ number_format($worker['referral_program'], 2) }}</td>
+            <td>${{ number_format($worker['training'], 2) }}</td>
             <td>${{ number_format($worker['total_washer_training'], 2) }}</td>
             <td>${{ number_format($worker['rental'], 2) }}</td>
             <td>${{ number_format($worker['total_pay'], 2) }}</td>
