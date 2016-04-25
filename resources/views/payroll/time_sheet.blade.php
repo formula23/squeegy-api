@@ -71,6 +71,13 @@
             </tr>
         @endif
 
+        @if(isset($day['bonus']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Bonus:</strong></td>
+                <td>${{ number_format($day['bonus'], 2)  }}</td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
             <td>${{ number_format($day['pay'] + @$day['min'], 2)  }}</td>
