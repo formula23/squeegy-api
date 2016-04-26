@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\CMTest',
         'App\Console\Commands\ImportMixpanel',
         'App\Console\Commands\FixLastWash',
+        'App\Console\Commands\SanitizeDb',
 	];
 
 	/**

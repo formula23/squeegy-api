@@ -36,6 +36,8 @@
 
     @foreach($washer_info['jobs']['days'] as $date=>$day)
 
+        @if(isset($day['pay']) && $day['pay'] > 0)
+
         <tr>
             <td colspan="{{ $colspan + 1 }}"><strong>{{ $date }}</strong></td>
         </tr>
@@ -71,6 +73,13 @@
             </tr>
         @endif
 
+        @if(isset($day['bonus']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Bonus:</strong></td>
+                <td>${{ number_format($day['bonus'], 2)  }}</td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
             <td>${{ number_format($day['pay'] + @$day['min'], 2)  }}</td>
@@ -79,6 +88,8 @@
         <tr>
             <td colspan="{{ $colspan + 1 }}">&nbsp;</td>
         </tr>
+
+        @endif
 
     @endforeach
 
@@ -100,6 +111,13 @@
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Training:</strong></td>
             <td>${{ number_format($washer_info['training'], 2) }}</td>
+        </tr>
+    @endif
+
+    @if(@$washer_info['total_washer_training'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Washer Training:</strong></td>
+            <td>${{ number_format($washer_info['total_washer_training'], 2) }}</td>
         </tr>
     @endif
 

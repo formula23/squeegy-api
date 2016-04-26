@@ -101,27 +101,27 @@ class PushNotification extends Command {
 
         $zip_codes = explode(",", $this->option('zip_codes'));
 
-        $users_qry = \DB::table('orders')
-            ->join('users', 'orders.user_id', '=', 'users.id')
-            ->select(['users.id', 'push_token', 'target_arn_gcm'])
-//            ->where('app_version', '1.4')
-//            ->where('push_token', '!=', '')
-//            ->where('status','done')
-            ->where(function($q) use ($zip_codes) {
-                if( ! empty($zip_codes)) {
-                    foreach($zip_codes as $zip_code) {
-                        $q->orWhere('location', 'like', '%'.$zip_code.'%');
-                    }
-                }
-            })
-            ->where('location', 'not like', '%31050 Venice Blvd%')
-            ->whereNotIn('user_id', function($q) {
-                $q->select('user_id')
-                    ->from('orders')
-                    ->whereIn('status', ['enroute', 'start', 'done'])
-                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 1 WEEK)'));
-            })
-            ->groupBy('user_id');
+//        $users_qry = \DB::table('orders')
+//            ->join('users', 'orders.user_id', '=', 'users.id')
+//            ->select(['users.id', 'push_token', 'target_arn_gcm'])
+////            ->where('app_version', '1.4')
+////            ->where('push_token', '!=', '')
+////            ->where('status','done')
+//            ->where(function($q) use ($zip_codes) {
+//                if( ! empty($zip_codes)) {
+//                    foreach($zip_codes as $zip_code) {
+//                        $q->orWhere('location', 'like', '%'.$zip_code.'%');
+//                    }
+//                }
+//            })
+//            ->where('location', 'not like', '%31050 Venice Blvd%')
+//            ->whereNotIn('user_id', function($q) {
+//                $q->select('user_id')
+//                    ->from('orders')
+//                    ->whereIn('status', ['enroute', 'start', 'done'])
+//                    ->where('confirm_at', '>', \DB::raw('DATE_SUB(NOW(), INTERVAL 1 WEEK)'));
+//            })
+//            ->groupBy('user_id');
 
 //        $users = \DB::table('users')->select(['id','push_token'])->where('app_version', '1.4')->where('push_token', '!=', '')->get();
 
@@ -139,7 +139,7 @@ class PushNotification extends Command {
 //            $users_qry->take($this->option('take'));
 //        }
 
-        $users = $users_qry->get();
+//        $users = $users_qry->get();
 
 //        $users = \DB::select('SELECT users.id, users.push_token, users.`target_arn_gcm`
 //          FROM orders, users
@@ -179,11 +179,12 @@ class PushNotification extends Command {
 //                )
 //            ');
 
-        $gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58) and `status` = \'done\'');
-        foreach($gilt_ids as $gilt_id) {
-            $this->all_gilt_ids[] = $gilt_id->user_id;
-        }
+//        $gilt_ids = \DB::select('select user_id from orders where discount_id in (27,28,55,56,57,58) and `status` = \'done\'');
+//        foreach($gilt_ids as $gilt_id) {
+//            $this->all_gilt_ids[] = $gilt_id->user_id;
+//        }
 
+        /*
         $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm`
                 FROM users, `user_segments`
                 WHERE users.id = `user_segments`.user_id
@@ -286,6 +287,9 @@ class PushNotification extends Command {
                 ORDER BY last_wash_at DESC
                 limit '.$this->option('take').' offset '.$this->option('skip')
         );
+*/
+
+        $users = \DB::select('SELECT users.id, push_token, `target_arn_gcm` FROM users');
 
         $send_list = array_merge($users, $default_users);
 

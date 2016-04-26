@@ -39,7 +39,25 @@ class ChargeOrder {
 
             if($stripe_charge_id) {
                 $payments = new Payments($event->order->customer->stripe_customer_id);
-                $charge = $payments->capture($stripe_charge_id, $order->charged);
+
+                $amt_to_capture = $order->charged;
+
+                if($amt_to_capture > $transaction->amount) {
+                    $additional_charge = $order->charged - $transaction->amount;
+
+                    $amt_to_capture = $order->charged - $additional_charge;
+
+                    $charge = $payments->sale($additional_charge, $order);
+                    $order->transactions()->create([
+                        'charge_id'=>$charge->id,
+                        'amount'=>$charge->amount,
+                        'type'=>'sale',
+                        'last_four'=>$charge->source->last4,
+                        'card_type'=>$charge->source->brand,
+                    ]);
+                }
+
+                $charge = $payments->capture($stripe_charge_id, $amt_to_capture);
                 $order->transactions()->create([
                     'charge_id'=>$charge->id,
                     'amount'=>$charge->amount,
@@ -47,7 +65,7 @@ class ChargeOrder {
                     'last_four'=>$charge->source->last4,
                     'card_type'=>$charge->source->brand,
                 ]);
-                $order->charged = $order->total;
+//                $order->charged = $order->total;
             }
 
             if($order->discount_record && $order->discount_record->single_use_code) {

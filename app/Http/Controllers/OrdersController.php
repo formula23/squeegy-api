@@ -2,6 +2,7 @@
 
 use App\Discount;
 use App\Events\BadRating;
+use App\Events\ChangeWasher;
 use App\Events\OrderAssign;
 use App\Events\OrderCancelled;
 use App\Events\OrderCancelledByWorker;
@@ -95,7 +96,14 @@ class OrdersController extends Controller {
             $order_bys=explode(",", $request->input('order_by'));
             foreach($order_bys as $order_by) {
                 $order_pts = explode(":", $order_by);
-                $orders->orderBy($order_pts[0], ( ! empty($order_pts[1])?$order_pts[1]:''));
+
+                if($order_pts[0]=="confirm_at") {
+                    $orderby = \DB::raw('IF(orders.eta, confirm_at + INTERVAL orders.eta MINUTE, confirm_at)');
+                } else {
+                    $orderby = $order_pts[0];
+                }
+                
+                $orders->orderBy($orderby, ( ! empty($order_pts[1])?$order_pts[1]:''));
             }
         }
 
@@ -126,6 +134,7 @@ class OrdersController extends Controller {
             else $this->limit = $request->input('limit');
         }
 
+//dd($orders->get());
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
@@ -481,6 +490,18 @@ class OrdersController extends Controller {
         return $this->response->withItem($order, new OrderTransformer);
     }
 
+    public function changeWasher(Request $request, Order $order)
+    {
+        if( ! $order->exists) return $this->response->errorNotFound();
+
+        $order->worker_id = $request->input('worker_id');
+
+        Event::fire(new ChangeWasher($order));
+
+        $order->save();
+        return $this->response->withItem($order, new OrderTransformer());
+    }
+    
     /**
      * @param Order $order
      * @param $request_data
@@ -492,7 +513,7 @@ class OrdersController extends Controller {
             return $this->response->errorNotFound('Order not found');
         }
 
-        if (isset($request_data['promo_code'])) { //calculate promo
+        if ( ! empty($request_data['promo_code'])) { //calculate promo
 
             //check if promo code is a referral code
             if($referrer = User::where('referral_code', $request_data['promo_code'])->where('id','!=',\Auth::user()->id)->first())
