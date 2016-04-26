@@ -97,6 +97,7 @@ class PayrollGenerate extends Command {
         3198 => [ //david
             4 => 100,
             5 => 100,
+            6 => 100,
         ]
     ];
 

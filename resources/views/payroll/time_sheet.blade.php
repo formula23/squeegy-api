@@ -114,6 +114,13 @@
         </tr>
     @endif
 
+    @if(@$washer_info['total_washer_training'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Washer Training:</strong></td>
+            <td>${{ number_format($washer_info['total_washer_training'], 2) }}</td>
+        </tr>
+    @endif
+
     @if(@$washer_info['bonus'])
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Bonus:</strong></td>
