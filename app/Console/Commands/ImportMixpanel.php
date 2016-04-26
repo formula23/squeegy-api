@@ -142,8 +142,8 @@ class ImportMixpanel extends Command
             $properties["Available Credits"] = $this->user->availableCredit()/100;
             $properties["Referral Code"] = $this->user->referral_code;
 
-            $properties["Lash Wash At"] = ( ! empty($this->user->segment->last_wash_at) ? $this->user->segment->last_wash_at->toAtomString() : "");
-            $properties["Lash Wash Type"] = ( ! empty($this->user->lastWash()) ? $this->user->lastWash()->service->name : "" );
+            $properties["Last Wash At"] = ( ! empty($this->user->segment->last_wash_at) ? $this->user->segment->last_wash_at->toAtomString() : "");
+            $properties["Last Wash Type"] = ( ! empty($this->user->lastWash()) ? $this->user->lastWash()->service->name : "" );
         }
         
         return $properties;
