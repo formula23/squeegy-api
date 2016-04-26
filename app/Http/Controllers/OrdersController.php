@@ -513,7 +513,7 @@ class OrdersController extends Controller {
             return $this->response->errorNotFound('Order not found');
         }
 
-        if (isset($request_data['promo_code'])) { //calculate promo
+        if ( ! empty($request_data['promo_code'])) { //calculate promo
 
             //check if promo code is a referral code
             if($referrer = User::where('referral_code', $request_data['promo_code'])->where('id','!=',\Auth::user()->id)->first())

@@ -19,6 +19,11 @@ class PayrollGenerate extends Command {
 	 */
 	protected $name = 'payroll:generate';
 
+    protected $washer_names = [
+        1847 => 'Ricardo Alanso',
+        
+    ];
+
     protected $training = [
         6861=>93, //angel
     ];
@@ -380,8 +385,8 @@ class PayrollGenerate extends Command {
 				$message->to('dan@squeegyapp.com', 'Dan Schultz');
 				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 			} else {
-				$message->bcc('Terri@lrmcocpas.com', 'Terri Perkins');
-				$message->bcc('Anna@lrmcocpas.com', 'Anna Asuncion');
+				$message->to('Terri@lrmcocpas.com', 'Terri Perkins');
+				$message->cc('Anna@lrmcocpas.com', 'Anna Asuncion');
 				$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
 				$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
 				$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
