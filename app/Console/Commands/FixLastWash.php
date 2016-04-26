@@ -62,7 +62,7 @@ class FixLastWash extends Command
         $mixpanel_batch=[];
 
 
-        User::customers()->chunk(1000, function($users) {
+        User::customers()->chunk(1000, function($users) use (&$mixpanel_batch) {
 
             foreach($users as $user) {
 
@@ -90,7 +90,7 @@ class FixLastWash extends Command
                         '$ignore_time' => true,
                         '$ignore_alias' => true,
                         '$ip' => 0,
-                        '$unset' => ['Lash Wash At', 'Lash Wash Type'],
+//                        '$unset' => ['Lash Wash At', 'Lash Wash Type'],
                         '$set' => [
                             'Last Wash Type' => $last_wash->service->name,
                             'Last Wash At' => $last_wash->done_at->toAtomString(),
@@ -106,6 +106,8 @@ class FixLastWash extends Command
             }
 
         });
+
+        $this->info("final batch");
 
         if(count($mixpanel_batch)) {
             $this->send_batch($mixpanel_batch);
