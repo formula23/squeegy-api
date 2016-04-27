@@ -12,6 +12,7 @@ use App\ServiceCoord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Log;
 use Lang;
 
 /**
@@ -61,7 +62,7 @@ class ServicesController extends Controller {
     public function availability(Request $request)
     {
         $availability = Orders::availability($request->input('lat'), $request->input('lng'));
-dd($availability);
+
         try {
             $etalog_data = [
                 'eta' => $availability["time"],
@@ -82,7 +83,7 @@ dd($availability);
             \Bugsnag::notifyException($e);
         }
 
-        \Log::info($availability);
+        Log::info($availability);
 
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer());
     }

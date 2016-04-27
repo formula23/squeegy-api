@@ -35,6 +35,9 @@ class NotifyWasher extends BaseEventHandler
             'order_id' => $event->order->id,
             'order_service' => $event->order->service->name,
         ];
+
+        $twilio = \App::make('Aloha\Twilio\Twilio');
+
         foreach(['original_washer', 'new_washer'] as $washer_type) {
 
             switch ($washer_type) {
@@ -50,7 +53,6 @@ class NotifyWasher extends BaseEventHandler
             }
 
             try {
-                $twilio = \App::make('Aloha\Twilio\Twilio');
                 $twilio->message($worker->phone, $message);
             } catch (\Exception $e) {
                 \Bugsnag::notifyException($e);

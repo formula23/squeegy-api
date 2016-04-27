@@ -11,6 +11,7 @@ use App\Region;
 use App\User;
 use App\Zone;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
@@ -161,7 +162,7 @@ class Orders {
         }
 
         $eta = self::getLeadTime($lat, $lng);
-dd($eta);
+
         Log::info('ETA:');
         Log::info($eta);
 
@@ -272,7 +273,7 @@ dd($eta);
             Log::info('Start: '.$start);
         }
 
-
+        //get ETA for each worker
         foreach($active_workers as $active_worker) {
 
             $worker_origin = self::get_workers_location($active_worker);
@@ -285,7 +286,7 @@ dd($eta);
                 }
 
                 $byp_time = self::getTravelTime($final_location, $request_loc_pair);
-                $complete_times_by_worker_debug[$active_worker->id]['q']['bypass--'] = $final_location." --> ".$request_loc_pair." (trvl time:$byp_time)";
+                $complete_times_by_worker_debug[$active_worker->id]['q']['bypass -- final-location -> request location'] = $final_location." --> ".$request_loc_pair." (trvl time:$byp_time)";
 
                 if($byp_time <= self::$bypass_time) {
                     $bypass_job[$active_worker->id] = $byp_time;
@@ -296,7 +297,10 @@ dd($eta);
                 $travel_time = self::getTravelTime($worker_origin, $request_loc_pair);
 
                 self::$complete_times_by_worker[$active_worker->id]['q']['default_travel'] = $travel_time;
-                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel--'] = $worker_origin." --> ".$request_loc_pair." (trvl time:$travel_time)";
+                $complete_times_by_worker_debug[$active_worker->id]['q']['default_travel -- worker origin -> request location'] = $worker_origin." --> ".$request_loc_pair." (trvl time:$travel_time)";
+
+                self::$complete_times_by_worker[$active_worker->id]['last_distance'] = $travel_time;
+
                 continue;
             }
 
@@ -346,8 +350,8 @@ dd($eta);
                         $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin." --> ".$destination." (trvl time:$travel_time)";
                     }
 
-                    self::$complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
-                    $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
+                    self::$complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->etc;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->etc;
 
                 }
                 $current_location = implode(",", [$job->location['lat'], $job->location['lon']]);
@@ -357,18 +361,98 @@ dd($eta);
 
                 $travel_time = self::getTravelTime($current_location, $next_location);
 
-
                 self::$complete_times_by_worker[$active_worker->id]['q']['travel time'.$idx] = $travel_time;
-                $complete_times_by_worker_debug[$active_worker->id]['q']['travel time---'.$job->id] = $current_location." --> ".$next_location." (trvl time: $travel_time)";
+                $complete_times_by_worker_debug[$active_worker->id]['q']['travel time -- '.$job->id] = $current_location." --> ".$next_location." (trvl time: $travel_time)";
+
             }
+//            Log::info("******************************************************");
+//            Log::info(self::$complete_times_by_worker[$active_worker->id]['q']);
+//            Log::info(array_slice(self::$complete_times_by_worker[$active_worker->id]['q'], -1));
+//            Log::info(self::$complete_times_by_worker[$active_worker->id]['q']);
+
+            self::$complete_times_by_worker[$active_worker->id]['last_distance'] = call_user_func('end', array_values(self::$complete_times_by_worker[$active_worker->id]['q']));
 
         }
 
+        /**
+         * Populate an array where key is worker id and value is the travel time from their last job in Q to requested location
+         * Sum the total ETA for each washer
+         */
+        $last_distance_by_worker=[];
         foreach(self::$complete_times_by_worker as $worker_id=>$q) {
+            $last_distance_by_worker[$worker_id] = $q['last_distance'];
             self::$complete_times_by_worker[$worker_id]['eta'] = array_sum($q['q']);
         }
 
+        if(env('ETA_LOGGING')) {
+            Log::info("Requested location: $request_loc_pair ".(self::$postal_code));
+            Log::info('Complete times by worker');
+            Log::info(print_r(self::$complete_times_by_worker,1));
+
+            Log::info('Complete times by worker DEBUG');
+            Log::info(print_r($complete_times_by_worker_debug,1));
+
+            Log::info('Bypass jobs');
+            Log::info(print_r($bypass_job,1));
+
+            $end = microtime(true);
+            Log::info('End time: '.$end);
+            Log::info('Execution time: '.($end - $start));
+
+            Log::info('****************************** /ETA LOGGING *****************************');
+        }
+
         $next_available = [];
+
+        /**
+         * Assign the washer to a customer regardless of time if the washer does not have any other orders in his Q
+         * Also check that new request is less than 0.5 miles to last order.
+         * Only assign to washer if washer is still accepting jobs.
+         */
+        if(Auth::user() && $users_last_order = Auth::user()->open_orders()->last()) {
+
+            Log::info($users_last_order);
+            Log::info($request_loc_pair);
+            $dist = self::get_distance(static::get_order_coords($users_last_order), $request_loc_pair);
+
+            Log::info("Distance to next job: ".$dist);
+
+            if($dist <= 0.5) {
+                if( ! $users_last_order->worker->active_jobs($users_last_order)->count() && !empty(self::$complete_times_by_worker[$users_last_order->worker_id])) {
+                    $next_available['time'] = self::$complete_times_by_worker[$users_last_order->worker_id]['eta'];
+                    $next_available['worker_id'] = $users_last_order->worker_id;
+                    Log::info("Same User -- Assign to same washer....");
+                    return $next_available;
+                }
+            }
+        }
+
+
+        /**
+         * Go through the list of washers, sorted by proximity. Assign job to washer with less than 60 total ETA
+         * and has less then 30 mins in travel time
+         */
+
+        asort($last_distance_by_worker);
+        foreach($last_distance_by_worker as $worker_id=>$last_distance) {
+            Log::info("Worker id: ".$worker_id." - ".self::$complete_times_by_worker[$worker_id]['eta']." - last dist:".$last_distance);
+            if(self::$complete_times_by_worker[$worker_id]['eta'] > 60) continue;
+            if($last_distance > 20) continue;
+
+            if(empty($next_available)) {
+                $next_available['time'] = self::$complete_times_by_worker[$worker_id]['eta'];
+                $next_available['worker_id'] = $worker_id;
+            } else if(self::$complete_times_by_worker[$worker_id]['eta'] < @(int)$next_available['time']) {
+                $next_available['time'] = self::$complete_times_by_worker[$worker_id]['eta'];
+                $next_available['worker_id'] = $worker_id;
+            }
+        }
+
+        if( ! empty($next_available)) {
+            Log::info('Assign to closest washer even if ETA is greater than some who is further');
+            return $next_available;
+        }
+
         $tmp_bypass_job = [];
 
         if(count($bypass_job)) {
@@ -376,6 +460,10 @@ dd($eta);
                 @$tmp_bypass_job[$worker_id] = self::$complete_times_by_worker[$worker_id]['eta'];
             }
             asort($tmp_bypass_job);
+
+            Log::info('bypass job actual eta');
+            Log::info(print_r($tmp_bypass_job,1));
+
             $worker_id = key($tmp_bypass_job);
             $next_available['time'] = self::$complete_times_by_worker[$worker_id]['eta'];
             $next_available['worker_id'] = $worker_id;
@@ -391,30 +479,6 @@ dd($eta);
                     $next_available['worker_id'] = $worker_id;
                 }
             }
-        }
-
-        if(env('ETA_LOGGING')) {
-            Log::info("Requested location: $request_loc_pair ".(self::$postal_code));
-            Log::info('Complete times by worker');
-            Log::info(print_r(self::$complete_times_by_worker,1));
-
-            Log::info('Complete times by worker DEBUG');
-            Log::info(print_r($complete_times_by_worker_debug,1));
-
-            Log::info('Bypass jobs');
-            Log::info(print_r($bypass_job,1));
-
-            Log::info('bypass job actual eta');
-            Log::info(print_r($tmp_bypass_job,1));
-
-            Log::info('next available');
-            Log::info(print_r($next_available,1));
-
-            $end = microtime(true);
-            Log::info('End time: '.$end);
-            Log::info('Execution time: '.($end - $start));
-
-            Log::info('****************************** /ETA LOGGING *****************************');
         }
 
         return $next_available;
@@ -486,7 +550,6 @@ dd($eta);
 
     public static function getTravelTime($origin, $destination, $current_route=false)
     {
-
         $miles = self::get_distance($origin, $destination);
 
         switch(true) {
@@ -567,7 +630,7 @@ dd($eta);
         $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
         $dist = acos($dist);
         $dist = rad2deg($dist);
-        $miles = round($dist * 60 * 1.1515);
+        $miles = ($dist * 69.05482);
 
         return ($miles * 1.3); // increase miles by 30% to account for turns a 'real' driving direction
     }
@@ -575,9 +638,14 @@ dd($eta);
     public static function get_location($lat, $lng)
     {
         return implode(",", [
-            'lat'=>round((float)$lat, 2),
-            'lng'=>round((float)$lng, 2),
+            'lat'=>round((float)$lat, 3),
+            'lng'=>round((float)$lng, 3),
         ]);
+    }
+
+    public static function get_order_coords($order)
+    {
+        return static::get_location($order->location['lat'], $order->location['lon']);
     }
 
     public static function geocode($latlng)

@@ -121,6 +121,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Order', 'worker_id');
     }
 
+    public function active_jobs($after_job=null)
+    {
+        $q = $this->jobs()->whereIn('status', ['assign','enroute','start'])->orderBy('confirm_at');
+        
+        if($after_job) {
+            $q->where('confirm_at', '>', $after_job->confirm_at)
+                ->where('orders.id', '!=', $after_job->id);
+        }
+        return $q;
+    }
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -372,4 +383,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return array_pop($nameParts);
     }
 
+    
+    public function open_orders()
+    {
+        return $this->orders()
+            ->whereIn('status', ['assign','enroute','start'])
+            ->whereDate('confirm_at', '=', Carbon::today()->toDateString())
+            ->orderBy('confirm_at')
+            ->get();
+    }
+    
 }

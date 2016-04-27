@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\User;
 use Illuminate\Console\Command;
 
 class SanitizeDb extends Command
@@ -37,11 +38,19 @@ class SanitizeDb extends Command
      */
     public function handle()
     {
+        if(env('APP_ENV')=='production') {
+            $this->info('Not available in production');
+            return;
+        }
+
         try {
-            \DB::raw("UPDATE users SET `push_token` = 'arn:aws:sns:us-east-1:171738602425:endpoint/APNS_SANDBOX/Squeegy/5212b7f5-0d68-34e4-943a-ea4014afb885', `phone` = '+13106004938', `stripe_customer_id` = 'cus_7fTOZi8a6nwkNE'");
+            \DB::table('users')->update([
+                'push_token'=>'arn:aws:sns:us-east-1:171738602425:endpoint/APNS_SANDBOX/Squeegy/5212b7f5-0d68-34e4-943a-ea4014afb885',
+                'phone'=>'+13106004938',
+                'stripe_customer_id'=>'cus_7fTOZi8a6nwkNE',
+            ]);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
-
     }
 }
