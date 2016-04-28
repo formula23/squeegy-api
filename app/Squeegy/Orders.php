@@ -436,7 +436,7 @@ class Orders {
         asort($last_distance_by_worker);
         foreach($last_distance_by_worker as $worker_id=>$last_distance) {
             Log::info("Worker id: ".$worker_id." - ".self::$complete_times_by_worker[$worker_id]['eta']." - last dist:".$last_distance);
-            if(self::$complete_times_by_worker[$worker_id]['eta'] > 60) continue;
+            if(self::$complete_times_by_worker[$worker_id]['eta'] > 75) continue;
             if($last_distance > 20) continue;
 
             if(empty($next_available)) {
