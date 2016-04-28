@@ -132,6 +132,14 @@ class Order extends Model {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notifications()
+    {
+        return $this->hasMany('App\NotificationLog');
+    }
+    
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function customer()
@@ -178,7 +186,7 @@ class Order extends Model {
     {
         return $this->belongsTo('App\Discount', 'discount_id');
     }
-
+    
     /**
      * @return null|string
      */
