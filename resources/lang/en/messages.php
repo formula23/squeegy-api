@@ -30,7 +30,7 @@ return [
             'schedule_assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
-            'start' => ':worker_name started washing your car.',
+            'start' => ':worker_name started washing your car and should be complete by around :etc_time',
             'done' => ":worker_name is done washing your car. We have charged your credit card in the amount of $:charge_amount and emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
             'change_washer' => [
@@ -38,7 +38,7 @@ return [
                 'original_washer' => 'Order#:order_id has been removed from your queue. Refresh your washer app.',
                 'new_washer' => ':order_service #:order_id has been assigned to you. Refresh your washer app.',
             ],
-            'review_wash' => 'Hi :customer_name, :washer_name will be done washing your car in about 10 minutes. If you would like to review, please go outside and meet your washer.',
+            'review_wash' => 'Hi :customer_first_name, :washer_name will be done washing your car in about 10 minutes. If you would like to review, please go outside and meet your washer.',
             'arriving_soon' => 'Your washer is arriving soon...',
         ],
         'push_notice_corp' => [
