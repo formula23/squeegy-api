@@ -189,6 +189,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notifications()
+    {
+        return $this->hasMany('App\NotificationLog');
+    }
+
+    /**
      * @param $query
      * @return mixed
      */

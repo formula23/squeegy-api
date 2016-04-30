@@ -23,11 +23,14 @@ class NotifyCustomerDone extends BaseEventHandler {
 	 */
 	public function handle(OrderDone $event)
 	{
-        $push_message = trans('messages.order.push_notice.done',['worker_name'=>$event->order->worker->name, 'charge_amount'=>number_format($event->order->charged/100, 2)]);
+        $push_message = trans('messages.order.push_notice.done',[
+			'worker_name'=>$event->order->worker->first_name(),
+			'charge_amount'=>number_format($event->order->charged/100, 2)
+		]);
 
 		if($event->order->schedule && $event->order->schedule->type=='subscription') {
 			$push_message = trans('messages.order.push_notice_subscription.done', [
-				'worker_name'=>$event->order->worker->name,
+				'worker_name'=>$event->order->worker->first_name(),
 			]);
 		}
 

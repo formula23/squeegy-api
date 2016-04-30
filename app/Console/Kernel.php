@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\FixLastWash',
         'App\Console\Commands\SanitizeDb',
         'App\Console\Commands\ChargeOrder',
+        'App\Console\Commands\ReviewWashNotification',
 	];
 
 	/**
@@ -38,6 +39,7 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule)
 	{
         $schedule->command('db:backup')->cron('* */6 * * *');
+		$schedule->command('order:review_wash_notice')->everyMinute();
 	}
 
 }
