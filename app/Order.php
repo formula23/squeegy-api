@@ -134,7 +134,7 @@ class Order extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function notifications()
+    public function notification_logs()
     {
         return $this->hasMany('App\NotificationLog');
     }

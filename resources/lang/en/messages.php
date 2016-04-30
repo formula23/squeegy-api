@@ -36,8 +36,10 @@ return [
             'change_washer' => [
                 'customer' => 'Your wash has been re-assigned to :worker_name.',
                 'original_washer' => 'Order#:order_id has been removed from your queue. Refresh your washer app.',
-                'new_washer' => 'You have been assigned :order_service #:order_id. Refresh your washer app.',
+                'new_washer' => ':order_service #:order_id has been assigned to you. Refresh your washer app.',
             ],
+            'review_wash' => 'Hi :customer_name, :washer_name will be done washing your car in about 10 minutes. If you would like to review, please go outside and meet your washer.',
+            'arriving_soon' => 'Your washer is arriving soon...',
         ],
         'push_notice_corp' => [
             'schedule' => "We have received your car wash order for :schedule_day.\nThank you for using Squeegy!",

@@ -7,15 +7,11 @@ use App\Order;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class ChangeWasher extends Event
+class WashReview extends Event
 {
     use SerializesModels;
 
     public $order;
-
-    public $message;
-
-    public $message_key = "messages.order.push_notice.change_washer.customer";
     
     /**
      * Create a new event instance.
@@ -25,9 +21,6 @@ class ChangeWasher extends Event
     public function __construct(Order $order)
     {
         $this->order = $order;
-
-        $this->message = trans($this->message_key,['worker_name'=>$order->worker->name]);
-        
     }
 
     /**

@@ -80,9 +80,13 @@ class EventServiceProvider extends ServiceProvider {
         ],
 
 		'App\Events\ChangeWasher' => [
-            'App\Listeners\NotifyWasher',
-            'App\Listeners\NotifyCustomer',
-        ]
+            'App\Listeners\NotifyWasherChange',
+            'App\Listeners\NotifyCustomerChange',
+        ],
+
+        'App\Events\WashReview' => [
+            'App\Listeners\NotifyCustomerReview',
+        ],
 	];
 
 	/**

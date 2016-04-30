@@ -21,7 +21,7 @@ class CreateNotificationLogsTable extends Migration
             $table->integer('order_id')->unsigned()->nullable()->index();
             $table->foreign('order_id')->references('id')->on('orders');
             $table->string('message');
-            $table->enum('delivery_method', ['push','sms'], 'push');
+            $table->enum('delivery_method', ['push','sms','email'], 'push');
             $table->timestamps();
         });
     }
