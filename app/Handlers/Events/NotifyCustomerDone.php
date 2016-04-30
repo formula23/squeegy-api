@@ -27,7 +27,7 @@ class NotifyCustomerDone extends BaseEventHandler {
 
 		if($event->order->schedule && $event->order->schedule->type=='subscription') {
 			$push_message = trans('messages.order.push_notice_subscription.done', [
-				'worker_name'=>$event->order->worker->name,
+				'worker_name'=>$event->order->worker->first_name(),
 			]);
 		}
 

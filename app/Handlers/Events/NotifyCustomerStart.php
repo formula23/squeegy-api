@@ -28,7 +28,7 @@ class NotifyCustomerStart extends BaseEventHandler {
 		}
 
         $push_message = trans('messages.order.push_notice.start',[
-			'worker_name'=>$event->order->worker->name,
+			'worker_name'=>$event->order->worker->first_name(),
 			'etc_time' => real_time($event->order->start_at->addMinutes($event->order->etc)),
 		]);
 

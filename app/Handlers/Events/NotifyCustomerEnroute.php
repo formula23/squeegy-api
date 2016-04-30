@@ -38,13 +38,13 @@ class NotifyCustomerEnroute extends BaseEventHandler {
 		}
 
         $push_message = trans('messages.order.push_notice.'.$msg_key, [
-            'worker_name'=>$event->order->worker->name,
+            'worker_name'=>$event->order->worker->first_name(),
             'arrival_time'=>$arrival_time,
         ]);
 
 		if($event->order->location['zip'] == '90015') {
 			$push_message = trans('messages.order.push_notice_corp.enroute', [
-				'worker_name'=>$event->order->worker->name,
+				'worker_name'=>$event->order->worker->first_name(),
 				'interior'=>$event->order->service_id == 2 ? "Please open your vehicle if it is not already." : "",
 			]);
 		}
