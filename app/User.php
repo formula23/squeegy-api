@@ -376,10 +376,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function first_name()
     {
-        if(!$this->name) return '';
+        if( ! $this->name) return '';
         $nameParts = explode(' ', $this->name);
         array_filter($nameParts);
-        $lastName = array_pop($nameParts); //remove last name
+        if(count($nameParts)>1) $lastName = array_pop($nameParts); //remove last name
         return implode(' ', $nameParts);
     }
 
@@ -388,7 +388,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         if(!$this->name) return '';
         $nameParts = explode(' ', $this->name);
         array_filter($nameParts);
-        return array_pop($nameParts);
+        if(count($nameParts)>1) return array_pop($nameParts);
+        else return '';
     }
 
     
