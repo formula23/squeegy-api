@@ -299,6 +299,7 @@ class PayrollGenerate extends Command {
                 if(isset($worker_min_details[$details['date']->dayOfWeek]) && $details['pay'] < $worker_min_details[$details['date']->dayOfWeek]) {
                     $details['min'] = $worker_min_details[$details['date']->dayOfWeek] - $details['pay'];
 
+                    if($details['pay'] === 0) $details['pay'] = $details['min'];
                     $orders_by_worker[$worker_id]['total_pay'] += $details['min'];
                     @$orders_by_worker[$worker_id]['daily_min_pay'] += $details['min'];
                 }
@@ -337,7 +338,7 @@ class PayrollGenerate extends Command {
 
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[6349]);
+        dd($orders_by_worker[6861]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
