@@ -25,13 +25,21 @@ class PayrollGenerate extends Command {
     ];
 
     protected $training = [
-        6861=>93, //angel
+//        6861=>93, //angel
+        7188 => 288, //Santos
+        7146 => 102, //Leonel
+        7269 => 96, //Salvador
+    ];
+
+    protected $ignore_midweek_special = [
+        7188, //santos
+        7269, //salvador
     ];
 
     protected $bonus = [
-        5482 => [ // Juan L
-            3 => 50,
-        ]
+//        5482 => [ // Juan L
+//            3 => 50,
+//        ]
     ];
 
     protected $ignore_ids =[
@@ -63,7 +71,7 @@ class PayrollGenerate extends Command {
 
     protected $no_kit_rental = [
         6349, //Melvyn
-        2882, //Juan
+        2882, //Juan lopez
     ];
 
     protected $min_weekly_worker_id = [
@@ -77,32 +85,44 @@ class PayrollGenerate extends Command {
             1=>100,
             2=>100,
             3=>100,
-            4=>200,
+            4=>100,
             5=>100,
             6=>100,
 		],
         1847 => [ //ricardo
             0 => 150,
-            4 => 200,
+            4 => 100,
+            5 => 100,
+            6 => 100,
         ],
-        5482 => [ //Juan L
-            4 => 150,
+        2882 => [ // juan lopez
+            0 => 140
         ],
-        2900 => [ //Victor
-            4 => 200,
-            6 => 180,
-        ],
+//        5482 => [ //Juan L
+//            4 => 150,
+//        ],
+//        2900 => [ //Victor
+//            4 => 200,
+//            6 => 180,
+//        ],
         2149 => [ //daniel
-            4 => 200,
-            6 => 150,
-        ]
+            0 => 150,
+        ],
+        6349 => [ //Melvyn
+            0 => 100,
+            1 => 120,
+        ],
+        6861 => [ //Angel
+            4 => 100,
+        ],
 	];
 
     protected $washer_training = [
         3198 => [ //david
-            4 => 100,
-            5 => 100,
-            6 => 100,
+            2 => 100, // salvador
+        ],
+        2882 => [ //juan lopez
+            4 => 100, //edgar
         ]
     ];
 
@@ -201,9 +221,12 @@ class PayrollGenerate extends Command {
             $job['etc'] = $order->etc;
             $job['rating'] = $order->rating;
 
-            if ($order->price < $this->service_price[$order->service_id]) {
-                $order->price = $this->service_price[$order->service_id] + $surcharge_amt;
+            if( ! in_array($order->worker_id, $this->ignore_midweek_special)) {
+                if ($order->price < $this->service_price[$order->service_id]) {
+                    $order->price = $this->service_price[$order->service_id] + $surcharge_amt;
+                }
             }
+
 
             $job['price'] = $order->price / 100;
             $job['squeegy'] = ($order->price * $this->commission_pct['squeegy']) / 100;
@@ -228,7 +251,8 @@ class PayrollGenerate extends Command {
             $job['rev'] = $job['rev'] / 100;
 
             @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
-            $job['pay'] = (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2);
+
+            $job['pay'] = ( $order->rating >= 3 || $order->rating === null ? (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2) : 0 );
 
 //            if (in_array($order->worker_id, $this->commission_userids)) {
 //                @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
@@ -313,7 +337,7 @@ class PayrollGenerate extends Command {
 
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[1847]);
+//        dd($orders_by_worker[6349]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
