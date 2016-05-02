@@ -21,7 +21,17 @@ class PayrollGenerate extends Command {
 
     protected $washer_names = [
         1847 => 'Ricardo Alanso',
-        
+        2149 => 'Daniel Garcia',
+        2882 => 'Juan Lopez',
+        2900 => 'Victor Rodriguez',
+        3198 => 'David Montano',
+        5482 => 'Juan Lara',
+        6349 => 'Melvyn Miller',
+        6861 => 'Angel Rodriguez',
+        7146 => 'Leonel Yanez',
+        7188 => 'Santos Aguilar',
+        7269 => 'Salvador Carcel',
+
     ];
 
     protected $training = [
@@ -72,6 +82,8 @@ class PayrollGenerate extends Command {
     protected $no_kit_rental = [
         6349, //Melvyn
         2882, //Juan lopez
+        7146, //Leo
+        5482, //juan lara
     ];
 
     protected $min_weekly_worker_id = [
@@ -84,7 +96,7 @@ class PayrollGenerate extends Command {
 		3198 => [ //david
             1=>100,
             2=>100,
-            3=>100,
+//            3=>100, //david sick
             4=>100,
             5=>100,
             6=>100,
@@ -182,7 +194,7 @@ class PayrollGenerate extends Command {
             if (in_array($order->worker->id, $this->ignore_ids)) continue;
 
             @$orders_by_worker[$order->worker->id]['job_count']++;
-            @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $order->worker->name, 'email' => $order->worker->email];
+            @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $this->washer_names[$order->worker_id], 'email' => $order->worker->email];
             @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : 25);
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['minimum'] = 0;
