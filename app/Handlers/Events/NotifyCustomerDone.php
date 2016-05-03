@@ -31,9 +31,11 @@ class NotifyCustomerDone extends BaseEventHandler {
 	public function handle(OrderDone $event)
 	{
 
+        $message_partial = ($event->order->charged ? trans('messages.order.card_charged_insert', ['charge_amount'=>number_format($event->order->charged/100, 2)]) : '' );
+
         $this->message = trans($this->message_key,[
 			'worker_name'=>$event->order->worker->first_name(),
-			'charge_amount'=>number_format($event->order->charged/100, 2)
+            'card_charged_insert'=>$message_partial,
 		]);
 
 		if($event->order->schedule && $event->order->schedule->type=='subscription') {
