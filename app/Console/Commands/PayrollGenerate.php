@@ -174,7 +174,7 @@ class PayrollGenerate extends Command {
             ->with('schedule')
 			->where('status', 'done')
 			->whereRaw('WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
-//            ->where('worker_id', 6861)
+            ->where('worker_id', 6861)
 			->orderBy('done_at')->get();
 
         $start_day = Carbon::parse('2 sundays ago');
@@ -238,7 +238,6 @@ class PayrollGenerate extends Command {
                     $order->price = $this->service_price[$order->service_id] + $surcharge_amt;
                 }
             }
-
 
             $job['price'] = $order->price / 100;
             $job['squeegy'] = ($order->price * $this->commission_pct['squeegy']) / 100;
@@ -310,8 +309,7 @@ class PayrollGenerate extends Command {
 //                if(in_array($details['date']->dayOfWeek, $worker_min_details['days']) && $details['pay'] < $worker_min_details['min']) {
                 if(isset($worker_min_details[$details['date']->dayOfWeek]) && $details['pay'] < $worker_min_details[$details['date']->dayOfWeek]) {
                     $details['min'] = $worker_min_details[$details['date']->dayOfWeek] - $details['pay'];
-
-                    if($details['pay'] === 0) $details['pay'] = $details['min'];
+//                    if($details['pay'] === 0) $details['pay'] = $details['min'];
                     $orders_by_worker[$worker_id]['total_pay'] += $details['min'];
                     @$orders_by_worker[$worker_id]['daily_min_pay'] += $details['min'];
                 }
