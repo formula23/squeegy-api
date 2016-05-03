@@ -174,7 +174,7 @@ class PayrollGenerate extends Command {
             ->with('schedule')
 			->where('status', 'done')
 			->whereRaw('WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
-            ->where('worker_id', 6861)
+//            ->where('worker_id', 6861)
 			->orderBy('done_at')->get();
 
         $start_day = Carbon::parse('2 sundays ago');
