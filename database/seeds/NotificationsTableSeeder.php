@@ -38,6 +38,54 @@ class NotificationsTableSeeder extends Seeder
             'name'=>'Change Washer - Customer',
             'key'=>'messages.order.push_notice.change_washer.customer',
         ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Assign',
+            'key'=>'messages.order.push_notice.assign',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Schedule Assign',
+            'key'=>'messages.order.push_notice.schedule_assign',
+        ]);
+
+
+        Notification::create([
+            'name'=>'Notify Corp Customer - Assign',
+            'key'=>'messages.order.push_notice_corp.assign',
+        ]);
+
+
+        Notification::create([
+            'name'=>'Notify Customer - Enroute',
+            'key'=>'messages.order.push_notice.enroute',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Enroute Manual',
+            'key'=>'messages.order.push_notice.enroute_manual',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Corp Customer - Enroute',
+            'key'=>'messages.order.push_notice_corp.enroute',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Start',
+            'key'=>'messages.order.push_notice.start',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Done',
+            'key'=>'messages.order.push_notice.done',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Corp Customer - Cancel',
+            'key'=>'messages.order.push_notice.cancel',
+        ]);
+
         
         DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // disable foreign key constraints
     }

@@ -1,18 +1,24 @@
 <?php namespace App\Handlers\Events;
 
+use Aloha\Twilio\Twilio;
 use App\Events\OrderDone;
 use App\Squeegy\PushNotification;
 
 class NotifyCustomerDone extends BaseEventHandler {
 
-	/**
-	 * Create the event handler.
-	 *
-	 * @return void
-	 */
-	public function __construct()
+	public $twilio;
+	public $delivery_method='push';
+	public $message;
+	public $message_key = 'messages.order.push_notice.done';
+
+    /**
+     * Create the event handler.
+     *
+     * @param Twilio $twilio
+     */
+	public function __construct(Twilio $twilio)
 	{
-		//
+		$this->twilio = $twilio;
 	}
 
 	/**
@@ -23,28 +29,45 @@ class NotifyCustomerDone extends BaseEventHandler {
 	 */
 	public function handle(OrderDone $event)
 	{
-        $push_message = trans('messages.order.push_notice.done',[
-			'worker_name'=>$event->order->worker->name,
+
+        $this->message = trans($this->message_key,[
+			'worker_name'=>$event->order->worker->first_name(),
 			'charge_amount'=>number_format($event->order->charged/100, 2)
 		]);
 
 		if($event->order->schedule && $event->order->schedule->type=='subscription') {
-			$push_message = trans('messages.order.push_notice_subscription.done', [
-				'worker_name'=>$event->order->worker->name,
+			$this->message = trans($this->message_key, [
+				'worker_name'=>$event->order->worker->first_name(),
 			]);
 		}
 
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 
-        if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
-			try {
-				$twilio = \App::make('Aloha\Twilio\Twilio');
-				$push_message = $this->_text_msg.$push_message;
-				$twilio->message($event->order->customer->phone, $push_message);
-			} catch(\Exception $e) {
-				\Bugsnag::notifyException($e);
-			}
-		}
+        $notification = Notification::where('key', $this->message_key)->first();
+
+        if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
+
+            if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $this->message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
+                try {
+                    $this->message = $this->_text_msg . $this->message;
+                    $this->twilio->message($event->order->customer->phone, $this->message);
+                } catch (\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                    return;
+                }
+            }
+
+            try {
+                $event->order->notification_logs()->create([
+                    'notification_id'=>$notification->id,
+                    'user_id'=>$event->order->user_id,
+                    'message'=>$this->message,
+                    'delivery_method'=>$this->delivery_method,
+                ]);
+            } catch (\Exception $e) {
+                \Bugsnag::notifyException($e);
+            }
+        }
     }
 
 }

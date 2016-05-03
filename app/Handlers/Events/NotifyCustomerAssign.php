@@ -1,19 +1,26 @@
 <?php namespace App\Handlers\Events;
 
+use Aloha\Twilio\Twilio;
 use App\Events\OrderAssign;
 
 use App\Squeegy\PushNotification;
+use Illuminate\Translation\Translator;
 
 class NotifyCustomerAssign extends BaseEventHandler {
 
-	/**
-	 * Create the event handler.
-	 *
-	 * @return void
-	 */
-	public function __construct()
+    public $twilio;
+    public $delivery_method='push';
+    public $message;
+    public $message_key = 'messages.order.push_notice.assign';
+
+    /**
+     * Create the event handler.
+     *
+     * @param Twilio $twilio
+     */
+	public function __construct(Twilio $twilio)
 	{
-		//
+		$this->twilio = $twilio;
 	}
 
 	/**
@@ -24,14 +31,15 @@ class NotifyCustomerAssign extends BaseEventHandler {
 	 */
 	public function handle($event)
 	{
-		$push_message = trans('messages.order.push_notice.assign', [
-			'worker_name'=>$event->order->worker->name,
+        $this->message = trans($this->message_key, [
+			'worker_name'=>$event->order->worker->first_name(),
 			'window_time'=>$event->order->arrival_eta(),
 		]);
 
         if($event->order->schedule && $event->order->schedule->window_open) {
-            $push_message = trans('messages.order.push_notice.schedule_assign', [
-                'worker_name'=>$event->order->worker->name,
+            $this->message_key = 'messages.order.push_notice.schedule_assign';
+            $this->message = trans($this->message_key, [
+                'worker_name'=>$event->order->worker->first_name(),
                 'window_time'=>$event->order->scheduled_time(),
             ]);
         }
@@ -45,23 +53,42 @@ class NotifyCustomerAssign extends BaseEventHandler {
         }
 
 		if($event->order->location['zip'] == '90015') {
-			$push_message = trans('messages.order.push_notice_corp.assign', [
-				'worker_name'=>$event->order->worker->name,
+            $this->message_key = 'messages.order.push_notice_corp.assign';
+            $this->message = trans($this->message_key, [
+				'worker_name'=>$event->order->worker->first_name(),
 			]);
-		}
+        }
 
-		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+        $notification = Notification::where('key', $this->message_key)->first();
+        
+        if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
 
-		if( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
-			//send sms to customer
-			try {
-				$twilio = \App::make('Aloha\Twilio\Twilio');
-				$push_message = $this->_text_msg.$push_message;
-				$twilio->message($event->order->customer->phone, $push_message);
-			} catch(\Exception $e) {
-				\Bugsnag::notifyException($e);
-			}
-		}
+            $arn_endpoint = ($event->order->push_platform == "apns" ? "push_token" : "target_arn_gcm");
+
+            if (!PushNotification::send($event->order->customer->{$arn_endpoint}, $this->message, 1, $event->order->id, $event->order->push_platform, 'Order Status')) {
+                //send sms to customer
+                try {
+                    $this->message = $this->_text_msg . $this->message;
+                    $this->twilio->message($event->order->customer->phone, $this->message);
+                    $this->delivery_method = 'sms';
+                } catch (\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                    return;
+                }
+            }
+
+            try {
+                $event->order->notification_logs()->create([
+                    'notification_id' => $notification->id,
+                    'user_id' => $event->order->user_id,
+                    'message' => $this->message,
+                    'delivery_method' => $this->delivery_method,
+                ]);
+            } catch (\Exception $e) {
+                \Bugsnag::notifyException($e);
+            }
+        }
+		
 	}
 
 }

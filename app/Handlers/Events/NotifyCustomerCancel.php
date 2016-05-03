@@ -5,6 +5,11 @@ use App\Squeegy\PushNotification;
 
 class NotifyCustomerCancel extends BaseEventHandler {
 
+	public $twilio;
+	public $delivery_method='push';
+	public $message;
+	public $message_key = 'messages.order.push_notice.cancel';
+	
 	/**
 	 * Create the event handler.
 	 *
@@ -23,19 +28,35 @@ class NotifyCustomerCancel extends BaseEventHandler {
 	 */
 	public function handle(OrderCancelledByWorker $event)
 	{
-        $push_message = trans('messages.order.push_notice.cancel');
+        $this->message = trans($this->message_key);
 
-		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
+        $arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 
-		if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $push_message, 1, $event->order->id, $event->order->push_platform, 'Order Info')) {
-			try {
-				$twilio = \App::make('Aloha\Twilio\Twilio');
-				$push_message = $this->_text_msg.$push_message;
-				$twilio->message($event->order->customer->phone, $push_message);
-			} catch(\Exception $e) {
-				\Bugsnag::notifyException($e);
-			}
-		}
+        $notification = Notification::where('key', $this->message_key)->first();
+        
+        if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
+
+            if (!PushNotification::send($event->order->customer->{$arn_endpoint}, $this->message, 1, $event->order->id, $event->order->push_platform, 'Order Info')) {
+                try {
+
+                    $this->message = $this->_text_msg . $this->message;
+                    $this->twilio->message($event->order->customer->phone, $this->message);
+                } catch (\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                    return;
+                }
+            }
+
+            try {
+                $event->order->notification_logs()->create([
+                    'notification_id' => $notification->id,
+                    'user_id' => $event->order->user_id,
+                    'message' => $this->message,
+                    'delivery_method' => $this->delivery_method,
+                ]);
+            } catch (\Exception $e) {
+                \Bugsnag::notifyException($e);
+            }
+        }
 	}
-
 }

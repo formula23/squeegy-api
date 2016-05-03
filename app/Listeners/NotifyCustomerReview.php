@@ -38,7 +38,7 @@ class NotifyCustomerReview extends BaseEventHandler
 
         $this->message = trans($this->message_key, [
             'customer_first_name'=>$event->order->customer->first_name(),
-            'washer_name'=>$event->order->worker->name,
+            'washer_name'=>$event->order->worker->first_name(),
         ]);
 
         $notification = Notification::where('key', $this->message_key)->first();

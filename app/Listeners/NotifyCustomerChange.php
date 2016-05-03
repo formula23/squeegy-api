@@ -35,7 +35,7 @@ class NotifyCustomerChange extends BaseEventHandler
     public function handle($event)
     {
         $this->message = trans($this->message_key, [
-            'worker_name'=>$event->order->worker->name]
+            'worker_name'=>$event->order->worker->first_name()]
         );
         
         $arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm");

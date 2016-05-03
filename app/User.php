@@ -65,6 +65,23 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public $device_orders = null;
 
     /**
+     * @param $value
+     */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = trim($value);
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function getNameAttribute($value)
+    {
+        return trim($value);
+    }
+
+    /**
      * A user can have many vehicles
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -108,6 +125,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return ($avail_credits < 0 ? 0 : $avail_credits );
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function eta_logs()
     {
         return $this->hasMany('App\EtaLog');
@@ -121,6 +141,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Order', 'worker_id');
     }
 
+    /**
+     * @param null $after_job
+     * @return mixed
+     */
     public function active_jobs($after_job=null)
     {
         $q = $this->jobs()->whereIn('status', ['assign','enroute','start'])->orderBy('confirm_at');
@@ -210,6 +234,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             ->orderBy('done_at');
     }
 
+    /**
+     * @return mixed
+     */
     public function lastWash()
     {
         return $this->orders()->where('status','done')->orderBy('done_at', 'desc')->first();
@@ -256,6 +283,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         });
     }
 
+    /**
+     * @param $query
+     * @param $postal_code
+     * @return mixed
+     */
     public function scopeActiveWashers($query, $postal_code)
     {
         $query = self::scopeWorkers($query);
@@ -336,11 +368,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
 
+    /**
+     * @return bool
+     */
     public function is_anon()
     {
         return (bool)(preg_match('/squeegyapp-tmp.com$/', $this->email) || $this->tmp_fb);
     }
 
+
+    /**
+     * @return string
+     */
     public function device()
     {
         $device = 'iOS';
@@ -349,6 +388,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     }
 
+
+    /**
+     * @return bool
+     */
     public function is_advocate()
     {
         return (($this->segment &&
@@ -357,6 +400,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
                     $this->completedPaidOrders()->count() >= 3) ? true : false );
     }
 
+    /**
+     * @param $fb_user
+     */
     public function updateFbFields($fb_user)
     {
         $this->facebook_id = $fb_user->getId();
