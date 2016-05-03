@@ -35,7 +35,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $training = [
-//        6861=>93, //angel
+        6861=>93, //angel
         7188 => 288, //Santos
         7146 => 102, //Leonel
         7269 => 96, //Salvador
