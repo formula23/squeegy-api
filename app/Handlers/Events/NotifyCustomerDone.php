@@ -3,6 +3,7 @@
 use Aloha\Twilio\Twilio;
 use App\Events\OrderDone;
 use App\Squeegy\PushNotification;
+use App\Notification;
 
 class NotifyCustomerDone extends BaseEventHandler {
 

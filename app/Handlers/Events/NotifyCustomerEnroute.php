@@ -4,6 +4,7 @@ use Aloha\Twilio\Twilio;
 use App\Events\OrderEnroute;
 use Auth;
 use App\Squeegy\PushNotification;
+use App\Notification;
 
 class NotifyCustomerEnroute extends BaseEventHandler {
 

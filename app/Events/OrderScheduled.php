@@ -10,7 +10,6 @@ class OrderScheduled extends Event {
 	use SerializesModels;
 
 	public $order;
-	public $twilio;
 
 	/**
 	 * Create a new event instance.
@@ -20,7 +19,6 @@ class OrderScheduled extends Event {
 	public function __construct(Order $order)
 	{
 		$this->order = $order;
-		$this->twilio = \App::make('Aloha\Twilio\Twilio');
 	}
 
 }

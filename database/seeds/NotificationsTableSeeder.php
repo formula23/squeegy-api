@@ -39,6 +39,25 @@ class NotificationsTableSeeder extends Seeder
             'key'=>'messages.order.push_notice.change_washer.customer',
         ]);
 
+        
+        
+        Notification::create([
+            'name'=>'Notify Customer - Schedule',
+            'key'=>'messages.order.push_notice.schedule',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Subscription Schedule',
+            'key'=>'messages.order.push_notice_subscription.schedule',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Customer - Corp Schedule',
+            'key'=>'messages.order.push_notice_corp.schedule',
+        ]);
+        
+        
+        
         Notification::create([
             'name'=>'Notify Customer - Assign',
             'key'=>'messages.order.push_notice.assign',
@@ -48,14 +67,14 @@ class NotificationsTableSeeder extends Seeder
             'name'=>'Notify Customer - Schedule Assign',
             'key'=>'messages.order.push_notice.schedule_assign',
         ]);
-
-
+        
         Notification::create([
             'name'=>'Notify Corp Customer - Assign',
             'key'=>'messages.order.push_notice_corp.assign',
         ]);
-
-
+        
+        
+        
         Notification::create([
             'name'=>'Notify Customer - Enroute',
             'key'=>'messages.order.push_notice.enroute',
@@ -71,16 +90,22 @@ class NotificationsTableSeeder extends Seeder
             'key'=>'messages.order.push_notice_corp.enroute',
         ]);
 
+        
+        
         Notification::create([
             'name'=>'Notify Customer - Start',
             'key'=>'messages.order.push_notice.start',
         ]);
 
+        
+        
         Notification::create([
             'name'=>'Notify Customer - Done',
             'key'=>'messages.order.push_notice.done',
         ]);
 
+        
+        
         Notification::create([
             'name'=>'Notify Corp Customer - Cancel',
             'key'=>'messages.order.push_notice.cancel',

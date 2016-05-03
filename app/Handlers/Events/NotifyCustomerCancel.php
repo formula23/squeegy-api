@@ -2,6 +2,7 @@
 
 use App\Events\OrderCancelledByWorker;
 use App\Squeegy\PushNotification;
+use App\Notification;
 
 class NotifyCustomerCancel extends BaseEventHandler {
 

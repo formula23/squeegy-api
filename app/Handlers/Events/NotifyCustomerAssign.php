@@ -2,9 +2,8 @@
 
 use Aloha\Twilio\Twilio;
 use App\Events\OrderAssign;
-
+use App\Notification;
 use App\Squeegy\PushNotification;
-use Illuminate\Translation\Translator;
 
 class NotifyCustomerAssign extends BaseEventHandler {
 
