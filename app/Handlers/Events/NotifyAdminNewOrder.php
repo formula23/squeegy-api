@@ -1,19 +1,22 @@
 <?php namespace App\Handlers\Events;
 
+use Aloha\Twilio\Twilio;
 use App\Events\OrderScheduled;
 
 use App\User;
 
 class NotifyAdminNewOrder {
 
+	public $twilio;
+
 	/**
 	 * Create the event handler.
 	 *
-	 * @return void
+	 * @param Twilio $twilio
 	 */
-	public function __construct()
+	public function __construct(Twilio $twilio)
 	{
-		//
+		$this->twilio = $twilio;
 	}
 
 	/**
@@ -46,7 +49,7 @@ class NotifyAdminNewOrder {
             }
 
             foreach($admins as $admin) {
-				$event->twilio->message($admin->phone, $message);
+				$this->twilio->message($admin->phone, $message);
 			}
 		} catch(\Exception $e) {
 			\Bugsnag::notifyException(new \Exception($e->getMessage()));
