@@ -32,4 +32,9 @@ class Vehicle extends Model {
         return false;
     }
 
+    public function full_name()
+    {
+        return $this->year." ".$this->make." ".$this->model;
+    }
+    
 }

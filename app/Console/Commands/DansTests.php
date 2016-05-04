@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\User;
+use App\Vehicle;
 use Illuminate\Console\Command;
+use GeometryLibrary\PolyUtil;
 
 class DansTests extends Command
 {
@@ -38,16 +40,24 @@ class DansTests extends Command
      */
     public function handle()
     {
-        
 
-        $users = User::take(30)->get();
+        $vehicle = Vehicle::find(15);
 
-        foreach($users as $user) {
-            $this->info($user->name);
-            $this->info($user->first_name());
-            $this->info($user->last_name());
-            $this->info("****************");
-        }
+        $this->info($vehicle->full_name());
+        dd("done");
+
+        $response =  PolyUtil::containsLocation(
+//            ['lat' => 34.098575, 'lng' => -118.322472], // point array [lat, lng]
+            ['lat' => 34.098646, 'lng' => -118.320884], // point array [lat, lng]
+//            ['lat' => 23.886, 'lng' => -65.269], // point array [lat, lng]
+            [ // poligon arrays of [lat, lng]
+                ['lat' => 34.098939, 'lng' => -118.322376],
+                ['lat' => 34.098912, 'lng' => -118.320562],
+                ['lat' => 34.098015, 'lng' => -118.320562],
+                ['lat' => 34.098024, 'lng' => -118.322333],
+            ]);
+
+        dd($response); // false
 
     }
 }

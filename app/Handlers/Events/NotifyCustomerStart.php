@@ -37,6 +37,7 @@ class NotifyCustomerStart extends BaseEventHandler {
         $this->message = trans($this->message_key,[
 			'worker_name'=>$event->order->worker->first_name(),
 			'etc_time' => real_time($event->order->start_at->addMinutes($event->order->etc)),
+            'car' => $event->order->vehicle->full_name(),
 		]);
 
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm");

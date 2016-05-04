@@ -85,6 +85,10 @@ class AuthController extends Controller {
 
             $facebook_user = $facebook_user_qry->first();
 
+            if( ! $facebook_user->is_active) {
+                return $this->response->errorWrongArgs('Unauthorized to login.');
+            }
+
             if( ! $facebook_user) {
                 $anon_user = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc')->first();
                 if($anon_user) {
