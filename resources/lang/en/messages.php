@@ -24,7 +24,7 @@ return [
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'SQUEEGY #:job_number',
         'invalid_card' => 'Please enter a valid credit card.',
-        'card_charged_insert' => ' charged your credit card in the amount of $:charge_amount and',
+        'card_charged' => ' charged your credit card in the amount of $:charge_amount and',
         'push_notice' => [
             'schedule' => "We have received your scheduled wash, a washer will be assigned to you at least one hour prior your scheduled window.\nThank you for using Squeegy!",
             'assign' => ':worker_name has been assigned to your order. He will be arriving around :window_time',
@@ -32,7 +32,7 @@ return [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
             'start' => ':worker_name started washing your :car he should be done around :etc_time',
-            'done' => ":worker_name is done washing your car. We:card_charged_insert have emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
+            'done' => ":worker_name is done washing your car. We:card_charged have emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
             'change_washer' => [
                 'customer' => 'Your wash has been re-assigned to :worker_name.',
@@ -49,8 +49,8 @@ return [
         ],
         'push_notice_subscription' => [
             'schedule' => "This is to confirm your next car wash has been scheduled for :subsription_schedule_time. No action is required on your behalf. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
-            'assign' => ":worker_name will be arriving :window_time to complete your car wash. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
-            'done' => ":worker_name is done washing your car. We have emailed you a picture of your car. Don't forget to rate your wash.\nThank you for using Squeegy!",
+//            'assign' => ":worker_name will be arriving :window_time to complete your car wash. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
+//            'done' => ":worker_name is done washing your car. We have emailed you a picture of your car. Don't forget to rate your wash.\nThank you for using Squeegy!",
         ],
         'cancel_reason' => [
             '1' => 'Customer not here',
