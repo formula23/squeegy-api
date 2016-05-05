@@ -85,10 +85,6 @@ class AuthController extends Controller {
 
             $facebook_user = $facebook_user_qry->first();
 
-            if( ! $facebook_user->is_active) {
-                return $this->response->errorWrongArgs('Unauthorized to login.');
-            }
-
             if( ! $facebook_user) {
                 $anon_user = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc')->first();
                 if($anon_user) {
@@ -97,8 +93,12 @@ class AuthController extends Controller {
                     $anon_user->updateFbFields($fb_user);
                 }
                 return $this->response->errorWrongArgs('You do not have an account. Please register.');
+                
+            } else if( ! $facebook_user->is_active ) {
+                return $this->response->errorWrongArgs('Unauthorized to login.');
+                
             }
-
+            
             $facebook_user->updateFbFields($fb_user);
 
             Auth::login($facebook_user);
