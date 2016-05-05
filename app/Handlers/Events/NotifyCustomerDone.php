@@ -36,6 +36,7 @@ class NotifyCustomerDone extends BaseEventHandler {
         $this->message = trans($this->message_key, [
             'worker_name'=>$event->order->worker->first_name(),
             'card_charged'=> ($event->order->charged ? trans('messages.order.card_charged', ['charge_amount'=>number_format($event->order->charged/100, 2)]) : '' ),
+            'car'=>$event->order->vehicle->full_name(),
         ]);
         
 //       $this->message = trans($this->message_key,[
