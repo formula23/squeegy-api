@@ -57,6 +57,14 @@ class Service extends Model {
     }
 
     /**
+     * @return $this
+     */
+    public function partners()
+    {
+        return $this->belongsToMany('App\Partner')->withPivot('price');
+    }
+
+    /**
      * @param Carbon $date
      * @return mixed
      */

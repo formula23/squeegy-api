@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCorporateAccountServicePivotTable extends Migration
+class CreatePartnerServicePivotTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,13 @@ class CreateCorporateAccountServicePivotTable extends Migration
      */
     public function up()
     {
-        Schema::create('corporate_account_service', function (Blueprint $table) {
-            $table->integer('corporate_account_id')->unsigned()->index();
-            $table->foreign('corporate_account_id')->references('id')->on('corporate_accounts')->onDelete('cascade');
+        Schema::create('partner_service', function (Blueprint $table) {
+            $table->integer('partner_id')->unsigned()->index();
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->integer('service_id')->unsigned()->index();
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
             $table->integer('price')->unsigned();
-            $table->primary(['corporate_account_id', 'service_id']);
+            $table->primary(['partner_id', 'service_id']);
         });
     }
 
@@ -29,6 +29,6 @@ class CreateCorporateAccountServicePivotTable extends Migration
      */
     public function down()
     {
-        Schema::drop('corporate_account_service');
+        Schema::drop('partner_service');
     }
 }
