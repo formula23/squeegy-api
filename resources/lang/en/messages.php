@@ -48,7 +48,7 @@ return [
             'enroute' => ':worker_name is about to start your car wash. :interior',
         ],
         'push_notice_subscription' => [
-            'schedule' => "This is to confirm your next car wash has been scheduled for :subsription_schedule_time. No action is required on your behalf. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
+            'schedule' => "This is to confirm your next :service_level car wash has been scheduled for your :car at :subsription_schedule_time. No action is required on your behalf. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
 //            'assign' => ":worker_name will be arriving :window_time to complete your car wash. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
 //            'done' => ":worker_name is done washing your car. We have emailed you a picture of your car. Don't forget to rate your wash.\nThank you for using Squeegy!",
         ],
