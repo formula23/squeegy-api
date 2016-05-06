@@ -30,6 +30,7 @@ class OrderTransformer extends TransformerAbstract {
     protected $availableIncludes = [
         'referrer',
         'payment_method',
+        'partner',
     ];
 
     public function transform(Order $order)
@@ -158,5 +159,12 @@ class OrderTransformer extends TransformerAbstract {
 
         return $this->item($card, new PaymentMethodTransformer());
     }
+
+    public function includePartner(Order $order)
+    {
+        if(!$order->partner) return null;
+        return $this->item($order->partner, new PartnerTransformer());
+    }
+
 
 }
