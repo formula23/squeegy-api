@@ -9,6 +9,7 @@
 namespace App\Squeegy\Transformers;
 
 use App\Service;
+use App\Partner;
 use App\Squeegy\Schedule;
 use League\Fractal\TransformerAbstract;
 
@@ -31,10 +32,9 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
             'service_area' => $data['service_area'],
         ];
 
-        if($data['schedule']||true) {
-            $schedule = new Schedule($data['postal_code']);
-            $resp['available_schedule'] = $schedule->availability();
-        }
+        
+        $schedule = new Schedule($data['postal_code']);
+        $resp['available_schedule'] = $schedule->availability($data['partner_id']);
 
         return $resp;
     }
@@ -42,6 +42,11 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
     public function includeServices()
     {
         $services = Service::getAvailableServices();
+        
+        if($partner = Partner::where_coords_in(\Request::input('lat'), \Request::input('lng'))) {
+            $services = $partner->services;
+        }
+       
         return $this->collection($services, new ServiceTransformer());
     }
 

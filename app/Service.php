@@ -70,6 +70,8 @@ class Service extends Model {
      */
     public function price(Carbon $date=null)
     {
+        if( ! empty($this->pivot) && $this->pivot->price) return $this->pivot->price;
+
         if($date) $this->date = $date;
         if($this->isMidWeekSpecial()) {
             return $this->mid_week_special[$this->id];

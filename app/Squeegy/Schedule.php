@@ -10,6 +10,7 @@ namespace App\Squeegy;
 
 use App\Order;
 use App\OrderSchedule;
+use App\Partner;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
@@ -25,6 +26,7 @@ class Schedule
     public $time_slot_interval=1;
     public $current_schedule;
     public $postal_code;
+    public $day_format;
 
     public function __construct($postal_code=null)
     {
@@ -37,17 +39,36 @@ class Schedule
         $this->open_hr = Config::get('squeegy.operating_hours.open');
         $this->close_hr = Config::get('squeegy.operating_hours.close');
 
+        $this->day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
 //		$this->current_day = 8;
 //		$this->now = Carbon::create(2016,01,$this->current_day,0,0,0);
 
     }
 
-    public function availability()
+    public function availability($partner_id=null)
     {
-        $day_format = (Request::header('X-Device') == "Android" ? 'D, M d' : 'l, F d' );
+
+        if($partner_id) {
+            $partner = Partner::find($partner_id);
+
+            $container=[];
+
+            foreach($partner->days as $idx=>$day) {
+
+                $day_display = ( $this->now->dayOfWeek == $day->day_of_week && $this->now->hour < (int)$day->time_end
+                    ? $this->now->format($this->day_format)
+                    : ( $this->now->dayOfWeek < $day->day_of_week ? Carbon::parse($day->day_of_week - $this->now->dayOfWeek.' day')->format($this->day_format) : $this->now->next($day->day_of_week)->format($this->day_format) ) );
+
+                $container[$idx]['day'] = $day_display;
+                $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
+
+            }
+            return $container;
+        }
 
         if($this->postal_code == 90015) { //downtown pilot
-            $day = ( $this->now->dayOfWeek == 3 && $this->now->hour < 18 ? $this->now->format($day_format) : $this->now->next(3)->format($day_format) );
+            $day = ( $this->now->dayOfWeek == 3 && $this->now->hour < 18 ? $this->now->format($this->day_format) : $this->now->next(3)->format($this->day_format) );
             $container=[];
             $container[0]['day'] = $day;
             $container[0]['time_slots'][] = "10:00am - 6:00pm";
@@ -77,7 +98,7 @@ class Schedule
 //            } elseif($this->now->isTomorrow()) {
 //                $day = "Tomorrow (".$this->now->format('m/d').")";
 //            } else {
-                $day = $this->now->format($day_format);
+                $day = $this->now->format($this->day_format);
 //            }
 
             $container[$idx] = ['day'=>$day];

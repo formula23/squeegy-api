@@ -7,6 +7,7 @@
  */
 
 use App\Order;
+use App\Partner;
 use App\Region;
 use App\User;
 use App\Zone;
@@ -98,7 +99,7 @@ class Orders {
     {
         $open = self::open();
         Log::info('Squeegy Open Hours: '.$open);
-        $data = ['accept'=>0, 'schedule'=>false, 'description'=>'', 'code'=>'', 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
+        $data = ['accept'=>0, 'schedule'=>false, 'description'=>'', 'code'=>'', 'partner_id'=>0, 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
         self::$lat = $lat;
@@ -158,6 +159,13 @@ class Orders {
                 $data['accept'] = 1;
             }
 
+            return $data;
+        }
+
+        if($partner = Partner::where_coords_in($lat, $lng)) {
+            $data['schedule'] = true;
+            $data['accept'] = 1;
+            $data['partner_id'] = $partner->id;
             return $data;
         }
 

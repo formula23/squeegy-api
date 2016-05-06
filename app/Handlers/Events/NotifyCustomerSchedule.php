@@ -3,6 +3,7 @@
 use Aloha\Twilio\Twilio;
 use App\Events\OrderScheduled;
 use App\Notification;
+use Illuminate\Support\Facades\Log;
 
 class NotifyCustomerSchedule extends BaseEventHandler {
 
@@ -38,8 +39,8 @@ class NotifyCustomerSchedule extends BaseEventHandler {
 			]);
 		}
 
-		if($event->order->location['zip'] == '90015') {
-            $this->message_key = 'messages.order.push_notice_subscription.schedule';
+        if($event->order->partner) {
+            $this->message_key = 'messages.order.push_notice_corp.schedule';
             $this->message = trans($this->message_key, [
 				'schedule_day' => $event->order->schedule->window_open->format('l, F jS'),
 			]);
@@ -48,6 +49,7 @@ class NotifyCustomerSchedule extends BaseEventHandler {
         $notification = Notification::where('key', $this->message_key)->first();
 
         if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
+
             try {
                 $this->message = $this->_text_msg.$this->message;
                 $this->twilio->message($event->order->customer->phone, $this->message);

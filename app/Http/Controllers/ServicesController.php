@@ -4,6 +4,7 @@
 use App\EtaLog;
 use App\Http\Requests;
 use App\Squeegy\Orders;
+use App\Squeegy\Partners;
 use App\Squeegy\Transformers\ServiceAvailabilityTransformer;
 use App\Squeegy\Transformers\ServiceTransformer;
 use App\Squeegy\Transformers\ServiceCoordTransformer;
@@ -87,6 +88,4 @@ class ServicesController extends Controller {
 
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer());
     }
-
-
 }

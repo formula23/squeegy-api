@@ -51,7 +51,7 @@ class NotifyCustomerAssign extends BaseEventHandler {
 //            ]);
         }
 
-		if($event->order->location['zip'] == '90015') {
+        if($event->order->partner) {
             $this->message_key = 'messages.order.push_notice_corp.assign';
             $this->message = trans($this->message_key, [
 				'worker_name'=>$event->order->worker->first_name(),

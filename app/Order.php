@@ -20,6 +20,7 @@ class Order extends Model {
         'user_id',
         'worker_id',
         'referrer_id',
+        'partner_id',
         'service_id',
         'vehicle_id',
         'job_number',
@@ -138,7 +139,15 @@ class Order extends Model {
     {
         return $this->hasMany('App\NotificationLog');
     }
-    
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function partner()
+    {
+        return $this->belongsTo('App\Partner');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -214,7 +223,7 @@ class Order extends Model {
         if(!$this->schedule) return null;
         return ($this->schedule->type=='subscription') ? true : false;
     }
-
+    
     /**
      * @return bool|null
      */

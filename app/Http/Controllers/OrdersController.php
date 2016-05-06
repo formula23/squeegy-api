@@ -19,6 +19,7 @@ use App\Squeegy\Orders;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
 use App\Service;
+use App\Partner;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -177,6 +178,10 @@ class OrdersController extends Controller {
 
         $service = Service::find($data['service_id']);
 
+        if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+            $data['partner_id'] = $partner->id;
+            $service = $partner->service($data['service_id'])->first();
+        }
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
         Log::info('OrdersController@store:117');

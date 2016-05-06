@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePartnersTable extends Migration
+class AddPartnerIdToOrders extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,8 @@ class CreatePartnersTable extends Migration
      */
     public function up()
     {
-        Schema::create('partners', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('location');
-            $table->text('geo_fence');
-            $table->timestamps();
+        Schema::table('orders', function (Blueprint $table) {
+            $table->string('partner_id')->nullable()->index()->after('referrer_id');
         });
     }
 
@@ -28,6 +24,8 @@ class CreatePartnersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('partners');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->dropColumn('partner_id');
+        });
     }
 }
