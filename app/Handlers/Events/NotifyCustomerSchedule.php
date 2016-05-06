@@ -36,6 +36,8 @@ class NotifyCustomerSchedule extends BaseEventHandler {
             $this->message_key = 'messages.order.push_notice_subscription.schedule';
             $this->message = trans($this->message_key, [
 				'subsription_schedule_time' => $event->order->schedule->start_date_time(),
+                'service_level' => $event->order->service->name,
+                'car' => $event->order->vehicle->full_name(),
 			]);
 		}
 

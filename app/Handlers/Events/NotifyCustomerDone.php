@@ -31,21 +31,12 @@ class NotifyCustomerDone extends BaseEventHandler {
 	public function handle(OrderDone $event)
 	{
 
-        $message_partial = ($event->order->charged ? trans('messages.order.card_charged_insert', ['charge_amount'=>number_format($event->order->charged/100, 2)]) : '' );
-
-        $this->message = trans($this->message_key,[
-			'worker_name'=>$event->order->worker->first_name(),
-            'card_charged_insert'=>$message_partial,
-			'car'=>$event->order->vehicle->full_name(),
-		]);
-
-		if($event->order->schedule && $event->order->schedule->type=='subscription') {
-			$this->message = trans($this->message_key, [
-				'worker_name'=>$event->order->worker->first_name(),
-				'car'=>$event->order->vehicle->full_name(),
-			]);
-		}
-
+        $this->message = trans($this->message_key, [
+            'worker_name'=>$event->order->worker->first_name(),
+            'card_charged'=> ($event->order->charged ? trans('messages.order.card_charged', ['charge_amount'=>number_format($event->order->charged/100, 2)]) : '' ),
+            'car'=>$event->order->vehicle->full_name(),
+        ]);
+        
 		$arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );
 
         $notification = Notification::where('key', $this->message_key)->first();
