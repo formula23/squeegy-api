@@ -30,6 +30,8 @@ class NotifyCustomerAssign extends BaseEventHandler {
 	 */
 	public function handle($event)
 	{
+        if($event->order->partner) return;
+
         $this->message = trans($this->message_key, [
 			'worker_name'=>$event->order->worker->first_name(),
 			'window_time'=>$event->order->arrival_eta(),
@@ -52,6 +54,7 @@ class NotifyCustomerAssign extends BaseEventHandler {
         }
 
         if($event->order->partner) {
+            return;
             $this->message_key = 'messages.order.push_notice_corp.assign';
             $this->message = trans($this->message_key, [
 				'worker_name'=>$event->order->worker->first_name(),
