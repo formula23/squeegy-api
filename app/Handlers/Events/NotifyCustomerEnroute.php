@@ -56,7 +56,8 @@ class NotifyCustomerEnroute extends BaseEventHandler {
             $this->message_key = 'messages.order.push_notice_corp.enroute';
 			$this->message = trans($this->message_key, [
 				'worker_name'=>$event->order->worker->first_name(),
-				'interior'=>$event->order->service_id == 2 ? "Please open your vehicle if it is not already." : "",
+//				'interior'=>$event->order->service_id == 2 ? "Please open your vehicle if it is not already." : "",
+				'interior'=>"",
 			]);
 		}
 

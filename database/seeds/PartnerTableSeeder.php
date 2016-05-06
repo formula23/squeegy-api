@@ -26,8 +26,8 @@ class PartnerTableSeeder extends Seeder
         $partner->days()->create([
             'day'=>'Thursday',
             'day_of_week'=>4,
-            'time_start'=>'9:00:00',
-            'time_end'=>'18:00:00',
+            'time_start'=>'9:00am',
+            'time_end'=>'6:00pm',
         ]);
 
         foreach( [1=>2000, 2=>2500] as $service_id=>$price_override) {
@@ -36,9 +36,7 @@ class PartnerTableSeeder extends Seeder
             $partner->services()->save($service, ['price'=>$price_override]);
 
         }
-
-        dd($partner->services);
-
+        
         DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // disable foreign key constraints
 
     }
