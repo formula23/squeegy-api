@@ -36,11 +36,13 @@ class NotifyCustomerDone extends BaseEventHandler {
         $this->message = trans($this->message_key,[
 			'worker_name'=>$event->order->worker->first_name(),
             'card_charged_insert'=>$message_partial,
+			'car'=>$event->order->vehicle->full_name(),
 		]);
 
 		if($event->order->schedule && $event->order->schedule->type=='subscription') {
 			$this->message = trans($this->message_key, [
 				'worker_name'=>$event->order->worker->first_name(),
+				'car'=>$event->order->vehicle->full_name(),
 			]);
 		}
 
