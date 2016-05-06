@@ -43,7 +43,7 @@ return [
             'arriving_soon' => 'Your washer is arriving soon...',
         ],
         'push_notice_corp' => [
-            'schedule' => "We have received your car wash order for :schedule_day.\nThank you for using Squeegy!",
+            'schedule' => "We have received your car wash order for :schedule_day @ :location\nThank you for using Squeegy!",
             'assign' => ':worker_name has added your vehicle to today\'s job queue.',
             'enroute' => ':worker_name is about to start washing your car. :interior',
         ],

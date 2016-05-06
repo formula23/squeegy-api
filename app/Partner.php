@@ -5,7 +5,7 @@ use GeometryLibrary\PolyUtil;
 
 class Partner extends Model
 {
-    protected $fillable = ['name', 'location', 'geo_fence'];
+    protected $fillable = ['name', 'location_name', 'location', 'geo_fence', 'is_active'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -50,6 +50,11 @@ class Partner extends Model
         return json_decode($value);
     }
 
+    public function location_display()
+    {
+        return $this->location_name." ".$this->location['street'];
+    }
+
     /**
      * @param $lat
      * @param $lng
@@ -86,6 +91,7 @@ class Partner extends Model
 
         return $polygon;
     }
+
 
 
 }
