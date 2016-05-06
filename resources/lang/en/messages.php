@@ -27,11 +27,11 @@ return [
         'card_charged_insert' => ' charged your credit card in the amount of $:charge_amount and',
         'push_notice' => [
             'schedule' => "We have received your scheduled wash, a washer will be assigned to you at least one hour prior your scheduled window.\nThank you for using Squeegy!",
-            'assign' => ':worker_name has been assigned to your order. He will be arriving around :window_time',
-            'schedule_assign' => ':worker_name has picked up your order. He will be arriving between :window_time',
-            'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time',
-            'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time',
-            'start' => ':worker_name started washing your :car he should be done around :etc_time',
+            'assign' => ':worker_name has been assigned to your order. He will be arriving around :window_time.',
+            'schedule_assign' => ':worker_name has picked up your order. He will be arriving between :window_time.',
+            'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time.',
+            'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time.',
+            'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
             'done' => ":worker_name is done washing your car. We:card_charged_insert have emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
             'change_washer' => [
