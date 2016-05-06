@@ -38,9 +38,10 @@ class NotifyAdminNewOrder {
                 'order_id' => $event->order->id,
                 'scheduled_day' => $event->order->scheduled_day().", ".$event->order->scheduled_date(),
                 'scheduled_time' => $event->order->scheduled_time(),
+                'location'=>($event->order->order->partner ? ' at '.$event->order->order->partner->name : '' ),
             ]);
 
-            if($event->order->schedule && $event->order->schedule->type=='subscription') {
+            if($event->order->isSubscription()) {
                 $message = trans('messages.order.new_subscription_schedule_order', [
                     'order_service' => $event->order->service->name,
                     'order_id' => $event->order->id,
