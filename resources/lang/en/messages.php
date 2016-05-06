@@ -45,7 +45,7 @@ return [
         'push_notice_corp' => [
             'schedule' => "We have received your car wash order for :schedule_day.\nThank you for using Squeegy!",
             'assign' => ':worker_name has added your vehicle to today\'s job queue.',
-            'enroute' => ':worker_name is about to start your car wash. :interior',
+            'enroute' => ':worker_name is about to start washing your car. :interior',
         ],
         'push_notice_subscription' => [
             'schedule' => "This is to confirm your next car wash has been scheduled for :subsription_schedule_time. No action is required on your behalf. If you have any questions please contact concierge@squeegyapp.com.\nThank you for using Squeegy!",
