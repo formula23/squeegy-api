@@ -518,6 +518,10 @@ class OrdersController extends Controller {
             return $this->response->errorNotFound('Order not found');
         }
 
+        if($order->partner) {
+            return $this->response->errorNotFound('Additional discounts not available at this location.');
+        }
+
         if ( ! empty($request_data['promo_code'])) { //calculate promo
 
             //check if promo code is a referral code
