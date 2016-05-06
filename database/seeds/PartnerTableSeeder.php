@@ -30,7 +30,7 @@ class PartnerTableSeeder extends Seeder
             'time_end'=>'6:00pm',
         ]);
 
-        foreach( [1=>2000, 2=>2500] as $service_id=>$price_override) {
+        foreach( [1=>1800, 2=>2500] as $service_id=>$price_override) {
             $service = Service::find($service_id);
 
             $partner->services()->save($service, ['price'=>$price_override]);
