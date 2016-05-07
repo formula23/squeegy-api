@@ -109,6 +109,13 @@ class Orders {
         Log::info('Lat/Lng requested: '.self::$lat.",".self::$lng);
         Log::info('Postal Code requested: '.self::$postal_code);
 
+        if($partner = Partner::where_coords_in($lat, $lng)) {
+            $data['schedule'] = true;
+            $data['accept'] = 1;
+            $data['partner_id'] = $partner->id;
+            return $data;
+        }
+
         if( ! $open) {
 
             if(env('MAINTENANCE')) {
@@ -162,12 +169,6 @@ class Orders {
             return $data;
         }
 
-        if($partner = Partner::where_coords_in($lat, $lng)) {
-            $data['schedule'] = true;
-            $data['accept'] = 1;
-            $data['partner_id'] = $partner->id;
-            return $data;
-        }
 
         $eta = self::getLeadTime($lat, $lng);
 
