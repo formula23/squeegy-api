@@ -36,6 +36,8 @@ class PayrollGenerate extends Command {
         7527 => 'Gonzalo Hidalgo',
     ];
 
+    protected $ids_to_process=[];
+
     protected $training = [
         7279=>102, //Cleto
         7527 => 192, //gonzalo
@@ -130,10 +132,10 @@ class PayrollGenerate extends Command {
 //        2149 => [ //daniel
 //            0 => 150,
 //        ],
-//        6349 => [ //Melvyn
+        6349 => [ //Melvyn
 //            0 => 100,
-//            1 => 120,
-//        ],
+            1 => 120,
+        ],
 //        6861 => [ //Angel
 //            4 => 100,
 //        ],
@@ -177,6 +179,11 @@ class PayrollGenerate extends Command {
 	 */
 	public function fire()
 	{
+
+        if($this->option('worker_ids')) {
+            $this->ids_to_process = explode(",", $this->option('worker_ids'));
+        }
+
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
 		Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
@@ -395,6 +402,9 @@ class PayrollGenerate extends Command {
 				'week_of'=>$week_of,
 			];
 
+            //only send to IDs that are in the array if there is an array
+            if(count($this->ids_to_process) && !isset($this->ids_to_process[$worker_id])) continue;
+
 			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
 			{
                 $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
@@ -457,7 +467,7 @@ class PayrollGenerate extends Command {
 	protected function getArguments()
 	{
 		return [
-			['send_email', InputArgument::OPTIONAL, 'Send email to washers or to internal review.', 'review'],
+            ['send_email', InputArgument::OPTIONAL, 'Send email to washers or to internal review.', 'review'],
 		];
 	}
 
@@ -470,6 +480,7 @@ class PayrollGenerate extends Command {
 	{
 		return [
 //			['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
+            ['worker_ids', null, InputOption::VALUE_OPTIONAL, 'Only send emails to the following worker IDs -- 1111,2222,3333'],
 		];
 	}
 
