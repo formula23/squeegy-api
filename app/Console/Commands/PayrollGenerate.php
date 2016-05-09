@@ -50,9 +50,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
-        5482 => [ // Juan L - kit rental refund
-            6 => 25,
-        ]
+        5482 => 25,
     ];
 
     protected $ignore_ids =[
@@ -113,15 +111,15 @@ class PayrollGenerate extends Command {
             6=>100,
 		],
         1847 => [ //ricardo
+            0 => 100,
             2 => 100,
             3 => 100,
             4 => 100,
-            5 => 100,
             6 => 100,
         ],
-        2882 => [ // juan lopez
-            0 => 140
-        ],
+//        2882 => [ // juan lopez
+//            0 => 140
+//        ],
 //        5482 => [ //Juan L
 //            4 => 150,
 //        ],
@@ -129,19 +127,19 @@ class PayrollGenerate extends Command {
 //            4 => 200,
 //            6 => 180,
 //        ],
-        2149 => [ //daniel
-            0 => 150,
-        ],
-        6349 => [ //Melvyn
-            0 => 100,
-            1 => 120,
-        ],
-        6861 => [ //Angel
-            4 => 100,
-        ],
-        7269 => [ //salvador
-            1 => 75,
-        ]
+//        2149 => [ //daniel
+//            0 => 150,
+//        ],
+//        6349 => [ //Melvyn
+//            0 => 100,
+//            1 => 120,
+//        ],
+//        6861 => [ //Angel
+//            4 => 100,
+//        ],
+//        7269 => [ //salvador
+//            1 => 75,
+//        ]
 	];
 
     protected $washer_training = [
@@ -228,9 +226,9 @@ class PayrollGenerate extends Command {
             }
 
             @$orders_by_worker[$order->worker->id]['bonus'] = 0;
-//            if (isset($this->bonus[$order->worker->id])) {
-//                @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
-//            }
+            if (isset($this->bonus[$order->worker->id])) {
+                @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
+            }
 
             //did order have surcharge
             $surcharge_row = $order->order_details()->where('name', 'like', '%surcharge')->first();
