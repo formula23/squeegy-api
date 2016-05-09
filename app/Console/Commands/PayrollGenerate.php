@@ -312,7 +312,8 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
                 $orders_by_worker[$order->worker->id]['minimum'] +
-                $orders_by_worker[$order->worker->id]['training'] -
+                $orders_by_worker[$order->worker->id]['training'] +
+                $orders_by_worker[$order->worker->id]['bonus'] -
                 $orders_by_worker[$order->worker->id]['rental']);
 
         }
