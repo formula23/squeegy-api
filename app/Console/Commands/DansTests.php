@@ -41,6 +41,53 @@ class DansTests extends Command
     public function handle()
     {
 
+        $days = array(4,5);
+//        $day_iterator=date('w');
+        $day_iterator=5;
+        do {
+            $position = array_search($day_iterator, $days);
+            if($position !== false)
+            {
+                $first_part = array_splice($days, $position);
+                $days = array_merge($first_part, $days);
+                break;
+            }
+            $day_iterator++;
+            
+        } while($day_iterator <= 6);
+
+        dd($days);
+
+        $days = array(3,4,5,6);
+
+        for($current_day=date('N');$current_day++;$current_day<8)
+        {
+            $this->info('cur day:'.$current_day);
+            $position = array_search($current_day, $days);
+
+            $this->info("pos: ".$position);
+            if($position===false) continue;
+
+            $first_part=[];
+            if($position !== false) {
+                $this->info('--pos:'.$position);
+                $first_part = array_splice($days, $position);
+                print_r($first_part);
+//                $this->info($first_part);
+            }
+            $days = array_merge($first_part, $days);
+            break;
+        }
+//        $current_day = 4;
+
+        dd($days);
+
+
+
+
+        dd("done");
+
+
         $vehicle = Vehicle::find(15);
 
         $this->info($vehicle->full_name());

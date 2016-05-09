@@ -45,7 +45,7 @@ class NotifyCustomerSchedule extends BaseEventHandler {
             $this->message_key = 'messages.order.push_notice_corp.schedule';
             $this->message = trans($this->message_key, [
 				'schedule_day' => $event->order->schedule->window_open->format('l, F jS'),
-                'location' => $event->order->partner->location_display(),
+                'location' => $event->order->partner->location_display(), 
 			]);
 		}
 

@@ -11,8 +11,10 @@ namespace App\Squeegy;
 use App\Order;
 use App\OrderSchedule;
 use App\Partner;
+use Aws\CloudTrail\LogFileIterator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Schedule
@@ -22,7 +24,7 @@ class Schedule
     public $close_hr;
 //    public $available=[];
     public $lead_hrs=4;
-    public $days_out=14;
+    public $days_out=7;
     public $time_slot_interval=1;
     public $current_schedule;
     public $postal_code;
@@ -50,31 +52,8 @@ class Schedule
     {
 
         if($partner_id) {
-            $partner = Partner::find($partner_id);
-
-            $container=[];
-
-            foreach($partner->days as $idx=>$day) {
-
-                $day_display = ( $this->now->dayOfWeek == $day->day_of_week && $this->now->hour < (int)$day->time_end
-                    ? $this->now->format($this->day_format)
-                    : ( $this->now->dayOfWeek < $day->day_of_week ? Carbon::parse($day->day_of_week - $this->now->dayOfWeek.' day')->format($this->day_format) : $this->now->next($day->day_of_week)->format($this->day_format) ) );
-
-                $container[$idx]['day'] = $day_display;
-                $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
-
-            }
-            return $container;
+            return $this->partner_days($partner_id);
         }
-
-        if($this->postal_code == 90015) { //downtown pilot
-            $day = ( $this->now->dayOfWeek == 3 && $this->now->hour < 18 ? $this->now->format($this->day_format) : $this->now->next(3)->format($this->day_format) );
-            $container=[];
-            $container[0]['day'] = $day;
-            $container[0]['time_slots'][] = "10:00am - 6:00pm";
-            return $container;
-        }
-
 
         $idx=0;
         for($i=0; $i<=$this->days_out; $i++)
@@ -160,5 +139,117 @@ class Schedule
     {
         $this->current_schedule = Order::current_scheduled_orders();
     }
+
+    protected function partner_days($partner_id)
+    {
+        $partner = Partner::find($partner_id);
+
+        $container=[];
+//        $cur_hr = $this->now->hour;
+//        $this->now = Carbon::create(2016,5,10,20,0,0);
+//        Log::info("**********************************");
+//        Log::info($this->now);
+        $cur_hr = $this->now->hour;
+//        $cur_hr = 13;
+//        Log::info('cur hr:'.$cur_hr);
+//        Log::info('day of week:...'.$this->now->dayOfWeek);
+
+        try
+        {
+            //get array of available days in sequential order.
+            $day_sort=[];
+            $day_sort_time=[];
+            $days = $partner->days()->orderBy('day_of_week')->get();
+            foreach($days as $day) {
+                $day_sort[] = $day->day_of_week;
+                $day_sort_time[$day->day_of_week] = $day->time_end;
+            }
+
+//            Log::info('day sort time:');
+//            Log::info($day_sort);
+//            Log::info($day_sort_time);
+
+            $days_array = $days->toArray();
+
+            //reorder days
+//            Log::info($cur_hr);
+
+            //only care about time of day if day of week exists in offered days
+            if( ! empty($day_sort_time[$this->now->dayOfWeek]) && $cur_hr < Carbon::parse($day_sort_time[$this->now->dayOfWeek])->hour ) {
+                $day_iterator = $this->now->dayOfWeek;
+            } else {
+                if($this->now->dayOfWeek < 6) {
+                    $day_iterator = $this->now->dayOfWeek + 1;
+                } else {
+                    $day_iterator = 0;
+                }
+            }
+
+//            $day_iterator=( $cur_hr < (@(int)$day_sort_time[$this->now->dayOfWeek] + 12) ? $this->now->dayOfWeek : ($this->now->dayOfWeek < 6 ? $this->now->dayOfWeek + 1 : 0 ) );
+
+//            Log::info('start day iterator:'.$day_iterator);
+//            dd($day_iterator);
+            do {
+//                Log::info('day iterator:'.$day_iterator);
+                $position = array_search($day_iterator, $day_sort);
+//                Log::info('position '.$position);
+//                Log::info( (@(int)$day_sort_time[$this->now->dayOfWeek] + 12) );
+//                Log::info('close time');
+//                Log::info(@(int)$day_sort_time[$this->now->dayOfWeek]);
+
+                if($position !== false)
+                {
+                    $first_part = array_splice($days_array, $position);
+                    $days_array = array_merge($first_part, $days_array);
+                    break;
+                }
+                $day_iterator++;
+
+            } while($day_iterator <= 6);
+
+//            Log::info('days array:');
+//            Log::info($days_array);
+
+            foreach($days_array as $idx=>$day) {
+
+                if($this->now->dayOfWeek == $day['day_of_week'] && $cur_hr < Carbon::parse($day['time_end'])->hour) {
+//                    Log::info('same day within time');
+                    $day_display = $this->now;
+                } else {
+                    if ($this->now->dayOfWeek < $day['day_of_week']) {
+//                        Log::info($this->now->dayOfWeek);
+//                        Log::info($day['day_of_week']);
+//                        Log::info('now < day');
+                        if($this->now->dayOfWeek===0) {
+//                            Log::info('next '.$day['day']);
+//                            $n = $this->now;
+                            $day_display = Carbon::now()->addDay($day['day_of_week']);
+
+                        } else {
+//                            Log::info($day['day']);
+//                            $n = $this->now;
+                            $day_display = Carbon::now()->addDay($day['day_of_week'] - $this->now->dayOfWeek);
+                        }
+
+                    } else {
+//                        $n = $this->now;
+                        $day_display = Carbon::now()->next($day['day_of_week']);
+                    }
+                }
+
+//                Log::info($day_display->format($this->day_format));
+
+                $container[$idx]['day'] = $day_display->format($this->day_format);
+                $container[$idx]['time_slots'][] = implode(" - ", [$day['time_start'], $day['time_end']]);
+
+            }
+        } catch (\Exception $e) {
+            Log::info($e);
+            \Bugsnag::notifyException($e);
+        }
+
+        return $container;
+    }
+
 
 }
