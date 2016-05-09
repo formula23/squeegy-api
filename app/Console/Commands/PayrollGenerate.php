@@ -31,25 +31,28 @@ class PayrollGenerate extends Command {
         7146 => 'Leonel Yanez',
         7188 => 'Santos Aguilar',
         7269 => 'Salvador Carcel',
-
+        7279 => 'Cleto Hernandez',
+        7506 => 'Rafael Sanchez',
+        7527 => 'Gonzalo Hidalgo',
     ];
 
     protected $training = [
-        6861=>93, //angel
-        7188 => 288, //Santos
-        7146 => 102, //Leonel
-        7269 => 96, //Salvador
+        7279=>102, //Cleto
+        7527 => 192, //gonzalo
+//        7146 => 102, //Leonel
+//        7279 => 96, //Salvador
     ];
 
     protected $ignore_midweek_special = [
         7188, //santos
         7269, //salvador
+        7527, //gonzalo
     ];
 
     protected $bonus = [
-//        5482 => [ // Juan L
-//            3 => 50,
-//        ]
+        5482 => [ // Juan L - kit rental refund
+            6 => 25,
+        ]
     ];
 
     protected $ignore_ids =[
@@ -84,6 +87,14 @@ class PayrollGenerate extends Command {
         2882, //Juan lopez
         7146, //Leo
         5482, //juan lara
+        7506, //Rafael
+    ];
+
+    protected $default_kit_fee = 25;
+
+    protected $kit_fee = [
+        7269 => 50, // salvador
+        7527 => 50, //gonzalo
     ];
 
     protected $min_weekly_worker_id = [
@@ -96,13 +107,14 @@ class PayrollGenerate extends Command {
 		3198 => [ //david
             1=>100,
             2=>100,
-//            3=>100, //david sick
+            3=>100, //david sick
             4=>100,
             5=>100,
             6=>100,
 		],
         1847 => [ //ricardo
-            0 => 150,
+            2 => 100,
+            3 => 100,
             4 => 100,
             5 => 100,
             6 => 100,
@@ -127,15 +139,20 @@ class PayrollGenerate extends Command {
         6861 => [ //Angel
             4 => 100,
         ],
+        7269 => [ //salvador
+            1 => 75,
+        ]
 	];
 
     protected $washer_training = [
         3198 => [ //david
-            2 => 100, // salvador
+            1 => 100, // gonzalo
+            2 => 100, // gonzalo
+            3 => 100, // edgardo
         ],
-        2882 => [ //juan lopez
-            4 => 100, //edgar
-        ]
+//        2882 => [ //juan lopez
+//            4 => 100, //edgar
+//        ]
     ];
 
 	/**
@@ -195,7 +212,7 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['job_count']++;
             @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $this->washer_names[$order->worker_id], 'email' => $order->worker->email];
-            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : 25);
+            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : (isset($this->kit_fee[$order->worker->id]) ? $this->kit_fee[$order->worker->id] : $this->default_kit_fee ) );
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['minimum'] = 0;
             @$orders_by_worker[$order->worker->id]['referral_program'] = 0;
