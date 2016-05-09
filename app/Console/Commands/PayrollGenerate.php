@@ -403,10 +403,7 @@ class PayrollGenerate extends Command {
 			];
 
             //only send to IDs that are in the array if there is an array
-            $this->info(print_r($this->ids_to_process, 1));
-            $this->info($worker_id);
-            
-            if(count($this->ids_to_process) && !isset($this->ids_to_process[$worker_id])) continue;
+            if(count($this->ids_to_process) && !in_array($this->ids_to_process[$worker_id])) continue;
 
 			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
 			{
