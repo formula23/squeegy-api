@@ -91,8 +91,8 @@ class PayrollGenerate extends Command {
     protected $default_kit_fee = 25;
 
     protected $kit_fee = [
-        7269 => 50, // salvador
-        7527 => 50, //gonzalo
+//        7269 => 50, // salvador
+//        7527 => 50, //gonzalo
     ];
 
     protected $min_weekly_worker_id = [
@@ -400,7 +400,7 @@ class PayrollGenerate extends Command {
                 $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
                 
 				$message->from('payments@squeegyapp.com', 'Squeegy Payments');
-                $message->replyTo('tech@squeegyapp.com', 'Squeegy');
+                $message->replyTo('support@squeegyapp.com', 'Squeegy');
 
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('dan@squeegyapp.com', 'Dan Schultz');
