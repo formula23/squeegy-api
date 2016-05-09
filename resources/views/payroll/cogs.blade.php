@@ -22,6 +22,7 @@
         <th>Referral Program</th>
         <th>Training</th>
         <th>Washer Training</th>
+        <th>Bonus</th>
         <th>Kit Rental</th>
         <th>Total Pay</th>
     </tr>
@@ -39,6 +40,7 @@
             <td>${{ number_format($worker['referral_program'], 2) }}</td>
             <td>${{ number_format($worker['training'], 2) }}</td>
             <td>${{ number_format($worker['total_washer_training'], 2) }}</td>
+            <td>${{ number_format($worker['bonus'], 2) }}</td>
             <td>${{ number_format($worker['rental'], 2) }}</td>
             <td>${{ number_format($worker['total_pay'], 2) }}</td>
         </tr>
