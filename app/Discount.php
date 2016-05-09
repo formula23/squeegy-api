@@ -132,6 +132,9 @@ class Discount extends Model {
      */
     static public function validate_code($code, Order $order)
     {
+
+        $order_date = ( $order->isSchedule() ? $order->schedule->window_open : $order->confirm_at );
+
 //        $discount_qry = self::leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')->active();
         $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'discounts.frequency_rate', 'single_use_code')
             ->leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')
@@ -141,13 +144,13 @@ class Discount extends Model {
                 $q->whereNull('discount_user.user_id')
                     ->orWhere('discount_user.user_id', $order->user_id);
             })
-            ->where(function($q) {
+            ->where(function($q) use ($order_date) {
                 $q->whereNull('start_at')
-                    ->orWhere('start_at', '<=', Carbon::now());
+                    ->orWhere('start_at', '<=', $order_date);
             })
-            ->where(function($q) {
+            ->where(function($q) use ($order_date) {
                 $q->whereNull('end_at')
-                    ->orWhere('end_at', '>=', Carbon::now());
+                    ->orWhere('end_at', '>=', $order_date);
             })
             ->where(function($q) use ($code) {
                 $q->where('discounts.code', $code)
