@@ -30,7 +30,7 @@ class PayrollGenerate extends Command {
         6861 => 'Angel Rodriguez',
         7146 => 'Leonel Yanez',
         7188 => 'Santos Aguilar',
-        7269 => 'Salvador Carcel',
+        7269 => 'Salvador Lacarcel',
         7279 => 'Cleto Hernandez',
         7506 => 'Rafael Sanchez',
         7527 => 'Gonzalo Hidalgo',
