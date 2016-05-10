@@ -133,7 +133,7 @@ class Discount extends Model {
     static public function validate_code($code, Order $order)
     {
 
-        $order_date = ( $order->isSchedule() ? $order->schedule->window_open : $order->confirm_at );
+        $order_date = ( $order->isSchedule() ? $order->schedule->window_open : Carbon::now() );
 
 //        $discount_qry = self::leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')->active();
         $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'discounts.frequency_rate', 'single_use_code')
