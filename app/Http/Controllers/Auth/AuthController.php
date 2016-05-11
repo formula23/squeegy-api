@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 
 use Aloha\Twilio\Twilio;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 
 use SammyK\LaravelFacebookSdk\LaravelFacebookSdk;
@@ -91,6 +92,8 @@ class AuthController extends Controller {
                     $anon_user->tmp_fb = 1;
                     $anon_user->email = $fb_user->getEmail();
                     $anon_user->updateFbFields($fb_user);
+
+                    Event::fire(new UserRegistered());
                 }
                 return $this->response->errorWrongArgs('You do not have an account. Please register.');
                 
