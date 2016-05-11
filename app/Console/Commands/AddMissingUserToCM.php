@@ -45,9 +45,9 @@ class AddMissingUserToCM extends Command
 
         User::customers()->where('email', 'not like', '%squeegyapp-tmp.com')->chunk(1000, function($users) use ($subscriber) {
 
-            foreach($users as $user) {
+            $all_subscriber_data=[];
 
-                $all_subscriber_data=[];
+            foreach($users as $user) {
 
                 $last_wash = $user->lastWash();
 
@@ -66,10 +66,11 @@ class AddMissingUserToCM extends Command
                 $all_subscriber_data[] = $subscriber_data;
 
             }
-dd($all_subscriber_data);
+
             $import_resp = $subscriber->import($all_subscriber_data, false, false, false);
 
             if($import_resp->was_successful()) {
+                $this->info('Import Count:'.count($all_subscriber_data));
                 $this->info('Import Success');
             } else {
 
