@@ -43,7 +43,7 @@ class AddMissingUserToCM extends Command
 
         $subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
-        User::customers()->where('email', 'not like', '%squeegyapp-tmp.com')->take(10)->chunk(1000, function($users) use ($subscriber) {
+        User::customers()->where('email', 'not like', '%squeegyapp-tmp.com')->chunk(1000, function($users) use ($subscriber) {
 
             foreach($users as $user) {
 
@@ -66,7 +66,7 @@ class AddMissingUserToCM extends Command
                 $all_subscriber_data[] = $subscriber_data;
 
             }
-
+dd($all_subscriber_data);
             $import_resp = $subscriber->import($all_subscriber_data, false, false, false);
 
             if($import_resp->was_successful()) {
