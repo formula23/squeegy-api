@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\ChargeOrder',
         'App\Console\Commands\ReviewWashNotification',
         'App\Console\Commands\DansTests',
+        'App\Console\Commands\AddMissingUserToCM',
 	];
 
 	/**
