@@ -93,7 +93,7 @@ class AuthController extends Controller {
                     $anon_user->email = $fb_user->getEmail();
                     $anon_user->updateFbFields($fb_user);
 
-                    Event::fire(new UserRegistered());
+                    Event::fire(new UserRegistered($anon_user));
                 }
                 return $this->response->errorWrongArgs('You do not have an account. Please register.');
                 
