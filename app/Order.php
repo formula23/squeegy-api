@@ -223,6 +223,14 @@ class Order extends Model {
         if(!$this->schedule) return null;
         return ($this->schedule->type=='subscription') ? true : false;
     }
+
+    /**
+     * @return bool
+     */
+    public function isPartner()
+    {
+        return ($this->partner ? true : false );
+    }
     
     /**
      * @return bool|null
