@@ -146,11 +146,11 @@ class Schedule
 
         $container=[];
 //        $cur_hr = $this->now->hour;
-//        $this->now = Carbon::create(2016,5,10,20,0,0);
+//        $this->now = Carbon::create(2016,5,12,18,1,0);
 //        Log::info("**********************************");
 //        Log::info($this->now);
         $cur_hr = $this->now->hour;
-//        $cur_hr = 13;
+//        $cur_hr = 17;
 //        Log::info('cur hr:'.$cur_hr);
 //        Log::info('day of week:...'.$this->now->dayOfWeek);
 
@@ -223,16 +223,19 @@ class Schedule
                         if($this->now->dayOfWeek===0) {
 //                            Log::info('next '.$day['day']);
 //                            $n = $this->now;
+//                            $day_display = $n->addDay($day['day_of_week']);
                             $day_display = Carbon::now()->addDay($day['day_of_week']);
 
                         } else {
 //                            Log::info($day['day']);
 //                            $n = $this->now;
+//                            $day_display = $n->addDay($day['day_of_week'] - $this->now->dayOfWeek);
                             $day_display = Carbon::now()->addDay($day['day_of_week'] - $this->now->dayOfWeek);
                         }
 
                     } else {
 //                        $n = $this->now;
+//                        $day_display = $n->next($day['day_of_week']);
                         $day_display = Carbon::now()->next($day['day_of_week']);
                     }
                 }
@@ -240,8 +243,13 @@ class Schedule
 //                Log::info($day_display);
 //                Log::info($day);
 //                Log::info($day_display->format($this->day_format));
-                if($day_display->isToday()) {
+                if($day_display->isToday() && ($cur_hr >= Carbon::parse($day['time_start'])->hour)) {
                     $day['time_start'] = $day_display->addHour(1)->format('g:00a');
+                    if($cur_hr+1 == Carbon::parse($day['time_end'])->hour) {
+                        $day['time_end'] = $day_display->addHour(1)->format('g:00a');
+                    }
+//                    Log::info($cur_hr);
+//                    Log::info(Carbon::parse($day['time_start'])->hour);
                 }
 
                 $container[$idx]['day'] = $day_display->format($this->day_format);
