@@ -518,7 +518,11 @@ class OrdersController extends Controller {
             return $this->response->errorNotFound('Order not found');
         }
 
+        Log::info("partner:.....");
+        Log::info($order->partner);
+
         if( ! empty($order->partner)) {
+            Log::info(trans('messages.order.discount.partners'));
             return trans('messages.order.discount.partners');
         }
 
