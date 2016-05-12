@@ -26,6 +26,7 @@ class UserTransformer extends TransformerAbstract {
         'activity_logs',
         'latest_activity_log',
         'payment_methods',
+        'zones',
     ];
 
     public function transform(User $user)
@@ -109,6 +110,13 @@ class UserTransformer extends TransformerAbstract {
         $washer_log->log_off = $user->log_off;
 
         return $this->item($washer_log, new WasherActivityLogTransformer());
+    }
+
+    public function includeZones(User $user)
+    {
+        if( ! $user->is('worker')) return null;
+
+        return $this->collection($user->zones, new ZoneTransformer());
     }
 
 }
