@@ -281,11 +281,13 @@ class OrdersController extends Controller {
 
         $request_data = $request->all();
 
-        $promo_code_msg = $this->applyPromoCode($order, $request_data);
-        if($promo_code_msg) {
-            return $this->response->errorWrongArgs($promo_code_msg);
+        if(isset($request_data['promo_code'])) {
+            $promo_code_msg = $this->applyPromoCode($order, $request_data);
+            if($promo_code_msg) {
+                return $this->response->errorWrongArgs($promo_code_msg);
+            }
         }
-
+        
         if( ! empty($request_data['rating']))
         {
 
@@ -521,8 +523,7 @@ class OrdersController extends Controller {
 //        Log::info("partner:.....");
 //        Log::info($order->partner);
 
-        if( ! empty($order->partner_id)) {
-//            Log::info(trans('messages.order.discount.partners'));
+        if($order->partner_id) {
             return trans('messages.order.discount.partners');
         }
 
