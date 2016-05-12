@@ -521,7 +521,7 @@ class OrdersController extends Controller {
 //        Log::info("partner:.....");
 //        Log::info($order->partner);
 
-        if( ! empty($order->partner)) {
+        if( ! empty($order->partner_id)) {
 //            Log::info(trans('messages.order.discount.partners'));
             return trans('messages.order.discount.partners');
         }
