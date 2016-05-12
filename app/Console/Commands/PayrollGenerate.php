@@ -30,26 +30,29 @@ class PayrollGenerate extends Command {
         6861 => 'Angel Rodriguez',
         7146 => 'Leonel Yanez',
         7188 => 'Santos Aguilar',
-        7269 => 'Salvador Carcel',
-
+        7269 => 'Salvador Lacarcel',
+        7279 => 'Cleto Hernandez',
+        7506 => 'Rafael Sanchez',
+        7527 => 'Gonzalo Hidalgo',
     ];
 
+    protected $ids_to_process=[];
+
     protected $training = [
-        6861=>93, //angel
-        7188 => 288, //Santos
-        7146 => 102, //Leonel
-        7269 => 96, //Salvador
+        7279=>102, //Cleto
+        7527 => 192, //gonzalo
+//        7146 => 102, //Leonel
+//        7279 => 96, //Salvador
     ];
 
     protected $ignore_midweek_special = [
         7188, //santos
         7269, //salvador
+        7527, //gonzalo
     ];
 
     protected $bonus = [
-//        5482 => [ // Juan L
-//            3 => 50,
-//        ]
+        5482 => 25,
     ];
 
     protected $ignore_ids =[
@@ -84,6 +87,14 @@ class PayrollGenerate extends Command {
         2882, //Juan lopez
         7146, //Leo
         5482, //juan lara
+        7506, //Rafael
+    ];
+
+    protected $default_kit_fee = 25;
+
+    protected $kit_fee = [
+//        7269 => 50, // salvador
+//        7527 => 50, //gonzalo
     ];
 
     protected $min_weekly_worker_id = [
@@ -96,20 +107,21 @@ class PayrollGenerate extends Command {
 		3198 => [ //david
             1=>100,
             2=>100,
-//            3=>100, //david sick
+            3=>100, //david sick
             4=>100,
             5=>100,
             6=>100,
 		],
         1847 => [ //ricardo
-            0 => 150,
+            0 => 100,
+            2 => 100,
+            3 => 100,
             4 => 100,
-            5 => 100,
             6 => 100,
         ],
-        2882 => [ // juan lopez
-            0 => 140
-        ],
+//        2882 => [ // juan lopez
+//            0 => 140
+//        ],
 //        5482 => [ //Juan L
 //            4 => 150,
 //        ],
@@ -117,25 +129,30 @@ class PayrollGenerate extends Command {
 //            4 => 200,
 //            6 => 180,
 //        ],
-        2149 => [ //daniel
-            0 => 150,
-        ],
+//        2149 => [ //daniel
+//            0 => 150,
+//        ],
         6349 => [ //Melvyn
-            0 => 100,
+//            0 => 100,
             1 => 120,
         ],
-        6861 => [ //Angel
-            4 => 100,
-        ],
+//        6861 => [ //Angel
+//            4 => 100,
+//        ],
+//        7269 => [ //salvador
+//            1 => 75,
+//        ]
 	];
 
     protected $washer_training = [
         3198 => [ //david
-            2 => 100, // salvador
+            1 => 100, // gonzalo
+            2 => 100, // gonzalo
+            3 => 100, // edgardo
         ],
-        2882 => [ //juan lopez
-            4 => 100, //edgar
-        ]
+//        2882 => [ //juan lopez
+//            4 => 100, //edgar
+//        ]
     ];
 
 	/**
@@ -162,6 +179,11 @@ class PayrollGenerate extends Command {
 	 */
 	public function fire()
 	{
+
+        if($this->option('worker_ids')) {
+            $this->ids_to_process = explode(",", $this->option('worker_ids'));
+        }
+
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
 		Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
@@ -195,7 +217,7 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['job_count']++;
             @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $this->washer_names[$order->worker_id], 'email' => $order->worker->email];
-            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : 25);
+            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : (isset($this->kit_fee[$order->worker->id]) ? $this->kit_fee[$order->worker->id] : $this->default_kit_fee ) );
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['minimum'] = 0;
             @$orders_by_worker[$order->worker->id]['referral_program'] = 0;
@@ -211,9 +233,9 @@ class PayrollGenerate extends Command {
             }
 
             @$orders_by_worker[$order->worker->id]['bonus'] = 0;
-//            if (isset($this->bonus[$order->worker->id])) {
-//                @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
-//            }
+            if (isset($this->bonus[$order->worker->id])) {
+                @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
+            }
 
             //did order have surcharge
             $surcharge_row = $order->order_details()->where('name', 'like', '%surcharge')->first();
@@ -297,7 +319,8 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
                 $orders_by_worker[$order->worker->id]['minimum'] +
-                $orders_by_worker[$order->worker->id]['training'] -
+                $orders_by_worker[$order->worker->id]['training'] +
+                $orders_by_worker[$order->worker->id]['bonus'] -
                 $orders_by_worker[$order->worker->id]['rental']);
 
         }
@@ -379,12 +402,15 @@ class PayrollGenerate extends Command {
 				'week_of'=>$week_of,
 			];
 
+            //only send to IDs that are in the array if there is an array
+            if(count($this->ids_to_process) && !in_array($worker_id, $this->ids_to_process)) continue;
+
 			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
 			{
                 $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
                 
 				$message->from('payments@squeegyapp.com', 'Squeegy Payments');
-                $message->replyTo('tech@squeegyapp.com', 'Squeegy');
+                $message->replyTo('support@squeegyapp.com', 'Squeegy');
 
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('dan@squeegyapp.com', 'Dan Schultz');
@@ -441,7 +467,7 @@ class PayrollGenerate extends Command {
 	protected function getArguments()
 	{
 		return [
-			['send_email', InputArgument::OPTIONAL, 'Send email to washers or to internal review.', 'review'],
+            ['send_email', InputArgument::OPTIONAL, 'Send email to washers or to internal review.', 'review'],
 		];
 	}
 
@@ -454,6 +480,7 @@ class PayrollGenerate extends Command {
 	{
 		return [
 //			['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
+            ['worker_ids', null, InputOption::VALUE_OPTIONAL, 'Only send emails to the following worker IDs -- 1111,2222,3333'],
 		];
 	}
 
