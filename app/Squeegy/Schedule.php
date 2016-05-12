@@ -237,7 +237,12 @@ class Schedule
                     }
                 }
 
+//                Log::info($day_display);
+//                Log::info($day);
 //                Log::info($day_display->format($this->day_format));
+                if($day_display->isToday()) {
+                    $day['time_start'] = $day_display->addHour(1)->format('g:00a');
+                }
 
                 $container[$idx]['day'] = $day_display->format($this->day_format);
                 $container[$idx]['time_slots'][] = implode(" - ", [$day['time_start'], $day['time_end']]);
