@@ -79,9 +79,13 @@ class AddMissingUserToCM extends Command
 
                 if($import_resp->response->ResultData->TotalExistingSubscribers > 0) {
                     $this->info('Updated '.$import_resp->response->ResultData->TotalExistingSubscribers.' existing subscribers in the list');
-                } else if($import_resp->response->ResultData->TotalNewSubscribers > 0) {
+                }
+
+                if($import_resp->response->ResultData->TotalNewSubscribers > 0) {
                     $this->info('Added '.$import_resp->response->ResultData->TotalNewSubscribers.' to the list');
-                } else if(count($import_resp->response->ResultData->DuplicateEmailsInSubmission) > 0) {
+                }
+
+                if(count($import_resp->response->ResultData->DuplicateEmailsInSubmission) > 0) {
                     $this->info(count($import_resp->response->ResultData->DuplicateEmailsInSubmission).' were duplicated in the provided array.');
                 }
 
