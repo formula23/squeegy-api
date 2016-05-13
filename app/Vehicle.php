@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Vehicle extends Model {
 
@@ -26,15 +27,10 @@ class Vehicle extends Model {
      */
     public function hasSurCharge()
     {
-        if(!$this->type) return false;
+        if( ! $this->type) return false;
         //get Service attribs
-        $srv_attb_qry = ServiceAttrib::where('vehicle_type', $this->type)->first();
-        $service_attrib = $srv_attb_qry->first();
+        $service_attrib = ServiceAttrib::where('vehicle_type', $this->type)->first();
         return ($service_attrib->surcharge > 0 ? true : false);
-//        if($this->type == "Car") return false;
-//        if(in_array($this->type, ['SUV','Truck']) && $this->size == "Large") return true;
-//        if(in_array($this->type, ['Minivan','Van'])) return true;
-//        return false;
     }
 
     public function full_name()
