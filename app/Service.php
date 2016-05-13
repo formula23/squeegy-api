@@ -97,6 +97,7 @@ class Service extends Model {
      */
     public function isMidWeekSpecial()
     {
+        return false;
         return in_array($this->date->dayOfWeek, [2,3]) ? true : false ;
     }
 
