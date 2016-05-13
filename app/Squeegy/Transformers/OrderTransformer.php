@@ -12,6 +12,7 @@ use App\OrderSchedule;
 use App\Squeegy\Orders;
 use App\Order;
 use App\Squeegy\Payments;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use League\Fractal\TransformerAbstract;
@@ -25,6 +26,7 @@ class OrderTransformer extends TransformerAbstract {
         'worker',
         'customer',
         'schedule',
+        'order_details',
     ];
 
     protected $availableIncludes = [
@@ -58,6 +60,7 @@ class OrderTransformer extends TransformerAbstract {
             'completed_time' => ($order->done_at) ? strtotime($order->done_at) : null,
             'photo_count' => $order->photo_count,
             'rating' => $order->rating,
+            'rating_comment' => $order->rating_comment,
             'platform' => $order->push_platform,
 
             'confirm_time' => $order->confirm_at ? ($order->schedule ? $order->created_at->format('n/d g:ia') : $order->confirm_at->format('g:ia') ) : "",
@@ -112,7 +115,8 @@ class OrderTransformer extends TransformerAbstract {
     }
 
     public function includeReferrer(Order $order) {
-        return $this->item($order->referrer, new UserTransformer);
+        $referrer = ($order->referrer?:new User());
+        return $this->item($referrer, new UserTransformer);
     }
 
     public function includeCustomer(Order $order) {
@@ -122,8 +126,10 @@ class OrderTransformer extends TransformerAbstract {
     public function includeService(Order $order)
     {
         $order->service->name = $order->service->getOriginal('name');
-        if($order->vehicle->hasSurCharge() && !request()->user()->is('worker')) {
-            $order->service->name = $order->service->getOriginal('name')." + $".number_format($order->vehicleSurCharge()/100)."(".$order->vehicle->type.")";
+        $order_vehicle_surcharge = $order->vehicleSurCharge();
+        Log::info($order_vehicle_surcharge);
+        if($order->vehicle->hasSurCharge() && !request()->user()->is('worker') && $order_vehicle_surcharge) {
+            $order->service->name = $order->service->getOriginal('name')." + $".number_format($order_vehicle_surcharge/100)."(".$order->vehicle->type.")";
         }
         
         return $this->item($order->service, new ServiceTransformer);
@@ -166,5 +172,8 @@ class OrderTransformer extends TransformerAbstract {
         return $this->item($order->partner, new PartnerTransformer());
     }
 
+    public function includeOrderDetails(Order $order)
+    {
 
+    }
 }
