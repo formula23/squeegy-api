@@ -102,7 +102,6 @@ class UserTransformer extends TransformerAbstract {
 
     public function includeLatestActivityLog(User $user)
     {
-//        dd($user);
         $washer_log = new WasherActivityLog();
         $washer_log->login = $user->login;
         $washer_log->logout = $user->logout;
