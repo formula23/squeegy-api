@@ -47,12 +47,20 @@ class UserController extends Controller {
         $type = $request->input('type');
         if(!$type) $type = "customers";
 
-        $usr_qry = User::$type();
+        $usr_qry = User::$type()->where('email','not like','%squeegyapp-tmp.com');
 
         if($type=="workers") { //get activity log
             $usr_qry->leftJoin(\DB::raw("(select user_id, login, logout, log_on, log_off from washer_activity_logs where logout is null order by log_on desc) as wal"), function($q) {
                 $q->on('users.id', '=', 'wal.user_id');
             })->groupBy('users.id');
+        }
+
+        if($request->input('name')) {
+            $usr_qry->where('name', 'like', '%'.$request->input('name')."%");
+        }
+
+        if($request->input('email')) {
+            $usr_qry->where('email', 'like', '%'.$request->input('email')."%");
         }
 
         if($request->input('is_active')) {

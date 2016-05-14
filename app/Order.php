@@ -341,6 +341,13 @@ class Order extends Model {
         return ( $service_attrib ? $service_attrib->surcharge : 0 );
     }
 
+    public function hasSurCharge()
+    {
+        $surcharge_record = $this->order_details()->where('name','like','%surcharge')->first();
+        if(!$surcharge_record) return 0;
+        return $surcharge_record->amount;
+    }
+
     public function get_etc()
     {
         $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
