@@ -100,9 +100,10 @@ class UserController extends Controller {
 	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio, $id=0)
 	{
         $data = $request->all();
-
+Log::info($id);
+Log::info($data);
         $user = ( $id ? User::find($id) : $request->user() );
-
+Log::info(print_r($user, 1));
         if($user->is('worker') && !empty($data['zone_id'])) {
             if($data['attach']=='yes') {
                 $user->zones()->attach($data['zone_id']);
