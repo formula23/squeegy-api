@@ -28,7 +28,7 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::get('user/{id}', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
-    Route::put('user', 'UserController@update');
+    Route::put('user/{id?}', 'UserController@update');
 
     Route::post('user/duty', 'UserController@duty');
     Route::post('user/location', 'UserController@location');

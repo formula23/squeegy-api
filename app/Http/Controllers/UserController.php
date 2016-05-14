@@ -99,14 +99,25 @@ class UserController extends Controller {
     /**
      * Update the specified resource in storage.
      *
+     * @param null $id
      * @param UpdateUserRequest $request
      * @param SnsClient $sns_client
      * @param Twilio $twilio
      * @return Response
      */
-	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio)
+	public function update(UpdateUserRequest $request, SnsClient $sns_client, Twilio $twilio, $id=0)
 	{
         $data = $request->all();
+
+        $user = ( $id ? User::find($id) : $request->user() );
+
+        if($user->is('worker') && !empty($data['zone_id'])) {
+            if($data['attach']=='yes') {
+                $user->zones()->attach($data['zone_id']);
+            } else {
+                $user->zones()->detach($data['zone_id']);
+            }
+        }
 
         if(isset($data['push_token'])) {
 
@@ -144,15 +155,15 @@ class UserController extends Controller {
 
         Stripe::setApiKey(\Config::get('services.stripe.secret'));
 
-        if( ! $request->user()->stripe_customer_id) {
+        if( ! $user->stripe_customer_id) {
             $customer = StripeCustomer::create([
-                "description" => (isset($data["name"]) ? $data["name"] : $request->user()->name ),
-                "email" => (isset($data["email"]) ? $data["email"] : $request->user()->email ),
+                "description" => (isset($data["name"]) ? $data["name"] : $user->name ),
+                "email" => (isset($data["email"]) ? $data["email"] : $user->email ),
             ]);
             $data['stripe_customer_id'] = $customer->id;
 
         } else {
-            $customer = StripeCustomer::retrieve($request->user()->stripe_customer_id);
+            $customer = StripeCustomer::retrieve($user->stripe_customer_id);
             if( ! empty($data['email'])) $customer->email = $data['email'];
             if( ! empty($data['name'])) $customer->description = $data['name'];
         }
@@ -175,10 +186,10 @@ class UserController extends Controller {
             \Bugsnag::notifyException($e);
         }
 
-// && ! empty($request->user()->phone) -- removed 9/17
+// && ! empty($user->phone) -- removed 9/17
 
         if( ! empty($data["phone"])) {
-            if($data["phone"] != preg_replace("/^\+1/","",$request->user()->phone)) {
+            if($data["phone"] != preg_replace("/^\+1/","",$user->phone)) {
                 try {
                     $twilio->message($data["phone"], trans('messages.profile.phone_verify', ['verify_code'=>config('squeegy.sms_verification')]));
                 } catch(\Services_Twilio_RestException $e) {
@@ -192,19 +203,19 @@ class UserController extends Controller {
             $data['tmp_fb'] = 0;
         }
 
-        $original_email = $request->user()->email;
+        $original_email = $user->email;
 
-        $request->user()->update($data);
+        $user->update($data);
 
         if( ! empty($data['email']) && preg_match('/squeegyapp-tmp\.com$/', $original_email)) {
-            \Event::fire(new UserRegistered($request->user()));
+            \Event::fire(new UserRegistered($user));
         }
 
         if( ! preg_match('/squeegyapp-tmp\.com$/', $original_email) &&  (! empty($data['email']) ||  ! empty($data['name']))) {
-            \Event::fire(new UserUpdated($original_email, $request->user()));
+            \Event::fire(new UserUpdated($original_email, $user));
         }
 
-        return $this->response->withItem($request->user(), new UserTransformer());
+        return $this->response->withItem($user, new UserTransformer());
 	}
 
     public function phoneVerify(Twilio $twilio)
