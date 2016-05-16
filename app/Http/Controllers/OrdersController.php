@@ -253,7 +253,7 @@ class OrdersController extends Controller {
         }
 
         ///use available credits - cannot redeem credits for partner washes
-        if( ! $order->isPartner() && $user->availableCredit()) {
+        if( ! $order->isPartner() && ! $order->isSubscription() && $user->availableCredit()) {
             $order->credit = min($order->total, $user->availableCredit());
             $order->total -= $order->credit;
         }
