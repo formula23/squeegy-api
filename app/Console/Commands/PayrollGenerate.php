@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Input\InputOption;
@@ -39,8 +40,8 @@ class PayrollGenerate extends Command {
     protected $ids_to_process=[];
 
     protected $training = [
-        7279=>102, //Cleto
-        7527 => 192, //gonzalo
+//        7279=>102, //Cleto
+//        7527 => 192, //gonzalo
 //        7146 => 102, //Leonel
 //        7279 => 96, //Salvador
     ];
@@ -52,7 +53,13 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
-        5482 => 25,
+//        5482 => 10,
+//        2882 => 10,
+    ];
+
+    protected $referral_code = [
+        5482 => 10,
+        2882 => 10,
     ];
 
     protected $ignore_ids =[
@@ -107,7 +114,7 @@ class PayrollGenerate extends Command {
 		3198 => [ //david
             1=>100,
             2=>100,
-            3=>100, //david sick
+            3=>100,
             4=>100,
             5=>100,
             6=>100,
@@ -145,14 +152,30 @@ class PayrollGenerate extends Command {
 	];
 
     protected $washer_training = [
-        3198 => [ //david
-            1 => 100, // gonzalo
-            2 => 100, // gonzalo
-            3 => 100, // edgardo
+//        3198 => [ //david
+//            1 => 100, // gonzalo
+//            2 => 100, // gonzalo
+//            3 => 100, // edgardo
+//        ],
+        2882 => [ //juan lopez
+            2 => 100, //guillermo
+            3 => 100, //guillermo
+        ]
+    ];
+
+    protected $onsite =[
+        3198 => [
+            4 => 130,
+            5 => 130,
         ],
-//        2882 => [ //juan lopez
-//            4 => 100, //edgar
-//        ]
+        2882 => [
+            4 => 150,
+            5 => 150,
+        ],
+        2149 => [
+            4 => 75,
+            5 => 60,
+        ]
     ];
 
 	/**
@@ -196,6 +219,7 @@ class PayrollGenerate extends Command {
             ->with('schedule')
 			->where('status', 'done')
 			->whereRaw('WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
+            ->whereNull('partner_id')
 //            ->where('worker_id', 6861)
 			->orderBy('done_at')->get();
 
@@ -221,6 +245,7 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['minimum'] = 0;
             @$orders_by_worker[$order->worker->id]['referral_program'] = 0;
+            @$orders_by_worker[$order->worker->id]['referrals'] = 0;
             @$orders_by_worker[$order->worker->id]['daily_min_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['total_washer_training'] = 0;
             @$orders_by_worker[$order->worker->id]['total_bonus'] = 0;
@@ -235,6 +260,11 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['bonus'] = 0;
             if (isset($this->bonus[$order->worker->id])) {
                 @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
+            }
+
+            @$orders_by_worker[$order->worker->id]['referral_code'] = 0;
+            if (isset($this->referral_code[$order->worker->id])) {
+                @$orders_by_worker[$order->worker->id]['referral_code'] = (int)@$this->referral_code[$order->worker->id];
             }
 
             //did order have surcharge
@@ -320,9 +350,25 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
                 $orders_by_worker[$order->worker->id]['minimum'] +
                 $orders_by_worker[$order->worker->id]['training'] +
+                $orders_by_worker[$order->worker->id]['referral_code'] +
                 $orders_by_worker[$order->worker->id]['bonus'] -
                 $orders_by_worker[$order->worker->id]['rental']);
 
+        }
+
+
+        foreach($this->onsite as $worker_id=>$onsite_details) {
+            if (!isset($orders_by_worker[$worker_id])) continue;
+
+            foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$day_details) {
+
+                if(isset($onsite_details[$day_details['date']->dayOfWeek])) {
+                    @$day_details['onsite'] += $onsite_details[$day_details['date']->dayOfWeek];
+                    $orders_by_worker[$worker_id]['jobs']['total_cog'] += $day_details['onsite'];
+                    $orders_by_worker[$worker_id]['jobs']['total'] += $day_details['onsite'];
+                    $orders_by_worker[$worker_id]['total_pay'] += $day_details['onsite'];
+                }
+            }
         }
 
         foreach($this->min_day_worker_id as $worker_id=>$worker_min_details) {
@@ -330,8 +376,8 @@ class PayrollGenerate extends Command {
             foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$details) {
 
 //                if(in_array($details['date']->dayOfWeek, $worker_min_details['days']) && $details['pay'] < $worker_min_details['min']) {
-                if(isset($worker_min_details[$details['date']->dayOfWeek]) && $details['pay'] < $worker_min_details[$details['date']->dayOfWeek]) {
-                    $details['min'] = $worker_min_details[$details['date']->dayOfWeek] - $details['pay'];
+                if(isset($worker_min_details[$details['date']->dayOfWeek]) && ($details['pay'] + @(int)$details['onsite']) < $worker_min_details[$details['date']->dayOfWeek]) {
+                    @$details['min'] = $worker_min_details[$details['date']->dayOfWeek] - $details['pay'] - $details['onsite'];
 //                    if($details['pay'] === 0) $details['pay'] = $details['min'];
                     $orders_by_worker[$worker_id]['total_pay'] += $details['min'];
                     @$orders_by_worker[$worker_id]['daily_min_pay'] += $details['min'];
@@ -355,6 +401,7 @@ class PayrollGenerate extends Command {
             }
         }
 
+
         foreach($this->bonus as $worker_id=>$bonus_details) {
             if(!isset($orders_by_worker[$worker_id])) continue;
             foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$details) {
@@ -371,7 +418,7 @@ class PayrollGenerate extends Command {
 
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[6861]);
+        dd($orders_by_worker[5482]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
@@ -414,7 +461,6 @@ class PayrollGenerate extends Command {
 
 				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 					$message->to('dan@squeegyapp.com', 'Dan Schultz');
-//					$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 				} else {
 					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
 					$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
@@ -444,11 +490,9 @@ class PayrollGenerate extends Command {
             
 			if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
 				$message->to('dan@squeegyapp.com', 'Dan Schultz');
-				$message->cc('ben@squeegyapp.com', 'Ben Grodsky');
 			} else {
 				$message->to('Terri@lrmcocpas.com', 'Terri Perkins');
 				$message->cc('Anna@lrmcocpas.com', 'Anna Asuncion');
-				$message->bcc('ben@squeegyapp.com', 'Ben Grodsky');
 				$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
 				$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
 			}

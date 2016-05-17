@@ -36,7 +36,7 @@
 
     @foreach($washer_info['jobs']['days'] as $date=>$day)
 
-        @if( (isset($day['pay']) && $day['pay'] > 0) || (isset($day['min']) && $day['min'] > 0) )
+        @if( (isset($day['pay']) && $day['pay'] > 0) || (isset($day['min']) && $day['min'] > 0) || (isset($day['onsite']) && $day['onsite'] > 0) )
 
         <tr>
             <td colspan="{{ $colspan + 1 }}"><strong>{{ $date }}</strong></td>
@@ -66,6 +66,13 @@
 
         @endforeach
 
+        @if(isset($day['onsite']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>On-site:</strong></td>
+                <td>${{ number_format($day['onsite'], 2)  }}</td>
+            </tr>
+        @endif
+
         @if(isset($day['min']))
             <tr>
                 <td colspan="{{ $colspan }}" class="text-right"><strong>Minimum:</strong></td>
@@ -82,7 +89,7 @@
 
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'] + @$day['min'], 2)  }}</td>
+            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'], 2)  }}</td>
         </tr>
 
         <tr>
@@ -102,8 +109,8 @@
 
     @if($washer_info['rental'])
     <tr>
-        <td colspan="{{ $colspan }}" class="text-right"><strong>Equipment Rental:</strong></td>
-        <td>- ${{ number_format($washer_info['rental'], 2) }}</td>
+        <td colspan="{{ $colspan }}" class="text-right"><strong>Equipment Rental (WAIVED):</strong></td>
+        <td><span style="text-decoration: line-through">- ${{ number_format($washer_info['rental'], 2) }}</span></td>
     </tr>
     @endif
 
@@ -125,6 +132,13 @@
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Bonus:</strong></td>
             <td>${{ number_format($washer_info['bonus'], 2) }}</td>
+        </tr>
+    @endif
+
+    @if(@$washer_info['referral_code'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Referral Code:</strong></td>
+            <td>${{ number_format($washer_info['referral_code'], 2) }}</td>
         </tr>
     @endif
 

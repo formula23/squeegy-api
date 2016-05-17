@@ -20,6 +20,7 @@
         <th>Weekly Min. Pay</th>
         <th>Daily Min. Pay</th>
         <th>Referral Program</th>
+        <th>Referral Code</th>
         <th>Training</th>
         <th>Washer Training</th>
         <th>Bonus</th>
@@ -38,6 +39,7 @@
             <td>${{ number_format($worker['minimum'], 2) }}</td>
             <td>${{ number_format($worker['daily_min_pay'] + $worker['total_bonus'], 2) }}</td>
             <td>${{ number_format($worker['referral_program'], 2) }}</td>
+            <td>${{ number_format($worker['referral_code'], 2) }}</td>
             <td>${{ number_format($worker['training'], 2) }}</td>
             <td>${{ number_format($worker['total_washer_training'], 2) }}</td>
             <td>${{ number_format($worker['bonus'], 2) }}</td>
