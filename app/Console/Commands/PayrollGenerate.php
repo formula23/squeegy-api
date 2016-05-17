@@ -418,7 +418,7 @@ class PayrollGenerate extends Command {
 
 //        dd("adsf");
 //        dd($orders_by_worker);
-        dd($orders_by_worker[5482]);
+//        dd($orders_by_worker[5482]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
