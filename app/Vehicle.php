@@ -27,10 +27,14 @@ class Vehicle extends Model {
      */
     public function hasSurCharge()
     {
-        if( ! $this->type) return false;
-        //get Service attribs
-        $service_attrib = ServiceAttrib::where('vehicle_type', $this->type)->first();
-        return ($service_attrib->surcharge > 0 ? true : false);
+        if($this->type == "Car") return false;
+        if(in_array($this->type, ['SUV','Truck']) && $this->size == "Large") return true;
+        if(in_array($this->type, ['Minivan','Van'])) return true;
+        return false;
+//        if( ! $this->type) return false;
+//        //get Service attribs
+//        $service_attrib = ServiceAttrib::where('vehicle_type', $this->type)->first();
+//        return ($service_attrib->surcharge > 0 ? true : false);
     }
 
     public function full_name()

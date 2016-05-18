@@ -88,7 +88,7 @@ class Service extends Model {
      */
     public function attribDetails($type, $size)
     {
-//        $type = ($type!="Car" ? "Non-Car" : $type);
+        $type = ($type!="Car" ? "Non-Car" : $type);
         return $this->attribs()->where('vehicle_type', $type)->where('vehicle_size', $size);
     }
 

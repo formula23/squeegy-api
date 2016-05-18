@@ -26,7 +26,6 @@ class OrderTransformer extends TransformerAbstract {
         'worker',
         'customer',
         'schedule',
-        'order_details',
     ];
 
     protected $availableIncludes = [
@@ -170,8 +169,4 @@ class OrderTransformer extends TransformerAbstract {
         return $this->item($order->partner, new PartnerTransformer());
     }
 
-    public function includeOrderDetails(Order $order)
-    {
-
-    }
 }
