@@ -18,7 +18,7 @@ return [
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
         'new_order_admin' => ':order_service #:order_id - :eta :customer_address :customer_address_lnk',
-        'new_order_worker' => ':order_service #:order_id - :eta',
+        'new_order_worker' => ':order_service #:order_id - :eta :customer_address',
         'new_schedule_order' => 'New Scheduled :order_service #:order_id on :scheduled_day between :scheduled_time:location',
         'new_subscription_schedule_order' => 'New Subscription :order_service #:order_id for :subsription_schedule_time',
         'same_status' => 'This order is already in the \':status\' state.',

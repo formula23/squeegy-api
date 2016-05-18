@@ -50,9 +50,12 @@ class NotifyWorkerNewOrder {
 					'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model." ".$vehicle->color,
 					'customer_name' => $event->order->customer->first_name(),
 					'customer_phone' => $event->order->customer->phone,
-					'customer_address' => "\n\n".$event->order->location['street'].", ".( ! empty($event->order->location['city']) ? $event->order->location['city'] : "" )." ".$event->order->location['zip'],
 					'customer_address_lnk' => "\n\ncomgooglemaps://?q=".$event->order->location['lat'].",".$event->order->location['lon']."&views=traffic",
 				];
+
+				if($event->order->schedule && $event->order->schedule->window_open->hour==8) {
+                    $msg_data['customer_address'] = "\n\n".$event->order->location['street'].", ".( ! empty($event->order->location['city']) ? $event->order->location['city'] : "" )." ".$event->order->location['zip'];
+                }
 
                 $event->twilio->message($worker->phone, trans('messages.order.new_order_worker', $msg_data));
             }
