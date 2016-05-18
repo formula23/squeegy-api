@@ -50,6 +50,7 @@ class NotifyWorkerNewOrder {
 					'vehicle' => "\n".$vehicle->year." ".$vehicle->make." ".$vehicle->model." ".$vehicle->color,
 					'customer_name' => $event->order->customer->first_name(),
 					'customer_phone' => $event->order->customer->phone,
+                    'customer_address' => '',
 					'customer_address_lnk' => "\n\ncomgooglemaps://?q=".$event->order->location['lat'].",".$event->order->location['lon']."&views=traffic",
 				];
 
