@@ -32,8 +32,12 @@ return [
 	'stripe' => [
 		'model'  => 'App\User',
 		'secret' => env('STRIPE_API_KEY', ''),
+        'supply' => [
+            'model'  => 'App\User',
+            'secret' => env('STRIPE_SUPPLY_API_KEY', ''),
+        ]
 	],
-
+	
 	'mixpanel' => [
 		'api_key' => env('MIXPANEL_API_KEY'),
 		'token' => env('MIXPANEL_TOKEN'),

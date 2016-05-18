@@ -42,6 +42,7 @@ class UserTransformer extends TransformerAbstract {
             'is_anon' => $user->is_anon(),
             'available_credits' => $user->availableCredit(),
             'facebook_id' => $user->facebook_id,
+            'segment_id' => ($user->segment?$user->segment->segment_id:''),
         ];
     }
 
