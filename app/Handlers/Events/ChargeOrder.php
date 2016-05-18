@@ -60,7 +60,7 @@ class ChargeOrder {
                 $charge = $payments->capture($stripe_charge_id, $amt_to_capture);
                 $order->transactions()->create([
                     'charge_id'=>$charge->id,
-                    'amount'=>$charge->amount,
+                    'amount'=>$amt_to_capture,
                     'type'=>'capture',
                     'last_four'=>$charge->source->last4,
                     'card_type'=>$charge->source->brand,
