@@ -45,12 +45,7 @@ class AssignScheduleWashes extends Command
      */
     public function handle()
     {
-        $this->info(Carbon::now().' - Start assign scheduled wash process.');
-
-        if( ! Orders::open()) {
-            $this->info('Not open!');
-            return;
-        }
+        if( ! Orders::open()) return;
 
         $scheduled_orders = Order::ofStatus('schedule')
             ->with('schedule')
@@ -60,10 +55,9 @@ class AssignScheduleWashes extends Command
 //            ->where('id', 6817)
             ->get();
 
-        if( ! $scheduled_orders->count()) {
-            $this->info('No scheduled orders at this time.');
-            return;
-        }
+        if( ! $scheduled_orders->count()) return;
+
+        $this->info(Carbon::now().' - Start assign scheduled wash process.');
 
         foreach($scheduled_orders as $order) {
 
@@ -87,7 +81,6 @@ class AssignScheduleWashes extends Command
                 \Event::fire(new OrderWillCancel($order));
                 continue;
             }
-
 
             if ( ! empty($avail['actual_time'])) {
 
