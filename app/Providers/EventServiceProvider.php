@@ -87,6 +87,10 @@ class EventServiceProvider extends ServiceProvider {
         'App\Events\WashReview' => [
             'App\Listeners\NotifyCustomerReview',
         ],
+
+		'App\Events\OrderWillCancel' => [
+			'App\Listeners\NotifyAdminOrderWillCancel',
+		],
 	];
 
 	/**

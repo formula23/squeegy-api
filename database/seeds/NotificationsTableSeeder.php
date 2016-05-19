@@ -107,11 +107,20 @@ class NotificationsTableSeeder extends Seeder
         
         
         Notification::create([
-            'name'=>'Notify Corp Customer - Cancel',
+            'name'=>'Notify Customer - Cancel',
             'key'=>'messages.order.push_notice.cancel',
         ]);
 
-        
+        Notification::create([
+            'name'=>'Notify Customer - Schedule Cancel',
+            'key'=>'messages.order.push_notice_schedule.cancel',
+        ]);
+
+        Notification::create([
+            'name'=>'Notify Admin - Schedule Will Cancel',
+            'key'=>'messages.order.push_notice_schedule.will_cancel',
+        ]);
+
         DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // disable foreign key constraints
     }
 }

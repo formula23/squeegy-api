@@ -42,8 +42,9 @@ class ChargeCancelFee {
 			$cancel_fee = config('squeegy.cancellation_fee');
 
 			Log::info("strip charge id: ".$stripe_charge_id);
-			Log::info("credit:" .$credit);
-
+			Log::info("credit: ".$credit);
+			Log::info("status: ".$event->order->getOriginal('status'));
+			
 			if($this->order_seq[$event->order->getOriginal('status')] < 4) { //refund full
 				Log::info('Full REFUND');
 				$type = "void";

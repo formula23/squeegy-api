@@ -42,6 +42,10 @@ return [
             'review_wash' => 'Hi :customer_first_name, :washer_name will be done washing your car in about 10 minutes. If you would like to review the work, please go outside now.',
             'arriving_soon' => 'Your washer is arriving soon...',
         ],
+        'push_notice_schedule' => [
+            'will_cancel' => 'No washers avialable. Order# :order_id will be cancelled at :cancel_time',
+            'cancel' => 'We\'re very sorry but there are no washers currently available to perform your wash. We had to cancel your order. A full refund has been issued. Please contact customer service at support@squeegyapp.com for additional information.',
+        ],
         'push_notice_corp' => [
             'schedule' => "We have received your car wash order for :schedule_day @ :location\nThank you for using Squeegy!",
             'assign' => ':worker_name has added your vehicle to today\'s job queue.',

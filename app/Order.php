@@ -195,7 +195,13 @@ class Order extends Model {
     {
         return $this->belongsTo('App\Discount', 'discount_id');
     }
-    
+
+    public function scopeOfStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+
     /**
      * @return null|string
      */

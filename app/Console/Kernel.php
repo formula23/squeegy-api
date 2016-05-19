@@ -1,7 +1,9 @@
 <?php namespace App\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use File;
 
 class Kernel extends ConsoleKernel {
 
@@ -30,6 +32,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\ReviewWashNotification',
         'App\Console\Commands\DansTests',
         'App\Console\Commands\AddMissingUserToCM',
+        'App\Console\Commands\AssignScheduleWashes',
 	];
 
 	/**
@@ -42,6 +45,25 @@ class Kernel extends ConsoleKernel {
 	{
         $schedule->command('db:backup')->cron('* */6 * * *');
 		$schedule->command('order:review_wash_notice')->everyMinute();
+		$schedule->command('order:assign-scheduled')->everyMinute()->appendOutputTo($this->dir('assign-scheduled'));
 	}
+
+    protected function dir($process_name)
+    {
+        $base_dir = storage_path('logs')."/$process_name".$this->dir_structure();
+
+        if( ! File::exists($base_dir)) {
+            File::makeDirectory($base_dir, 0775, true);
+        }
+
+        $dir = $base_dir."/".Carbon::now()->format('d').".log";
+        
+        return $dir;
+    }
+
+    protected function dir_structure()
+    {
+        return Carbon::now()->format('/Y/m');
+    }
 
 }

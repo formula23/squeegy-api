@@ -24,7 +24,7 @@ class OrderSchedule extends Model {
     {
         if( ! $this->window_open) return null;
         if($this->type=='one-time') {
-            if(request()->user()->is('worker')) {
+            if(request()->user() && request()->user()->is('worker')) {
                 return $this->window_open->format('g:ia');
             } else {
                 return $this->window_open->format('g')."-".$this->window_close->format('ga');

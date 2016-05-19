@@ -29,6 +29,10 @@ class NotifyCustomerCancel extends BaseEventHandler {
 	 */
 	public function handle(OrderCancelledByWorker $event)
 	{
+        if($event->order->isSchedule()) {
+            $this->message_key = 'messages.order.push_notice_schedule.cancel';
+        }
+
         $this->message = trans($this->message_key);
 
         $arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm" );

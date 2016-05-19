@@ -21,5 +21,4 @@ class OrderAssign extends Event {
 		$this->order = $order;
 		$this->twilio = \App::make('Aloha\Twilio\Twilio');
 	}
-
 }

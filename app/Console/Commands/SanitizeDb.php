@@ -46,6 +46,7 @@ class SanitizeDb extends Command
         try {
             \DB::table('users')->update([
                 'push_token'=>'arn:aws:sns:us-east-1:171738602425:endpoint/APNS_SANDBOX/Squeegy/5212b7f5-0d68-34e4-943a-ea4014afb885',
+                'target_arn_gcm'=>'arn:aws:sns:us-east-1:171738602425:endpoint/GCM/Squeegy-Android/4c03a096-65e0-33a8-9bb3-95ac49f2d2cf',
                 'phone'=>'+13106004938',
                 'stripe_customer_id'=>'cus_7fTOZi8a6nwkNE',
             ]);

@@ -247,6 +247,8 @@ class Orders {
 
         $request_loc_pair = self::get_location($lat, $lng);
 
+        Log::info($request_loc_pair);
+
         self::geocode($request_loc_pair);
 
         $regions = Region::where('postal_code', self::$postal_code)->get();
@@ -266,12 +268,16 @@ class Orders {
 
         $active_workers = $active_workers_qry->get();
 //dd($active_workers[0]->jobs);
-        if(Request::header('X-Device')) {
-            if( ! $active_workers->count()) return ['schedule'=>true];
-        } else {
-            if( ! $active_workers->count()) return ['error_msg'=>trans('messages.service.not_available'), 'error_code'=>'not_available'];
-        }
 
+        if( ! $active_workers->count()) return ['schedule'=>true];
+
+//        if(Request::header('X-Device')||true) {
+//            if( ! $active_workers->count()) return ['schedule'=>true];
+//        } else {
+//            if( ! $active_workers->count()) return ['error_msg'=>trans('messages.service.not_available'), 'error_code'=>'not_available'];
+//        }
+
+        static::$complete_times_by_worker=[];
         $complete_times_by_worker_debug=[];
 
         $bypass_job = [];
@@ -660,6 +666,7 @@ class Orders {
     public static function geocode($latlng)
     {
         try {
+
             if(Cache::has($latlng)) {
                 $results = Cache::get($latlng);
                 self::parse_add_components($results);
@@ -672,6 +679,7 @@ class Orders {
                 }
             }
         } catch (\Exception $e) {
+            Log::info($e);
             \Bugsnag::notifyException($e);
         }
 
