@@ -88,9 +88,11 @@ class AssignScheduleWashes extends Command
                 continue;
             }
 
-            $this->info(print_r($avail, 1));
 
             if ( ! empty($avail['actual_time'])) {
+
+                $this->info('Lead time:'.$avail['actual_time']);
+                $this->info('Worker Id:'.$avail['worker_id']);
 
                 $arrival_time = Carbon::now()->addMinutes($avail['actual_time'] + $this->lead_time_buffer);
 
@@ -112,10 +114,11 @@ class AssignScheduleWashes extends Command
                         continue;
                     }
 
+                    $this->info('Fire OrderAssign event.');
                     \Event::fire(new OrderAssign($order));
 
                 } else {
-                    $this->info("don't assign yet...");
+                    $this->info("Don't assign yet...");
                 }
             }
         }
