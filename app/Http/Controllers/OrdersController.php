@@ -97,17 +97,16 @@ class OrdersController extends Controller {
             $order_bys=explode(",", $request->input('order_by'));
             foreach($order_bys as $order_by) {
                 $order_pts = explode(":", $order_by);
-
                 if($order_pts[0]=="confirm_at") {
                     $orderby = \DB::raw('IF(orders.eta, confirm_at + INTERVAL orders.eta MINUTE, confirm_at)');
                 } else {
                     $orderby = $order_pts[0];
                 }
-                
-                $orders->orderBy($orderby, ( ! empty($order_pts[1])?$order_pts[1]:''));
+
+                $orders->orderBy($orderby, ( ! empty($order_pts[1]) ? $order_pts[1] : 'asc' ));
             }
         }
-        
+
         if($request->input('zip')) {
             $orders->where('location' ,'like', "%".$request->input('zip')."%");
         }
