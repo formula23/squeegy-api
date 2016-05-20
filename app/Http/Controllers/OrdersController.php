@@ -76,8 +76,8 @@ class OrdersController extends Controller {
 
         if(Auth::user()->is('customer|worker')) {
             if(Auth::user()->is('worker')) {
-                $orders->where('worker_id', Auth::user()->id)
-                    ->orderBy('confirm_at', 'asc');
+                $orders->where('worker_id', Auth::user()->id);
+//                    ->orderBy('confirm_at', 'asc');
 //                $this->limit = 1;
             } else {
                 $orders->where('user_id', Auth::user()->id);
@@ -107,7 +107,7 @@ class OrdersController extends Controller {
                 $orders->orderBy($orderby, ( ! empty($order_pts[1])?$order_pts[1]:''));
             }
         }
-
+        
         if($request->input('zip')) {
             $orders->where('location' ,'like', "%".$request->input('zip')."%");
         }
@@ -135,7 +135,7 @@ class OrdersController extends Controller {
             else $this->limit = $request->input('limit');
         }
 
-//dd($orders->get());
+
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
