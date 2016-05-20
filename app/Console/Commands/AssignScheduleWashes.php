@@ -67,10 +67,6 @@ class AssignScheduleWashes extends Command
 //                continue;
 //            }
 
-            $this->info('Get availability for order id: ' . $order->id);
-
-            $this->info($order->location['lat'] . ", " . $order->location['lon']);
-
             $avail = Orders::availability($order->location['lat'], $order->location['lon']);
 
             //no washers available...
@@ -83,17 +79,18 @@ class AssignScheduleWashes extends Command
             }
 
             if ( ! empty($avail['actual_time'])) {
-
-                $this->info('Lead time:'.$avail['actual_time']);
-                $this->info('Worker Id:'.$avail['worker_id']);
-
+                
                 $arrival_time = Carbon::now()->addMinutes($avail['actual_time'] + $this->lead_time_buffer);
-
-                $this->info('Arrival time: ' . $arrival_time);
-                $this->info('Scheduled time: ' . $order->confirm_at);
-
+                
                 if ($arrival_time->gt($order->confirm_at)) {
-                    $this->info('Ok to assign...');
+                    
+                    $this->info('---Ok to assign order id: '.$order->id.'---');
+                    $this->info($order->location['lat'] . ", " . $order->location['lon']);
+                    $this->info('Lead time:'.$avail['actual_time']);
+                    $this->info('Worker Id:'.$avail['worker_id']);
+                    $this->info('Arrival time: ' . $arrival_time);
+                    $this->info('Scheduled time: ' . $order->confirm_at);
+                    
                     try {
                         $order->status = 'assign';
                         $order->assign_at = Carbon::now();
@@ -110,8 +107,6 @@ class AssignScheduleWashes extends Command
                     $this->info('Fire OrderAssign event.');
                     \Event::fire(new OrderAssign($order));
 
-                } else {
-                    $this->info("Don't assign yet...");
                 }
             }
         }
