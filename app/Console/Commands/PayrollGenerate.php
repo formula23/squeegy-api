@@ -35,15 +35,13 @@ class PayrollGenerate extends Command {
         7279 => 'Cleto Hernandez',
         7506 => 'Rafael Sanchez',
         7527 => 'Gonzalo Hidalgo',
+        7896 => 'Guillermo Lizardi',
     ];
 
     protected $ids_to_process=[];
 
     protected $training = [
-//        7279=>102, //Cleto
-//        7527 => 192, //gonzalo
-//        7146 => 102, //Leonel
-//        7279 => 96, //Salvador
+        7896=>192, //Guillermo Lizardi
     ];
 
     protected $ignore_midweek_special = [
@@ -53,17 +51,18 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
+//        3198 => 80, //david
+//        2882 => 10,
+
+    ];
+
+    protected $referral_code = [
 //        5482 => 10,
 //        2882 => 10,
     ];
 
-    protected $referral_code = [
-        5482 => 10,
-        2882 => 10,
-    ];
-
     protected $ignore_ids =[
-        6119, //ben
+        6119, //Ops
         1, //dan
     ];
 
@@ -110,6 +109,12 @@ class PayrollGenerate extends Command {
         //3198 => 600,
     ];
 
+    protected $daily_bonus_worker_id = [
+        3198 => [ //david
+            5=>80,
+        ],
+    ];
+
 	protected $min_day_worker_id = [
 		3198 => [ //david
             1=>100,
@@ -126,6 +131,13 @@ class PayrollGenerate extends Command {
             4 => 100,
             6 => 100,
         ],
+        7146 => [ //leonel
+            1 => 100,
+            2 => 100,
+            3 => 100,
+            4 => 100,
+//            5 => 100,
+        ],
 //        2882 => [ // juan lopez
 //            0 => 140
 //        ],
@@ -139,10 +151,10 @@ class PayrollGenerate extends Command {
 //        2149 => [ //daniel
 //            0 => 150,
 //        ],
-        6349 => [ //Melvyn
+//        6349 => [ //Melvyn
 //            0 => 100,
-            1 => 120,
-        ],
+//            1 => 120,
+//        ],
 //        6861 => [ //Angel
 //            4 => 100,
 //        ],
@@ -157,25 +169,25 @@ class PayrollGenerate extends Command {
 //            2 => 100, // gonzalo
 //            3 => 100, // edgardo
 //        ],
-        2882 => [ //juan lopez
-            2 => 100, //guillermo
-            3 => 100, //guillermo
-        ]
+//        2882 => [ //juan lopez
+//            2 => 100, //guillermo
+//            3 => 100, //guillermo
+//        ]
     ];
 
     protected $onsite =[
-        3198 => [
-            4 => 130,
-            5 => 130,
-        ],
-        2882 => [
-            4 => 150,
-            5 => 150,
-        ],
-        2149 => [
-            4 => 75,
-            5 => 60,
-        ]
+//        3198 => [
+//            4 => 130,
+//            5 => 130,
+//        ],
+//        2882 => [
+//            4 => 150,
+//            5 => 150,
+//        ],
+//        2149 => [
+//            4 => 75,
+//            5 => 60,
+//        ]
     ];
 
 	/**
@@ -402,7 +414,7 @@ class PayrollGenerate extends Command {
         }
 
 
-        foreach($this->bonus as $worker_id=>$bonus_details) {
+        foreach($this->daily_bonus_worker_id as $worker_id=>$bonus_details) {
             if(!isset($orders_by_worker[$worker_id])) continue;
             foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$details) {
 
