@@ -82,7 +82,8 @@ class Schedule
 
             $container[$idx] = ['day'=>$day];
 
-            $this->open = $this->open_hr;
+//            $this->open = $this->open_hr;
+            $this->open = 9;
             $this->close = $this->close_hr;
             $windows=[];
 
@@ -114,16 +115,12 @@ class Schedule
                 }
 
                 //will not block out windows at this time.
-//                $key = $this->now->format('m/d/Y ').$start->format('H');
-//                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key]>=3?false:true);
-//                if( ! $is_available) continue;
+                $key = $this->now->format('m/d/Y ').$start->format('H');
 
-//                if(Request::header('X-Device') == "Android") {
-//                    $windows[] = $start->format('g')."-".$start->addHours($this->time_slot_interval)->format('ga');
-//                } else {
-                    $windows[] = $start->format('g:00a')." - ".$start->addHours($this->time_slot_interval)->format('g:00a');
-//                }
+                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key] >= $this->cap($start->hour)?false:true);
+                if( ! $is_available) continue;
 
+                $windows[] = $start->format('g:00a')." - ".$start->addHours($this->time_slot_interval)->format('g:00a');
             }
 
             if(count($windows)) {
@@ -264,5 +261,9 @@ class Schedule
         return $container;
     }
 
+    private function cap($hr)
+    {
+        return ($hr==9 ? 2 : 3 );
+    }
 
 }
