@@ -52,21 +52,21 @@ class ServicesTableSeeder extends Seeder {
                 'Compact' => [
                     '1' => [
                         'etc'=>'30',
-                        'surcharge'=>'1000',
+                        'surcharge'=>'400',
                     ],
                     '2' => [
                         'etc'=>'60',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'800',
                     ],
                 ],
                 'Midsize' => [
                     '1' => [
                         'etc'=>'30',
-                        'surcharge'=>'1000',
+                        'surcharge'=>'400',
                     ],
                     '2' => [
                         'etc'=>'60',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'800',
                     ],
                 ],
                 'Large' => [
@@ -76,7 +76,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'1500',
                     ],
                 ],
             ],
@@ -84,21 +84,21 @@ class ServicesTableSeeder extends Seeder {
                 'Compact' => [
                     '1' => [
                         'etc'=>'30',
-                        'surcharge'=>'500',
+                        'surcharge'=>'400',
                     ],
                     '2' => [
                         'etc'=>'40',
-                        'surcharge'=>'1000',
+                        'surcharge'=>'800',
                     ],
                 ],
                 'Midsize' => [
                     '1' => [
                         'etc'=>'40',
-                        'surcharge'=>'700',
+                        'surcharge'=>'400',
                     ],
                     '2' => [
                         'etc'=>'60',
-                        'surcharge'=>'1200',
+                        'surcharge'=>'800',
                     ],
                 ],
                 'Large' => [
@@ -108,7 +108,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'80',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'1500',
                     ],
                 ],
             ],
@@ -152,7 +152,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'1500',
                     ],
                 ],
                 'Midsize' => [
@@ -162,7 +162,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'1500',
                     ],
                 ],
                 'Large' => [
@@ -172,7 +172,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'2000',
+                        'surcharge'=>'1500',
                     ],
                 ],
             ],
