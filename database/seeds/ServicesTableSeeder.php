@@ -94,20 +94,20 @@ class ServicesTableSeeder extends Seeder {
                 'Midsize' => [
                     '1' => [
                         'etc'=>'40',
-                        'surcharge'=>'500',
+                        'surcharge'=>'700',
                     ],
                     '2' => [
                         'etc'=>'60',
-                        'surcharge'=>'1000',
+                        'surcharge'=>'1200',
                     ],
                 ],
                 'Large' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'50',
                         'surcharge'=>'1000',
                     ],
                     '2' => [
-                        'etc'=>'90',
+                        'etc'=>'80',
                         'surcharge'=>'2000',
                     ],
                 ],
