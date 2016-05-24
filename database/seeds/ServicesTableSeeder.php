@@ -76,7 +76,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'1500',
+                        'surcharge'=>'1300',
                     ],
                 ],
             ],
@@ -84,11 +84,11 @@ class ServicesTableSeeder extends Seeder {
                 'Compact' => [
                     '1' => [
                         'etc'=>'30',
-                        'surcharge'=>'400',
+                        'surcharge'=>'300',
                     ],
                     '2' => [
                         'etc'=>'40',
-                        'surcharge'=>'800',
+                        'surcharge'=>'500',
                     ],
                 ],
                 'Midsize' => [
@@ -108,7 +108,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'80',
-                        'surcharge'=>'1500',
+                        'surcharge'=>'1300',
                     ],
                 ],
             ],
@@ -152,7 +152,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'1500',
+                        'surcharge'=>'1300',
                     ],
                 ],
                 'Midsize' => [
@@ -162,7 +162,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'1500',
+                        'surcharge'=>'1300',
                     ],
                 ],
                 'Large' => [
@@ -172,7 +172,7 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
-                        'surcharge'=>'1500',
+                        'surcharge'=>'1300',
                     ],
                 ],
             ],
