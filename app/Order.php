@@ -295,13 +295,28 @@ class Order extends Model {
     }
 
     /**
+     * @param mixed $partner_id
      * @return array
+     * @internal param int $partner
      */
-    public static function current_scheduled_orders()
+    public static function current_scheduled_orders($partner_id = null)
     {
-        $existing_scheduled_orders = self::whereIn('status', ['schedule'])->whereHas('schedule', function($q) {
+        $existing_scheduled_orders_qry = self::whereIn('status', ['schedule'])
+            ->whereHas('schedule', function($q) {
             $q->whereDate('window_open', '>', Carbon::now())->orderBy('window_open');
         })->with('schedule')->get();
+
+        if( ! $partner_id) {
+            $existing_scheduled_orders_qry->whereNull('partner_id');
+        } else {
+            if(is_array($partner_id)) {
+                $existing_scheduled_orders_qry->whereIn('partner_id', $partner_id);
+            } else {
+                $existing_scheduled_orders_qry->where('partner_id', $partner_id);
+            }
+        }
+
+        $existing_scheduled_orders = $existing_scheduled_orders_qry->get();
 
         $current_schedule=[];
         foreach($existing_scheduled_orders as $existing_scheduled_order) {
