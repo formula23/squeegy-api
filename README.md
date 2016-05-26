@@ -1,1 +1,1 @@
-# wasche
+# Squeegy API
