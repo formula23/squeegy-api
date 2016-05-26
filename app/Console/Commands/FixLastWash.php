@@ -90,11 +90,11 @@ class FixLastWash extends Command
                         '$ignore_time' => true,
                         '$ignore_alias' => true,
                         '$ip' => 0,
-//                        '$unset' => ['Lash Wash At', 'Lash Wash Type'],
-                        '$set' => [
-                            'Last Wash Type' => $last_wash->service->name,
-                            'Last Wash At' => $last_wash->done_at->toAtomString(),
-                        ]
+                        '$unset' => ['Lash Wash At', 'Lash Wash Type'],
+//                        '$set' => [
+//                            'Last Wash Type' => $last_wash->service->name,
+//                            'Last Wash At' => $last_wash->done_at->toAtomString(),
+//                        ]
                     ];
 
                     if (count($mixpanel_batch) == 50) {
