@@ -304,7 +304,7 @@ class Order extends Model {
         $existing_scheduled_orders_qry = self::whereIn('status', ['schedule'])
             ->whereHas('schedule', function($q) {
             $q->whereDate('window_open', '>', Carbon::now())->orderBy('window_open');
-        })->with('schedule')->get();
+        })->with('schedule');
 
         if( ! $partner_id) {
             $existing_scheduled_orders_qry->whereNull('partner_id');
