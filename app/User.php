@@ -116,6 +116,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $this->hasMany('App\Credit');
     }
 
+    public function partners()
+    {
+        return $this->belongsToMany('App\Partner', 'orders');
+    }
+
     /**
      * @return int
      */
@@ -426,7 +431,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $nameParts = explode(' ', $this->name);
         array_filter($nameParts);
         if(count($nameParts)>1) $lastName = array_pop($nameParts); //remove last name
-        return implode(' ', $nameParts);
+        return trim(implode(' ', $nameParts));
     }
 
     public function last_name()
@@ -434,7 +439,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         if(!$this->name) return '';
         $nameParts = explode(' ', $this->name);
         array_filter($nameParts);
-        if(count($nameParts)>1) return array_pop($nameParts);
+        if(count($nameParts)>1) return trim(array_pop($nameParts));
         else return '';
     }
 

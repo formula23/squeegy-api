@@ -64,8 +64,10 @@ class MixPanelUserObserver
                 "Referral Code" =>$user->referral_code,
                 "Segment ID" =>$user->segment?$user->segment->segment_id:0,
                 'Is Anonymous' => false,
-                "Lash Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
-                "Lash Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
+                "Last Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
+                "Last Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
+                "Partner ID" => ( ! empty($user->partners)?$user->partners->first()->id:""),
+                "Partner Name" => ( ! empty($user->partners)?$user->partners->first()->name:""),
             ];
         }
 

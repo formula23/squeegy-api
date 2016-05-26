@@ -23,6 +23,11 @@ class Partner extends Model
         return $this->belongsToMany('App\Service')->withPivot('price');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany('App\User', 'orders');
+    }
+    
     /**
      * @param $service_id
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
