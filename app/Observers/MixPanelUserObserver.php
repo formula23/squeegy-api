@@ -78,8 +78,8 @@ class MixPanelUserObserver
 
         array_filter($data);
 
-//        Log::info('User Observer - Saved...');
-//        Log::info($data);
+        Log::info('User Observer - Saved...');
+        Log::info($data);
 
         if (count($data)) {
 //            Log::info('User key:'.$user->getKey());
