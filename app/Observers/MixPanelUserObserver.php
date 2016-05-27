@@ -69,6 +69,12 @@ class MixPanelUserObserver
                 "Partner ID" => ( ! $user->partners->isEmpty() ? $user->partners->first()->id : ""),
                 "Partner Name" => ( ! $user->partners->isEmpty() ? $user->partners->first()->name : ""),
             ];
+
+            if ($partner = $user->partners->first()) {
+                $data['Partner ID'] = $partner->id;
+                $data['Partner Name'] = $partner->name;
+            }
+            
         }
 
         if($this->request->input('push_token')) {
