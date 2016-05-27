@@ -66,15 +66,13 @@ class MixPanelUserObserver
                 'Is Anonymous' => false,
                 "Last Wash At" => ( ! empty($user->segment->last_wash_at)?$user->segment->last_wash_at->toAtomString():""),
                 "Last Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
-                "Partner ID" => ( ! $user->partners->isEmpty() ? $user->partners->first()->id : ""),
-                "Partner Name" => ( ! $user->partners->isEmpty() ? $user->partners->first()->name : ""),
             ];
 
             if ($partner = $user->partners->first()) {
                 $data['Partner ID'] = $partner->id;
                 $data['Partner Name'] = $partner->name;
             }
-            
+
         }
 
         if($this->request->input('push_token')) {
