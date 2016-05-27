@@ -118,7 +118,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function partners()
     {
-        return $this->belongsToMany('App\Partner', 'orders');
+        return $this->belongsToMany('App\Partner', 'orders')->where('orders.status', 'done');
     }
 
     /**

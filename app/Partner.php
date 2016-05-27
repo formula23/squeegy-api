@@ -25,7 +25,7 @@ class Partner extends Model
 
     public function users()
     {
-        return $this->belongsToMany('App\User', 'orders');
+        return $this->belongsToMany('App\User', 'orders')->where('orders.status', 'done');
     }
     
     /**
