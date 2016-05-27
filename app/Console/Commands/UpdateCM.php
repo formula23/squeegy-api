@@ -48,9 +48,13 @@ class UpdateCM extends Command
 
             foreach($users as $user)
             {
+                $partner = $user->partners->first();
+                if( ! $partner) continue;
+                
                 $subscriber_data=[
                     'CustomFields'=> [
-                        ['Key'=>'ReferralCode', 'Value'=>$user->referral_code],
+                        ['Key'=>'PartnerID', 'Value'=>$partner->id],
+                        ['Key'=>'PartnerName', 'Value'=>$partner->name],
                     ]
                 ];
 

@@ -131,7 +131,8 @@ class ImportMixpanel extends Command
             : null);
         $properties['Segment ID'] = ( $this->user->segment ? $this->user->segment->segment_id : 0 );
 
-        if( ! $this->user->is_anon()) {
+        if( ! $this->user->is_anon())
+        {
             $properties['$first_name'] = $this->user->first_name();
             $properties['$last_name'] = $this->user->last_name();
             $properties['$name'] = $this->user->name;
@@ -144,6 +145,11 @@ class ImportMixpanel extends Command
 
             $properties["Last Wash At"] = ( ! empty($this->user->segment->last_wash_at) ? $this->user->segment->last_wash_at->toAtomString() : "");
             $properties["Last Wash Type"] = ( ! empty($this->user->lastWash()) ? $this->user->lastWash()->service->name : "" );
+
+            if ($partner = $this->user->partners->first()) {
+                $properties["Partner ID"] = $partner->id;
+                $properties["Partner Name"] = $partner->name;
+            }
         }
         
         return $properties;
