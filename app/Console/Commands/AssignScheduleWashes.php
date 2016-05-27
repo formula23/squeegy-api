@@ -94,7 +94,7 @@ class AssignScheduleWashes extends Command
                     try {
                         $order->status = 'assign';
                         $order->assign_at = Carbon::now();
-                        $order->eta = $avail['actual_time'];
+//                        $order->eta = $avail['actual_time'];
                         $order->worker_id = $avail['worker_id'];
                         $order->save();
                         $this->info('Assigned!');
