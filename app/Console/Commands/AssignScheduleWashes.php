@@ -70,9 +70,8 @@ class AssignScheduleWashes extends Command
 
             $avail = Orders::availability($order->location['lat'], $order->location['lon']);
 
-            $this->info("order id:...".$order->id);
-
-            $this->info(print_r($avail, 1));
+//            $this->info("order id:...".$order->id);
+//            $this->info(print_r($avail, 1));
 
             //no washers available...
             if(Carbon::now()->addMinutes(30)->gte($order->schedule->window_open) &&
