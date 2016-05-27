@@ -9,6 +9,7 @@ use App\Order;
 use App\Squeegy\Orders;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class AssignScheduleWashes extends Command
 {
@@ -68,6 +69,10 @@ class AssignScheduleWashes extends Command
 //            }
 
             $avail = Orders::availability($order->location['lat'], $order->location['lon']);
+
+            Log::info("order id:...".$order->id);
+
+            Log:info(print_r($avail, 1));
 
             //no washers available...
             if(Carbon::now()->addMinutes(30)->gte($order->schedule->window_open) &&
