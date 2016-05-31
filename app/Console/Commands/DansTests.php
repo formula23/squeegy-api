@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\User;
 use App\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use GeometryLibrary\PolyUtil;
 
@@ -40,6 +41,18 @@ class DansTests extends Command
      */
     public function handle()
     {
+
+        $start_date = Carbon::create(2016,5,11,9,0,0);
+
+        $current_day = Carbon::create(2016,5,18,15,23,0);
+
+
+        $diff_wks = $start_date->diffInWeeks($current_day);
+//dd($diff_wks);
+        print $diff_wks;
+        dd( $start_date->addWeeks( $diff_wks + ($diff_wks % 2 ? 2 : 1 ) ) );
+
+
 
         $user = User::find(7566);
 //        $user = User::find(525);
