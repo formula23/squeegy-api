@@ -41,6 +41,15 @@ class DansTests extends Command
     public function handle()
     {
 
+        $user = User::find(7566);
+//        $user = User::find(525);
+
+//        dd($user->partners->isEmpty());
+
+        dd( ! $user->partners->isEmpty() ? $user->partners->first()->id : "" );
+
+        dd("Done");
+
         $days = array(4,5);
 //        $day_iterator=date('w');
         $day_iterator=5;

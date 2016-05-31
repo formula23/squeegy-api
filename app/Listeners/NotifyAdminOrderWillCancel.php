@@ -36,7 +36,7 @@ class NotifyAdminOrderWillCancel
     {
         $this->message = trans($this->message_key, [
                 'order_id'=>$event->order->id,
-                'cancel_time'=>$event->order->schedule->window_close->format('H:i'),
+//                'cancel_time'=>$event->order->schedule->window_close->format('H:i'),
             ]);
 
         $notification = Notification::where('key', $this->message_key)->first();
