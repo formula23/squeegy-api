@@ -31,7 +31,7 @@ class NotifyWorkerNewOrder {
         try {
 
             //get assigned worker and andrew & dan
-			$additional_usersids = [1,2,6119];
+			$additional_usersids = [1,6119];
 			if(env('APP_ENV')!='production') $additional_usersids=[1];
 
             $workers = User::workers()
