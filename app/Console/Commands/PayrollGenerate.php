@@ -116,7 +116,7 @@ class PayrollGenerate extends Command {
         2882 => [ //juan lopez
             0=>50,
         ],
-        2882 => [ //daniel garcia
+        2149 => [ //daniel garcia
             5=>30,
         ],
     ];
@@ -132,10 +132,10 @@ class PayrollGenerate extends Command {
 		],
         1847 => [ //ricardo
             0 => 100,
-            2 => 100,
-            3 => 100,
-            4 => 100,
-            6 => 100,
+//            2 => 100,
+//            3 => 100,
+//            4 => 100,
+//            6 => 100,
         ],
         7146 => [ //leonel
             1 => 100,
@@ -147,7 +147,7 @@ class PayrollGenerate extends Command {
         2882 => [ // juan lopez
             6 => 120,
         ],
-        5482 => [ // juan lopez
+        5482 => [ // juan lara
             6 => 70,
         ],
         7527 => [ // Gonzalo hidalgo

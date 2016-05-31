@@ -89,7 +89,7 @@
 
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'], 2)  }}</td>
+            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'], 2)  }}</td>
         </tr>
 
         <tr>
