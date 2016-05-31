@@ -41,7 +41,7 @@ class PayrollGenerate extends Command {
     protected $ids_to_process=[];
 
     protected $training = [
-        7896=>192, //Guillermo Lizardi
+//        7896=>192, //Guillermo Lizardi
     ];
 
     protected $ignore_midweek_special = [
@@ -68,7 +68,7 @@ class PayrollGenerate extends Command {
 
     protected $service_price = [
         1=>2500,
-        2=>3900,
+        2=>3500,
         3=>1500,
     ];
 
@@ -111,7 +111,13 @@ class PayrollGenerate extends Command {
 
     protected $daily_bonus_worker_id = [
         3198 => [ //david
-            5=>80,
+            4=>40,
+        ],
+        2882 => [ //juan lopez
+            0=>50,
+        ],
+        2882 => [ //daniel garcia
+            5=>30,
         ],
     ];
 
@@ -138,12 +144,15 @@ class PayrollGenerate extends Command {
             4 => 100,
 //            5 => 100,
         ],
-//        2882 => [ // juan lopez
-//            0 => 140
-//        ],
-//        5482 => [ //Juan L
-//            4 => 150,
-//        ],
+        2882 => [ // juan lopez
+            6 => 120,
+        ],
+        5482 => [ // juan lopez
+            6 => 70,
+        ],
+        7527 => [ // Gonzalo hidalgo
+            6 => 120,
+        ],
 //        2900 => [ //Victor
 //            4 => 200,
 //            6 => 180,
@@ -176,10 +185,14 @@ class PayrollGenerate extends Command {
     ];
 
     protected $onsite =[
-//        3198 => [
-//            4 => 130,
+        3198 => [
+            3 => 130,
+            4 => 130,
 //            5 => 130,
-//        ],
+        ],
+        7146 => [
+            4 => 120,
+        ],
 //        2882 => [
 //            4 => 150,
 //            5 => 150,
