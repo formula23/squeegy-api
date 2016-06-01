@@ -33,6 +33,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\DansTests',
         'App\Console\Commands\AddMissingUserToCM',
         'App\Console\Commands\AssignScheduleWashes',
+        'App\Console\Commands\UpdatePartnerDate',
 	];
 
 	/**
@@ -46,6 +47,7 @@ class Kernel extends ConsoleKernel {
         $schedule->command('db:backup')->cron('* */6 * * *');
 		$schedule->command('order:review_wash_notice')->everyMinute();
 		$schedule->command('order:assign-scheduled')->everyMinute()->appendOutputTo($this->dir('assign-scheduled'));
+		$schedule->command('squeegy:update_partner_dates')->cron('0 16-19 * * *');
 	}
 
     protected function dir($process_name)
