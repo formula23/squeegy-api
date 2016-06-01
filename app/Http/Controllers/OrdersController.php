@@ -140,6 +140,9 @@ class OrdersController extends Controller {
         return $this->response->withPaginator($paginator, new OrderTransformer());
     }
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory
+     */
     public function all_locations()
     {
         $orders = Order::select("location")->where('status', 'done')->get();
@@ -202,7 +205,8 @@ class OrdersController extends Controller {
                     $schedule_data['type'] = 'subscription';
                 }
 
-                if($schedule_data['window_open']->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
+                $time_window_key = ( $data['partner_id'] ? 'close' : 'open' );
+                if($schedule_data['window_'.$time_window_key]->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
                 $order_schedule = OrderSchedule::create($schedule_data);
                 $this->order_date = $schedule_data['window_open'];
@@ -494,6 +498,11 @@ class OrdersController extends Controller {
         return $this->response->withItem($order, new OrderTransformer);
     }
 
+    /**
+     * @param Request $request
+     * @param Order $order
+     * @return mixed
+     */
     public function changeWasher(Request $request, Order $order)
     {
         if( ! $order->exists) return $this->response->errorNotFound();
