@@ -166,7 +166,9 @@ class Schedule
 //                $day_sort[] = $day->day_of_week;
 //                $day_sort_time[$day->day_of_week] = $day->time_end;
             }
-dd($container);
+
+            return $container;
+            
 //            Log::info('day sort time:');
 //            Log::info($day_sort);
 //            Log::info($day_sort_time);
