@@ -205,7 +205,7 @@ class OrdersController extends Controller {
                     $schedule_data['type'] = 'subscription';
                 }
 
-                $time_window_key = ( $data['partner_id'] ? 'close' : 'open' );
+                $time_window_key = ( ! empty($data['partner_id']) ? 'close' : 'open' );
                 if($schedule_data['window_'.$time_window_key]->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
                 $order_schedule = OrderSchedule::create($schedule_data);
