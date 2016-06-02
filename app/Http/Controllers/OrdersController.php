@@ -45,8 +45,8 @@ class OrdersController extends Controller {
     protected $order_date;
 
     protected $blast_list_device_id = [
-        '0F6B1F21-15F0-4A43-B75C-C88B8516F2A5',
-        '6F4FF312-39ED-42F3-816C-C100EE968B10',
+        '0F6B1F21-15F0-4A43-B75C-C88B8516F2A5', //user id:866 Steph
+        '4C274C2A-3704-43EA-9B2F-736675AA6C51', //user id:2876 Steve Merker
     ];
 
     /**
