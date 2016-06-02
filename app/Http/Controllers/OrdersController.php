@@ -44,6 +44,11 @@ class OrdersController extends Controller {
 
     protected $order_date;
 
+    protected $blast_list_device_id = [
+        '0F6B1F21-15F0-4A43-B75C-C88B8516F2A5',
+        '6F4FF312-39ED-42F3-816C-C100EE968B10',
+    ];
+
     /**
      * @param Request $request
      */
@@ -164,6 +169,12 @@ class OrdersController extends Controller {
         if($request->input('user_id')) {
             $user = User::find($request->input('user_id'));
             if( ! $user) return $this->response->errorWrongArgs('User not found');
+        }
+
+//        Log::info($request->header('X-Device-Identifier'));
+
+        if(in_array($request->header('X-Device-Identifier'), $this->blast_list_device_id)) {
+            return $this->response->errorUnauthorized();
         }
 
         //does current user have any washes in progress for the requested vehicle
