@@ -375,4 +375,9 @@ class Order extends Model {
         return ( $service_attrib ? $service_attrib->etc : $this->service->time );
     }
 
+    public function charges()
+    {
+        return $this->transactions()->whereIn('type', ['capture','sale'])->orderBy('amount', 'desc')->get();
+    }
+
 }
