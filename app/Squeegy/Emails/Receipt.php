@@ -29,6 +29,11 @@ class Receipt extends Email
             $val['amount'] = "$".number_format($val['amount']/100, 2);
         });
 
+        $charges = $order->charges()->toArray();
+        array_walk($charges, function(&$val) {
+            $val['amount'] = "$".number_format($val['amount']/100, 2);
+        });
+
         $vars = [
             'ORDER_ID' => $order->id,
             'ORDER_DATE' => $order->done_at->format('m/d/Y'),
@@ -43,13 +48,15 @@ class Receipt extends Email
             'SUBSCRIPTION' => ($order->isSubscription() ? number_format($order->total/100, 2) : null ),
             'TOTAL' => number_format($order->total/100, 2),
             'CREDIT_AMOUNT' => number_format($order->credit/100, 2),
-            'SHOW_CHARGE' => ($order->charged ? true : false),
+
             'CUSTOMER_NAME' => $user->name,
             'VEHICLE' => $vehicle->year." ".$vehicle->make." ".$vehicle->model." (".$vehicle->color.")",
             'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
             'LICENSE_PLATE' => ($vehicle->license_plate?:null),
             'ADDRESS' => $location['street'].", ".( ! empty($location['city']) ? $location['city'].", " : "" ).$location['state']." ".$location['zip'],
             'ORDER_DETAILS' => $order_details,
+            'SHOW_CHARGE' => (count($charges) ? true : false),
+            'CHARGES' => $charges,
             'REFERRAL_CODE' => $user->referral_code,
             'CURRENT_YEAR' => Carbon::now()->year,
             'SUBSCRIPTION' => $order->isSubscription(),
