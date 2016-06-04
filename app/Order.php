@@ -297,7 +297,6 @@ class Order extends Model {
     /**
      * @param mixed $partner_id
      * @return array
-     * @internal param int $partner
      */
     public static function current_scheduled_orders($partner_id = null)
     {
@@ -324,7 +323,7 @@ class Order extends Model {
             if(empty($current_schedule[$key])) $current_schedule[$key]=0;
             $current_schedule[$key]+=1;
         }
-
+\Log::info($current_schedule);
         return $current_schedule;
 
     }

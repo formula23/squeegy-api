@@ -118,7 +118,10 @@ class Schedule
                 //will not block out windows at this time.
                 $key = $this->now->format('m/d/Y ').$start->format('H');
 
-                $is_available = (!empty($this->current_schedule[$key]) && $this->current_schedule[$key] >= $this->cap($start->hour)?false:true);
+
+                \Log::info('CAP: '.$start->hour."--".$this->cap($start->hour));
+
+                $is_available = ( ! empty($this->current_schedule[$key]) && ($this->current_schedule[$key] >= $this->cap($start->hour) ) ? false : true );
                 if( ! $is_available) continue;
 
                 $windows[] = $start->format('g:00a')." - ".$start->addHours($this->time_slot_interval)->format('g:00a');
