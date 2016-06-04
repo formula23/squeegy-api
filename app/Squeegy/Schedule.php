@@ -92,17 +92,18 @@ class Schedule
                 $start = new Carbon($this->now->format("m/d/y $this->open:00"));
 
                 if($this->now->isToday()) {
-//				if($this->now->day == $this->current_day) {
 
                     if($this->now->hour >= $this->close) {
 //						print "after close\n";
                         continue(2);
                     }
 
-                    if($this->now->hour >= 0 && $this->now->hour < Config::get('squeegy.operating_hours.open') && $this->open < Config::get('squeegy.operating_hours.open')+$this->lead_hrs) {
-//						print "before open\n";
-                        continue;
-                    }
+                    /** First time slot is 9am no need to give lead time after midnight...System will auto-assign orders... */
+//                    if($this->now->hour >= 0 &&
+//                        $this->now->hour < Config::get('squeegy.operating_hours.open') &&
+//                        $this->open < Config::get('squeegy.operating_hours.open')+$this->lead_hrs) {
+//                        continue;
+//                    }
 
                     if($this->open < $this->now->hour+$this->lead_hrs) {
 //						print "cont\n";
