@@ -314,7 +314,7 @@ class Order extends Model {
                 $existing_scheduled_orders_qry->where('partner_id', $partner_id);
             }
         }
-\Log::info($existing_scheduled_orders_qry);
+\Log::info(print_r($existing_scheduled_orders_qry, 1));
         \Log::info($existing_scheduled_orders_qry->toSql());
 
         $existing_scheduled_orders = $existing_scheduled_orders_qry->get();
