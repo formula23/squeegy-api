@@ -32,7 +32,7 @@ class NotifyWasherCancel
      */
     public function handle(OrderCancelled $event)
     {
-        if(is_null($event->order->worker_id)) return; //No one to notify..
+        if( ! $event->order->worker_id ) return; //No one to notify..
 
         $this->message = trans($this->message_key, [
             'order_id'=>$event->order->id,
