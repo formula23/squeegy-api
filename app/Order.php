@@ -315,12 +315,7 @@ class Order extends Model {
             }
         }
 
-        \Log::info($existing_scheduled_orders_qry->toSql());
-
         $existing_scheduled_orders = $existing_scheduled_orders_qry->get();
-
-        \Log::info('existing schedule...');
-        \Log::info($existing_scheduled_orders);
 
         $current_schedule=[];
         foreach($existing_scheduled_orders as $existing_scheduled_order) {
@@ -328,11 +323,7 @@ class Order extends Model {
             if(empty($current_schedule[$key])) $current_schedule[$key]=0;
             $current_schedule[$key]+=1;
         }
-
-\Log::info($current_schedule);
-
         return $current_schedule;
-
     }
 
     /**
