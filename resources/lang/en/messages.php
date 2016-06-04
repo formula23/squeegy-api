@@ -34,6 +34,7 @@ return [
             'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
             'done' => ":worker_name is done washing your :car. We:card_charged have emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
+            'cancel_washer' => 'Customer cancelled order# :order_id - :vehicle',
             'change_washer' => [
                 'customer' => 'Your wash has been re-assigned to :worker_name.',
                 'original_washer' => 'Order#:order_id has been removed from your queue. Refresh your washer app.',

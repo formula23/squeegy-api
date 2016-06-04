@@ -19,7 +19,7 @@ class ServicesTableSeeder extends Seeder {
             'Car' => [
                 'Compact' => [
                     '1' => [
-                        'etc'=>'30',
+                        'etc'=>'25',
                         'surcharge'=>'0',
                     ],
                     '2' => [
@@ -29,7 +29,7 @@ class ServicesTableSeeder extends Seeder {
                 ],
                 'Midsize' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'30',
                         'surcharge'=>'0',
                     ],
                     '2' => [
@@ -39,7 +39,7 @@ class ServicesTableSeeder extends Seeder {
                 ],
                 'Large' => [
                     '1' => [
-                        'etc'=>'45',
+                        'etc'=>'40',
                         'surcharge'=>'0',
                     ],
                     '2' => [

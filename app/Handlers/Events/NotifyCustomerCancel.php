@@ -1,5 +1,6 @@
 <?php namespace App\Handlers\Events;
 
+use Aloha\Twilio\Twilio;
 use App\Events\OrderCancelledByWorker;
 use App\Squeegy\PushNotification;
 use App\Notification;
@@ -10,16 +11,16 @@ class NotifyCustomerCancel extends BaseEventHandler {
 	public $delivery_method='push';
 	public $message;
 	public $message_key = 'messages.order.push_notice.cancel';
-	
-	/**
-	 * Create the event handler.
-	 *
-	 * @return void
-	 */
-	public function __construct()
-	{
-		//
-	}
+
+    /**
+     * Create the event handler.
+     *
+     * @param Twilio $twilio
+     */
+	public function __construct(Twilio $twilio)
+    {
+        $this->twilio = $twilio;
+    }
 
 	/**
 	 * Handle the event.
@@ -41,11 +42,12 @@ class NotifyCustomerCancel extends BaseEventHandler {
         
         if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
 
-            if (!PushNotification::send($event->order->customer->{$arn_endpoint}, $this->message, 1, $event->order->id, $event->order->push_platform, 'Order Info')) {
+            if ( ! PushNotification::send($event->order->customer->{$arn_endpoint}, $this->message, 1, $event->order->id, $event->order->push_platform, 'Order Info')) {
                 try {
 
                     $this->message = $this->_text_msg . $this->message;
                     $this->twilio->message($event->order->customer->phone, $this->message);
+                    $this->delivery_method = 'sms';
                 } catch (\Exception $e) {
                     \Bugsnag::notifyException($e);
                     return;
