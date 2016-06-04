@@ -15,7 +15,9 @@ use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\OrderDetail;
 use App\OrderSchedule;
+use App\Squeegy\Emails\Tip;
 use App\Squeegy\Orders;
+use App\Squeegy\Payments;
 use App\Squeegy\Transformers\OrderTransformer;
 use App\Order;
 use App\Service;
@@ -525,7 +527,53 @@ class OrdersController extends Controller {
         $order->save();
         return $this->response->withItem($order, new OrderTransformer());
     }
-    
+
+    /**
+     * @param Request $request
+     * @param Order $order
+     * @return mixed
+     */
+    public function tipWasher(Request $request, Order $order)
+    {
+        if( ! $order->exists) return $this->response->errorNotFound();
+        
+        if($this->order_seq[$order->status] != 6) return $this->response->errorMethodNotAllowed(trans('messages.order.tip.order_not_complete'));
+        if($order->tip) return $this->response->errorWrongArgs(trans('messages.order.tip.order_has_tip'));
+
+        if($tip_amount = $request->input('amount')) {
+
+            $description = substr(trans('messages.order.statement_descriptor_tip', ['job_number'=>$order->job_number]), 0, 20);
+            
+            //charge tip amount
+            $payments = new Payments($order->customer->stripe_customer_id);
+            $charge  = $payments->sale($tip_amount, $order, $description);
+
+            //record transaction
+            $order->transactions()->create([
+                'charge_id'=>$charge->id,
+                'amount'=>$charge->amount,
+                'type'=>'sale',
+                'last_four'=>$charge->source->last4,
+                'card_type'=>$charge->source->brand,
+            ]);
+
+            $order->tip = $tip_amount;
+            $order->save();
+
+            //send email to customer
+            try {
+                (new Tip)
+                    ->withBCC(config('squeegy.emails.bcc'))
+                    ->withData(['data' => $order])
+                    ->sendTo($order->customer);
+            } catch(\Exception $e) {
+                \Bugsnag::notifyException(new \Exception($e->getMessage()));
+            }
+        }
+        
+        return $this->response->withItem($order, new OrderTransformer());
+    }
+
     /**
      * @param Order $order
      * @param $request_data

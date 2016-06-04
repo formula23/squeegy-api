@@ -11,9 +11,6 @@
 |
 */
 
-use App\User;
-use Illuminate\Http\Response;
-
 Route::group(['prefix' => 'v1'], function() {
 
     Route::get('version', 'VersionController@index');
@@ -54,6 +51,8 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
 
     Route::post('orders/{orders}/change-washer', 'OrdersController@changeWasher');
+    
+    Route::post('orders/{orders}/tip', 'OrdersController@tipWasher');
 
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');

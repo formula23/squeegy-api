@@ -23,6 +23,7 @@ return [
         'new_subscription_schedule_order' => 'New Subscription :order_service #:order_id for :subsription_schedule_time',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'SQUEEGY #:job_number',
+        'statement_descriptor_tip' => 'SQUEEGY TIP #:job_number',
         'invalid_card' => 'Please enter a valid credit card.',
         'card_charged' => ' charged your credit card in the amount of $:charge_amount and',
         'push_notice' => [
@@ -71,6 +72,10 @@ return [
             'invalid_service' => 'Promotion not available for the :service_name wash',
             'referral_code_new_customer' => 'Referral codes can only be used by new customers.',
             'partners' => 'Additional discounts not available for this location.',
+        ],
+        'tip' => [
+            'order_not_complete'=>'Wash must be completed to tip.',
+            'order_has_tip'=>'Order already has tip!',
         ],
     ],
     'service' => [

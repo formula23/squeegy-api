@@ -42,6 +42,7 @@ class Order extends Model {
         'credit',
         'total',
         'charged',
+        'tip',
         'stripe_charge_id',
         'promo_code',
         'rating',

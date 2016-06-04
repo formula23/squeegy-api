@@ -45,7 +45,6 @@ abstract class Email
 
         $payload = [
             'To' => $user->email,
-            'ReplyTo' => config('squeegy.emails.support'),
             'Data'=> $data,
         ];
 

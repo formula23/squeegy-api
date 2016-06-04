@@ -27,7 +27,7 @@ class Payments {
         $this->customer_id = $customer_id;
     }
 
-    public function auth($amt=0, $order=null, $capture=false)
+    public function auth($amt=0, $order=null, $capture=false, $description="")
     {
         if($amt===0) return;
 
@@ -40,7 +40,7 @@ class Payments {
             ];
 
             if($order) {
-                $charge_data['statement_descriptor'] = substr(trans('messages.order.statement_descriptor', ['job_number'=>$order->job_number]), 0, 20);
+                $charge_data['statement_descriptor'] = ( $description?:substr(trans('messages.order.statement_descriptor', ['job_number'=>$order->job_number]), 0, 20) );
             }
 
             $charge = StripeCharge::create($charge_data);
@@ -53,9 +53,9 @@ class Payments {
         return $charge;
     }
 
-    public function sale($amt=0, $order=null)
+    public function sale($amt=0, $order=null, $description="")
     {
-        return $this->auth($amt, $order, true);
+        return $this->auth($amt, $order, true, $description);
     }
 
     public function capture($charge_id, $amt=0)

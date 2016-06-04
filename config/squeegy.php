@@ -22,6 +22,9 @@ return [
         'receipt' => [
             'photo_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/orders' . (app()->environment('production') ? "/" : "-dev/" ),
         ],
+        'tip' => [
+            'washer_url' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy/workers' . (app()->environment('production') ? "/" : "-dev/" ),
+        ],
     ],
     'order_seq' => [
         'cancel' => 100,
