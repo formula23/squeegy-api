@@ -315,6 +315,8 @@ class Order extends Model {
             }
         }
 
+        \Log::info($existing_scheduled_orders_qry->toSql());
+
         $existing_scheduled_orders = $existing_scheduled_orders_qry->get();
 
         \Log::info('existing schedule...');
