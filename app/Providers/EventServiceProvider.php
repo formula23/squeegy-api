@@ -33,6 +33,7 @@ class EventServiceProvider extends ServiceProvider {
 
         'App\Events\OrderCancelled' => [
             'App\Handlers\Events\ChargeCancelFee',
+			'App\Listeners\NotifyWasherCancel'
         ],
 
         'App\Events\OrderCancelledByWorker' => [

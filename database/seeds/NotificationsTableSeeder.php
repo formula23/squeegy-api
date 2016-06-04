@@ -121,6 +121,11 @@ class NotificationsTableSeeder extends Seeder
             'key'=>'messages.order.push_notice_schedule.will_cancel',
         ]);
 
+        Notification::create([
+            'name'=>'Notify Washer - Cancel',
+            'key'=>'messages.order.push_notice.cancel_washer',
+        ]);
+        
         DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // disable foreign key constraints
     }
 }
