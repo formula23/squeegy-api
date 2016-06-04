@@ -3,6 +3,7 @@
 use App\Events\OrderCancelled;
 use App\Squeegy\Orders;
 use App\Squeegy\Payments;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
@@ -44,8 +45,10 @@ class ChargeCancelFee {
 			Log::info("strip charge id: ".$stripe_charge_id);
 			Log::info("credit: ".$credit);
 			Log::info("status: ".$event->order->getOriginal('status'));
-			
-			if($this->order_seq[$event->order->getOriginal('status')] < 4) { //refund full
+
+			//don't charge cancel fee if washer has past eta or is cancelled within 5 mins of enroute.
+
+			if( $this->full_refund($event->order) ) { //refund full
 				Log::info('Full REFUND');
 				$type = "void";
 
@@ -169,4 +172,30 @@ class ChargeCancelFee {
         }
 
 	}
+
+    protected function full_refund($order)
+    {
+        if( $this->order_seq[$order->getOriginal('status')] < 4 ) {
+            \Log::info('FULL REFUND - ordder not enroute yet');
+            return true;
+        }
+
+        if( $order->eta && $order->assign_at->addMinutes($order->eta)->isPast() ) {
+            \Log::info('FULL REFUND - we missed the ETA.');
+            return true;
+        }
+
+        if( $order->isSchedule() && $order->schedule->window_close->isPast() ) {
+            \Log::info('FULL REFUND - we are after ending time slot.');
+            return true;
+        }
+
+        if( $order->enroute_at && $order->enroute_at->addMinutes(5)->isFuture() ) {
+            \Log::info('FULL REFUND - cancel is 5 mins within enroute');
+            return true;
+        }
+
+        return false;
+    }
+
 }
