@@ -46,7 +46,7 @@ class NotifyWasherCancel
 
                 $event->order->notification_logs()->create([
                     'notification_id' => $notification->id,
-                    'user_id' => $event->order->user_id,
+                    'user_id' => $event->order->worker_id,
                     'message' => $this->message,
                     'delivery_method' => $this->delivery_method,
                 ]);
