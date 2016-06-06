@@ -90,7 +90,7 @@ class Partner extends Model
     {
         $polygon=[];
 
-        foreach($geo_fence as $coord) {
+        foreach((array)$geo_fence as $coord) {
             $polygon[] = ['lat'=>$coord->lat, 'lng'=>$coord->lng];
         }
 
