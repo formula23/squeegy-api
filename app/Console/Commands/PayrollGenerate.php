@@ -123,7 +123,7 @@ class PayrollGenerate extends Command {
 
 	protected $min_day_worker_id = [
 		3198 => [ //david
-            1=>120,
+//            1=>100,
             2=>100,
             3=>100,
             4=>100,
@@ -145,34 +145,29 @@ class PayrollGenerate extends Command {
 //            5 => 100,
         ],
         2882 => [ // juan lopez
-            0 => 120,
+//            0 => 120,
         ],
         5482 => [ // juan lara
-            1 => 70,
+            1 => 120,
+            2 => 120,
+            3 => 120,
+            4 => 120,
             6 => 120,
         ],
         7527 => [ // Gonzalo hidalgo
-            1 => 120,
+//            1 => 120,
         ],
-//        2900 => [ //Victor
-//            4 => 200,
-//            6 => 180,
-//        ],
         2149 => [ //daniel
             0 => 120,
             1 => 120,
+            2 => 120,
+            3 => 120,
             5 => 120,
         ],
 //        6349 => [ //Melvyn
 //            0 => 100,
 //            1 => 120,
 //        ],
-//        6861 => [ //Angel
-//            4 => 100,
-//        ],
-//        7269 => [ //salvador
-//            1 => 75,
-//        ]
 	];
 
     protected $washer_training = [
