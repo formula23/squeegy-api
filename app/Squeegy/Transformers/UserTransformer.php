@@ -27,6 +27,7 @@ class UserTransformer extends TransformerAbstract {
         'latest_activity_log',
         'payment_methods',
         'zones',
+        'notes',
     ];
 
     public function transform(User $user)
@@ -117,6 +118,11 @@ class UserTransformer extends TransformerAbstract {
         if( ! $user->is('worker')) return null;
 
         return $this->collection($user->zones, new ZoneTransformer());
+    }
+
+    public function includeNotes(User $user)
+    {
+        return $this->collection($user->notes, new UserNoteTransformer());
     }
 
 }

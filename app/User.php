@@ -226,6 +226,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function notes()
+    {
+        return $this->hasMany('App\UserNote');
+    }
+    
+    /**
      * @param $query
      * @return mixed
      */

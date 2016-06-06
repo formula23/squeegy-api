@@ -36,6 +36,7 @@ class UserController extends Controller {
         } else {
             $this->middleware('auth', ['except' => 'authenticated']);
         }
+        $this->middleware('user_has_access', ['only'=>['show','update']]);
     }
 
     /**
@@ -92,7 +93,6 @@ class UserController extends Controller {
 	{
         if($id) $user = User::find($id);
         else $user = $request->user();
-
         return $this->response->withItem($user, new UserTransformer());
 	}
 
