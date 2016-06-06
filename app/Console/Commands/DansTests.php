@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Squeegy\Orders;
 use App\User;
 use App\Vehicle;
 use Carbon\Carbon;
@@ -41,7 +42,11 @@ class DansTests extends Command
      */
     public function handle()
     {
-
+//        dd(Orders::get_location("33.9752461","-118.4198021"));
+        $dist = Orders::get_distance("33.975,-118.42", "33.975,-118.42");
+$this->info($dist);
+        \Log::info("Distance to next job: ".$dist);
+        dd("end");
         $start_date = Carbon::create(2016,5,11,9,0,0);
 
         $current_day = Carbon::create(2016,5,18,15,23,0);
