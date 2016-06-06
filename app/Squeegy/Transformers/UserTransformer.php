@@ -120,9 +120,25 @@ class UserTransformer extends TransformerAbstract {
         return $this->collection($user->zones, new ZoneTransformer());
     }
 
-    public function includeNotes(User $user)
+    public function includeNotes(User $user, ParamBag $params = null)
     {
-        return $this->collection($user->notes, new UserNoteTransformer());
+        $notes_qry = $user->notes();
+
+        if($params) {
+            list($limit, $offset) = $params->get('limit');
+            list($orderCol, $orderBy) = $params->get('order');
+
+            if($limit && $offset) {
+                $notes_qry->take($limit)->skip($offset);
+            }
+
+            if($orderCol && $orderBy) {
+                $notes_qry->orderBy($orderCol, $orderBy);
+            }
+        }
+
+        $notes = $notes_qry->get();
+        return $this->collection($notes, new UserNoteTransformer());
     }
 
 }
