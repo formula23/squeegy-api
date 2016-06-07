@@ -196,6 +196,11 @@ class OrdersController extends Controller {
         if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
             $data['partner_id'] = $partner->id;
             $service = $partner->service($data['service_id'])->first();
+
+            //snacknation - set cap to 5
+            if($partner->id == 3 && $partner->orders()->where('status', 'schedule')->count() >= config("squeegy.partners.$partner->id.cap")) {
+                return $this->response->errorWrongArgs("Squeegy is fully booked for the day. Unfortunately, we are unable to accept additonal requests.");
+            }
         }
 
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
