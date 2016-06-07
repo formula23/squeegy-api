@@ -36,7 +36,7 @@ class UserController extends Controller {
         } else {
             $this->middleware('auth', ['except' => 'authenticated']);
         }
-        $this->middleware('user_has_access', ['only'=>['show','update']]);
+//        $this->middleware('user_has_access', ['only'=>['show','update']]);
     }
 
     /**
