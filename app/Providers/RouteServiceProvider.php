@@ -1,9 +1,11 @@
 <?php namespace App\Providers;
 
+use App\UserNote;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RouteServiceProvider extends ServiceProvider {
 
@@ -33,6 +35,15 @@ class RouteServiceProvider extends ServiceProvider {
             return \App\Order::find($id);
 //            if(Auth::user() && Auth::user()->is('customer')) $order->where('user_id', Auth::id());
 //            return $order->get()->first();
+        });
+
+        $router->model('users', 'App\User');
+
+        $router->bind('notes', function($id, $route) {
+            if($note = $route->users->notes()->where('id', $id)->first()) {
+                return $note;
+            }
+            throw new NotFoundHttpException;
         });
 
         $router->model('services', 'App\Service');

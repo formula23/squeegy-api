@@ -18,6 +18,8 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::resource('vehicles', 'VehiclesController');
 
+    Route::resource('users.notes', 'UserNoteController', ['middleware'=>'role:test']);
+
     Route::get('users', 'UserController@index');
     Route::get('user', 'UserController@show');
     Route::post('user/phone-verify', 'UserController@phoneVerify');
