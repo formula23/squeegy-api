@@ -309,7 +309,6 @@ class OrdersController extends Controller {
 
         if( ! empty($request_data['rating']))
         {
-
             $order->rating = $request_data['rating'];
             $order->rating_comment = (!empty($request_data['rating_comment'])?$request_data['rating_comment']:"");
 
@@ -395,8 +394,9 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs(trans("messages.service.only_schedule"));
                     }
 
-                    if($availability['postal_code'] == '90015' && strtolower($order->promo_code) != "joymode20") {
-                        return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area. Contact support@squeegyapp.com");
+                    if($availability['postal_code'] == '91316' && strtolower($order->promo_code) != "ktla") {
+                        \Bugsnag::notifyException(new \Exception("Order attempt in Encino without promo code. User id: ".$user->id));
+                        return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area.");
                     }
                     
                     $order->confirm_at = Carbon::now();

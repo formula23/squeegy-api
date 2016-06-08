@@ -99,6 +99,9 @@ class ZoneRegionsTableSeeder extends Seeder
                 ['postal_code'=>'90717'],
                 ['postal_code'=>'90274'],
             ],
+            3 => [
+                ['postal_code'=>'91316'],
+            ]
         ];
 
         foreach($regions as $zone_id => $regions)

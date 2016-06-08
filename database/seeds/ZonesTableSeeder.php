@@ -25,7 +25,7 @@ class ZonesTableSeeder extends Seeder
         ]);
 
         Zone::create([
-            'name' => 'Downtown',
+            'name' => 'Encino',
             'code' => '003',
         ]);
 
