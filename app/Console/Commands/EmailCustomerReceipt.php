@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Order;
 use App\Squeegy\Emails\Receipt;
+use App\User;
 use Illuminate\Console\Command;
 
 class EmailCustomerReceipt extends Command
@@ -41,13 +42,13 @@ class EmailCustomerReceipt extends Command
     {
 
         $order = Order::find($this->argument('order'));
-dd($order);
+        
         try {
             (new Receipt)
                 ->withBCC(config('squeegy.emails.bcc'))
                 ->withData(['data' => $order])
 //                ->sendTo($order->customer);
-                ->sendTo("dan@squeegyapp.com");
+                ->sendTo(User::find(4412));
 
         } catch(\Exception $e) {
             \Bugsnag::notifyException($e);
