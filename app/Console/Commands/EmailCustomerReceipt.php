@@ -40,16 +40,13 @@ class EmailCustomerReceipt extends Command
      */
     public function handle()
     {
-
         $order = Order::find($this->argument('order'));
         
         try {
             (new Receipt)
                 ->withBCC(config('squeegy.emails.bcc'))
                 ->withData(['data' => $order])
-//                ->sendTo($order->customer);
-                ->sendTo(User::find(4412));
-
+                ->sendTo($order->customer);
         } catch(\Exception $e) {
             \Bugsnag::notifyException($e);
         }
