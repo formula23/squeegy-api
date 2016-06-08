@@ -24,10 +24,10 @@ class ZonesTableSeeder extends Seeder
             'code' => '002',
         ]);
 
-        Zone::create([
-            'name' => 'Encino',
-            'code' => '003',
-        ]);
+//        Zone::create([
+//            'name' => 'Encino',
+//            'code' => '003',
+//        ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
