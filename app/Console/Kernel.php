@@ -34,6 +34,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\AddMissingUserToCM',
         'App\Console\Commands\AssignScheduleWashes',
         'App\Console\Commands\UpdatePartnerDate',
+        'App\Console\Commands\EmailCustomerReceipt',
 	];
 
 	/**
