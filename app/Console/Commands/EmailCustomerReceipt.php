@@ -41,7 +41,7 @@ class EmailCustomerReceipt extends Command
     {
 
         $order = Order::find($this->argument('order'));
-
+dd($order);
         try {
             (new Receipt)
                 ->withBCC(config('squeegy.emails.bcc'))
@@ -50,7 +50,7 @@ class EmailCustomerReceipt extends Command
                 ->sendTo("dan@squeegyapp.com");
 
         } catch(\Exception $e) {
-            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+            \Bugsnag::notifyException($e);
         }
 
     }
