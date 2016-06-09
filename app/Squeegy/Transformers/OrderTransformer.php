@@ -45,7 +45,7 @@ class OrderTransformer extends TransformerAbstract {
             'is_subscription_order' => ($order->schedule && $order->schedule->type=='subscription'?true:false),
             'location' => $order->location,
             'instructions' => $order->instructions,
-            'tip_eligible' => true,
+            'tip_eligible' => ($order->tip ? false : true),
             'subtotal' => (int)$order->price,
             'discount' => ($order->discount ? (int)$order->discount : null ),
             'credit' => ($order->credit ? (int)$order->credit : 0 ),

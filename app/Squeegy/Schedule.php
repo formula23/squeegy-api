@@ -271,7 +271,7 @@ class Schedule
 
     private function cap($hr)
     {
-        return ($hr==9 ? 2 : 3 );
+        return ($hr==9 ? 1 : 1 );
     }
 
 }
