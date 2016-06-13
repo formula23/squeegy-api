@@ -110,9 +110,9 @@ class PayrollGenerate extends Command {
     ];
 
     protected $daily_bonus_worker_id = [
-//        3198 => [ //david
-//            4=>40,
-//        ],
+        3198 => [ //david
+            5=>50,
+        ],
 //        2882 => [ //juan lopez
 //            0=>50,
 //        ],
