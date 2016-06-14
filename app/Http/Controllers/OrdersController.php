@@ -544,12 +544,12 @@ class OrdersController extends Controller {
         if( ! $order->exists) return $this->response->errorNotFound();
         
         if($this->order_seq[$order->status] != 6) return $this->response->errorMethodNotAllowed(trans('messages.order.tip.order_not_complete'));
-        if($order->tip) return $this->response->errorWrongArgs(trans('messages.order.tip.order_has_tip'));
+        if($order->tip!==null) return $this->response->errorWrongArgs(trans('messages.order.tip.order_has_tip'));
 
-        if($tip_amount = $request->input('amount')) {
-
+        if($tip_amount = $request->input('amount'))
+        {
             $description = substr(trans('messages.order.statement_descriptor_tip', ['job_number'=>$order->job_number]), 0, 20);
-            
+
             //charge tip amount
             $payments = new Payments($order->customer->stripe_customer_id);
             $charge  = $payments->sale($tip_amount, $order, $description);
@@ -563,9 +563,6 @@ class OrdersController extends Controller {
                 'card_type'=>$charge->source->brand,
             ]);
 
-            $order->tip = $tip_amount;
-            $order->save();
-
             //send email to customer
             try {
                 (new Tip)
@@ -576,7 +573,10 @@ class OrdersController extends Controller {
                 \Bugsnag::notifyException(new \Exception($e->getMessage()));
             }
         }
-        
+
+        $order->tip = (int)$tip_amount;
+        $order->save();
+
         return $this->response->withItem($order, new OrderTransformer());
     }
 
