@@ -46,7 +46,7 @@ class OrderTransformer extends TransformerAbstract {
             'location' => $order->location,
             'instructions' => $order->instructions,
             'tip_eligible' => ($order->tip===null && $order->rating===null ? true : false),
-            'default_tip_index' => 0,
+            'default_tip_index' => 2,
             'subtotal' => (int)$order->price,
             'discount' => ($order->discount ? (int)$order->discount : null ),
             'credit' => ($order->credit ? (int)$order->credit : 0 ),
