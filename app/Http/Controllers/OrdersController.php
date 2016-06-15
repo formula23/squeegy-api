@@ -546,7 +546,10 @@ class OrdersController extends Controller {
         if($this->order_seq[$order->status] != 6) return $this->response->errorMethodNotAllowed(trans('messages.order.tip.order_not_complete'));
         if($order->tip!==null) return $this->response->errorWrongArgs(trans('messages.order.tip.order_has_tip'));
 
-        if($tip_amount = $request->input('amount'))
+        $tip_amount = $request->input('amount');
+        $order->tip = (int)$tip_amount;
+
+        if($tip_amount)
         {
             $description = substr(trans('messages.order.statement_descriptor_tip', ['job_number'=>$order->job_number]), 0, 20);
 
@@ -574,7 +577,6 @@ class OrdersController extends Controller {
             }
         }
 
-        $order->tip = (int)$tip_amount;
         $order->save();
 
         return $this->response->withItem($order, new OrderTransformer());
