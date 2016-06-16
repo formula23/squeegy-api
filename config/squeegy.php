@@ -12,7 +12,7 @@ return [
         -118.452264
     ],
     "sms_verification" => "6538",
-    "cancellation_fee" => 1000,
+    "cancellation_fee" => 500,
     'emails' => [
         'support' => 'support@squeegyapp.com',
         'support_name' => 'Squeegy Support',
