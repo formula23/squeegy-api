@@ -81,6 +81,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return trim($value);
     }
 
+    public function email() {
+        if($this->is_anon() && $this->tmp_fb == 1) {
+            return "";
+        }
+        return $this->email;
+    }
+
     /**
      * A user can have many vehicles
      *

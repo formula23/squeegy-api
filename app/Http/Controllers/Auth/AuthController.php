@@ -90,7 +90,7 @@ class AuthController extends Controller {
                 $anon_user = User::where('email','like',$request->header('X-Device-Identifier').'%')->orderBy('created_at','desc')->first();
                 if($anon_user) {
                     $anon_user->tmp_fb = 1;
-                    $anon_user->email = $fb_user->getEmail();
+                    $anon_user->email = ($fb_user->getEmail()?:$request->header('X-Device-Identifier')."-".random_int(100, 9999999)."@squeegyapp-tmp.com");
                     $anon_user->updateFbFields($fb_user);
 
                     Event::fire(new UserRegistered($anon_user));
