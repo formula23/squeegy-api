@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Request;
 
 class Schedule
 {
+    public $partner_id;
     public $now;
     public $open_hr;
     public $close_hr;
@@ -30,9 +31,10 @@ class Schedule
     public $postal_code;
     public $day_format;
 
-    public function __construct($postal_code=null)
+    public function __construct($postal_code=null, $partner_id=0)
     {
         if($postal_code) $this->postal_code = $postal_code;
+        $this->partner_id = $partner_id;
 
         $this->current_schedule();
 
@@ -48,11 +50,11 @@ class Schedule
 
     }
 
-    public function availability($partner_id=null)
+    public function availability()
     {
 
-        if($partner_id) {
-            return $this->partner_days($partner_id);
+        if($this->partner_id) {
+            return $this->partner_days();
         }
 
         $idx=0;
@@ -135,12 +137,12 @@ class Schedule
 
     protected function current_schedule()
     {
-        $this->current_schedule = Order::current_scheduled_orders();
+        $this->current_schedule = Order::current_scheduled_orders($this->partner_id);
     }
 
-    protected function partner_days($partner_id)
+    protected function partner_days()
     {
-        $partner = Partner::find($partner_id);
+        $partner = Partner::find($this->partner_id);
 
         $container=[];
 //        $cur_hr = $this->now->hour;
@@ -162,10 +164,28 @@ class Schedule
             foreach($days as $idx=>$day) {
 
                 $container[$idx]['day'] = $day->next_date->format($this->day_format);
-                $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
 
-//                $day_sort[] = $day->day_of_week;
-//                $day_sort_time[$day->day_of_week] = $day->time_end;
+                $start_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_start);
+                $end_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_end);
+                $num_hrs = $start_time->diffInHours($end_time);
+
+                if($partner->id == 5) {
+
+                    for($h=0;$h<$num_hrs;$h++) {
+
+                        if($start_time->gt($end_time))continue;
+
+                        if(@(int)$this->current_schedule[$start_time->format('m/d/Y H')] >= 2) { ///only allow 2 orders per slot
+                            $start_time->addHour();
+                            continue;
+                        }
+                        $container[$idx]['time_slots'][] = implode(" - ", [$start_time->format('g:ia'), $start_time->addHours(1)->format('g:ia')]);
+                    }
+
+                } else {
+                    $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
+                }
+
             }
 
             return $container;
