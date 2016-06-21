@@ -24,6 +24,11 @@ class Tip extends Email
     {
         $vars=[
             'CURRENT_YEAR' => Carbon::now()->year,
+            'ORDER_NUMBER' => $order->job_number,
+            'ORDER_DATE' => $order->done_at->format('m/d/Y'),
+            'ORDER_TIME' => $order->done_at->format('g:ia'),
+            'VEHICLE' => $order->vehicle->full_name(),
+            'LICENSE_PLATE' => ($order->vehicle->license_plate?:null),
             'WASHER_NAME'=>$order->worker->name,
             'TIP' => '$'.number_format($order->tip/100, 2),
             'VEHICLE_PIC' => config('squeegy.emails.receipt.photo_url').$order->id.'.jpg',
