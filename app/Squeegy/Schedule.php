@@ -176,10 +176,14 @@ class Schedule
                         if($start_time->gt($end_time))continue;
 
                         if(@(int)$this->current_schedule[$start_time->format('m/d/Y H')] >= 2) { ///only allow 2 orders per slot
-                            $start_time->addHour();
+                            $start_time->addHours(1);
                             continue;
                         }
-                        $container[$idx]['time_slots'][] = implode(" - ", [$start_time->format('g:ia'), $start_time->addHours(1)->format('g:ia')]);
+                        $strt = $start_time->format('g:ia');
+                        $end = $start_time->addHours(1);
+                        if($end->isPast()) continue;
+
+                        $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
                 } else {
