@@ -28,7 +28,7 @@ class SyncCampaignMonitor {
 
 			$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
-			if(empty($customer->email)) return;
+			if(empty($customer->email) || $customer->is_anon()) return;
 
 			$subscriber_data = [
 				'EmailAddress' => $customer->email,
