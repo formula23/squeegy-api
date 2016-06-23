@@ -81,7 +81,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return trim($value);
     }
 
-    public function email() {
+    public function email_address() {
         if($this->is_anon() && $this->tmp_fb == 1) {
             return "";
         }

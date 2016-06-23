@@ -35,7 +35,7 @@ class UserTransformer extends TransformerAbstract {
         return [
             'id' => (string)$user->id,
             'name' => $user->name,
-            'email' => $user->email(),
+            'email' => $user->email_address(),
             'phone' => $user->phone,
             'referral_code' => $user->referral_code,
             'is_active' => $user->is_active,
