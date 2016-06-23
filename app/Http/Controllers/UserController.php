@@ -198,7 +198,7 @@ class UserController extends Controller {
             }
         }
 
-        if( ! empty($data['password']) || ! empty($data['facebook_id'])) {
+        if( ! empty($data['password']) || ! empty($data['facebook_id']) || ! empty($data['facebook_token'])) {
             $data['anon_pw_reset'] = 1;
             $data['tmp_fb'] = 0;
         }
