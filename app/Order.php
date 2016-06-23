@@ -43,6 +43,7 @@ class Order extends Model {
         'total',
         'charged',
         'tip',
+        'tip_at',
         'stripe_charge_id',
         'promo_code',
         'rating',
@@ -64,6 +65,7 @@ class Order extends Model {
         'start_at',
         'done_at',
         'cancel_at',
+        'tip_at',
     ];
 
 //    public $hasSurcharge = false;

@@ -548,6 +548,7 @@ class OrdersController extends Controller {
 
         $tip_amount = $request->input('amount');
         $order->tip = (int)$tip_amount;
+        $order->tip_at = Carbon::now();
 
         if($tip_amount)
         {
