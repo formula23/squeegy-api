@@ -23,7 +23,7 @@ return [
         'new_subscription_schedule_order' => 'New Subscription :order_service #:order_id for :subsription_schedule_time',
         'same_status' => 'This order is already in the \':status\' state.',
         'statement_descriptor' => 'SQUEEGY #:job_number',
-        'statement_descriptor_tip' => 'SQUEEGY TIP #:job_number',
+        'statement_descriptor_tip' => 'SQUEEGY WASHER TIP #:job_number',
         'invalid_card' => 'Please enter a valid credit card.',
         'card_charged' => ' charged your credit card in the amount of $:charge_amount and',
         'push_notice' => [
@@ -33,7 +33,7 @@ return [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time.',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time.',
             'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
-            'done' => ":worker_name is done washing your :car. We:card_charged have emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
+            'done' => ":worker_name is done washing your :car. We:card_charged have emailed you a receipt. Don't forget to tip your washer and rate your wash.\nThank you for using Squeegy!",
             'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
             'cancel_washer' => 'Customer cancelled order# :order_id - :vehicle',
             'change_washer' => [
