@@ -11,7 +11,7 @@ return [
     'template_ids' => [
         'receipt' => env('CM_RECEIPT_ID'),
         'pw_reset' => env('CM_PW_RESET_ID'),
-        'tip' => env('CM_TIP'),
+        'tip' => env('CM_TIP_ID'),
     ]
     
 ];
