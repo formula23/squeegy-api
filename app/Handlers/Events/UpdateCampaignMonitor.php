@@ -31,7 +31,7 @@ class UpdateCampaignMonitor {
 
 			$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
-			if(empty($customer->email) || $customer->is_anon()) return;
+			if(empty($customer->email) || $customer->is_tmp_email()) return;
 
 			$subscriber_data = [
 				'EmailAddress' => $customer->email,

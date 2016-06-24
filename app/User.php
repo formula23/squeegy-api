@@ -396,7 +396,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return (bool)(preg_match('/squeegyapp-tmp.com$/', $this->email) || $this->tmp_fb);
     }
 
-
+    /**
+     * @return bool
+     */
+    public function is_tmp_email()
+    {
+        return (bool)(preg_match('/squeegyapp-tmp.com$/', $this->email));
+    }
+    
     /**
      * @return string
      */
