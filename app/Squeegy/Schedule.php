@@ -57,7 +57,7 @@ class Schedule
     {
         $this->availability = Orders::availability(\Request::input('lat'), \Request::input('lng'));
 
-        if($this->availability["schedule"]) return;
+        if($this->availability["schedule"] && ! $this->availability["accept"]) return;
 
         $this->lead_hrs = (int)round($this->availability["actual_time"]/60);
     }
