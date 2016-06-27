@@ -28,7 +28,7 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
             'time' => $data['time'],
             'actual_time' => $data['lead_time'],
             'time_label' => $data['time_label'],
-            'worker_id' => (!empty($data['worker_id']) ? $data['worker_id'] : 0) ,
+            'worker_id' => ( ! empty($data['worker_id']) ? $data['worker_id'] : 0 ),
             'postal_code' => $data['postal_code'],
             'service_area' => $data['service_area'],
         ];

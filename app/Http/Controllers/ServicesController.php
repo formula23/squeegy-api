@@ -84,6 +84,7 @@ class ServicesController extends Controller {
             \Bugsnag::notifyException($e);
         }
 
+        Log::info("services@availability");
         Log::info($availability);
 
         return $this->response->withItem($availability, new ServiceAvailabilityTransformer());
