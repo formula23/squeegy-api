@@ -99,7 +99,7 @@ class Orders {
     {
         $open = self::open();
         Log::info('Squeegy Open Hours: '.$open);
-        $data = ['accept'=>0, 'schedule'=>false, 'description'=>'', 'code'=>'', 'partner_id'=>0, 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
+        $data = ['accept'=>0, 'schedule'=>false, 'open'=>$open, 'description'=>'', 'code'=>'', 'partner_id'=>0, 'time'=>0, 'time_label'=>'', 'service_area' => config('squeegy.service_area')];
 
         self::geocode(self::get_location($lat, $lng));
         self::$lat = $lat;

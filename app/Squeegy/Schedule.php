@@ -24,12 +24,13 @@ class Schedule
     public $open_hr;
     public $close_hr;
 //    public $available=[];
-    public $lead_hrs=4;
+    public $lead_hrs=0;
     public $days_out=7;
     public $time_slot_interval=1;
     public $current_schedule;
     public $postal_code;
     public $day_format;
+    public $availability;
 
     public function __construct($postal_code=null, $partner_id=0)
     {
@@ -37,6 +38,8 @@ class Schedule
         $this->partner_id = $partner_id;
 
         $this->current_schedule();
+
+        $this->set_lead_time();
 
         $this->now = Carbon::now();
 
@@ -48,6 +51,15 @@ class Schedule
 //		$this->current_day = 8;
 //		$this->now = Carbon::create(2016,01,$this->current_day,0,0,0);
 
+    }
+
+    protected function set_lead_time()
+    {
+        $this->availability = Orders::availability(\Request::input('lat'), \Request::input('lng'));
+
+        if($this->availability["schedule"]) return;
+
+        $this->lead_hrs = (int)round($this->availability["time"]/60);
     }
 
     public function availability()
@@ -89,14 +101,15 @@ class Schedule
             $this->close = $this->close_hr;
             $windows=[];
 
+            
+            
             for($this->open; $this->open<=$this->close-1; $this->open++) {
 
                 $start = new Carbon($this->now->format("m/d/y $this->open:00"));
 
                 if($this->now->isToday()) {
 
-                    if($this->now->hour >= $this->close) {
-//						print "after close\n";
+                    if($this->now->hour >= $this->close) { //squeegy closed
                         continue(2);
                     }
 
@@ -107,12 +120,15 @@ class Schedule
 //                        continue;
 //                    }
 
-                    if($this->open < $this->now->hour+$this->lead_hrs) {
-//						print "cont\n";
+                    if( ! $this->lead_hrs && $this->availability["open"] ) { ///no ETA - no washers availble and squeegy is open.
+                        continue(2);
+                    }
+
+                    if( $this->open < ($this->now->hour + $this->lead_hrs) ) {
                         continue;
                     }
-                    if($this->now->hour+$this->lead_hrs >= $this->close) {
-//						print "cont\n";
+
+                    if( ($this->now->hour + $this->lead_hrs) >= $this->close ) {
                         continue(2);
                     }
                 }
