@@ -345,7 +345,18 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
 
-            $job['pay'] = ( $order->rating >= 3 || $order->rating === null ? (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2) : 0 );
+            $job_pay = (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2);
+
+            if( $order->rating >= 3 || $order->rating === null ) {
+                $job['pay'] = $job_pay;
+            } else {
+                $job['pay'] = 0;
+
+                if(isset($this->min_day_worker_id[$order->worker->id]) && isset($this->min_day_worker_id[$order->worker->id][$order->done_at->dayOfWeek])) {
+                    $this->min_day_worker_id[$order->worker->id][$order->done_at->dayOfWeek] -= $job_pay;
+                }
+
+            }
 
 //            if (in_array($order->worker_id, $this->commission_userids)) {
 //                @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
