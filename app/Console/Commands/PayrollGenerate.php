@@ -197,7 +197,7 @@ class PayrollGenerate extends Command {
         ],
         2882 => [ //juan lopez
             2 => 100,
-            4 => 120,
+            4 => 100,
         ],
         2149 => [ //daniel
 //            4 => 130,
@@ -404,6 +404,11 @@ class PayrollGenerate extends Command {
             foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$day_details) {
 
                 if(isset($onsite_details[$day_details['date']->dayOfWeek])) {
+
+                    if(isset($this->min_day_worker_id[$worker_id]) && isset($this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek])) {
+                        $this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek] =0;
+                    }
+
                     @$day_details['onsite'] += $onsite_details[$day_details['date']->dayOfWeek];
                     $orders_by_worker[$worker_id]['jobs']['total_cog'] += $day_details['onsite'];
                     $orders_by_worker[$worker_id]['jobs']['total'] += $day_details['onsite'];
