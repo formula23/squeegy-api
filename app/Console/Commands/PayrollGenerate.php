@@ -517,7 +517,7 @@ class PayrollGenerate extends Command {
 				$message->attach($email_data['time_sheet']);
 			});
             $this->info("Email sent: ".$email_data['washer']['email']);
-            sleep(2);
+//            sleep(2);
 		}
 
         ///generate COGs file and email
