@@ -59,7 +59,7 @@ class Schedule
 
         if($this->availability["schedule"]) return;
 
-        $this->lead_hrs = (int)round($this->availability["time"]/60);
+        $this->lead_hrs = (int)round($this->availability["actual_time"]/60);
     }
 
     public function availability()
