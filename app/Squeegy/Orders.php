@@ -206,15 +206,14 @@ class Orders {
             $data['description'] = trans('messages.service.highdemand');
             $data['accept'] = 0;
         }
+        
+        $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
+        $resp = array_merge($data, $lead_time_arr);
 
         Log::info('Response Data:');
-        Log::info($data);
+        Log::info($resp);
 
-        $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
-
-        Log::info($lead_time_arr);
-        
-        return array_merge($data, $lead_time_arr);
+        return $resp;
     }
 
     /**
