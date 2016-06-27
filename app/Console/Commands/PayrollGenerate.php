@@ -406,7 +406,7 @@ class PayrollGenerate extends Command {
                 if(isset($onsite_details[$day_details['date']->dayOfWeek])) {
 
                     if(isset($this->min_day_worker_id[$worker_id]) && isset($this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek])) {
-                        $this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek] =0;
+                        $this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek] = 0;//no min if washer was on-site
                     }
 
                     @$day_details['onsite'] += $onsite_details[$day_details['date']->dayOfWeek];
