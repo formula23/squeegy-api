@@ -58,7 +58,7 @@ class PayrollGenerate extends Command {
 
     protected $referral_code = [
 //        5482 => 10,
-//        2882 => 10,
+        2882 => 10,
     ];
 
     protected $ignore_ids =[
@@ -110,9 +110,9 @@ class PayrollGenerate extends Command {
     ];
 
     protected $daily_bonus_worker_id = [
-        3198 => [ //david
-            2=>50,
-        ],
+//        3198 => [ //david
+//            2=>50,
+//        ],
 //        2882 => [ //juan lopez
 //            0=>50,
 //        ],
@@ -124,19 +124,18 @@ class PayrollGenerate extends Command {
 	protected $min_day_worker_id = [
 		3198 => [ //david
             1=>100,
-            2=>100,
-            3=>100,
-            4=>100,
-            5=>100,
+//            2=>100,
+//            3=>100,
+//            4=>100,
+//            5=>100,
             6=>100,
 		],
         1847 => [ //ricardo
             0 => 100,
-//            2 => 100,
+            2 => 100,
             3 => 100,
             4 => 100,
             5 => 100,
-            6 => 100,
         ],
         7146 => [ //leonel
 //            1 => 100,
@@ -153,11 +152,14 @@ class PayrollGenerate extends Command {
             2 => 120,
             3 => 120,
             4 => 120,
-            6 => 120,
+//            6 => 120,
         ],
         7527 => [ // Gonzalo hidalgo
+            1 => 120,
+            3 => 120,
+            4 => 120,
             5 => 120,
-//            6 => 120,
+            6 => 120,
         ],
         2149 => [ //daniel
             0 => 150,
@@ -185,22 +187,25 @@ class PayrollGenerate extends Command {
     ];
 
     protected $onsite =[
-        3198 => [
+        3198 => [ //david
 //            3 => 75, //snack nation half day
 //            4 => 130,
 //            5 => 130,
         ],
-        7146 => [
+        7146 => [ //leo
 //            4 => 120,
         ],
-//        2882 => [
-//            4 => 150,
-//            5 => 150,
-//        ],
-        2149 => [
+        2882 => [ //juan lopez
+            2 => 100,
+            4 => 120,
+        ],
+        2149 => [ //daniel
 //            4 => 130,
 //            5 => 60,
-        ]
+        ],
+        7527 => [ // Gonzalo hidalgo
+            4 => 100,
+        ],
     ];
 
 	/**
