@@ -212,6 +212,8 @@ class Orders {
 
         $lead_time_arr = Orders::formatLeadTime($data['lead_time']);
 
+        Log::info($lead_time_arr);
+        
         return array_merge($data, $lead_time_arr);
     }
 
