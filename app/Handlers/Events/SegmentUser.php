@@ -38,7 +38,7 @@ class SegmentUser {
 
 			if( ! $order) return;
 
-			if($order->referrer && $order->referrer->segment->segment_id != 5 && $order->referrer->is_advocate()) {
+			if($order->referrer && $order->referrer->is('customer') && $order->referrer->segment->segment_id != 5 && $order->referrer->is_advocate()) {
 				$order->referrer->segment->segment_id = 5;
 				$order->referrer->segment->advocate_at = $order->done_at;
 			}
