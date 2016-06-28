@@ -20,7 +20,7 @@ class RequestingUserHasAccessMiddleware
     public function handle($request, Closure $next)
     {
         $get_user_id = ($request->users?$request->users->id:$request->id);
-        if( ! $request->user()->is('admin') && ($get_user_id != $request->user()->id)) {
+        if( ! $request->user()->is('admin|support') && ($get_user_id != $request->user()->id)) {
             return (new Response(new Manager()))->errorWrongArgs();
         }
         return $next($request);
