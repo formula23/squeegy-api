@@ -141,8 +141,7 @@ class OrdersController extends Controller {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = $request->input('limit');
         }
-
-
+        
         $paginator = $orders->paginate($this->limit);
 
         return $this->response->withPaginator($paginator, new OrderTransformer());
@@ -395,10 +394,10 @@ class OrdersController extends Controller {
                         return $this->response->errorWrongArgs(trans("messages.service.only_schedule"));
                     }
 
-                    if(in_array($availability['postal_code'], ['91316','91356','91335','91406','91436']) && strtolower($order->promo_code) != "ktla") {
-                        \Bugsnag::notifyException(new \Exception("Order attempt in Encino without promo code. User id: ".$user->id));
-                        return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area.");
-                    }
+//                    if(in_array($availability['postal_code'], ['91316','91356','91335','91406','91436']) && strtolower($order->promo_code) != "ktla") {
+//                        \Bugsnag::notifyException(new \Exception("Order attempt in Encino without promo code. User id: ".$user->id));
+//                        return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area.");
+//                    }
                     
                     $order->confirm_at = Carbon::now();
                     $order->job_number = strtoupper(substr( md5(rand()), 0, 6));
@@ -424,7 +423,7 @@ class OrdersController extends Controller {
                     break;
                 case "assign":
 
-                    if( ! $user->is('admin')) {
+                    if( ! $user->can('order.assign')) {
                         return $this->response->errorUnauthorized();
                     }
 
