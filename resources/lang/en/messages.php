@@ -33,8 +33,8 @@ return [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time.',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time.',
             'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
-            'done' => ":worker_name is done washing your :car. We:card_charged have emailed you a receipt. Don't forget to rate your wash.\nThank you for using Squeegy!",
-            'cancel' => 'We\'re very sorry but we had to cancel your order. Contact customer service for additional information.',
+            'done' => ":worker_name is done washing your :car. We:card_charged have emailed you a receipt. Don't forget to tip your washer and rate your wash.\nThank you for using Squeegy!",
+            'cancel' => 'Your order has been cancelled. Please contact customer service for additional information.',
             'cancel_washer' => 'Customer cancelled order# :order_id - :vehicle',
             'change_washer' => [
                 'customer' => 'Your wash has been re-assigned to :worker_name.',

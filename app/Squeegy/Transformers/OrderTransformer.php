@@ -8,6 +8,7 @@
 
 namespace App\Squeegy\Transformers;
 
+use App\CancelReason;
 use App\OrderSchedule;
 use App\Squeegy\Orders;
 use App\Order;
@@ -26,12 +27,14 @@ class OrderTransformer extends TransformerAbstract {
         'worker',
         'customer',
         'schedule',
+        'cancel_reason',
     ];
 
     protected $availableIncludes = [
         'referrer',
         'payment_method',
         'partner',
+
     ];
 
     public function transform(Order $order)
@@ -172,4 +175,16 @@ class OrderTransformer extends TransformerAbstract {
         return $this->item($order->partner, new PartnerTransformer());
     }
 
+    public function includeCancelReason(Order $order)
+    {
+        if(!$order->cancel_reason) {
+            $cancel_reason = new CancelReason();
+            $cancel_reason->description = 'Customer cancelled.';
+        } else {
+            $cancel_reason = $order->cancel_description;
+        }
+        return $this->item($cancel_reason, new CancelReasonTransformer());
+    }
+    
+    
 }

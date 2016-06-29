@@ -199,6 +199,19 @@ class Order extends Model {
         return $this->belongsTo('App\Discount', 'discount_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function cancel_description()
+    {
+        return $this->belongsTo('App\CancelReason', 'cancel_reason');
+    }
+    
+    /**
+     * @param $query
+     * @param $status
+     * @return mixed
+     */
     public function scopeOfStatus($query, $status)
     {
         return $query->where('status', $status);
