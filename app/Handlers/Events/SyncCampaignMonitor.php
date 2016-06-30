@@ -45,12 +45,12 @@ class SyncCampaignMonitor {
 
 			if( ! empty($event->order)) {
 				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
-			}
 
-            if($partner = $event->order->partner) {
-                $subscriber_data['CustomFields'][] = ['Key'=>'PartnerID', 'Value'=>$partner->id];
-                $subscriber_data['CustomFields'][] = ['Key'=>'PartnerName', 'Value'=>$partner->name];
-            }
+                if($partner = $event->order->partner) {
+                    $subscriber_data['CustomFields'][] = ['Key'=>'PartnerID', 'Value'=>$partner->id];
+                    $subscriber_data['CustomFields'][] = ['Key'=>'PartnerName', 'Value'=>$partner->name];
+                }
+			}
 
 			Log::info($subscriber_data);
 
