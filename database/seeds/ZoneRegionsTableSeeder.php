@@ -69,11 +69,7 @@ class ZoneRegionsTableSeeder extends Seeder
                 ['postal_code'=>'90405'],
                 ['postal_code'=>'90073'],
                 ['postal_code'=>'90068'],
-                ['postal_code'=>'91316'], //encino area
-                ['postal_code'=>'91356'], //encino area
-                ['postal_code'=>'91335'], //encino area
-                ['postal_code'=>'91406'], //encino area
-                ['postal_code'=>'91436'], //encino area
+                ['postal_code'=>'90017'], //downtown
             ],
             2 => [
                 ['postal_code'=>'90245'],

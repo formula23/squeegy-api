@@ -46,7 +46,7 @@ class OrderTransformer extends TransformerAbstract {
             'status' => $order->status,
             'is_schedule_order' => ($order->schedule && $order->schedule->type=='one-time'?true:false),
             'is_subscription_order' => ($order->schedule && $order->schedule->type=='subscription'?true:false),
-            'location' => $order->location,
+            'location' => ( $order->isPartner() ? $order->partner->location : $order->location ),
             'instructions' => $order->instructions,
             'tip_eligible' => ($order->tip===null && $order->rating===null ? true : false),
             'default_tip_index' => 0,

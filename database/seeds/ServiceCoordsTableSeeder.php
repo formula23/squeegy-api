@@ -50,6 +50,15 @@ class ServiceCoordsTableSeeder extends Seeder
             "34.105419"=>"-118.284774", //hollywood & hoover
             "34.076204"=>"-118.284431", //hoover & beverly
 
+            ///*** digital realty ***/
+
+            "34.048024"=>"-118.257685", //7th & hope
+            "34.047278"=>"-118.256570", //7th & grand
+            "34.045829"=>"-118.257943", //grand & 8th
+            "34.046557"=>"-118.259059", //8th & hope
+            "34.047971"=>"-118.257761", //hope & 7th
+
+            ////*** *END ** ////
 
             ///*** Downtown pilot ****/
 //            "34.042956"=>"-118.264125", //flower & 11st

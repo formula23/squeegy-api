@@ -27,7 +27,7 @@ class Partner extends Model
     {
         return $this->belongsToMany('App\User', 'orders')->where('orders.status', 'done');
     }
-    
+
     /**
      * @param $service_id
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -45,11 +45,23 @@ class Partner extends Model
         return $this->hasMany('App\PartnerDay');
     }
 
+    /**
+     * @param $value
+     * @return mixed
+     */
     public function getLocationAttribute($value)
     {
         return json_decode($value, true);
     }
-    
+
+    /**
+     * @param $value
+     */
+    public function setLocationAttribute($value)
+    {
+        $this->attributes['location'] = json_encode($value);
+    }
+
     public function getGeoFenceAttribute($value)
     {
         return json_decode($value);
