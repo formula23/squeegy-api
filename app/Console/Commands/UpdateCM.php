@@ -54,7 +54,6 @@ class UpdateCM extends Command
             ->chunk(10, function ($users) use ($subscriber) {
 
                 foreach($users as $user) {
-                    dd($user);
                     $subscriber_data=[
                         'CustomFields'=> [
                             ['Key'=>'PartnerID', 'Value'=>$user->partner_id],
