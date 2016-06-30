@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Order;
 use App\User;
 use App\UserSegment;
 use CampaignMonitor;
@@ -43,6 +44,37 @@ class UpdateCM extends Command
     {
 
         $subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
+
+        Order::whereNotNull('partner_id')
+            ->select('users.email', 'partners.id as partner_id', 'partners.name as partner_name')
+            ->join('users','orders.user_id','=','users.id')
+            ->join('partners', 'orders.partner_id', '=', 'partners.id')
+            ->groupBy('users.id')
+            ->where('status','done')
+            ->chunk(10, function ($users) use ($subscriber) {
+
+                foreach($users as $user) {
+                    dd($user);
+                    $subscriber_data=[
+                        'CustomFields'=> [
+                            ['Key'=>'PartnerID', 'Value'=>$user->partner_id],
+                            ['Key'=>'PartnerName', 'Value'=>$user->partner_name],
+                        ]
+                    ];
+
+                    $result = $subscriber->update($user->email, $subscriber_data);
+
+                    if($result->http_status_code != 200) {
+                        $err_msg = "Campaign Monitor: ".$result->http_status_code." -- ".( ! empty($result->response) ? $result->response->Message : "");
+                        $this->error($err_msg);
+                    } else {
+                        $this->info($user->email." updated.");
+                    }
+                }
+
+            });
+dd("Done");
+
 
         User::customers()->chunk(1000, function($users) use ($subscriber) {
 
