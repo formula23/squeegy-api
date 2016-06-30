@@ -123,12 +123,12 @@ class PayrollGenerate extends Command {
 
 	protected $min_day_worker_id = [
 		3198 => [ //david
-            1=>100,
-//            2=>100,
-//            3=>100,
-//            4=>100,
-//            5=>100,
-            6=>100,
+            1=>120,
+            2=>120,
+            3=>120,
+            4=>120,
+            5=>120,
+            6=>120,
 		],
         1847 => [ //ricardo
             0 => 100,

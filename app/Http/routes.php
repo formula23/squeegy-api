@@ -56,6 +56,8 @@ Route::group(['prefix' => 'v1'], function() {
     
     Route::post('orders/{orders}/tip', 'OrdersController@tipWasher');
 
+    Route::get('partners', 'PartnerController@index');
+    
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');
 

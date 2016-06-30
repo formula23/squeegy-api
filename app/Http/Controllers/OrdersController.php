@@ -137,6 +137,15 @@ class OrdersController extends Controller {
             $orders->where('worker_id', $request->input('worker_id'));
         }
 
+        $partner_id = $request->input('partner_id');
+        if($partner_id!="") {
+            if ($partner_id === "0") {
+                $orders->whereNull('partner_id');
+            } else {
+                $orders->where('partner_id', $partner_id);
+            }
+        }
+
         if($request->input('limit')) {
             if((int)$request->input('limit') < 1) $this->limit = 1;
             else $this->limit = $request->input('limit');
