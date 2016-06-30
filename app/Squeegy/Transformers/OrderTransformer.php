@@ -177,13 +177,16 @@ class OrderTransformer extends TransformerAbstract {
 
     public function includeCancelReason(Order $order)
     {
-        if(!$order->cancel_reason) {
-            $cancel_reason = new CancelReason();
-            $cancel_reason->description = 'Customer cancelled.';
-        } else {
-            $cancel_reason = $order->cancel_description;
+        if($order->status == 'cancel') {
+            if( ! $order->cancel_reason) {
+                $cancel_reason = new CancelReason();
+                $cancel_reason->description = 'Customer cancelled.';
+            } else {
+                $cancel_reason = $order->cancel_description;
+            }
+            return $this->item($cancel_reason, new CancelReasonTransformer());
         }
-        return $this->item($cancel_reason, new CancelReasonTransformer());
+        return null;
     }
     
     
