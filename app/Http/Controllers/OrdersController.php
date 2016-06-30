@@ -194,6 +194,7 @@ class OrdersController extends Controller {
         $service = Service::find($data['service_id']);
 
         if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+
             $data['partner_id'] = $partner->id;
             $service = $partner->service($data['service_id'])->first();
 
@@ -244,6 +245,7 @@ class OrdersController extends Controller {
             }
         } catch (\Exception $e) {
             \Bugsnag::notifyException($e);
+            \Log::info($e);
             return $this->response->errorWrongArgs(trans('messages.service.error'));
         }
 

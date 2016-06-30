@@ -38,7 +38,7 @@ class UpdateMixPanel
             "Last Wash Type" => ( ! empty($user->lastWash()) ? $user->lastWash()->service->name : "" ),
         ];
 
-        if ($partner = $user->partners->first()) {
+        if($partner = $event->order->partner) {
             $data['Partner ID'] = $partner->id;
             $data['Partner Name'] = $partner->name;
         }
