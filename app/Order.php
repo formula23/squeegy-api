@@ -377,9 +377,9 @@ class Order extends Model {
 
     public function hasSurCharge()
     {
-        $surcharge_record = $this->order_details()->where('name','like','%surcharge')->first();
+        $surcharge_record = $this->order_details()->where('name','like','%surcharge')->sum('amount');
         if(!$surcharge_record) return 0;
-        return $surcharge_record->amount;
+        return $surcharge_record;
     }
 
     public function get_etc()
@@ -391,6 +391,87 @@ class Order extends Model {
     public function charges()
     {
         return $this->transactions()->whereIn('type', ['capture','sale'])->orderBy('amount', 'desc')->get();
+    }
+
+    public function change_service($service_id)
+    {
+        //get original order values
+        $orig_price = $this->service->price();
+        $orig_total = $this->total;
+        $orig_discount = $this->discount;
+        $orig_credit = $this->credit;
+        $orig_surcharge = $this->vehicleSurCharge();
+
+        //set new service level and reload the service relationship
+        $this->service_id = (int)$service_id;
+        $this->load('service');
+
+        $this->etc = $this->get_etc();
+
+        /**
+         * update ETC
+         * update price, discount, credit, total, charged
+         * add order details
+         */
+
+//        dd($order->service);
+
+        $this->price = $this->service->price();
+        $new_price = $this->price;
+        
+        if($new_surcharge = $this->vehicleSurCharge()) {
+            $this->price += $new_surcharge;
+        }
+
+        $this->total = $this->price;
+
+//        if($order->discount_id) {
+//            $promo_code_msg = $this->applyPromoCode($order, ['promo_code'=>$order->promo_code]);
+//            if($promo_code_msg) {
+//                return $this->response->errorWrongArgs($promo_code_msg);
+//            }
+//        }
+
+        $new_discount = $this->discount;
+        $new_credit = $this->credit;
+        $new_total = $new_price-$new_discount-$new_credit+$new_surcharge;
+
+        $this->charged = $this->total;
+
+        print "orig price: ".$orig_price."\n";
+
+        print "orig disc: ".$orig_discount."\n";
+        print "orig credit: ".$orig_credit."\n";
+        print "orig surcharge: ".$orig_surcharge."\n";
+        print "orig total: ".$orig_total."\n";
+        print "\n\n";
+        print "new price: ".$new_price."\n";
+        print "new disc: ".$new_discount."\n";
+        print "new credit: ".$new_credit."\n";
+        print "new surcharge: ".$new_surcharge."\n";
+        print "new total:".$new_total;
+        print "\n\n";
+
+        $order_details=[];
+
+        if($orig_price != $new_price) {
+            $price_diff = $new_price - $orig_price;
+            $direction = ($new_price > $orig_price ? "Upgrade" : "Downgrade" );
+            $order_details[] = new OrderDetail(['name'=>$direction." to ".$this->service->name, 'amount'=>$price_diff]);
+            print "price diff: ".$price_diff."\n";
+        }
+
+        if($orig_surcharge!=$new_surcharge) {
+            $surcharge_diff = $new_surcharge - $orig_surcharge;
+            $order_details[] = new OrderDetail(['name'=>$this->service->name." ".$this->vehicle->type." Surcharge", 'amount'=>$surcharge_diff]);
+            print "surcharge diff: ".$surcharge_diff."\n";
+        }
+
+        print_r($order_details);
+
+        $this->order_details()->saveMany($order_details);
+
+        $this->save();
     }
 
 }

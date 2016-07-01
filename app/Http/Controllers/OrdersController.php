@@ -593,6 +593,19 @@ class OrdersController extends Controller {
         return $this->response->withItem($order, new OrderTransformer());
     }
 
+    public function changeService(Request $request, Order $order)
+    {
+        if( ! $order->exists) return $this->response->errorNotFound();
+
+        if($order->status > 5) return $this->response->errorWrongArgs('Order already complete! Can not change service level.');
+
+        $order->change_service($request->input('service_id'));
+
+        
+        dd("done");
+        return $this->response->withItem($order, new OrderTransformer());
+    }
+
     /**
      * @param Order $order
      * @param $request_data
