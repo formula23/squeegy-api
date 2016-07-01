@@ -313,7 +313,7 @@ class OrdersController extends Controller {
 
         $request_data = $request->all();
         
-        $promo_code_msg = $this->applyPromoCode($order, $request_data);
+        $promo_code_msg = $order->applyPromoCode(@$request_data['promo_code']);
         if($promo_code_msg) {
             return $this->response->errorWrongArgs($promo_code_msg);
         }
