@@ -284,8 +284,8 @@ class OrdersController extends Controller {
             $order->schedule()->save($order_schedule);
         }
 
-        ///use available credits - cannot redeem credits for partner washes
-        if( ! $order->isPartner() && ! $order->isSubscription() && $user->availableCredit()) {
+        ///use available credits
+        if( ! $order->isSubscription() && $user->availableCredit()) {
             $order->credit = min($order->total, $user->availableCredit());
             $order->total -= $order->credit;
         }
