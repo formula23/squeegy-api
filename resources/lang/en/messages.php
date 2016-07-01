@@ -33,7 +33,7 @@ return [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time.',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time.',
             'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
-            'done' => ":worker_name is done washing your :car. We:card_charged have emailed you a receipt. Don't forget to tip your washer and rate your wash.\nThank you for using Squeegy!",
+            'done' => ":worker_name is done washing your :car. If you would like to review the work, please go outside now. We:card_charged have emailed you a receipt. \nThank you for using Squeegy!",
             'cancel' => 'Your order has been cancelled. Please contact customer service for additional information.',
             'cancel_washer' => 'Customer cancelled order# :order_id - :vehicle',
             'change_washer' => [
@@ -45,7 +45,7 @@ return [
             'arriving_soon' => 'Your washer is arriving soon...',
         ],
         'push_notice_schedule' => [
-            'will_cancel' => 'No washers avialable for Order# :order_id',
+            'will_cancel' => 'No washers available for Order# :order_id',
             'cancel' => 'We\'re very sorry but there are no washers currently available to perform your wash. We had to cancel your order. A full refund has been issued. Please contact customer service at support@squeegyapp.com for additional information.',
         ],
         'push_notice_corp' => [
