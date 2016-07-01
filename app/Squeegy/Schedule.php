@@ -119,8 +119,7 @@ class Schedule
 //                        $this->open < Config::get('squeegy.operating_hours.open')+$this->lead_hrs) {
 //                        continue;
 //                    }
-
-                    if( ! $this->lead_hrs && $this->availability["open"] ) { ///no ETA - no washers availble and squeegy is open.
+                    if( $this->availability["schedule"] && $this->availability["open"] ) { ///no washers availble and squeegy is open.
                         continue(2);
                     }
 
