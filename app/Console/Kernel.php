@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule)
 	{
         $schedule->command('db:backup')->cron('* */6 * * *');
-		$schedule->command('order:review_wash_notice')->cron('* 8-20 * * *');
+//		$schedule->command('order:review_wash_notice')->cron('* 8-20 * * *');
 		$schedule->command('order:assign-scheduled')->cron('* 7-19 * * *')->appendOutputTo($this->dir('assign-scheduled'));
 		$schedule->command('squeegy:update_partner_dates')->cron('0 13-19 * * *');
 	}
