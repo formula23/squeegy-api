@@ -76,7 +76,7 @@ class Schedule
 
             if(empty($container)) $container=[];
 
-            if($this->now->format('Y-m-d') == '2016-03-27') { //easter
+            if($this->now->format('Y-m-d') == '2016-07-04') { //4th july
                 $this->days_out+=1;
                 continue;
             }
