@@ -423,15 +423,27 @@ class Order extends Model {
             $this->price += $new_surcharge;
         }
 
-        $this->total = $this->price;
-        
+
         $this->applyPromoCode($this->promo_code);
 
+
         $new_discount = $this->discount;
-        $new_credit = $this->credit;
-        $new_total = $new_price-$new_discount-$new_credit+$new_surcharge;
+
+        $new_total = $new_price - $new_discount - $this->credit + $new_surcharge;
 
         $this->charged = $this->total;
+
+        $total_diff = $new_total - $orig_total;
+        print "total diff:".$total_diff."\n";
+
+        if( $total_diff <= $this->customer->availableCredit() ) {
+            $this->credit += min($total_diff, $this->customer->availableCredit());
+        }
+
+        $new_credit = $this->credit;
+
+        $this->total = $this->price - $this->credit;
+        $new_total = $this->total;
 
         print "orig price: ".$orig_price."\n";
 
@@ -447,6 +459,8 @@ class Order extends Model {
         print "new total:".$new_total;
         print "\n\n";
 
+        dd('done');
+
         $order_details=[];
 
         if($orig_price != $new_price) {
@@ -461,6 +475,8 @@ class Order extends Model {
             $order_details[] = new OrderDetail(['name'=>$this->service->name." ".$this->vehicle->type." Surcharge", 'amount'=>$surcharge_diff]);
             print "surcharge diff: ".$surcharge_diff."\n";
         }
+
+
 
         print_r($order_details);
 
