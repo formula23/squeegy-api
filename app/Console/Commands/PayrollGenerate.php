@@ -311,7 +311,6 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['referral_code'] = 0;
             if (isset($this->referral_code[$order->worker->id])) {
-                Log::info($this->referral_code[$order->worker->id]);
                 @$orders_by_worker[$order->worker->id]['referral_code'] = (int)@$this->referral_code[$order->worker->id];
             }
 
