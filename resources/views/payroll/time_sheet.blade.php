@@ -33,7 +33,7 @@
         <th>Net Pay</th>
     </tr>
     </thead>
-
+@if(isset($washer_info['jobs']))
     @foreach($washer_info['jobs']['days'] as $date=>$day)
 
         @if( (isset($day['pay']) && $day['pay'] > 0) || (isset($day['min']) && $day['min'] > 0) || (isset($day['onsite']) && $day['onsite'] > 0) )
@@ -99,6 +99,7 @@
         @endif
 
     @endforeach
+@endif
 
     @if($washer_info['minimum'])
     <tr>
@@ -139,6 +140,13 @@
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Referral Code:</strong></td>
             <td>${{ number_format($washer_info['referral_code'], 2) }}</td>
+        </tr>
+    @endif
+
+    @if(isset($washer_info['tip']))
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
+            <td>${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
         </tr>
     @endif
 
