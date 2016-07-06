@@ -600,7 +600,6 @@ class PayrollGenerate extends Command {
                 $message->subject("Squeegy Pay - COGs Week of ".$email_data['week_of']);
                 $message->attach($email_data['time_sheet']);
             });
-            $this->info("Email sent: ".$email_data['washer']['email']);
 
         } catch(\Exception $e) {
             $this->error($e->getMessage());
