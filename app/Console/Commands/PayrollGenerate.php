@@ -542,25 +542,34 @@ class PayrollGenerate extends Command {
             //only send to IDs that are in the array if there is an array
             if(count($this->ids_to_process) && !in_array($worker_id, $this->ids_to_process)) continue;
 
-			Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
-			{
-                $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
-                
-				$message->from('payments@squeegyapp.com', 'Squeegy Payments');
-                $message->replyTo('support@squeegyapp.com', 'Squeegy');
+            try {
 
-				if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
-					$message->to('dan@squeegyapp.com', 'Dan Schultz');
-				} else {
-					$message->to($email_data['washer']['email'], $email_data['washer']['name']);
-					$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
-					$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
-				}
+                Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
+                {
+                    $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
 
-				$message->subject("Squeegy Pay - Week of ".$email_data['week_of']);
-				$message->attach($email_data['time_sheet']);
-			});
-            $this->info("Email sent: ".$email_data['washer']['email']);
+                    $message->from('payments@squeegyapp.com', 'Squeegy Payments');
+                    $message->replyTo('support@squeegyapp.com', 'Squeegy');
+
+                    if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
+                        $message->to('dan@squeegyapp.com', 'Dan Schultz');
+                    } else {
+                        $message->to($email_data['washer']['email'], $email_data['washer']['name']);
+                        $message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
+                        $message->bcc('dan@squeegyapp.com', 'Dan Schultz');
+                    }
+
+                    $message->subject("Squeegy Pay - Week of ".$email_data['week_of']);
+                    $message->attach($email_data['time_sheet']);
+                });
+
+                $this->info("Email sent: ".$email_data['washer']['email']);
+
+            } catch(\Exception $e) {
+                $this->error($e->getMessage());
+            }
+
+
 //            sleep(2);
 		}
 
@@ -573,23 +582,29 @@ class PayrollGenerate extends Command {
 
 		$email_data['time_sheet'] = $disk->getDriver()->getAdapter()->getPathPrefix().implode("/", $dir_path);
 
-		Mail::raw('COGs Attached', function($message) use ($email_data)
-		{
-            $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll COGs');
-            
-			if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
-				$message->to('dan@squeegyapp.com', 'Dan Schultz');
-			} else {
-				$message->to('Terri@lrmcocpas.com', 'Terri Perkins');
-				$message->cc('Anna@lrmcocpas.com', 'Anna Asuncion');
-				$message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
-				$message->bcc('dan@squeegyapp.com', 'Dan Schultz');
-			}
+        try {
 
-			$message->subject("Squeegy Pay - COGs Week of ".$email_data['week_of']);
-			$message->attach($email_data['time_sheet']);
-		});
+            Mail::raw('COGs Attached', function($message) use ($email_data)
+            {
+                $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll COGs');
 
+                if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
+                    $message->to('dan@squeegyapp.com', 'Dan Schultz');
+                } else {
+                    $message->to('Terri@lrmcocpas.com', 'Terri Perkins');
+                    $message->cc('Anna@lrmcocpas.com', 'Anna Asuncion');
+                    $message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
+                    $message->bcc('dan@squeegyapp.com', 'Dan Schultz');
+                }
+
+                $message->subject("Squeegy Pay - COGs Week of ".$email_data['week_of']);
+                $message->attach($email_data['time_sheet']);
+            });
+            $this->info("Email sent: ".$email_data['washer']['email']);
+
+        } catch(\Exception $e) {
+            $this->error($e->getMessage());
+        }
 	}
 
     protected function get_tips()
