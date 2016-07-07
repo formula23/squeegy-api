@@ -141,6 +141,8 @@ class OrdersController extends Controller {
         if($partner_id!="") {
             if ($partner_id === "0") {
                 $orders->whereNull('partner_id');
+            } else if($partner_id == "all-partners") {
+                $orders->whereNotNull('partner_id');
             } else {
                 $orders->where('partner_id', $partner_id);
             }
