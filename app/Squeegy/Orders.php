@@ -434,6 +434,12 @@ class Orders {
             Log::info("Distance to next job: ".$dist);
 
             if($dist <= 0.5) {
+
+                Log::info('Active jobs count:');
+                Log::info($users_last_order->worker->active_jobs($users_last_order)->count());
+                Log::info('Completed times for worker:'.$users_last_order->worker_id);
+                Log::info(self::$complete_times_by_worker[$users_last_order->worker_id]);
+
                 if( ! $users_last_order->worker->active_jobs($users_last_order)->count() && !empty(self::$complete_times_by_worker[$users_last_order->worker_id])) {
                     $next_available['time'] = self::$complete_times_by_worker[$users_last_order->worker_id]['eta'];
                     $next_available['worker_id'] = $users_last_order->worker_id;
