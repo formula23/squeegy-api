@@ -435,9 +435,9 @@ class Orders {
 
             if($dist <= 0.5) {
 
-                Log::info('Active jobs count:');
+                Log::info('Active jobs after last/current job:');
                 Log::info($users_last_order->worker->active_jobs($users_last_order)->count());
-                Log::info('Completed times for worker:'.$users_last_order->worker_id);
+                Log::info('Completed times is empty for worker:'.$users_last_order->worker_id);
                 Log::info(empty(self::$complete_times_by_worker[$users_last_order->worker_id]));
 
                 if( ! $users_last_order->worker->active_jobs($users_last_order)->count() && !empty(self::$complete_times_by_worker[$users_last_order->worker_id])) {
