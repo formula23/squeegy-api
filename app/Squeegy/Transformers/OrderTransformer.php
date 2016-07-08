@@ -55,7 +55,7 @@ class OrderTransformer extends TransformerAbstract {
             'credit' => ($order->credit ? (int)$order->credit : 0 ),
             'total' => (int)($order->price - (int)$order->discount - (int)$order->credit + (int)$order->tip),
             'charged' => (int)($order->charged),
-            'tip' => $order->tip,
+            'tip' => (int)$order->tip,
             'promo_code' => ($order->promo_code ? $order->promo_code : null ),
             'eta_quote' => (int)$order->eta,
             'arrival_eta' => $order->arrival_eta(),
