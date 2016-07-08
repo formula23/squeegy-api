@@ -599,9 +599,12 @@ class OrdersController extends Controller {
 
         if($order->status > 5) return $this->response->errorWrongArgs('Order already complete! Can not change service level.');
 
-        $order->change_service($request->input('service_id'));
+        if(($service_id = $request->input('service_id')) == $order->service_id) {
+            return $this->response->errorWrongArgs('Order already this service level. Nothing to change.');
+        }
 
-        
+        $order->change_service($service_id);
+
         dd("done");
         return $this->response->withItem($order, new OrderTransformer());
     }

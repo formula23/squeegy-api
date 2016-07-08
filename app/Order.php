@@ -414,7 +414,7 @@ class Order extends Model {
          * add order details
          */
 
-//        dd($order->service);
+        $order_credit = $this->order_credit()->where('status', 'auth')->first();
 
         $this->price = $this->service->price();
         $new_price = $this->price;
@@ -426,23 +426,30 @@ class Order extends Model {
 
         $this->applyPromoCode($this->promo_code);
 
-
         $new_discount = $this->discount;
 
-        $new_total = $new_price - $new_discount - $this->credit + $new_surcharge;
+        $new_total = $new_price - $new_discount - $orig_credit + $new_surcharge;
 
-        $this->charged = $this->total;
-
+//        $new_credit = $this->credit + $this->customer->availableCredit();
+//        print
+//        dd($orig_credit);
+//dd($new_total);
         $total_diff = $new_total - $orig_total;
         print "total diff:".$total_diff."\n";
 
-        if( $total_diff <= $this->customer->availableCredit() ) {
+        if( $this->customer->availableCredit() && ! $this->promo_code) {
+            print "available credit:".$this->customer->availableCredit()."\n";
+//            $credit_to_apply =
             $this->credit += min($total_diff, $this->customer->availableCredit());
         }
 
+        $this->charged = $this->total;
+
+
         $new_credit = $this->credit;
 
-        $this->total = $this->price - $this->credit;
+        $this->total = $this->price - $this->discount - $this->credit;
+        $this->charged = $this->total;
         $new_total = $this->total;
 
         print "orig price: ".$orig_price."\n";
@@ -459,7 +466,7 @@ class Order extends Model {
         print "new total:".$new_total;
         print "\n\n";
 
-        dd('done');
+//        dd('done');
 
         $order_details=[];
 
@@ -476,11 +483,16 @@ class Order extends Model {
             print "surcharge diff: ".$surcharge_diff."\n";
         }
 
-
-
-        print_r($order_details);
+//        print_r($order_details);
 
         $this->order_details()->saveMany($order_details);
+
+        if($order_credit) {
+            $order_credit->amount = -$new_credit;
+            $order_credit->save();
+        } else if($new_credit) {
+            $this->order_credit()->save(new Credit(['user_id'=>$this->user_id, 'amount'=>-$new_credit, 'status'=>'auth']));
+        }
 
         $this->save();
     }
@@ -600,6 +612,12 @@ class Order extends Model {
         }
 
         $available_credit = ( ! $this->isPartner()) ? $this->customer->availableCredit() : 0 ;
+
+        if($this->credit) {
+            $available_credit += $this->credit;
+//            dd($available_credit);
+        }
+
         $this->credit = min($this->price - $this->discount, $available_credit);
         $this->total = max(0,$this->price - $this->discount - $this->credit);
 
