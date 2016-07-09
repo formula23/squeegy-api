@@ -80,7 +80,7 @@ class Partner extends Model
 
     public static function where_coords_in($lat, $lng)
     {
-        $partners = static::all();
+        $partners = static::where('is_active', 1)->get();
 
         foreach($partners as $partner) {
 
