@@ -18,30 +18,30 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>'Marina 41 Apartments',
-            'location_name'=>'Marina 41 Apartments',
+            'name'=>'Coral Circle - El Segundo',
+            'location_name'=>'Coral Circle - El Segundo',
             'location'=>[
-                "city"=>"Marina del Rey",
-                "lon"=>-118.459605,
-                "lat"=>33.980095,
-                "street"=>"4157 Via Marina",
-                "zip"=>"90292",
+                "city"=>"El Segundo",
+                "lon"=>-118.384138,
+                "lat"=>33.911827,
+                "street"=>"354 Coral Circle",
+                "zip"=>"90245",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.979067,"lng":-118.459148},{"lat":33.979054,"lng":-118.460106},{"lat":33.978425,"lng":-118.461120},{"lat":33.979490,"lng":-118.461920},{"lat":33.980786,"lng":-118.459599},{"lat":33.979980,"lng":-118.459218}]',
+            'geo_fence'=>'[{"lat":33.916327,"lng":-118.385238},{"lat":33.916346,"lng":-118.383209},{"lat":33.910219,"lng":-118.383163},{"lat":33.909292,"lng":-118.385356}]',
             'is_active'=>1,
         ]);
 
         $partner->days()->create([
-            'day'=>'Sunday',
-            'day_of_week'=>0,
-            'next_date'=>Carbon::createFromDate(2016, 07, 10),
-            'time_start'=>'10:00am',
+            'day'=>'Tuesday',
+            'day_of_week'=>2,
+            'next_date'=>Carbon::createFromDate(2016, 07, 12),
+            'time_start'=>'9:00am',
             'time_end'=>'6:00pm',
             'frequency'=>'weekly',
         ]);
 
-        foreach( [1=>1900, 2=>2900] as $service_id=>$price_override) {
+        foreach( [1=>1800, 2=>2500] as $service_id=>$price_override) {
             $service = Service::find($service_id);
             $partner->services()->save($service, ['price'=>$price_override]);
         }
