@@ -547,7 +547,7 @@ class PayrollGenerate extends Command {
 
             try {
 
-                Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
+                $sent = Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
                 {
                     $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
 
@@ -566,7 +566,11 @@ class PayrollGenerate extends Command {
                     $message->attach($email_data['time_sheet']);
                 });
 
-                $this->info("Email sent: ".$email_data['washer']['email']);
+                if($sent) {
+                    $this->info("Email sent: ".$email_data['washer']['email']." -- ".$sent);
+                } else {
+                    $this->error("Email not sent:". $email_data['washer']['email']);
+                }
 
             } catch(\Exception $e) {
                 $this->error($e->getMessage());
@@ -587,7 +591,7 @@ class PayrollGenerate extends Command {
 
         try {
 
-            Mail::raw('COGs Attached', function($message) use ($email_data)
+            $cog_sent = Mail::raw('COGs Attached', function($message) use ($email_data)
             {
                 $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll COGs');
 
@@ -603,6 +607,12 @@ class PayrollGenerate extends Command {
                 $message->subject("Squeegy Pay - COGs Week of ".$email_data['week_of']);
                 $message->attach($email_data['time_sheet']);
             });
+
+            if($cog_sent) {
+                $this->info("COGs sent: $sent");
+            } else {
+                $this->error("COG email not sent");
+            }
 
         } catch(\Exception $e) {
             $this->error($e->getMessage());
