@@ -51,7 +51,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
-        3198 => 84.70, //david
+//        3198 => 84.70, //david
 //        2882 => 10,
 
     ];
@@ -138,29 +138,19 @@ class PayrollGenerate extends Command {
         1847 => [ //ricardo
             0 => 100,
             2 => 100,
-            3 => 100,
             4 => 100,
             5 => 100,
-        ],
-        7146 => [ //leonel
-//            1 => 100,
-//            2 => 100,
-//            3 => 100,
-//            4 => 100,
-//            5 => 100,
-        ],
-        2882 => [ // juan lopez
-//            0 => 120,
+            6 => 100,
         ],
         5482 => [ // juan lara
-            1 => 120,
-            2 => 120,
+//            1 => 120,
+//            2 => 120,
             3 => 120,
             4 => 120,
 //            6 => 120,
         ],
         7527 => [ // Gonzalo hidalgo
-            1 => 120,
+//            1 => 120,
             3 => 120,
             4 => 120,
             5 => 120,
@@ -168,15 +158,18 @@ class PayrollGenerate extends Command {
         ],
         2149 => [ //daniel
             0 => 150,
-            1 => 150,
+//            1 => 150,
             2 => 150,
             4 => 150,
             5 => 150,
         ],
-//        6349 => [ //Melvyn
-//            0 => 100,
+        10018 => [ //david medina
 //            1 => 120,
-//        ],
+//            2 => 120,
+            3 => 60,
+            4 => 120,
+            5 => 120,
+        ],
 	];
 
     protected $washer_training = [
@@ -193,8 +186,8 @@ class PayrollGenerate extends Command {
 
     protected $onsite =[
         3198 => [ //david
-//            3 => 75, //snack nation half day
-            4 => 70, //zefr
+            3 => 50, //snack nation half day
+//            4 => 70, //zefr
 //            5 => 130,
         ],
         7146 => [ //leo
@@ -209,10 +202,14 @@ class PayrollGenerate extends Command {
 //            5 => 60,
         ],
         7527 => [ // Gonzalo hidalgo
-//            4 => 100,
+            4 => 60,
+            5 => 20,
         ],
         1847 => [
-            3 => 50,
+//            3 => 50,
+        ],
+        10018 => [ //David medina
+            4 => 100,
         ]
     ];
 
