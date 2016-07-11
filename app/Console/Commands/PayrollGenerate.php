@@ -36,6 +36,7 @@ class PayrollGenerate extends Command {
         7506 => 'Rafael Sanchez',
         7527 => 'Gonzalo Hidalgo',
         7896 => 'Guillermo Lizardi',
+        10018 => 'David Medina',
     ];
 
     protected $ids_to_process=[];
@@ -58,7 +59,7 @@ class PayrollGenerate extends Command {
 
     protected $referral_code = [
 //        5482 => 10,
-        2882 => 20,
+//        2882 => 20,
     ];
 
     protected $ignore_ids =[
@@ -99,6 +100,7 @@ class PayrollGenerate extends Command {
         7146, //Leo
         5482, //juan lara
         7506, //Rafael
+        7269, //salvador
     ];
 
     protected $default_kit_fee = 25;
@@ -170,6 +172,10 @@ class PayrollGenerate extends Command {
             4 => 120,
             5 => 120,
         ],
+        7269 => [ //salvador
+            5=>120,
+            6=>120,
+        ]
 	];
 
     protected $washer_training = [
