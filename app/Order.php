@@ -377,7 +377,7 @@ class Order extends Model {
 
     public function hasSurCharge()
     {
-        $surcharge_record = $this->order_details()->where('name','like','%surcharge')->sum('amount');
+        $surcharge_record = $this->order_details()->where('name','like','%surcharge')->first();
         if(!$surcharge_record) return 0;
         return $surcharge_record->amount;
     }
