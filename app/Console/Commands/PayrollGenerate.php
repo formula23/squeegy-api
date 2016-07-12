@@ -558,8 +558,10 @@ class PayrollGenerate extends Command {
                     $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
                 } else {
                     $message['To'] = [$email_data['washer']['name']." <".$email_data['washer']['email'].">"];
-                    $message['BCC'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
-                    $message['BCC'] = ["Andrew Davis "."<andrew@squeegyapp.com>"];
+                    $message['BCC'] = [
+                        "Dan Schultz "."<dan@squeegyapp.com>",
+                        "Andrew Davis "."<andrew@squeegyapp.com>"
+                    ];
                 }
 
                 $message['Subject'] = "Squeegy Pay - Week of ".$email_data['week_of'];
@@ -607,8 +609,10 @@ class PayrollGenerate extends Command {
             } else {
                 $message['To'] = ["Terri Perkins "."<Terri@lrmcocpas.com>"];
                 $message['CC'] = ["Anna Asuncion "."<Anna@lrmcocpas.com>"];
-                $message['BCC'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
-                $message['BCC'] = ["Andrew Davis "."<andrew@squeegyapp.com>"];
+                $message['BCC'] = [
+                    "Dan Schultz "."<dan@squeegyapp.com>",
+                    "Andrew Davis "."<andrew@squeegyapp.com>"
+                ];
             }
 
             $message['Subject'] = "Squeegy Pay - COGs Week of ".$email_data['week_of'];
