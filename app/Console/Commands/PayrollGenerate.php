@@ -602,7 +602,7 @@ class PayrollGenerate extends Command {
                 'ReplyTo' => 'support@squeegyapp.com',
             ];
 
-            if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review" || $this->argument('send_cog')===false) {
+            if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review" || $this->argument('send_cog')=='false') {
                 $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
             } else {
                 $message['To'] = ["Terri Perkins "."<Terri@lrmcocpas.com>"];
@@ -660,7 +660,7 @@ class PayrollGenerate extends Command {
 	{
 		return [
             ['send_email', InputArgument::OPTIONAL, 'Send email to washers or to internal review.', 'review'],
-            ['send_cog', InputArgument::OPTIONAL, 'Send COGs email to accounting.', false],
+            ['send_cog', InputArgument::OPTIONAL, 'Send COGs email to accounting.', 'false'],
 		];
 	}
 
