@@ -20,5 +20,4 @@ class CampaignMonitor extends \Casinelli\CampaignMonitor\CampaignMonitor
     {
         return new \CS_REST_Transactional_SmartEmail($smartemail_id, $this->getAuthTokens(), $clientId);
     }
-
 }

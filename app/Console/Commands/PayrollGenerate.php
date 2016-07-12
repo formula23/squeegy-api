@@ -1,10 +1,12 @@
 <?php namespace App\Console\Commands;
 
 use App\Order;
+use App\Squeegy\Facades\CampaignMonitor;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +14,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class PayrollGenerate extends Command {
+
+    protected $mailer;
 
 	/**
 	 * The console command name.
@@ -239,7 +243,7 @@ class PayrollGenerate extends Command {
 
         $this->get_tips();
 
-//        dd($this->washer_tips);
+        $this->mailer = CampaignMonitor::classicSend(config('campaignmonitor.client_id'));
 
 	}
 
@@ -504,8 +508,6 @@ class PayrollGenerate extends Command {
             }
         }
 
-
-
 //        dd($this->washer_tips);
 //        dd("adsf");
 //        dd($orders_by_worker);
@@ -547,71 +549,84 @@ class PayrollGenerate extends Command {
 
             try {
 
-                $sent = Mail::send('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of], function($message) use ($email_data)
-                {
-                    $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll');
+                $message=[
+                    'From' => 'Squeegy Payments '.'<payments@squeegyapp.com>',
+                    'ReplyTo' => 'support@squeegyapp.com',
+                ];
 
-                    $message->from('payments@squeegyapp.com', 'Squeegy Payments');
-                    $message->replyTo('support@squeegyapp.com', 'Squeegy');
-
-                    if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
-                        $message->to('dan@squeegyapp.com', 'Dan Schultz');
-                    } else {
-                        $message->to($email_data['washer']['email'], $email_data['washer']['name']);
-                        $message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
-                        $message->bcc('dan@squeegyapp.com', 'Dan Schultz');
-                    }
-
-                    $message->subject("Squeegy Pay - Week of ".$email_data['week_of']);
-                    $message->attach($email_data['time_sheet']);
-                });
-
-                if($sent) {
-                    $this->info("Email sent: ".$email_data['washer']['email']." -- ".$sent);
+                if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
+                    $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
                 } else {
-                    $this->error("Email not sent:". $email_data['washer']['email']);
+                    $message['To'] = [$email_data['washer']['name']." <".$email_data['washer']['email'].">"];
+                    $message['BCC'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
+                    $message['BCC'] = ["Andrew Davis "."<andrew@squeegyapp.com>"];
+                }
+
+                $message['Subject'] = "Squeegy Pay - Week of ".$email_data['week_of'];
+                $message['Html'] = view('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of])->render();
+                $message['Attachments'] = [
+                    ['Name' => $file_name,
+                    'Type' => 'text/html',
+                    'Content' => base64_encode(File::get($email_data['time_sheet']))
+                    ],
+                ];
+
+                $resp = $this->mailer->send($message, 'Payroll');
+
+                if( ! $resp->was_successful()) {
+                    $this->error($resp->http_status_code." - ".$resp->response->Message);
+                } else {
+                    $this->info("Email sent: ".$email_data['washer']['email']);
                 }
 
             } catch(\Exception $e) {
                 $this->error($e->getMessage());
             }
-
-
-//            sleep(2);
 		}
 
-        ///generate COGs file and email
-        $email_data['orders_by_worker'] = $orders_by_worker;
-
-		$view = view('payroll.cogs', $email_data);
-		$dir_path['file'] = "COGs-$now_date.html";
-		$disk->put(implode("/", $dir_path), $view->render());
-
-		$email_data['time_sheet'] = $disk->getDriver()->getAdapter()->getPathPrefix().implode("/", $dir_path);
 
         try {
 
-            $cog_sent = Mail::raw('COGs Attached', function($message) use ($email_data)
-            {
-                $message->getHeaders()->addTextHeader('X-CMail-GroupName', 'Payroll COGs');
+            ///generate COGs file and email
+            $email_data['orders_by_worker'] = $orders_by_worker;
 
-                if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
-                    $message->to('dan@squeegyapp.com', 'Dan Schultz');
-                } else {
-                    $message->to('Terri@lrmcocpas.com', 'Terri Perkins');
-                    $message->cc('Anna@lrmcocpas.com', 'Anna Asuncion');
-                    $message->bcc('andrew@squeegyapp.com', 'Andrew Davis');
-                    $message->bcc('dan@squeegyapp.com', 'Dan Schultz');
-                }
+            $view = view('payroll.cogs', $email_data);
+            $file_name = "COGs-$now_date";
+            $dir_path['file'] = "$file_name.html";
+            $disk->put(implode("/", $dir_path), $view->render());
 
-                $message->subject("Squeegy Pay - COGs Week of ".$email_data['week_of']);
-                $message->attach($email_data['time_sheet']);
-            });
+            $email_data['time_sheet'] = $disk->getDriver()->getAdapter()->getPathPrefix().implode("/", $dir_path);
 
-            if($cog_sent) {
-                $this->info("COGs sent: $sent");
+            $message=[
+                'From' => 'Squeegy Payments '.'<payments@squeegyapp.com>',
+                'ReplyTo' => 'support@squeegyapp.com',
+            ];
+
+            if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review" || $this->argument('send_cog')===false) {
+                $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
             } else {
-                $this->error("COG email not sent");
+                $message['To'] = ["Terri Perkins "."<Terri@lrmcocpas.com>"];
+                $message['CC'] = ["Anna Asuncion "."<Anna@lrmcocpas.com>"];
+                $message['BCC'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
+                $message['BCC'] = ["Andrew Davis "."<andrew@squeegyapp.com>"];
+            }
+
+            $message['Subject'] = "Squeegy Pay - COGs Week of ".$email_data['week_of'];
+            $message['Text'] = "COGs file attached.";
+            $message['Attachments'] = [
+                [
+                    'Name' => $file_name,
+                    'Type' => 'text/html',
+                    'Content' => base64_encode(File::get($email_data['time_sheet']))
+                ],
+            ];
+
+            $resp = $this->mailer->send($message, 'Payroll COGs');
+
+            if( ! $resp->was_successful()) {
+                $this->error($resp->http_status_code." - ".$resp->response->Message);
+            } else {
+                $this->info("COG Email sent");
             }
 
         } catch(\Exception $e) {
@@ -645,6 +660,7 @@ class PayrollGenerate extends Command {
 	{
 		return [
             ['send_email', InputArgument::OPTIONAL, 'Send email to washers or to internal review.', 'review'],
+            ['send_cog', InputArgument::OPTIONAL, 'Send COGs email to accounting.', false],
 		];
 	}
 
@@ -656,7 +672,6 @@ class PayrollGenerate extends Command {
 	protected function getOptions()
 	{
 		return [
-//			['example', null, InputOption::VALUE_OPTIONAL, 'An example option.', null],
             ['worker_ids', null, InputOption::VALUE_OPTIONAL, 'Only send emails to the following worker IDs -- 1111,2222,3333'],
 		];
 	}
