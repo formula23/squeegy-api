@@ -18,26 +18,26 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>'K-Bell',
-            'location_name'=>'K-Bell',
+            'name'=>'400 Continental Building',
+            'location_name'=>'400 Continental Building',
             'location'=>[
-                "city"=>"Inglewood",
-                "lon"=>-118.361820,
-                "lat"=>33.966870,
-                "street"=>"550 N Oak St.",
-                "zip"=>"90302",
+                "city"=>"El Segundo",
+                "lat"=>33.920542,
+                "lon"=>-118.389769,
+                "street"=>"400 Continental Blvd",
+                "zip"=>"90245",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.968294,"lng":-118.365714},{"lat":33.968534,"lng": -118.362742},{"lat":33.966701,"lng":-118.359427},{"lat":33.965517,"lng":-118.359642},{"lat":33.965838,"lng":-118.364255},{"lat":33.965179,"lng":-118.366261},{"lat":33.967181,"lng":-118.366605},{"lat":33.967422,"lng":-118.365575}]',
+            'geo_fence'=>'[{"lat":33.921701,"lng":-118.390946},{"lat":33.921701,"lng":-118.389074},{"lat":33.919814,"lng":-118.389028},{"lat":33.919627,"lng":-118.390759}]',
             'is_active'=>1,
         ]);
 
         $partner->days()->create([
-            'day'=>'Friday',
-            'day_of_week'=>5,
-            'next_date'=>Carbon::createFromDate(2016, 07, 15),
-            'time_start'=>'8:00am',
-            'time_end'=>'4:00pm',
+            'day'=>'Wednesday',
+            'day_of_week'=>3,
+            'next_date'=>Carbon::createFromDate(2016, 07, 13),
+            'time_start'=>'9:00am',
+            'time_end'=>'6:00pm',
             'frequency'=>'weekly',
         ]);
 
