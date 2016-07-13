@@ -18,26 +18,26 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>'400 Continental Building',
-            'location_name'=>'400 Continental Building',
+            'name'=>'ReGreen',
+            'location_name'=>'ReGreen',
             'location'=>[
                 "city"=>"El Segundo",
-                "lat"=>33.920542,
-                "lon"=>-118.389769,
-                "street"=>"400 Continental Blvd",
+                "lat"=>33.917166,
+                "lon"=>-118.414451,
+                "street"=>"120 Standard St.",
                 "zip"=>"90245",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.921701,"lng":-118.390946},{"lat":33.921701,"lng":-118.389074},{"lat":33.919814,"lng":-118.389028},{"lat":33.919627,"lng":-118.390759}]',
+            'geo_fence'=>'[{"lat":33.917883,"lng":-118.414709},{"lat":33.917889,"lng":-118.414121},{"lat":33.916393,"lng":-118.414135},{"lat":33.916405,"lng":-118.414703}]',
             'is_active'=>1,
         ]);
 
         $partner->days()->create([
-            'day'=>'Wednesday',
-            'day_of_week'=>3,
-            'next_date'=>Carbon::createFromDate(2016, 07, 13),
+            'day'=>'Friday',
+            'day_of_week'=>5,
+            'next_date'=>Carbon::createFromDate(2016, 07, 15),
             'time_start'=>'9:00am',
-            'time_end'=>'6:00pm',
+            'time_end'=>'3:00pm',
             'frequency'=>'weekly',
         ]);
 
