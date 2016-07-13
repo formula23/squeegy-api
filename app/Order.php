@@ -395,8 +395,14 @@ class Order extends Model {
 
     public function change_service($service_id)
     {
+
         //get original order values
-        $orig_price = $this->service->price();
+        if($this->isPartner()) {
+            $orig_price = $this->partner->services()->where('id', $this->service_id)->first()->pivot->price;
+        } else {
+            $orig_price = $this->service->price;
+        }
+
         $orig_total = $this->total;
         $orig_discount = $this->discount;
         $orig_credit = $this->credit;
@@ -416,9 +422,16 @@ class Order extends Model {
 
         $order_credit = $this->order_credit()->where('status', 'auth')->first();
 
-        $this->price = $this->service->price();
-        $new_price = $this->price;
-        
+        if($this->isPartner()) {
+            $new_price = $this->partner->services()->where('id', $this->service_id)->first()->pivot->price;
+        } else {
+            $new_price = $this->service->price;
+        }
+        $this->price = $new_price;
+
+//        $this->price = $this->service->price();
+//        $new_price = $this->price;
+//
         if($new_surcharge = $this->vehicleSurCharge()) {
             $this->price += $new_surcharge;
         }
