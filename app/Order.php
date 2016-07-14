@@ -395,116 +395,89 @@ class Order extends Model {
 
     public function change_service($service_id)
     {
-
-        //get original order values
-        if($this->isPartner()) {
-            $orig_price = $this->partner->services()->where('id', $this->service_id)->first()->pivot->price;
-        } else {
-            $orig_price = $this->service->price;
-        }
-
+        $orig_price = $this->base_price();
         $orig_total = $this->total;
-        $orig_discount = $this->discount;
         $orig_credit = $this->credit;
         $orig_surcharge = $this->vehicleSurCharge();
+
+        $order_credit = $this->order_credit()->where('status', 'auth')->first();
 
         //set new service level and reload the service relationship
         $this->service_id = (int)$service_id;
         $this->load('service');
 
+        //////calc new values
+
         $this->etc = $this->get_etc();
 
-        /**
-         * update ETC
-         * update price, discount, credit, total, charged
-         * add order details
-         */
+//        $new_price = $this->base_price();
+//        $this->price = $new_price;
+        $this->price = $this->base_price();
 
-        $order_credit = $this->order_credit()->where('status', 'auth')->first();
-
-        if($this->isPartner()) {
-            $new_price = $this->partner->services()->where('id', $this->service_id)->first()->pivot->price;
-        } else {
-            $new_price = $this->service->price;
-        }
-        $this->price = $new_price;
-
-//        $this->price = $this->service->price();
-//        $new_price = $this->price;
-//
         if($new_surcharge = $this->vehicleSurCharge()) {
             $this->price += $new_surcharge;
         }
 
-
+        ///Apply discount to order with new service/price
         $this->applyPromoCode($this->promo_code);
 
-        $new_discount = $this->discount;
+        $new_total = $this->price - $this->discount - $orig_credit + $new_surcharge;
 
-        $new_total = $new_price - $new_discount - $orig_credit + $new_surcharge;
-
-//        $new_credit = $this->credit + $this->customer->availableCredit();
-//        print
-//        dd($orig_credit);
-//dd($new_total);
         $total_diff = $new_total - $orig_total;
-        print "total diff:".$total_diff."\n";
+//        print "total diff:".$total_diff."\n";
 
+        ///if order has promo credits got applied during promo code logic
         if( $this->customer->availableCredit() && ! $this->promo_code) {
-            print "available credit:".$this->customer->availableCredit()."\n";
-//            $credit_to_apply =
+//            print "available credit:".$this->customer->availableCredit()."\n";
             $this->credit += min($total_diff, $this->customer->availableCredit());
         }
 
         $this->charged = $this->total;
 
-
-        $new_credit = $this->credit;
+//        $new_credit = $this->credit;
 
         $this->total = $this->price - $this->discount - $this->credit;
         $this->charged = $this->total;
-        $new_total = $this->total;
+//        $new_total = $this->total;
 
-        print "orig price: ".$orig_price."\n";
-
-        print "orig disc: ".$orig_discount."\n";
-        print "orig credit: ".$orig_credit."\n";
-        print "orig surcharge: ".$orig_surcharge."\n";
-        print "orig total: ".$orig_total."\n";
-        print "\n\n";
-        print "new price: ".$new_price."\n";
-        print "new disc: ".$new_discount."\n";
-        print "new credit: ".$new_credit."\n";
-        print "new surcharge: ".$new_surcharge."\n";
-        print "new total:".$new_total;
-        print "\n\n";
+//        print "orig price: ".$orig_price."\n";
+//
+//        print "orig disc: ".$orig_discount."\n";
+//        print "orig credit: ".$orig_credit."\n";
+//        print "orig surcharge: ".$orig_surcharge."\n";
+//        print "orig total: ".$orig_total."\n";
+//        print "\n\n";
+//        print "new price: ".$this->price."\n";
+//        print "new disc: ".$this->discount."\n";
+//        print "new credit: ".$this->credit."\n";
+//        print "new surcharge: ".$new_surcharge."\n";
+//        print "new total:".$new_total;
+//        print "\n\n";
 
 //        dd('done');
 
         $order_details=[];
 
-        if($orig_price != $new_price) {
-            $price_diff = $new_price - $orig_price;
-            $direction = ($new_price > $orig_price ? "Upgrade" : "Downgrade" );
+        if($orig_price != $this->price) {
+            $price_diff = $this->price - $orig_price;
+            $direction = ($this->price > $orig_price ? "Upgrade" : "Downgrade" );
             $order_details[] = new OrderDetail(['name'=>$direction." to ".$this->service->name, 'amount'=>$price_diff]);
-            print "price diff: ".$price_diff."\n";
+//            print "price diff: ".$price_diff."\n";
         }
 
-        if($orig_surcharge!=$new_surcharge) {
+        if($orig_surcharge != $new_surcharge) {
             $surcharge_diff = $new_surcharge - $orig_surcharge;
             $order_details[] = new OrderDetail(['name'=>$this->service->name." ".$this->vehicle->type." Surcharge", 'amount'=>$surcharge_diff]);
-            print "surcharge diff: ".$surcharge_diff."\n";
+//            print "surcharge diff: ".$surcharge_diff."\n";
         }
-
-//        print_r($order_details);
 
         $this->order_details()->saveMany($order_details);
 
         if($order_credit) {
-            $order_credit->amount = -$new_credit;
+            $order_credit->amount = -$this->credit;
             $order_credit->save();
-        } else if($new_credit) {
-            $this->order_credit()->save(new Credit(['user_id'=>$this->user_id, 'amount'=>-$new_credit, 'status'=>'auth']));
+        } else if($this->credit) {
+            $this->order_credit()->save(new Credit(['user_id'=>$this->user_id, 'amount'=>-$this->credit, 'status'=>'auth']));
         }
 
         $this->save();
@@ -624,16 +597,34 @@ class Order extends Model {
             if($this->discount > $this->price) $this->discount = $this->price;
         }
 
-        $available_credit = ( ! $this->isPartner()) ? $this->customer->availableCredit() : 0 ;
+//        $available_credit = ( ! $this->isPartner()) ? $this->customer->availableCredit() : 0 ;
+        $available_credit = $this->customer->availableCredit();
 
-        if($this->credit) {
+        \Log::info("avail credit:");
+\Log::info($available_credit);
+        if($this->credit && Config::get('squeegy.order_seq')[$this->status] >= 3) {
             $available_credit += $this->credit;
-//            dd($available_credit);
+        } else {
+//            $available_credit = $this->credit;
         }
 
         $this->credit = min($this->price - $this->discount, $available_credit);
         $this->total = max(0,$this->price - $this->discount - $this->credit);
 
+//        $available_credit = ( ! $order->isPartner()) ? $order->customer->availableCredit() : 0 ;
+//        $order->credit = min($order->price - $order->discount, $available_credit);
+
+    }
+
+    public function base_price()
+    {
+        if( ! $this->service_id) return 0;
+
+        if($this->isPartner()) {
+            return $this->partner->services()->where('id', $this->service_id)->first()->pivot->price;
+        } else {
+            return $this->service->price;
+        }
     }
 
 }
