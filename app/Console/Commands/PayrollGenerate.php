@@ -153,7 +153,7 @@ class PayrollGenerate extends Command {
 //            6 => 100,
         ],
         5482 => [ // juan lara
-            1 => 120,
+//            1 => 120,
             2 => 120,
             3 => 120,
 //            4 => 120,
@@ -175,7 +175,7 @@ class PayrollGenerate extends Command {
             5 => 150,
         ],
         10018 => [ //david medina
-            0 => 120,
+//            0 => 120,
 //            1 => 120,
 //            2 => 120,
             3 => 120,
