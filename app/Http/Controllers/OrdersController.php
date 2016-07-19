@@ -605,7 +605,6 @@ class OrdersController extends Controller {
 
         $order->change_service($service_id);
 
-        dd("done");
         return $this->response->withItem($order, new OrderTransformer());
     }
 

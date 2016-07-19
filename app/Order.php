@@ -413,6 +413,7 @@ class Order extends Model {
 //        $new_price = $this->base_price();
 //        $this->price = $new_price;
         $this->price = $this->base_price();
+        $new_price = $this->price;
 
         if($new_surcharge = $this->vehicleSurCharge()) {
             $this->price += $new_surcharge;
@@ -421,7 +422,7 @@ class Order extends Model {
         ///Apply discount to order with new service/price
         $this->applyPromoCode($this->promo_code);
 
-        $new_total = $this->price - $this->discount - $orig_credit + $new_surcharge;
+        $new_total = $new_price - $this->discount - $orig_credit + $new_surcharge;
 
         $total_diff = $new_total - $orig_total;
 //        print "total diff:".$total_diff."\n";
@@ -442,7 +443,6 @@ class Order extends Model {
 
 //        print "orig price: ".$orig_price."\n";
 //
-//        print "orig disc: ".$orig_discount."\n";
 //        print "orig credit: ".$orig_credit."\n";
 //        print "orig surcharge: ".$orig_surcharge."\n";
 //        print "orig total: ".$orig_total."\n";
@@ -454,13 +454,11 @@ class Order extends Model {
 //        print "new total:".$new_total;
 //        print "\n\n";
 
-//        dd('done');
-
         $order_details=[];
 
-        if($orig_price != $this->price) {
-            $price_diff = $this->price - $orig_price;
-            $direction = ($this->price > $orig_price ? "Upgrade" : "Downgrade" );
+        if($orig_price != $new_price) {
+            $price_diff = $new_price - $orig_price;
+            $direction = ($new_price > $orig_price ? "Upgrade" : "Downgrade" );
             $order_details[] = new OrderDetail(['name'=>$direction." to ".$this->service->name, 'amount'=>$price_diff]);
 //            print "price diff: ".$price_diff."\n";
         }
@@ -470,6 +468,10 @@ class Order extends Model {
             $order_details[] = new OrderDetail(['name'=>$this->service->name." ".$this->vehicle->type." Surcharge", 'amount'=>$surcharge_diff]);
 //            print "surcharge diff: ".$surcharge_diff."\n";
         }
+
+//        print_r($order_details);
+//
+//        dd('done');
 
         $this->order_details()->saveMany($order_details);
 
