@@ -604,7 +604,7 @@ class Order extends Model {
 
         \Log::info("avail credit:");
 \Log::info($available_credit);
-        if($this->credit && Config::get('squeegy.order_seq')[$this->status] >= 3) {
+        if($this->credit && Config::get('squeegy.order_seq')[$this->status] < 6) {
             $available_credit += $this->credit;
         } else {
 //            $available_credit = $this->credit;
