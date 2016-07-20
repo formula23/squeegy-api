@@ -37,10 +37,10 @@ class ChargeOrder {
             $transaction = $order->auth_transaction;
             $stripe_charge_id = ($transaction ? $transaction->charge_id : $event->order->stripe_charge_id);
 
-            if($stripe_charge_id) {
-                $payments = new Payments($event->order->customer->stripe_customer_id);
+            $amt_to_capture = $order->charged;
+            $payments = new Payments($event->order->customer->stripe_customer_id);
 
-                $amt_to_capture = $order->charged;
+            if($stripe_charge_id) {
 
                 if($amt_to_capture > $transaction->amount) {
                     $additional_charge = $order->charged - $transaction->amount;
@@ -66,8 +66,18 @@ class ChargeOrder {
                     'card_type'=>$charge->source->brand,
                 ]);
 //                $order->charged = $order->total;
-            }
+            } elseif($amt_to_capture) {
 
+                $charge = $payments->sale($amt_to_capture, $order);
+                $order->transactions()->create([
+                    'charge_id'=>$charge->id,
+                    'amount'=>$charge->amount,
+                    'type'=>'sale',
+                    'last_four'=>$charge->source->last4,
+                    'card_type'=>$charge->source->brand,
+                ]);
+            }
+            
             if($order->discount_record && $order->discount_record->single_use_code) {
                 $discount_code = DiscountCode::where('discount_id', $order->discount_id)->where('code', $order->promo_code)->get()->first();
                 $discount_code->is_active = 0;

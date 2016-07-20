@@ -393,4 +393,240 @@ class Order extends Model {
         return $this->transactions()->whereIn('type', ['capture','sale'])->orderBy('amount', 'desc')->get();
     }
 
+    public function change_service($service_id)
+    {
+        $orig_price = $this->base_price();
+        $orig_total = $this->total;
+        $orig_credit = $this->credit;
+        $orig_surcharge = $this->vehicleSurCharge();
+
+        $order_credit = $this->order_credit()->where('status', 'auth')->first();
+
+        //set new service level and reload the service relationship
+        $this->service_id = (int)$service_id;
+        $this->load('service');
+
+        //////calc new values
+
+        $this->etc = $this->get_etc();
+
+//        $new_price = $this->base_price();
+//        $this->price = $new_price;
+        $this->price = $this->base_price();
+        $new_price = $this->price;
+
+        if($new_surcharge = $this->vehicleSurCharge()) {
+            $this->price += $new_surcharge;
+        }
+
+        ///Apply discount to order with new service/price
+        $this->applyPromoCode($this->promo_code);
+
+        $new_total = $new_price - $this->discount - $orig_credit + $new_surcharge;
+
+        $total_diff = $new_total - $orig_total;
+//        print "total diff:".$total_diff."\n";
+
+        ///if order has promo credits got applied during promo code logic
+        if( $this->customer->availableCredit() && ! $this->promo_code) {
+//            print "available credit:".$this->customer->availableCredit()."\n";
+            $this->credit += min($total_diff, $this->customer->availableCredit());
+        }
+
+        $this->charged = $this->total;
+
+//        $new_credit = $this->credit;
+
+        $this->total = $this->price - $this->discount - $this->credit;
+        $this->charged = $this->total;
+//        $new_total = $this->total;
+
+//        print "orig price: ".$orig_price."\n";
+//
+//        print "orig credit: ".$orig_credit."\n";
+//        print "orig surcharge: ".$orig_surcharge."\n";
+//        print "orig total: ".$orig_total."\n";
+//        print "\n\n";
+//        print "new price: ".$this->price."\n";
+//        print "new disc: ".$this->discount."\n";
+//        print "new credit: ".$this->credit."\n";
+//        print "new surcharge: ".$new_surcharge."\n";
+//        print "new total:".$new_total;
+//        print "\n\n";
+
+        $order_details=[];
+
+        if($orig_price != $new_price) {
+            $price_diff = $new_price - $orig_price;
+            $direction = ($new_price > $orig_price ? "Upgrade" : "Downgrade" );
+            $order_details[] = new OrderDetail(['name'=>$direction." to ".$this->service->name, 'amount'=>$price_diff]);
+//            print "price diff: ".$price_diff."\n";
+        }
+
+        if($orig_surcharge != $new_surcharge) {
+            $surcharge_diff = $new_surcharge - $orig_surcharge;
+            $order_details[] = new OrderDetail(['name'=>$this->service->name." ".$this->vehicle->type." Surcharge", 'amount'=>$surcharge_diff]);
+//            print "surcharge diff: ".$surcharge_diff."\n";
+        }
+
+//        print_r($order_details);
+//
+//        dd('done');
+
+        $this->order_details()->saveMany($order_details);
+
+        if($order_credit) {
+            $order_credit->amount = -$this->credit;
+            $order_credit->save();
+        } else if($this->credit) {
+            $this->order_credit()->save(new Credit(['user_id'=>$this->user_id, 'amount'=>-$this->credit, 'status'=>'auth']));
+        }
+
+        $this->save();
+    }
+
+    public function applyPromoCode($promo_code)
+    {
+//        if(Auth::user()->is('customer') && Auth::id()!=$this->user_id) {
+//            return $this->response->errorNotFound('Order not found');
+//        }
+
+        if (empty($promo_code)) return "";
+
+//        Log::info("partner:.....");
+//        Log::info($order->partner);
+
+        if($this->isPartner()) {
+            return trans('messages.order.discount.partners');
+        }
+
+        //check if promo code is a referral code
+        if($referrer = User::where('referral_code', $promo_code)->where('id', '!=', $this->user_id)->first())
+        {
+            //referrer program only valid for new customers
+            if( ! $this->customer->firstOrder()) return trans('messages.order.discount.referral_code_new_customer');
+
+            $this->referrer_id = $referrer->id;
+            $this->promo_code = $promo_code;
+            $this->discount = (int)Config::get('squeegy.referral_program.referred_amt');
+        }
+        else
+        {
+            $discount = Discount::validate_code($promo_code, $this);
+
+            if($discount === null) return trans('messages.order.discount.unavailable');
+
+            if($discount->new_customer && ! $this->customer->firstOrder()) return trans('messages.order.discount.new_customer');
+
+            if($discount->user_id && ($this->user_id != $discount->user_id)) return trans('messages.order.discount.unavailable');
+
+            if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
+
+            if($discount->services->count() && ! in_array($this->service_id, $discount->services->lists('id')->all())) return trans('messages.order.discount.invalid_service', ['service_name' => $this->service->name]);
+
+            $scope_discount = true;
+            $frequency_rate = 0;
+            if($discount->scope == "system") {
+                $scope_label="";
+                if($discount->frequency_rate && $discount->frequency_rate <= $discount->active_orders->count()) {
+                    $scope_discount = false;
+                    $frequency_rate = $discount->frequency_rate;
+                }
+
+                if($discount->discount_code) {
+                    $actual_discount_code = $discount->actual_discount_code($promo_code);
+                    if( ! $actual_discount_code) return trans('messages.order.discount.unavailable');
+
+                    if($actual_discount_code->frequency_rate &&
+                        $actual_discount_code->frequency_rate <= Order::where('promo_code', $promo_code)->whereNotIn('status', ['cancel','request'])->count())
+                    {
+                        $frequency_rate = $actual_discount_code->frequency_rate;
+                        $scope_discount = false;
+                    }
+                }
+            } else {
+                $scope_label=" per customer";
+
+                if($discount->discount_code) {
+                    $actual_code = $discount->actual_discount_code($promo_code);
+                    if(!$actual_code) return trans('messages.order.discount.unavailable');
+
+                    if($actual_code->frequency_rate > 0) {
+
+                        if( ! (Order::device_orders('promo_code', $promo_code)->count() < $actual_code->frequency_rate) ||
+                            ! ($this->customer->orders_with_discount('promo_code', $promo_code)->count() < $actual_code->frequency_rate))
+                        {
+                            $frequency_rate = $actual_code->frequency_rate;
+                            $scope_discount = false;
+                        }
+                    }
+                }
+
+                if($discount->frequency_rate) {
+                    if( ! (Order::device_orders('discount_id', $discount->id)->count() < $discount->frequency_rate) ||
+                        ! ($this->customer->orders_with_discount('discount_id', $discount->id)->count() < $discount->frequency_rate))
+                    {
+                        $frequency_rate = $discount->frequency_rate;
+                        $scope_discount = false;
+                    }
+                }
+            }
+
+            if( ! $scope_discount) {
+                switch($frequency_rate) {
+                    case 1:
+                    case 2:
+                        $word_map = ['once','twice'];
+                        $times = $word_map[($frequency_rate-1)];
+                        break;
+                    default:
+                        $times = $frequency_rate." ".str_plural('time', $frequency_rate);
+                        break;
+                }
+                return trans('messages.order.discount.frequency', ['times'=>$times, 'scope_label'=>$scope_label]);
+            }
+
+            //calculate discount
+            $this->discount_id = $discount->id;
+            $this->promo_code = $promo_code;
+
+            if( $discount->discount_type=='amt' ) {
+                $this->discount = $discount->amount;
+            } else {
+                $this->discount = (int) ($this->price * ($discount->amount / 100));
+            }
+
+            if($this->discount > $this->price) $this->discount = $this->price;
+        }
+
+//        $available_credit = ( ! $this->isPartner()) ? $this->customer->availableCredit() : 0 ;
+        $available_credit = $this->customer->availableCredit();
+
+        \Log::info("avail credit:");
+\Log::info($available_credit);
+        if($this->credit && Config::get('squeegy.order_seq')[$this->status] >= 3) {
+            $available_credit += $this->credit;
+        } else {
+//            $available_credit = $this->credit;
+        }
+
+        $this->credit = min($this->price - $this->discount, $available_credit);
+        $this->total = max(0,$this->price - $this->discount - $this->credit);
+
+//        $available_credit = ( ! $order->isPartner()) ? $order->customer->availableCredit() : 0 ;
+//        $order->credit = min($order->price - $order->discount, $available_credit);
+
+    }
+
+    public function base_price()
+    {
+        if( ! $this->service_id) return 0;
+
+        if($this->isPartner()) {
+            return $this->partner->services()->where('id', $this->service_id)->first()->pivot->price;
+        } else {
+            return $this->service->price;
+        }
+    }
+
 }

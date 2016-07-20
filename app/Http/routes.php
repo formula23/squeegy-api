@@ -53,8 +53,9 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
 
     Route::post('orders/{orders}/change-washer', 'OrdersController@changeWasher');
-    
+    Route::post('orders/{orders}/change-service', 'OrdersController@changeService');
     Route::post('orders/{orders}/tip', 'OrdersController@tipWasher');
+
 
     Route::get('partners', 'PartnerController@index');
     
