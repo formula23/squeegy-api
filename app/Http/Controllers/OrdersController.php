@@ -342,15 +342,18 @@ class OrdersController extends Controller {
             }
 
             if($this->order_seq[$request_data['status']]!== 100 &&
-                ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']]) {
+                ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']] &&
+                ! Auth::user()->is('admin')) {
                 return $this->response->errorWrongArgs(trans('messages.order.status_change_not_allowed', ['request_status'=>$request_data['status'], 'current_status'=>$order->status]));
             }
             $original_status = $order->status;
 
             $order->status = $request_data['status'];
 
-            $order->{$order->status."_at"} = Carbon::now();
-
+            if($order->status!='test') {
+                $order->{$order->status."_at"} = Carbon::now();
+            }
+            
             switch($order->status)
             {
                 case "cancel":
@@ -440,23 +443,25 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    if($original_status != "schedule") {
-                        return $this->response->errorUnauthorized('Unable to assign. Current status: '.$original_status);
-                    }
-
-                    if($request_data['worker_id']) {
-                        $order->worker_id = $request_data['worker_id'];
-                    } else {
-                        $availability = Orders::availability($order->location['lat'], $order->location['lon']);
-                        try {
-                            $order->eta = $availability['actual_time'];
-                            $order->worker_id = $availability['worker_id'];
-                        } catch(\Exception $e) {
-                            return $this->response->errorWrongArgs('Unable to assign order.');
+//                    if($original_status != "schedule") {
+//                        return $this->response->errorUnauthorized('Unable to assign. Current status: '.$original_status);
+//                    }
+                    if(config('squeegy.order_seq')[$original_status] < config('squeegy.order_seq')[$order->status]) { //forward
+                        if($request_data['worker_id']) {
+                            $order->worker_id = $request_data['worker_id'];
+                        } else {
+                            $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+                            try {
+                                $order->eta = $availability['actual_time'];
+                                $order->worker_id = $availability['worker_id'];
+                            } catch(\Exception $e) {
+                                return $this->response->errorWrongArgs('Unable to assign order.');
+                            }
                         }
+
+                        Event::fire(new OrderAssign($order));
                     }
 
-                    Event::fire(new OrderAssign($order));
 
                     break;
                 case "enroute":
@@ -465,14 +470,14 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $order->worker_id = $user->id;
+                    if(!$order->worker_id) $order->worker_id = $user->id;
 
                     Event::fire(new OrderEnroute($order, false));
 
                     break;
                 case "start":
 
-                    if( ! $user->can('order.status') || $user->id != $order->worker_id) {
+                    if( ! $user->can('order.status')) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
@@ -482,7 +487,7 @@ class OrdersController extends Controller {
 
                 case "done":
 
-                    if( ! $user->can('order.status') || $user->id != $order->worker_id) {
+                    if( ! $user->can('order.status')) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
