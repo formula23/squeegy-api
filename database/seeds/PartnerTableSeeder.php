@@ -18,26 +18,26 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>'Mirada/Logan TV',
-            'location_name'=>'Mirada/Logan TV',
+            'name'=>'Coppersmith',
+            'location_name'=>'Coppersmith',
             'location'=>[
-                "city"=>"Los Angeles",
-                "lat" => 33.988823,
-                "lon" => -118.438634,
-                "street"=>"4235 Redwood Ave.",
-                "zip"=>"90066",
+                "city"=>"El Segundo",
+                "lat" => 33.908819,
+                "lon" => -118.383856,
+                "street"=>"525 S Douglas St.",
+                "zip"=>"90245",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.989188,"lng":-118.438730},{"lat":33.988729,"lng":-118.438358},{"lat":33.988230,"lng":-118.439404},{"lat":33.988407,"lng":-118.439590},{"lat":33.987866, "lng":-118.440765},{"lat":33.988076, "lng":-118.440948}]',
+            'geo_fence'=>'[{"lat":33.909645, "lng":-118.383341},{"lat":33.908650, "lng":-118.383328},{"lat":33.907832, "lng":-118.383677},{"lat":33.908144, "lng":-118.384715},{"lat":33.908816, "lng":-118.384376}]',
             'is_active'=>1,
         ]);
 
         $partner->days()->create([
-            'day'=>'Thursday',
-            'day_of_week'=>4,
-            'next_date'=>Carbon::createFromDate(2016, 07, 21),
+            'day'=>'Tuesday',
+            'day_of_week'=>2,
+            'next_date'=>Carbon::createFromDate(2016, 07, 26),
             'time_start'=>'9:00am',
-            'time_end'=>'6:00pm',
+            'time_end'=>'5:00pm',
             'frequency'=>'weekly',
         ]);
 
