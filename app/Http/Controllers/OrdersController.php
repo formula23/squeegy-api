@@ -342,7 +342,8 @@ class OrdersController extends Controller {
             }
 
             if($this->order_seq[$request_data['status']]!== 100 &&
-                ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']]) {
+                ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']] &&
+                ! Auth::user()->is('admin')) {
                 return $this->response->errorWrongArgs(trans('messages.order.status_change_not_allowed', ['request_status'=>$request_data['status'], 'current_status'=>$order->status]));
             }
             $original_status = $order->status;
@@ -465,14 +466,14 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    $order->worker_id = $user->id;
+                    if(!$order->worker_id) $order->worker_id = $user->id;
 
                     Event::fire(new OrderEnroute($order, false));
 
                     break;
                 case "start":
 
-                    if( ! $user->can('order.status') || $user->id != $order->worker_id) {
+                    if( ! $user->can('order.status')) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
@@ -482,7 +483,7 @@ class OrdersController extends Controller {
 
                 case "done":
 
-                    if( ! $user->can('order.status') || $user->id != $order->worker_id) {
+                    if( ! $user->can('order.status')) {
                         return $this->response->errorUnauthorized('This order is not assigned to you!');
                     }
 
