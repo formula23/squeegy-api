@@ -350,8 +350,10 @@ class OrdersController extends Controller {
 
             $order->status = $request_data['status'];
 
-            $order->{$order->status."_at"} = Carbon::now();
-
+            if($order->status!='test') {
+                $order->{$order->status."_at"} = Carbon::now();
+            }
+            
             switch($order->status)
             {
                 case "cancel":
@@ -441,23 +443,25 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    if($original_status != "schedule") {
-                        return $this->response->errorUnauthorized('Unable to assign. Current status: '.$original_status);
-                    }
-
-                    if($request_data['worker_id']) {
-                        $order->worker_id = $request_data['worker_id'];
-                    } else {
-                        $availability = Orders::availability($order->location['lat'], $order->location['lon']);
-                        try {
-                            $order->eta = $availability['actual_time'];
-                            $order->worker_id = $availability['worker_id'];
-                        } catch(\Exception $e) {
-                            return $this->response->errorWrongArgs('Unable to assign order.');
+//                    if($original_status != "schedule") {
+//                        return $this->response->errorUnauthorized('Unable to assign. Current status: '.$original_status);
+//                    }
+                    if(config('squeegy.order_seq')[$original_status] < config('squeegy.order_seq')[$order->status]) { //forward
+                        if($request_data['worker_id']) {
+                            $order->worker_id = $request_data['worker_id'];
+                        } else {
+                            $availability = Orders::availability($order->location['lat'], $order->location['lon']);
+                            try {
+                                $order->eta = $availability['actual_time'];
+                                $order->worker_id = $availability['worker_id'];
+                            } catch(\Exception $e) {
+                                return $this->response->errorWrongArgs('Unable to assign order.');
+                            }
                         }
+
+                        Event::fire(new OrderAssign($order));
                     }
 
-                    Event::fire(new OrderAssign($order));
 
                     break;
                 case "enroute":
