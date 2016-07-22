@@ -26,8 +26,8 @@
         <th>ETC</th>
         <th>Rating</th>
         @if(@$washer_info['comp_type']=='comm')
-            <th>Total</th>
-            <th>Gross Pay<br/><span class="hint">@ 75%</span></th>
+            <th>Net Receipt</th>
+            <th>Commission</th>
             <th>Txn Fee</th>
         @endif
         <th>Net Pay</th>
@@ -69,27 +69,34 @@
         @if(isset($day['onsite']))
             <tr>
                 <td colspan="{{ $colspan }}" class="text-right"><strong>On-site:</strong></td>
-                <td>${{ number_format($day['onsite'], 2)  }}</td>
+                <td>${{ number_format($day['onsite'], 2) }}</td>
             </tr>
         @endif
 
-        @if(isset($day['min']))
+        @if(isset($day['tip']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Tips:</strong></td>
+                <td>${{ number_format($day['tip'], 2) }}</td>
+            </tr>
+        @endif
+
+        @if(isset($day['min']) && $day['min'] > 0)
             <tr>
                 <td colspan="{{ $colspan }}" class="text-right"><strong>Minimum:</strong></td>
-                <td>${{ number_format($day['min'], 2)  }}</td>
+                <td>${{ number_format($day['min'], 2) }}</td>
             </tr>
         @endif
 
         @if(isset($day['bonus']))
             <tr>
                 <td colspan="{{ $colspan }}" class="text-right"><strong>Bonus:</strong></td>
-                <td>${{ number_format($day['bonus'], 2)  }}</td>
+                <td>${{ number_format($day['bonus'], 2) }}</td>
             </tr>
         @endif
 
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'], 2)  }}</td>
+            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'], 2) }}</td>
         </tr>
 
         <tr>
@@ -136,6 +143,13 @@
         </tr>
     @endif
 
+    @if(@$washer_info['extra_tip'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Extra Tips:</strong></td>
+            <td>${{ number_format($washer_info['extra_tip'], 2) }}</td>
+        </tr>
+    @endif
+
     @if(@$washer_info['referral_code'])
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Referral Code:</strong></td>
@@ -145,14 +159,14 @@
 
     @if(isset($washer_info['tip']))
         <tr>
-            <td colspan="{{ $colspan }}" class="text-right"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
-            <td>${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
+            <td colspan="{{ $colspan }}" class="text-right" style="font-size: 15px"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
+            <td style="font-size: 15px">${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
         </tr>
     @endif
 
     <tr>
-        <td colspan="{{ $colspan }}" class="text-right"><strong>Total:</strong></td>
-        <td><strong>${{ number_format($washer_info['total_pay'], 2) }}</strong></td>
+        <td colspan="{{ $colspan }}" class="text-right" style="font-size: 15px"><strong>Total:</strong></td>
+        <td style="font-size: 15px"><strong>${{ number_format($washer_info['total_pay'], 2) }}</strong></td>
     </tr>
 
 </table>

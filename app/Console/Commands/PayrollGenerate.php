@@ -85,7 +85,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $commission_pct = [
-        'squeegy' => 0.25,
+        'squeegy' => 0.30,
         'txn' => 0.025,
     ];
 
@@ -298,8 +298,28 @@ class PayrollGenerate extends Command {
             $job_date = $day_of_week->format('m/d/Y (l)');
             $init_days[$job_date] = ["date"=>$day_of_week, "orders"=>[],"pay"=>0];
         }
+
+        $orders_by_worker = [];
+
+//        if( ! isset($orders_by_worker[$order->worker->id]['jobs']['days'])) { // && isset($this->min_day_worker_id[$order->worker->id])
+//            $orders_by_worker[$order->worker->id]['jobs']['days'] = $init_days;
+//        }
+
+//        foreach($this->washer_tips as $worker_id => $tip_by_day) {
+//            foreach()
+//        }
+
+//        dd($this->washer_tips);
+        //add tips
+//        foreach() {
+//
+//        }
+
+
 //dd($init_days);
-		$orders_by_worker = [];
+
+
+
 
 		$week_of = $orders->first()->done_at->startOfWeek()->format("M jS");
 
@@ -311,6 +331,8 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $this->washer_names[$order->worker_id], 'email' => $order->worker->email];
             @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : (isset($this->kit_fee[$order->worker->id]) ? $this->kit_fee[$order->worker->id] : $this->default_kit_fee ) );
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
+//            @$orders_by_worker[$order->worker->id]['total_daily_tip'] = 0;
+//            @$orders_by_worker[$order->worker->id]['extra_tip'] = 0;
             @$orders_by_worker[$order->worker->id]['minimum'] = 0;
             @$orders_by_worker[$order->worker->id]['referral_program'] = 0;
             @$orders_by_worker[$order->worker->id]['referrals'] = 0;
@@ -360,9 +382,9 @@ class PayrollGenerate extends Command {
                     $order->price = $this->service_price[$order->service_id] + $surcharge_amt;
                 }
             }
-
-            $job['price'] = $order->price / 100;
-            $job['squeegy'] = ($order->price * $this->commission_pct['squeegy']) / 100;
+//$order->price / 100
+            $job['price'] = (round($order->price * (1 - 0.029)) - 30)/100;
+            $job['squeegy'] = ($job['price'] * $this->commission_pct['squeegy']);
             $job['txn'] = ($order->price * $this->commission_pct['txn']) / 100;
 
             $job['rev'] = $order->charged;
@@ -385,7 +407,7 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
 
-            $job_pay = (float)number_format(($order->price / 100 - $job['squeegy'] - $job['txn']), 2);
+            $job_pay = (float)number_format(($job['price'] - $job['squeegy'] - $job['txn']), 2);
 
             if( $order->rating >= 3 || $order->rating === null ) {
                 $job['pay'] = $job_pay;
@@ -420,8 +442,15 @@ class PayrollGenerate extends Command {
                 $orders_by_worker[$order->worker->id]['jobs']['days'] = $init_days;
             }
 
+            if( ! isset($orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['tip']) ) {
+                $orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['tip'] = (float)@array_sum($this->washer_tips[$order->worker->id][$order->done_at->format('m/d/Y')]);
+                @$orders_by_worker[$order->worker->id]['total_daily_tip'] += $orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['tip'];
+            }
+
             $orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['orders'][] = $job;
             @$orders_by_worker[$order->worker->id]['jobs']['days'][$job_date]['pay'] += $job['pay'];
+
+
 
             if (in_array($order->worker->id, array_keys($this->min_weekly_worker_id)) &&
                 $orders_by_worker[$order->worker->id]['jobs']['total'] < $this->min_weekly_worker_id[$order->worker_id]) {
@@ -431,15 +460,20 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['total_pay'] = ($orders_by_worker[$order->worker->id]['jobs']['total'] +
                 $orders_by_worker[$order->worker->id]['minimum'] +
                 $orders_by_worker[$order->worker->id]['training'] +
+                $orders_by_worker[$order->worker->id]['total_daily_tip'] +
+                $orders_by_worker[$order->worker->id]['extra_tip'] +
                 $orders_by_worker[$order->worker->id]['bonus'] -
                 $orders_by_worker[$order->worker->id]['rental']);
 
         }
 
+
         foreach( $orders_by_worker as $worker_id => &$washer_d ) {
             if( $washer_d['referral_code'] > 0 ) {
                 $washer_d['total_pay'] += $washer_d['referral_code'];
             }
+
+            @$washer_d['extra_tip'] = $this->washer_tips[$worker_id]['total'] - $washer_d['total_daily_tip'];
         }
 
         foreach($this->onsite as $worker_id => $onsite_details) {
@@ -473,7 +507,7 @@ class PayrollGenerate extends Command {
 
                 if(isset($worker_min_details[$details['date']->dayOfWeek]) && ($details['pay'] + @(int)$details['onsite']) < $worker_min_details[$details['date']->dayOfWeek]) {
 
-                    @$details['min'] = $worker_min_details[$details['date']->dayOfWeek] - $details['pay'] - $details['onsite'];
+                    @$details['min'] = max(0, $worker_min_details[$details['date']->dayOfWeek] - $details['pay'] - $details['onsite'] - $details['tip']);
 //                    if($details['pay'] === 0) $details['pay'] = $details['min'];
                     $orders_by_worker[$worker_id]['total_pay'] += $details['min'];
                     @$orders_by_worker[$worker_id]['daily_min_pay'] += $details['min'];
@@ -515,17 +549,17 @@ class PayrollGenerate extends Command {
             }
         }
 
-        foreach($orders_by_worker as $worker_id=>&$worker_info) {
-            if(isset($this->washer_tips[$worker_id])) {
-                $worker_info['tip'] = $this->washer_tips[$worker_id];
-                $orders_by_worker[$worker_id]['total_pay'] += array_sum($worker_info['tip']);
-            }
-        }
+//        foreach($orders_by_worker as $worker_id=>&$worker_info) {
+//            if(isset($this->washer_tips[$worker_id])) {
+//                $worker_info['tip'] = $this->washer_tips[$worker_id];
+//                $orders_by_worker[$worker_id]['total_pay'] += array_sum($worker_info['tip']);
+//            }
+//        }
 
-//        dd($this->washer_tips);
+//        dd($this->washer_tips[3198]);
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[3198]);
+//        dd($orders_by_worker[10267]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
@@ -664,8 +698,14 @@ class PayrollGenerate extends Command {
             if(empty($this->washer_tips[$tip_order->worker_id])) {
                 $this->washer_tips[$tip_order->worker_id]=[];
             }
-            $this->washer_tips[$tip_order->worker_id][] = (round($tip_order->tip * (1 - 0.029)) - 30)/100;
+            if(empty($this->washer_tips[$tip_order->worker_id]['total'])) {
+                $this->washer_tips[$tip_order->worker_id]['total']=0;
+            }
+
+            $this->washer_tips[$tip_order->worker_id][$tip_order->tip_at->format('m/d/Y')][] = (round($tip_order->tip * (1 - 0.029)) - 30)/100;
+            $this->washer_tips[$tip_order->worker_id]['total'] += (round($tip_order->tip * (1 - 0.029)) - 30)/100;
         }
+
         return;
     }
 
