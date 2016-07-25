@@ -139,7 +139,7 @@ class PayrollGenerate extends Command {
 		3198 => [ //david
             1=>120,
             2=>120,
-//            3=>120,
+            3=>60,
             4=>120,
             5=>120,
             6=>120,
@@ -224,7 +224,7 @@ class PayrollGenerate extends Command {
             2 => 20, //coral circle - 1 car
             3 => 20, //400 cont
             4 => 80, //zefr & mirada
-//            5 => 130,
+            5 => 95, //regreen
         ],
         7146 => [ //leo
 //            4 => 120,
