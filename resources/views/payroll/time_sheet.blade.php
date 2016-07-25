@@ -159,14 +159,14 @@
 
     @if(isset($washer_info['tip']))
         <tr>
-            <td colspan="{{ $colspan }}" class="text-right" style="font-size: 15px"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
-            <td style="font-size: 15px">${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
+            <td colspan="{{ $colspan }}" class="text-right" style="font-size: 22px"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
+            <td style="font-size: 22px">${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
         </tr>
     @endif
 
     <tr>
-        <td colspan="{{ $colspan }}" class="text-right" style="font-size: 15px"><strong>Total:</strong></td>
-        <td style="font-size: 15px"><strong>${{ number_format($washer_info['total_pay'], 2) }}</strong></td>
+        <td colspan="{{ $colspan }}" class="text-right" style="font-size: 22px"><strong>Total:</strong></td>
+        <td style="font-size: 22px"><strong>${{ number_format($washer_info['total_pay'], 2) }}</strong></td>
     </tr>
 
 </table>
