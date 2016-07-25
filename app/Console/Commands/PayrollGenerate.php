@@ -73,6 +73,7 @@ class PayrollGenerate extends Command {
         6119, //Ops
         1, //dan
         2, //andrew
+        2882, //lopez
     ];
 
     protected $payroll_washers = [
@@ -486,6 +487,7 @@ class PayrollGenerate extends Command {
             }
 
             @$washer_d['extra_tip'] = $this->washer_tips[$worker_id]['total'] - $washer_d['total_daily_tip'];
+            $orders_by_worker[$worker_id]['total_pay'] += $washer_d['extra_tip'];
         }
 
         foreach($this->onsite as $worker_id => $onsite_details) {

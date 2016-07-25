@@ -143,13 +143,6 @@
         </tr>
     @endif
 
-    @if(@$washer_info['extra_tip'])
-        <tr>
-            <td colspan="{{ $colspan }}" class="text-right"><strong>Extra Tips:</strong></td>
-            <td>${{ number_format($washer_info['extra_tip'], 2) }}</td>
-        </tr>
-    @endif
-
     @if(@$washer_info['referral_code'])
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Referral Code:</strong></td>
@@ -157,10 +150,17 @@
         </tr>
     @endif
 
+    @if(@$washer_info['extra_tip'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right" style="font-size: 18px"><strong>Extra Tips:</strong></td>
+            <td style="font-size: 18px">${{ number_format($washer_info['extra_tip'], 2) }}</td>
+        </tr>
+    @endif
+
     @if(isset($washer_info['tip']))
         <tr>
-            <td colspan="{{ $colspan }}" class="text-right" style="font-size: 22px"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
-            <td style="font-size: 22px">${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
+            <td colspan="{{ $colspan }}" class="text-right" style="font-size: 18px"><strong>Tips ({{ count($washer_info['tip']) }} Washes):</strong></td>
+            <td style="font-size: 18px">${{ number_format(array_sum($washer_info['tip']), 2) }}</td>
         </tr>
     @endif
 
