@@ -115,4 +115,7 @@ return [
             'body' => 'We\'ve added many new features to this version of Squeegy. To continue, please add a password to your account.',
         ],
     ],
+    'washer' => [
+        'daily_tip' => 'You earned :daily_tip in tips today!',
+    ]
 ];

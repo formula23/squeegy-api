@@ -35,6 +35,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\AssignScheduleWashes',
         'App\Console\Commands\UpdatePartnerDate',
         'App\Console\Commands\EmailCustomerReceipt',
+        'App\Console\Commands\WasherTipNotify',
 	];
 
 	/**
