@@ -658,7 +658,7 @@ class PayrollGenerate extends Command {
             }
 
             $message['Subject'] = "Squeegy Pay - COGs Week of ".$email_data['week_of'];
-            $message['Html'] = $email_data['time_sheet'];
+            $message['Html'] = File::get($email_data['time_sheet']);
             $message['Attachments'] = [
                 [
                     'Name' => $file_name,
