@@ -195,7 +195,7 @@ class PayrollGenerate extends Command {
         ],
         10350 => [ //michael wallace
             0=>120,
-            1=>75,
+//            1=>75,
             2=>120,
             3=>120,
             4=>120,
@@ -313,26 +313,6 @@ class PayrollGenerate extends Command {
         }
 
         $orders_by_worker = [];
-
-//        if( ! isset($orders_by_worker[$order->worker->id]['jobs']['days'])) { // && isset($this->min_day_worker_id[$order->worker->id])
-//            $orders_by_worker[$order->worker->id]['jobs']['days'] = $init_days;
-//        }
-
-//        foreach($this->washer_tips as $worker_id => $tip_by_day) {
-//            foreach()
-//        }
-
-//        dd($this->washer_tips);
-        //add tips
-//        foreach() {
-//
-//        }
-
-
-//dd($init_days);
-
-
-
 
 		$week_of = $orders->first()->done_at->startOfWeek()->format("M jS");
 
@@ -678,7 +658,7 @@ class PayrollGenerate extends Command {
             }
 
             $message['Subject'] = "Squeegy Pay - COGs Week of ".$email_data['week_of'];
-            $message['Text'] = "COGs file attached.";
+            $message['Html'] = $email_data['time_sheet'];
             $message['Attachments'] = [
                 [
                     'Name' => $file_name,
