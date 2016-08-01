@@ -72,7 +72,7 @@ class AssignOrderPhoneNumber
 
         $numberSid = $this->twilio->account->incoming_phone_numbers->create(array(
             "PhoneNumber" => $twilioNumber,
-            "FriendlyName" => 'AirTng',
+            "FriendlyName" => config('twilio.twilio.connections.twilio.order_communication.friendly_name'),
             "SmsApplicationSid" => config('twilio.twilio.connections.twilio.application_sid'),
             "VoiceApplicationSid" => config('twilio.twilio.connections.twilio.application_sid')
         ));
