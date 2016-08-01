@@ -125,6 +125,10 @@ class OrderTransformer extends TransformerAbstract {
     }
 
     public function includeCustomer(Order $order) {
+        
+        $customer = $order->customer;
+        $customer->phone = $order->phone;
+        
         return $this->item($order->customer, new UserTransformer);
     }
 
@@ -142,6 +146,9 @@ class OrderTransformer extends TransformerAbstract {
     {
         $worker = $order->worker;
         if(!$worker) $worker = new \App\User;
+        
+        $worker->phone = $order->phone;
+        
         return $this->item($worker, new UserTransformer);
     }
 
