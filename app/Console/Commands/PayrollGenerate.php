@@ -207,7 +207,7 @@ class PayrollGenerate extends Command {
             5=>120,
             6=>120,
         ],
-        10691 => [ //Uriel
+        10696 => [ //Uriel
 //            2=>120,
 //            3=>120,
 //            4=>120,
@@ -231,7 +231,7 @@ class PayrollGenerate extends Command {
     protected $onsite =[
         3198 => [ //david
 //            2 => 20, //coral circle - 1 car
-//            3 => 20, //400 cont
+            3 => 35, //JR
 //            4 => 80, //zefr & mirada
 //            5 => 95, //regreen
         ],
