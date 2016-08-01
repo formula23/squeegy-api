@@ -31,7 +31,7 @@ class NotifyWorkerNewOrder {
         try {
 
             //get assigned worker and andrew & dan
-			$additional_usersids = [1,6119];
+			$additional_usersids = [6119];
 			if(env('APP_ENV')!='production') $additional_usersids=[1];
 
 			if($event->order->isPartner()) $additional_usersids[] = 2;//Only send Andrew partner orders.
@@ -65,8 +65,5 @@ class NotifyWorkerNewOrder {
         } catch(\Exception $e) {
             \Bugsnag::notifyException(new \Exception($e->getMessage()));
         }
-
-
 	}
-
 }
