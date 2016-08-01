@@ -44,6 +44,8 @@ class PayrollGenerate extends Command {
         10267 => 'Sheldon Springs',
         10350 => 'Michael Wallace',
         10620 => 'Antonio',
+        10691 => 'Edgar',
+        10696 => 'Uriel',
     ];
 
     protected $ids_to_process=[];
@@ -66,7 +68,7 @@ class PayrollGenerate extends Command {
 
     protected $referral_code = [
 //        5482 => 10,
-        7527 => 10,
+//        7527 => 10,
     ];
 
     protected $ignore_ids =[
@@ -137,30 +139,31 @@ class PayrollGenerate extends Command {
     ];
 
 	protected $min_day_worker_id = [
-		3198 => [ //david
+        1847 => [ //ricardo
+//            0 => 120,
+//            1 => 120,
+            2 => 120,
+            3 => 120,
+            4 => 120,
+            5 => 120,
+//            6 => 100,
+        ],
+        2149 => [ //daniel garcia
+//            0 => 150,
+//            1 => 150,
+            2 => 150,
+            4 => 150,
+            5 => 150,
+            6 => 150,
+        ],
+        3198 => [ //david
             1=>120,
             2=>120,
-            3=>60,
+            3=>120,
             4=>120,
             5=>120,
             6=>120,
 		],
-        1847 => [ //ricardo
-            0 => 120,
-            1 => 120,
-            2 => 120,
-            3 => 120,
-            4 => 120,
-//            5 => 100,
-//            6 => 100,
-        ],
-        5482 => [ // juan lara
-//            1 => 120,
-//            2 => 120,
-//            3 => 120,
-//            4 => 120,
-//            6 => 120,
-        ],
         7527 => [ // Gonzalo hidalgo
             1 => 120,
             3 => 120,
@@ -168,43 +171,48 @@ class PayrollGenerate extends Command {
             5 => 120,
             6 => 120,
         ],
-        2149 => [ //daniel
-            0 => 150,
-            1 => 150,
-            2 => 150,
-            4 => 150,
-            5 => 150,
-        ],
         10018 => [ //david medina
 //            0 => 120,
-            1 => 120,
+//            1 => 120,
             2 => 120,
             3 => 120,
-            4 => 120,
-//            5 => 120,
-        ],
-        7269 => [ //salvador
-//            5=>120,
-//            6=>120,
+//            4 => 120,
+            5 => 120,
         ],
         10267 => [ //sheldon springs
-            0=>75,
-            1=>75,
-            4=>120,
-            6=>75,
+//            0=>75,
+//            1=>75,
+//            4=>120,
+            6=>120,
         ],
         10350 => [ //michael wallace
-            0=>120,
+//            0=>120,
 //            1=>75,
+            2=>120,
+            3=>120,
+            4=>120,
+            5=>120,
+//            6=>120,
+        ],
+        10620 => [ //Antonio
+            3=>120,
+            4=>120,
+            5=>120,
+            6=>120,
+        ],
+        10691 => [ //Edgar
             2=>120,
             3=>120,
             4=>120,
             5=>120,
             6=>120,
         ],
-        10620 => [
-            5=>75,
-            6=>120,
+        10691 => [ //Uriel
+//            2=>120,
+//            3=>120,
+//            4=>120,
+//            5=>120,
+//            6=>120,
         ]
 	];
 
@@ -222,10 +230,10 @@ class PayrollGenerate extends Command {
 
     protected $onsite =[
         3198 => [ //david
-            2 => 20, //coral circle - 1 car
-            3 => 20, //400 cont
-            4 => 80, //zefr & mirada
-            5 => 95, //regreen
+//            2 => 20, //coral circle - 1 car
+//            3 => 20, //400 cont
+//            4 => 80, //zefr & mirada
+//            5 => 95, //regreen
         ],
         7146 => [ //leo
 //            4 => 120,
@@ -235,7 +243,7 @@ class PayrollGenerate extends Command {
 //            4 => 100,
         ],
         2149 => [ //daniel
-            4 => 120, //buzzfeed
+//            4 => 120, //buzzfeed
 //            5 => 60,
         ],
         7527 => [ // Gonzalo hidalgo
@@ -243,10 +251,10 @@ class PayrollGenerate extends Command {
 //            5 => 20,
         ],
         1847 => [ //ricardo
-            3 => 70, //snack nation
+//            3 => 70, //snack nation
         ],
         10018 => [ //David medina
-            4 => 100, //buzzfeeed
+//            4 => 100, //buzzfeeed
         ]
     ];
 
