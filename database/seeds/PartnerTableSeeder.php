@@ -18,17 +18,17 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>'Skechers',
-            'location_name'=>'Skechers',
+            'name'=>'Skechers Lot 1/2',
+            'location_name'=>'Skechers Lot 1/2',
             'location'=>[
-                "city"=>"Manhattan Beach",
-                "lat" => 33.878281,
-                "lon" => -118.396552,
-                "street"=>"225 S Sepulveda Blvd",
-                "zip"=>"90266",
+                "city"=>"Hermosa Beach",
+                "lat" => 33.876219,
+                "lon" => -118.396307,
+                "street"=>"30th St",
+                "zip"=>"90254",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.878616, "lng":-118.396922},{"lat":33.878604, "lng":-118.396129},{"lat":33.877928, "lng":-118.396127},{"lat":33.877924, "lng":-118.396912}]',
+            'geo_fence'=>'[{"lat":33.876378, "lng":-118.396433},{"lat":33.876384, "lng":-118.395838},{"lat":33.877482, "lng":-118.395867},{"lat":33.877493, "lng":-118.395301},{"lat":33.876817, "lng":-118.395287},{"lat":33.876766, "lng":-118.395790},{"lat":33.876751, "lng":-118.395776},{"lat":33.876344, "lng":-118.395795},{"lat":33.876327, "lng":-118.396129},{"lat":33.876067, "lng":-118.396136},{"lat":33.875106, "lng":-118.396117},{"lat":33.875044, "lng":-118.396684},{"lat":33.876003, "lng":-118.396694},{"lat":33.876083, "lng":-118.396446}]',
             'is_active'=>1,
         ]);
 
