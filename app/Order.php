@@ -207,6 +207,11 @@ class Order extends Model {
         return $this->belongsTo('App\CancelReason', 'cancel_reason');
     }
     
+    public function sms_logs()
+    {
+        return $this->hasMany('App\OrderSmsLog');
+    }
+    
     /**
      * @param $query
      * @param $status
@@ -627,6 +632,48 @@ class Order extends Model {
         } else {
             return $this->service->price;
         }
+    }
+
+    public function phone_numbers_in_use()
+    {
+        return $this->whereIn('status', ['assign','enroute','start'])
+            ->whereNotNull('phone')
+            ->where('id', '!=', $this->id)
+            ->lists('phone', 'id');
+    }
+
+    public static function getOrderFromNumber($number)
+    {
+        return static::where('phone', $number)->first();
+    }
+
+    public function getContactRecipients($number)
+    {
+        $washer = $this->worker;
+        $customer = $this->customer;
+        
+        if ($number === $customer->phone) {
+            return [
+                'from'=>$customer,
+                'to'=>$washer,
+            ];
+        } else if($number === $washer->phone) {
+            return [
+                'from'=>$washer,
+                'to'=>$customer,
+            ];
+        } else {
+            return [];
+        }
+    }
+
+    public function save_sms_log($order_recipients, $messageBody)
+    {
+        return $this->sms_logs()->create([
+            'from' => $order_recipients['from']->id,
+            'to' => $order_recipients['to']->id,
+            'message' => $messageBody,
+        ]);   
     }
 
 }

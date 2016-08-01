@@ -77,6 +77,14 @@ return [
             'order_not_complete'=>'Wash must be completed to tip.',
             'order_has_tip'=>'Order already has tip!',
         ],
+        'communication'=> [
+            'invalid_number' => 'Thanks for calling Squeegy. This number is not valid. Goodbye!',
+            'invalid_number_sms' => 'Thanks for calling Squeegy. This number is not valid. Goodbye!',
+            'sms' => [
+                'to_washer'=>":customer_name - Order# :order_id:\n:body",
+                'to_customer'=>"Hi :customer_name, this is :washer_name with Squeegy:\n:body",
+            ]
+        ]
     ],
     'service' => [
         'closed' => "Sorry we missed you!\nWe'll be back :next_day, ".env('OPERATING_HR_OPEN')."am - ".(env('OPERATING_HR_CLOSE') - 12).":close_mins",

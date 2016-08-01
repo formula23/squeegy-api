@@ -156,6 +156,7 @@ return [
 //        GeneaLabs\LaravelMixpanel\Providers\LaravelMixpanelServiceProvider::class,
 		App\Providers\MixpanelServiceProvider::class,
 		SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+		App\Providers\TwilioRestClientProvider::class,
 	],
 
 	/*

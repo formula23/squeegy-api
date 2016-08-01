@@ -15,6 +15,7 @@ use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\OrderDetail;
 use App\OrderSchedule;
+use App\OrderSmsLog;
 use App\Squeegy\Emails\Tip;
 use App\Squeegy\Orders;
 use App\Squeegy\Payments;
@@ -30,6 +31,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+
+use Services_Twilio_Twiml as TwilioTwiml;
 
 /**
  * Class OrdersController
@@ -61,9 +64,9 @@ class OrdersController extends Controller {
         parent::__construct();
 
         if($request->header('Authorization')) {
-            $this->middleware('jwt.auth');
+            $this->middleware('jwt.auth', ['except'=> ['connectVoice', 'connectSms']]);
         } else {
-            $this->middleware('auth');
+            $this->middleware('auth', ['except'=> ['connectVoice', 'connectSms']]);
         }
 
         $this->order_seq = Config::get('squeegy.order_seq');
@@ -489,6 +492,8 @@ class OrdersController extends Controller {
 
                     if( $user->is('worker') && $user->id != $order->worker_id) return $this->response->errorUnauthorized('This order is not assigned to you!');
 
+                    $order->phone = null;
+
                     Event::fire(new OrderDone($order));
 
                     break;
@@ -613,130 +618,110 @@ class OrdersController extends Controller {
         return $this->response->withItem($order, new OrderTransformer());
     }
 
-    /**
-     * @param Order $order
-     * @param $request_data
-     * @return mixed
-     */
-//    protected function applyPromoCode(Order $order, $request_data)
-//    {
-//        if(Auth::user()->is('customer') && Auth::id()!=$order->user_id) {
-//            return $this->response->errorNotFound('Order not found');
-//        }
-//
-//        if ( empty($request_data['promo_code'])) return "";
-//
-////        Log::info("partner:.....");
-////        Log::info($order->partner);
-//
-//        if($order->isPartner()) {
-//            return trans('messages.order.discount.partners');
-//        }
-//
-//        //check if promo code is a referral code
-//        if($referrer = User::where('referral_code', $request_data['promo_code'])->where('id','!=',\Auth::user()->id)->first())
-//        {
-//            //referrer program only valid for new customers
-//            if( ! $order->customer->firstOrder()) return trans('messages.order.discount.referral_code_new_customer');
-//
-//            $order->referrer_id = $referrer->id;
-//            $order->promo_code = $request_data['promo_code'];
-//            $order->discount = (int)Config::get('squeegy.referral_program.referred_amt');
-//        }
-//        else
-//        {
-//            $discount = Discount::validate_code($request_data['promo_code'], $order);
-//
-//            if($discount === null) return trans('messages.order.discount.unavailable');
-//
-//            if($discount->new_customer && ! $order->customer->firstOrder()) return trans('messages.order.discount.new_customer');
-//
-//            if($discount->user_id && ($order->user_id != $discount->user_id)) return trans('messages.order.discount.unavailable');
-//
-//            if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
-//
-//            if($discount->services->count() && ! in_array($order->service_id, $discount->services->lists('id')->all())) return trans('messages.order.discount.invalid_service', ['service_name' => $order->service->name]);
-//
-//            $scope_discount = true;
-//            $frequency_rate = 0;
-//            if($discount->scope == "system") {
-//                $scope_label="";
-//                if($discount->frequency_rate && $discount->frequency_rate <= $discount->active_orders->count()) {
-//                    $scope_discount = false;
-//                    $frequency_rate = $discount->frequency_rate;
-//                }
-//
-//                if($discount->discount_code) {
-//                    $actual_discount_code = $discount->actual_discount_code($request_data['promo_code']);
-//                    if( ! $actual_discount_code) return trans('messages.order.discount.unavailable');
-//
-//                    if($actual_discount_code->frequency_rate &&
-//                        $actual_discount_code->frequency_rate <= Order::where('promo_code', $request_data['promo_code'])->whereNotIn('status', ['cancel','request'])->count())
-//                    {
-//                        $frequency_rate = $actual_discount_code->frequency_rate;
-//                        $scope_discount = false;
-//                    }
-//                }
-//            } else {
-//                $scope_label=" per customer";
-//
-//                if($discount->discount_code) {
-//                    $actual_code = $discount->actual_discount_code($request_data['promo_code']);
-//                    if(!$actual_code) return trans('messages.order.discount.unavailable');
-//
-//                    if($actual_code->frequency_rate > 0) {
-//
-//                        if( ! (Order::device_orders('promo_code', $request_data['promo_code'])->count() < $actual_code->frequency_rate) ||
-//                            ! (Auth::user()->orders_with_discount('promo_code', $request_data['promo_code'])->count() < $actual_code->frequency_rate))
-//                        {
-//                            $frequency_rate = $actual_code->frequency_rate;
-//                            $scope_discount = false;
-//                        }
-//                    }
-//                }
-//
-//                if($discount->frequency_rate) {
-//                    if( ! (Order::device_orders('discount_id', $discount->id)->count() < $discount->frequency_rate) ||
-//                        ! (Auth::user()->orders_with_discount('discount_id', $discount->id)->count() < $discount->frequency_rate))
-//                    {
-//                        $frequency_rate = $discount->frequency_rate;
-//                        $scope_discount = false;
-//                    }
-//                }
-//            }
-//
-//            if( ! $scope_discount) {
-//                switch($frequency_rate) {
-//                    case 1:
-//                    case 2:
-//                        $word_map = ['once','twice'];
-//                        $times = $word_map[($frequency_rate-1)];
-//                        break;
-//                    default:
-//                        $times = $frequency_rate." ".str_plural('time', $frequency_rate);
-//                        break;
-//                }
-//                return trans('messages.order.discount.frequency', ['times'=>$times, 'scope_label'=>$scope_label]);
-//            }
-//
-//            //calculate discount
-//            $order->discount_id = $discount->id;
-//            $order->promo_code = $request_data['promo_code'];
-//
-//
-//            if( $discount->discount_type=='amt' ) {
-//                $order->discount = $discount->amount;
-//            } else {
-//                $order->discount = (int) ($order->price * ($discount->amount / 100));
-//            }
-//
-//            if($order->discount > $order->price) $order->discount = $order->price;
-//        }
-//
-//        $available_credit = ( ! $order->isPartner()) ? $order->customer->availableCredit() : 0 ;
-//        $order->credit = min($order->price - $order->discount, $available_credit);
-//        $order->total = max(0,$order->price - $order->discount - $order->credit);
-//        
-//    }
+    public function connectVoice(Request $request)
+    {
+        $twilioNumber = $request->input('To');
+        $incomingNumber = $request->input('From');
+
+        //get order by twilio number
+        $order = Order::getOrderFromNumber($twilioNumber);
+        if( ! $order) return $this->failedVoiceResponse();
+
+        $order_recipients = $order->getContactRecipients($incomingNumber);
+
+        if(count($order_recipients)) {
+            return response($this->connectVoiceResponse($order_recipients['to']->phone, $twilioNumber))->header('Content-Type', 'application/xml');
+        }
+
+        return $this->failedVoiceResponse();
+    }
+
+    public function connectSms(Request $request)
+    {
+        $twilioNumber = $request->input('To');
+        $incomingNumber = $request->input('From');
+        $messageBody = $request->input('Body');
+
+        $order = Order::getOrderFromNumber($twilioNumber);
+
+        if( ! $order) return $this->failedSmsResponse($incomingNumber);
+
+        $order_recipients = $order->getContactRecipients($incomingNumber);
+
+        if(count($order_recipients)) {
+            $messageBody = $this->getSmsMessage($incomingNumber, $order, $messageBody);
+
+            $order->save_sms_log($order_recipients, $messageBody);
+            return response($this->connectSmsResponse($messageBody, $order_recipients['to']->phone))->header('Content-Type', 'application/xml');
+        }
+
+        return $this->failedSmsResponse($incomingNumber);
+    }
+
+    private function connectVoiceResponse($outgoingNumber, $twilioNumber)
+    {
+        $response = new TwilioTwiml();
+        try {
+            $response->dial($outgoingNumber, [
+                'callerId' => $twilioNumber,
+                'record'=>true,
+            ]);
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+        return $response;
+    }
+
+    private function connectSmsResponse($messageBody, $outgoingNumber)
+    {
+        $response = new TwilioTwiml();
+        try {
+            $response->message(
+                $messageBody,
+                ['to' => $outgoingNumber]
+            );
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+        return $response;
+    }
+
+    private function failedVoiceResponse()
+    {
+        $response = new TwilioTwiml();
+        $response->say(trans('messages.order.communication.invalid_number'), [
+            'voice'=>'alice',
+        ]);
+        return $response;
+    }
+
+    private function failedSmsResponse($outgoingNumber)
+    {
+        $response = new TwilioTwiml();
+        $response->message(
+            trans('messages.order.communication.invalid_number_sms'),
+            ['to' => $outgoingNumber]
+        );
+        return $response;
+    }
+
+    private function getSmsMessage($incomingNumber, $order, $messageBody)
+    {
+        if($incomingNumber === $order->customer->phone) {
+            $messageBody = trans('messages.order.communication.sms.to_washer', [
+                'customer_name'=> $order->customer->first_name(),
+                'order_id'=>$order->id,
+                'body'=>$messageBody,
+            ]);
+        } else {
+
+            $messageBody = trans('messages.order.communication.sms.to_customer', [
+                'customer_name'=>$order->customer->first_name(),
+                'washer_name'=>$order->worker->first_name(),
+                'body'=>$messageBody,
+            ]);
+        }
+        return $messageBody;
+    }
 
 }

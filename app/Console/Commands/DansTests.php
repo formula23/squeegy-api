@@ -9,6 +9,9 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use GeometryLibrary\PolyUtil;
 
+use Services_Twilio as TwilioRestClient;
+use Services_Twilio_Twiml as TwilioTwiml;
+
 class DansTests extends Command
 {
     /**
@@ -30,9 +33,13 @@ class DansTests extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(TwilioRestClient $twilio)
     {
         parent::__construct();
+
+        $this->twilio = $twilio;
+
+//        dd($this->twilio->account->incoming_phone_numbers);
     }
 
     /**
@@ -42,6 +49,15 @@ class DansTests extends Command
      */
     public function handle()
     {
+
+        foreach($this->twilio->account->incoming_phone_numbers->getIterator(0, 50, array("FriendlyName"=>'AirTng')) as $number)
+        {
+            $this->info($number->phone_number);
+            $this->info($number->friendly_name);
+//            dd($number);
+        }
+        dd('done');
+        
 //        dd(Orders::get_location("33.9752461","-118.4198021"));
         $dist = Orders::get_distance("33.975,-118.42", "33.975,-118.42");
 $this->info($dist);
