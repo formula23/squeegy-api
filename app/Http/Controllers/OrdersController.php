@@ -642,17 +642,17 @@ class OrdersController extends Controller {
         $incomingNumber = $request->input('From');
         $messageBody = $request->input('Body');
 
-        \Log::info('twilio: '.$twilioNumber);
-        \Log::info('incoming: '.$incomingNumber);
-        \Log::info('msg: '.$messageBody);
+//        \Log::info('twilio: '.$twilioNumber);
+//        \Log::info('incoming: '.$incomingNumber);
+//        \Log::info('msg: '.$messageBody);
 
         $order = Order::getOrderFromNumber($twilioNumber);
-        \Log::info($order);
+//        \Log::info($order);
         if( ! $order) return $this->failedSmsResponse($incomingNumber);
 
         $order_recipients = $order->getContactRecipients($incomingNumber);
 
-        \Log::info($order_recipients);
+//        \Log::info($order_recipients);
 
         if(count($order_recipients)) {
             $messageBody = $this->getSmsMessage($incomingNumber, $order, $messageBody);
