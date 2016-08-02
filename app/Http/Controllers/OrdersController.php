@@ -371,6 +371,8 @@ class OrdersController extends Controller {
                         Event::fire(new OrderCancelled($order));
                     }
 
+                    $order->phone = null;
+
                     break;
                 case "confirm": //v1.4 uses this status
 
