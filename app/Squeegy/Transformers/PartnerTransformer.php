@@ -24,6 +24,7 @@ class PartnerTransformer extends TransformerAbstract
         return [
             'id'=>(string)$partner->id,
             'name'=>$partner->name,
+            'location_name'=>$partner->name,
             'location'=>$partner->location,
         ];
     }
