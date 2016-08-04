@@ -56,6 +56,10 @@ class NotifyWorkerNewOrder {
 					'customer_address_lnk' => "\n\ncomgooglemaps://?q=".$event->order->location['lat'].",".$event->order->location['lon']."&views=traffic",
 				];
 
+				if($event->order->isPartner()) {
+					$msg_data['customer_address'] = $event->order->partner->name."\n".$event->order->partner->location['street']."\n";
+				}
+
 				if($event->order->schedule && $event->order->schedule->window_open->hour==8) {
                     $msg_data['customer_address'] = "\n\n".$event->order->location['street'].", ".( ! empty($event->order->location['city']) ? $event->order->location['city'] : "" )." ".$event->order->location['zip'];
                 }
