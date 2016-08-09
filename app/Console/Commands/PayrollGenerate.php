@@ -182,7 +182,7 @@ class PayrollGenerate extends Command {
         10267 => [ //sheldon springs
 //            0=>75,
             2=>120,
-            5=>120,
+//            5=>120,
             6=>120,
         ],
         10350 => [ //michael wallace
@@ -231,7 +231,7 @@ class PayrollGenerate extends Command {
 
     protected $onsite =[
         3198 => [ //david
-//            2 => 20, //coral circle - 1 car
+            2 => 15, //coppersmith - 1 car
             3 => 120, //skechers
             4 => 15, //zefr
             5 => 120, //skechers
@@ -259,7 +259,7 @@ class PayrollGenerate extends Command {
 //            4 => 100, //buzzfeeed
         ],
         10267 => [ //sheldon
-            5 => 55, //buzzfeed
+            5 => 60, //buzzfeed
         ],
         10350 => [ //michael
             4 => 15, //mirada
