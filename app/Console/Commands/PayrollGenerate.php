@@ -580,7 +580,7 @@ class PayrollGenerate extends Command {
 
 		foreach($orders_by_worker as $worker_id => &$worker) {
             
-            if($worker['total_pay'] <= 0) continue;
+//            if($worker['total_pay'] <= 0) continue;
             
 			$worker['promotional'] = (float)@$cogs_by_washer[$worker_id] + (float)@$worker['minimum'];
 
