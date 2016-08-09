@@ -323,6 +323,8 @@ class PayrollGenerate extends Command {
 
 
         $start_day = Carbon::parse('2 sundays ago');
+        $week_of = $start_day->format("M jS");
+
         $init_days = [];
         for($day_count=0; $day_count<7; $day_count++) {
             $day_of_week = clone $start_day->addDay(($day_count > 1 ? 1 : $day_count ));
@@ -331,9 +333,6 @@ class PayrollGenerate extends Command {
         }
 
         $orders_by_worker = [];
-
-//		$week_of = $orders->first()->done_at->startOfWeek()->format("M jS");
-		$week_of = $start_day->format("M jS");
 
         foreach ($orders as $order)
         {
