@@ -165,7 +165,7 @@ class PayrollGenerate extends Command {
 		],
         7527 => [ // Gonzalo hidalgo
             1 => 120,
-            2 => 120,
+//            2 => 120,
             3 => 120,
             4 => 120,
             5 => 120,
@@ -206,7 +206,7 @@ class PayrollGenerate extends Command {
             3=>120,
             4=>120,
             5=>120,
-            6=>120,
+//            6=>120,
         ],
         10696 => [ //Uriel
 //            2=>120,
@@ -232,9 +232,9 @@ class PayrollGenerate extends Command {
     protected $onsite =[
         3198 => [ //david
 //            2 => 20, //coral circle - 1 car
-//            3 => 35, //JR
-//            4 => 80, //zefr & mirada
-//            5 => 95, //regreen
+            3 => 120, //skechers
+            4 => 15, //zefr
+            5 => 120, //skechers
         ],
         7146 => [ //leo
 //            4 => 120,
@@ -244,15 +244,16 @@ class PayrollGenerate extends Command {
 //            4 => 100,
         ],
         2149 => [ //daniel
-//            4 => 120, //buzzfeed
-//            5 => 60,
+            4 => 120, //buzzfeed
+            5 => 100, //buzzfeed
         ],
         7527 => [ // Gonzalo hidalgo
             3 => 80,
 //            5 => 20,
         ],
         1847 => [ //ricardo
-            4 => 100, //buzzfeed
+            4 => 120, //buzzfeed
+            5 => 120, //skechers
         ],
         10018 => [ //David medina
 //            4 => 100, //buzzfeeed
