@@ -603,12 +603,16 @@ class Order extends Model {
         $available_credit = $this->customer->availableCredit();
 
         \Log::info("avail credit:");
-\Log::info($available_credit);
+        \Log::info($available_credit);
         if($this->credit && Config::get('squeegy.order_seq')[$this->status] < 6) {
             $available_credit += $this->credit;
         } else {
 //            $available_credit = $this->credit;
         }
+
+        \Log::info("avail credit2:");
+        \Log::info($available_credit);
+
 
         $this->credit = min($this->price - $this->discount, $available_credit);
         $this->total = max(0,$this->price - $this->discount - $this->credit);

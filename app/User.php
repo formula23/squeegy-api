@@ -134,6 +134,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function availableCredit()
     {
         $avail_credits = (int)$this->credits()->where('status', '!=', 'void')->sum('amount');
+        \Log::info('USER -- availableCredit');
+        \Log::info($avail_credits);
         return ($avail_credits < 0 ? 0 : $avail_credits );
     }
 
