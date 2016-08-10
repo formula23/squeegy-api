@@ -611,7 +611,7 @@ class Order extends Model {
         \Log::info('NEW service');
         \Log::info($this->service_id);
 
-        if($this->credit && Config::get('squeegy.order_seq')[$this->status] < 6) {
+        if( $this->credit && Config::get('squeegy.order_seq')[$this->status] < 6 && ($this->getOriginal('service_id') != $this->service_id) ) {
             $available_credit += $this->credit;
         } else {
 //            $available_credit = $this->credit;
