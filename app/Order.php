@@ -602,29 +602,17 @@ class Order extends Model {
 //        $available_credit = ( ! $this->isPartner()) ? $this->customer->availableCredit() : 0 ;
         $available_credit = $this->customer->availableCredit();
 
-        \Log::info("avail credit:");
-        \Log::info($available_credit);
-
-        \Log::info('ORIGINAL service');
-        \Log::info($this->getOriginal('service_id'));
-
-        \Log::info('NEW service');
-        \Log::info($this->service_id);
-
-        if( $this->credit && Config::get('squeegy.order_seq')[$this->status] < 6 && ($this->getOriginal('service_id') != $this->service_id) ) {
+        if($this->credit && 
+            Config::get('squeegy.order_seq')[$this->status] < 6 && 
+            ($this->getOriginal('service_id') != $this->service_id))
+        {
             $available_credit += $this->credit;
         } else {
 //            $available_credit = $this->credit;
         }
 
-        \Log::info("avail credit2:");
-        \Log::info($available_credit);
-
-
         $this->credit = min($this->price - $this->discount, $available_credit);
         $this->total = max(0,$this->price - $this->discount - $this->credit);
-
-        \Log::info($this);
 
 //        $available_credit = ( ! $order->isPartner()) ? $order->customer->availableCredit() : 0 ;
 //        $order->credit = min($order->price - $order->discount, $available_credit);
