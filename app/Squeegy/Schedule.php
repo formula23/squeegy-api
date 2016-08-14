@@ -168,7 +168,7 @@ class Schedule
 //        $cur_hr = 17;
 //        Log::info('cur hr:'.$cur_hr);
 //        Log::info('day of week:...'.$this->now->dayOfWeek);
-
+//        Log::info($this->current_schedule);
         try
         {
             //get array of available days in sequential order.
@@ -177,12 +177,18 @@ class Schedule
             $days = $partner->days()->orderBy('next_date')->get();
 
             foreach($days as $idx=>$day) {
-
-                $container[$idx]['day'] = $day->next_date->format($this->day_format);
-
+                
                 $start_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_start);
                 $end_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_end);
                 $num_hrs = $start_time->diffInHours($end_time);
+
+                if($day->order_cap > 0 &&
+                    isset($this->current_schedule[$start_time->format('m/d/Y H')]) &&
+                    $this->current_schedule[$start_time->format('m/d/Y H')] >= $day->order_cap ) {
+                    continue;
+                }
+
+                $container[$idx]['day'] = $day->next_date->format($this->day_format);
 
                 if($partner->id == 5) {
 
@@ -207,7 +213,7 @@ class Schedule
 
             }
 
-            return $container;
+            return array_values($container);
             
 //            Log::info('day sort time:');
 //            Log::info($day_sort);

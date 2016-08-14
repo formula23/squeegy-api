@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PartnerDay extends Model
 {
-    protected $fillable = ['partner_id','day','day_of_week','next_date','time_start','time_end','frequency'];
+    protected $fillable = ['partner_id','day','day_of_week','next_date','time_start','time_end','frequency','order_cap'];
 
     protected $dates = ['next_date'];
 
