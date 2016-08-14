@@ -153,6 +153,7 @@ class Schedule
     protected function current_schedule()
     {
         $this->current_schedule = Order::current_scheduled_orders($this->partner_id);
+//        Log::info($this->current_schedule);
     }
 
     protected function partner_days()
