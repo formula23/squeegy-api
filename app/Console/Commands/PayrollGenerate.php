@@ -43,9 +43,9 @@ class PayrollGenerate extends Command {
         10018 => 'David Medina',
         10267 => 'Sheldon Springs',
         10350 => 'Michael Wallace',
-        10620 => 'Antonio',
-        10691 => 'Edgar',
-        10696 => 'Uriel',
+        10620 => 'Antonio Uribe',
+        10691 => 'Edgar Sandoval',
+        10696 => 'Uriel Pedro Medina',
     ];
 
     protected $ids_to_process=[];

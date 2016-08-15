@@ -125,7 +125,7 @@
     @if($washer_info['rental'])
     <tr>
         <td colspan="{{ $colspan }}" class="text-right"><strong>Equipment Rental:</strong></td>
-        <td>- ${{ number_format($washer_info['rental'], 2) }}</td>
+        <td>$-{{ number_format($washer_info['rental'], 2) }}</td>
     </tr>
     @endif
 
