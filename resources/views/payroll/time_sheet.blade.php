@@ -97,7 +97,7 @@
         @if(isset($day['deduction']))
             <tr>
                 <td colspan="{{ $colspan }}" class="text-right"><strong>Deduction:</strong></td>
-                <td>(${{ number_format($day['deduction'], 2) }})</td>
+                <td>$-{{ number_format($day['deduction'], 2) }}</td>
             </tr>
         @endif
 
