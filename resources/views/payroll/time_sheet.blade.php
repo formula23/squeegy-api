@@ -94,9 +94,16 @@
             </tr>
         @endif
 
+        @if(isset($day['deduction']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Deduction:</strong></td>
+                <td>${{ number_format($day['deduction'], 2) }}</td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'], 2) }}</td>
+            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'] - @$day['deduction'], 2) }}</td>
         </tr>
 
         <tr>

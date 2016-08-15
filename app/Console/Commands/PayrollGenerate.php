@@ -67,7 +67,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $referral_code = [
-        10691 => 10,
+//        10691 => 10,
     ];
 
     protected $ignore_ids =[
@@ -79,6 +79,7 @@ class PayrollGenerate extends Command {
 
     protected $payroll_washers = [
         2882, //juan lopez
+        11353, //Javier
     ];
 
     protected $service_price = [
@@ -140,17 +141,17 @@ class PayrollGenerate extends Command {
 	protected $min_day_worker_id = [
         1847 => [ //ricardo
 //            0 => 120,
-            1 => 120,
+//            1 => 120,
             2 => 120,
 //            3 => 120,
-            4 => 120,
-            5 => 120,
+//            4 => 100,
+//            5 => 120,
             6 => 120,
         ],
         2149 => [ //daniel garcia
 //            0 => 150,
-//            1 => 150,
-            2 => 150,
+            1 => 150,
+//            2 => 150,
             4 => 150,
             5 => 150,
 //            6 => 150,
@@ -158,7 +159,7 @@ class PayrollGenerate extends Command {
         3198 => [ //david
             1=>120,
             2=>120,
-            3=>120,
+//            3=>120,
             4=>120,
             5=>120,
             6=>120,
@@ -168,7 +169,7 @@ class PayrollGenerate extends Command {
 //            2 => 120,
             3 => 120,
             4 => 120,
-            5 => 120,
+//            5 => 120,
             6 => 120,
         ],
         10018 => [ //david medina
@@ -176,37 +177,38 @@ class PayrollGenerate extends Command {
 //            1 => 120,
 //            2 => 120,
             3 => 120,
-            4 => 120,
+//            4 => 120,
 //            5 => 120,
         ],
         10267 => [ //sheldon springs
-//            0=>75,
-            2=>120,
+//            1=>15,
+//            2=>120,
 //            5=>120,
             6=>120,
         ],
         10350 => [ //michael wallace
 //            0=>120,
-//            1=>75,
-//            2=>120,
-            3=>120,
-            4=>120,
-            5=>120,
-            6=>120,
-        ],
-        10620 => [ //Antonio
+            1=>120,
+            2=>120,
 //            3=>120,
 //            4=>120,
 //            5=>120,
-//            6=>120,
+            6=>120,
+        ],
+        10620 => [ //Antonio
+            1=>120,
+//            3=>120,
+//            4=>120,
+            5=>120,
+            6=>120,
         ],
         10691 => [ //Edgar
             1=>120,
             2=>120,
-            3=>120,
+//            3=>120,
             4=>120,
             5=>120,
-//            6=>120,
+            6=>120,
         ],
         10696 => [ //Uriel
 //            2=>120,
@@ -216,6 +218,128 @@ class PayrollGenerate extends Command {
 //            6=>120,
         ]
 	];
+
+    protected $deductions = [
+        1847 => [ //ricardo
+//            0 => 120,
+//            1 => 120,
+//            2 => 120,
+//            3 => 120,
+//            4 => 100,
+//            5 => 120,
+//            6 => 120,
+        ],
+        2149 => [ //daniel garcia
+//            0 => 150,
+//            1 => 150,
+//            2 => 150,
+//            4 => 150,
+//            5 => 150,
+//            6 => 150,
+        ],
+        3198 => [ //david
+//            1=>12.99,
+//            2=>120,
+//            3=>120,
+//            4=>120,
+//            5=>120,
+            6=>12.50,
+        ],
+        7527 => [ // Gonzalo hidalgo
+//            1 => 120,
+//            2 => 120,
+//            3 => 120,
+//            4 => 120,
+//            5 => 120,
+//            6 => 120,
+        ],
+        10018 => [ //david medina
+//            0 => 120,
+//            1 => 120,
+//            2 => 120,
+//            3 => 120,
+//            4 => 120,
+//            5 => 120,
+        ],
+        10267 => [ //sheldon springs
+//            1=>15,
+//            2=>120,
+//            5=>120,
+//            6=>120,
+        ],
+        10350 => [ //michael wallace
+//            0=>120,
+//            1=>120,
+//            2=>120,
+//            3=>120,
+//            4=>120,
+//            5=>120,
+//            6=>120,
+        ],
+        10620 => [ //Antonio
+//            1=>120,
+//            3=>120,
+//            4=>120,
+//            5=>120,
+//            6=>120,
+        ],
+        10691 => [ //Edgar
+//            1=>120,
+//            2=>120,
+//            3=>120,
+//            4=>120,
+//            5=>120,
+//            6=>120,
+        ],
+        10696 => [ //Uriel
+//            2=>120,
+//            3=>120,
+//            4=>120,
+//            5=>120,
+//            6=>120,
+        ]
+    ];
+
+    protected $onsite =[
+        3198 => [ //david
+            1 => 100,
+            2 => 100,
+            3 => 80,
+        ],
+        7146 => [ //leo
+//            4 => 120,
+        ],
+        2149 => [ //daniel
+            1 => 100,
+        ],
+        7527 => [ // Gonzalo hidalgo
+            3 => 50,
+//            5 => 20,
+        ],
+        1847 => [ //ricardo
+            2 => 100,
+            4 => 100,
+            5 => 45,
+        ],
+        10018 => [ //David medina
+            4 => 90,
+        ],
+        10267 => [ //sheldon
+            1 => 15,
+        ],
+        10350 => [ //michael
+            4 => 100,
+        ],
+        10620 => [ //Antonio
+            1 => 100,
+            3 => 15,
+        ],
+        10691 => [ //Edgar
+            1 => 100,
+//            4 => 30,
+        ]
+    ];
+
 
     protected $washer_training = [
 //        3198 => [ //david
@@ -227,47 +351,6 @@ class PayrollGenerate extends Command {
 //            2 => 100, //guillermo
 //            3 => 100, //guillermo
 //        ]
-    ];
-
-    protected $onsite =[
-        3198 => [ //david
-            2 => 15, //coppersmith - 1 car
-            3 => 120, //skechers
-            4 => 15, //zefr
-            5 => 120, //skechers
-        ],
-        7146 => [ //leo
-//            4 => 120,
-        ],
-        2882 => [ //juan lopez
-//            2 => 100,
-//            4 => 100,
-        ],
-        2149 => [ //daniel
-            4 => 120, //buzzfeed
-            5 => 100, //buzzfeed
-        ],
-        7527 => [ // Gonzalo hidalgo
-            3 => 80,
-//            5 => 20,
-        ],
-        1847 => [ //ricardo
-            4 => 120, //buzzfeed
-            5 => 120, //skechers
-        ],
-        10018 => [ //David medina
-//            4 => 100, //buzzfeeed
-        ],
-        10267 => [ //sheldon
-            5 => 60, //buzzfeed
-        ],
-        10350 => [ //michael
-            4 => 15, //mirada
-        ],
-        10691 => [ //Edgar
-            3 => 70, //snacknation
-            4 => 30, //buzzfeed
-        ]
     ];
 
     protected $washer_tips =[];
@@ -351,6 +434,7 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['daily_min_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['total_washer_training'] = 0;
             @$orders_by_worker[$order->worker->id]['total_bonus'] = 0;
+            @$orders_by_worker[$order->worker->id]['total_deduction'] = 0;
             @$orders_by_worker[$order->worker->id]['comp_type'] = 'flat';
             @$orders_by_worker[$order->worker->id]['full_price_rev'] += $order->price / 100;
 
@@ -562,6 +646,22 @@ class PayrollGenerate extends Command {
             }
         }
 
+        foreach($this->deductions as $worker_id=>$deduction_details) {
+            if( ! isset($orders_by_worker[$worker_id])) continue;
+            if(empty($orders_by_worker[$worker_id]['jobs'])) continue;
+
+            foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$details) {
+
+                if(isset($deduction_details[$details['date']->dayOfWeek])) {
+                    $details['deduction'] = $deduction_details[$details['date']->dayOfWeek];
+
+                    $orders_by_worker[$worker_id]['total_pay'] -= $details['deduction'];
+                    @$orders_by_worker[$worker_id]['total_deduction'] -= $details['deduction'];
+                }
+
+            }
+        }
+
 //        foreach($orders_by_worker as $worker_id=>&$worker_info) {
 //            if(isset($this->washer_tips[$worker_id])) {
 //                $worker_info['tip'] = $this->washer_tips[$worker_id];
@@ -572,7 +672,7 @@ class PayrollGenerate extends Command {
 //        dd($this->washer_tips[3198]);
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[10267]);
+        dd($orders_by_worker[3198]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
