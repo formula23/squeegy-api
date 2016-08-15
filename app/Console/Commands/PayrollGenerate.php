@@ -230,9 +230,9 @@ class PayrollGenerate extends Command {
 //            6 => 120,
         ],
         2149 => [ //daniel garcia
-//            0 => 150,
+            0 => 19.08,
 //            1 => 150,
-//            2 => 150,
+            2 => 45.98,
 //            4 => 150,
 //            5 => 150,
 //            6 => 150,
@@ -243,7 +243,7 @@ class PayrollGenerate extends Command {
 //            3=>120,
 //            4=>120,
 //            5=>120,
-            6=>12.50,
+//            6=>12.50,
         ],
         7527 => [ // Gonzalo hidalgo
 //            1 => 120,
@@ -257,7 +257,7 @@ class PayrollGenerate extends Command {
 //            0 => 120,
 //            1 => 120,
 //            2 => 120,
-//            3 => 120,
+            3 => 20.98,
 //            4 => 120,
 //            5 => 120,
         ],
@@ -278,7 +278,7 @@ class PayrollGenerate extends Command {
         ],
         10620 => [ //Antonio
 //            1=>120,
-//            3=>120,
+            3=>20, //equipment
 //            4=>120,
 //            5=>120,
 //            6=>120,
@@ -672,7 +672,7 @@ class PayrollGenerate extends Command {
 //        dd($this->washer_tips[3198]);
 //        dd("adsf");
 //        dd($orders_by_worker);
-        dd($orders_by_worker[3198]);
+//        dd($orders_by_worker[3198]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
