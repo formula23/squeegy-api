@@ -150,7 +150,7 @@ class PayrollGenerate extends Command {
         ],
         2149 => [ //daniel garcia
 //            0 => 150,
-            1 => 150,
+            1 => 120,
 //            2 => 150,
             4 => 150,
             5 => 150,
@@ -231,7 +231,7 @@ class PayrollGenerate extends Command {
 //            4 => 120,
         ],
         2149 => [ //daniel
-            1 => 100,
+            1 => 120,
             4 => 95,
         ],
         7527 => [ // Gonzalo hidalgo
@@ -239,7 +239,7 @@ class PayrollGenerate extends Command {
 //            5 => 20,
         ],
         1847 => [ //ricardo
-            2 => 100,
+            2 => 120,
             4 => 100,
             5 => 45,
         ],
@@ -720,11 +720,13 @@ class PayrollGenerate extends Command {
 
                 if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review") {
                     $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
+                    $message['CC'] = ["Javier Macias "."<javier@squeegyapp.com>"];
                 } else {
                     $message['To'] = [$email_data['washer']['name']." <".$email_data['washer']['email'].">"];
                     $message['BCC'] = [
                         "Dan Schultz "."<dan@squeegyapp.com>",
-                        "Andrew Davis "."<andrew@squeegyapp.com>"
+                        "Andrew Davis "."<andrew@squeegyapp.com>",
+                        "Javier Macias "."<javier@squeegyapp.com>"
                     ];
                 }
 
@@ -770,12 +772,14 @@ class PayrollGenerate extends Command {
 
             if(env('APP_ENV') != 'production' || $this->argument('send_email') == "review" || $this->argument('send_cog')=='false') {
                 $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
+                $message['CC'] = ["Javier Macias "."<javier@squeegyapp.com>"];
             } else {
                 $message['To'] = ["Terri Perkins "."<Terri@lrmcocpas.com>"];
                 $message['CC'] = ["Anna Asuncion "."<Anna@lrmcocpas.com>"];
                 $message['BCC'] = [
                     "Dan Schultz "."<dan@squeegyapp.com>",
-                    "Andrew Davis "."<andrew@squeegyapp.com>"
+                    "Andrew Davis "."<andrew@squeegyapp.com>",
+                    "Javier Macias "."<javier@squeegyapp.com>"
                 ];
             }
 
