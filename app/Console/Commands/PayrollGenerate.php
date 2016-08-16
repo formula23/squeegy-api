@@ -221,11 +221,11 @@ class PayrollGenerate extends Command {
 
     protected $onsite =[
         3198 => [ //david
-            1 => 100,
+            1 => 120,
             2 => 100,
             3 => 83.81,
-            4 => 65,
-            5 => 50,
+            4 => 100,
+            5 => 60,
         ],
         7146 => [ //leo
 //            4 => 120,
@@ -256,6 +256,8 @@ class PayrollGenerate extends Command {
         10620 => [ //Antonio
             1 => 100,
             3 => 15,
+            4 => 100,
+            5 => 15,
         ],
         10691 => [ //Edgar
             1 => 100,
