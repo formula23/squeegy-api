@@ -184,7 +184,7 @@ class PayrollGenerate extends Command {
 //            1=>15,
 //            2=>120,
 //            5=>120,
-            6=>120,
+//            6=>120,
         ],
         10350 => [ //michael wallace
 //            0=>120,
@@ -200,7 +200,7 @@ class PayrollGenerate extends Command {
 //            3=>120,
 //            4=>120,
             5=>120,
-            6=>120,
+//            6=>120,
         ],
         10691 => [ //Edgar
             1=>120,
@@ -218,6 +218,50 @@ class PayrollGenerate extends Command {
 //            6=>120,
         ]
 	];
+
+    protected $onsite =[
+        3198 => [ //david
+            1 => 100,
+            2 => 100,
+            3 => 83.81,
+            4 => 65,
+            5 => 50,
+        ],
+        7146 => [ //leo
+//            4 => 120,
+        ],
+        2149 => [ //daniel
+            1 => 100,
+            4 => 95,
+        ],
+        7527 => [ // Gonzalo hidalgo
+            3 => 50,
+//            5 => 20,
+        ],
+        1847 => [ //ricardo
+            2 => 100,
+            4 => 100,
+            5 => 45,
+        ],
+        10018 => [ //David medina
+            4 => 90,
+        ],
+        10267 => [ //sheldon
+            1 => 15,
+        ],
+        10350 => [ //michael
+            1 => 100,
+            4 => 100,
+        ],
+        10620 => [ //Antonio
+            1 => 100,
+            3 => 15,
+        ],
+        10691 => [ //Edgar
+            1 => 100,
+//            4 => 30,
+        ]
+    ];
 
     protected $deductions = [
         1847 => [ //ricardo
@@ -299,49 +343,6 @@ class PayrollGenerate extends Command {
 //            6=>120,
         ]
     ];
-
-    protected $onsite =[
-        3198 => [ //david
-            1 => 100,
-            2 => 100,
-            3 => 80,
-            4 => 65,
-            5 => 50,
-        ],
-        7146 => [ //leo
-//            4 => 120,
-        ],
-        2149 => [ //daniel
-            1 => 100,
-        ],
-        7527 => [ // Gonzalo hidalgo
-            3 => 50,
-//            5 => 20,
-        ],
-        1847 => [ //ricardo
-            2 => 100,
-            4 => 100,
-            5 => 45,
-        ],
-        10018 => [ //David medina
-            4 => 90,
-        ],
-        10267 => [ //sheldon
-            1 => 15,
-        ],
-        10350 => [ //michael
-            4 => 100,
-        ],
-        10620 => [ //Antonio
-            1 => 100,
-            3 => 15,
-        ],
-        10691 => [ //Edgar
-            1 => 100,
-//            4 => 30,
-        ]
-    ];
-
 
     protected $washer_training = [
 //        3198 => [ //david
@@ -674,7 +675,7 @@ class PayrollGenerate extends Command {
 //        dd($this->washer_tips[3198]);
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[3198]);
+        dd($orders_by_worker[2149]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
