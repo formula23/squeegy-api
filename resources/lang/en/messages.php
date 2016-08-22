@@ -79,10 +79,10 @@ return [
         ],
         'communication'=> [
             'invalid_number' => 'Thanks for calling Squeegy. This number is not valid. Goodbye!',
-            'invalid_number_sms' => 'Thanks for calling Squeegy. This number is not valid. Goodbye!',
+            'invalid_number_sms' => 'This number is not valid. - Squeegy',
             'sms' => [
                 'to_washer'=>":customer_name - Order# :order_id:\n:body",
-                'to_customer'=>"Hi :customer_name, this is :washer_name with Squeegy:\n:body",
+                'to_customer'=>":washer_name with Squeegy:\n:body",
             ]
         ]
     ],

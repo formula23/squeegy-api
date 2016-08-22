@@ -724,7 +724,6 @@ class OrdersController extends Controller {
         } else {
 
             $messageBody = trans('messages.order.communication.sms.to_customer', [
-                'customer_name'=>$order->customer->first_name(),
                 'washer_name'=>$order->worker->first_name(),
                 'body'=>$messageBody,
             ]);
