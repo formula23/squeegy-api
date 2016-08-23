@@ -11,6 +11,7 @@ use App\Events\OrderDone;
 use App\Events\OrderEnroute;
 use App\Events\OrderScheduled;
 use App\Events\OrderStart;
+use App\FailedSmsLog;
 use App\Http\Requests\CreateOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\OrderDetail;
@@ -651,7 +652,7 @@ class OrdersController extends Controller {
 
         $order = Order::getOrderFromNumber($twilioNumber);
 //        \Log::info($order);
-        if( ! $order) return $this->failedSmsResponse($incomingNumber);
+        if( ! $order) return $this->failedSmsResponse($twilioNumber, $incomingNumber, $messageBody);
 
         $order_recipients = $order->getContactRecipients($incomingNumber);
 
@@ -664,7 +665,7 @@ class OrdersController extends Controller {
             return response($this->connectSmsResponse($messageBody, $order_recipients['to']->phone))->header('Content-Type', 'application/xml');
         }
 
-        return $this->failedSmsResponse($incomingNumber);
+        return $this->failedSmsResponse($twilioNumber, $incomingNumber, $messageBody);
     }
 
     private function connectVoiceResponse($outgoingNumber, $twilioNumber)
@@ -704,13 +705,28 @@ class OrdersController extends Controller {
         return $response;
     }
 
-    private function failedSmsResponse($outgoingNumber)
+    private function failedSmsResponse($to, $from, $message)
     {
         $response = new TwilioTwiml();
-        $response->message(
-            trans('messages.order.communication.invalid_number_sms'),
-            ['to' => $outgoingNumber]
-        );
+        try {
+            $response->message(
+                trans('messages.order.communication.invalid_number_sms'),
+                ['to' => $from]
+            );
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+
+        try {
+            FailedSmsLog::create([
+                'to'=>$to,
+                'from'=>$from,
+                'message'=>$message,
+            ]);
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
+        }
+
         return $response;
     }
 
