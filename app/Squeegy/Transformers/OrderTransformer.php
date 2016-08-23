@@ -125,6 +125,12 @@ class OrderTransformer extends TransformerAbstract {
     }
 
     public function includeCustomer(Order $order) {
+        
+        $customer = $order->customer;
+
+        if(in_array(config('squeegy.order_seq')[$order->status], [3,4,5])) {
+            $customer->phone = $order->phone;
+        }
         return $this->item($order->customer, new UserTransformer);
     }
 
@@ -142,6 +148,10 @@ class OrderTransformer extends TransformerAbstract {
     {
         $worker = $order->worker;
         if(!$worker) $worker = new \App\User;
+
+        if(in_array(config('squeegy.order_seq')[$order->status], [3,4,5])) {
+            $worker->phone = $order->phone;
+        }
         return $this->item($worker, new UserTransformer);
     }
 

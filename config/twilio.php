@@ -54,6 +54,10 @@ return [
                 */
 
                 'ssl_verify' => true,
+                'application_sid' => env('TWILIO_APP_SID', ''),
+                'order_communication' => [
+                    'friendly_name' => env('TWILIO_ORDERS_FRIENDLY_NAME')
+                ]
 
             ],
         ],

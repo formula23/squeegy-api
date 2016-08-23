@@ -49,6 +49,9 @@ Route::group(['prefix' => 'v1'], function() {
 
     Route::post('orders', 'OrdersController@store');
 
+    Route::post('orders/connect_voice', 'OrdersController@connectVoice');
+    Route::post('orders/connect_sms', 'OrdersController@connectSms');
+
     Route::put('orders/{orders}', 'OrdersController@update');
     Route::get('orders/{orders}', ['as'=>'v1.orders.show', 'uses'=>'OrdersController@show']);
 

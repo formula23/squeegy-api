@@ -45,6 +45,7 @@ class EventServiceProvider extends ServiceProvider {
             'App\Handlers\Events\AuthOrder',
             'App\Handlers\Events\NotifyCustomerAssign',
             'App\Handlers\Events\NotifyWorkerNewOrder',
+			'App\Listeners\AssignOrderPhoneNumber',
         ],
 
 		'App\Events\OrderScheduled' => [
@@ -56,6 +57,7 @@ class EventServiceProvider extends ServiceProvider {
 		'App\Events\OrderAssign' => [
 			'App\Handlers\Events\NotifyCustomerAssign',
 			'App\Handlers\Events\NotifyWorkerNewOrder',
+			'App\Listeners\AssignOrderPhoneNumber',
 		],
 
         'App\Events\OrderEnroute' => [
