@@ -21,7 +21,6 @@ function is_internal()
         '76.94.204.22', //dan home wifi
         '104.32.54.86', //squeegy office
         '24.205.11.225', //kevin
-        '46.107.102.191', //budapest hotel
     ];
     
     if(env('APP_ENV')!='production') {

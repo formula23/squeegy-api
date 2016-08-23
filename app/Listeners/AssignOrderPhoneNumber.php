@@ -34,7 +34,8 @@ class AssignOrderPhoneNumber
         ///get phone numbers currently in use
         $in_use_numbers = $event->order->phone_numbers_in_use()->toArray();
 
-        \Log::info($in_use_numbers);
+//        \Log::info('in use numbers:');
+//        \Log::info($in_use_numbers);
 
         ///get phone numbers available from twilio
         $all_available_incoming=[];
@@ -45,20 +46,27 @@ class AssignOrderPhoneNumber
             $all_available_incoming[] = $number->phone_number;
         }
 
-        \Log::info($all_available_incoming);
+//        \Log::info('all available incoming:');
+//        \Log::info($all_available_incoming);
 
         $available_incoming = array_diff($all_available_incoming, $in_use_numbers);
 
-        \Log::info($available_incoming);
+//        \Log::info('available incoming:');
+//        \Log::info($available_incoming);
         
         if( ! count($available_incoming) ) {
-            \Log::info('get new number..');
+//            \Log::info('get new number..');
             if($order_number = $this->getNewTwilioNumber()) {
                 $event->order->phone = $order_number;
             }
         } else {
             $event->order->phone = array_shift($available_incoming);
         }
+
+//        \Log::info('order number assigned');
+//        \Log::info($event->order->phone);
+
+        $event->order->save();
     }
 
     private function getNewTwilioNumber()
