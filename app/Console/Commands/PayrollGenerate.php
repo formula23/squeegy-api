@@ -150,7 +150,7 @@ class PayrollGenerate extends Command {
         ],
         2149 => [ //daniel garcia
             0 => 150,
-            1 => 120,
+            1 => 150,
             2 => 150,
             4 => 150,
             5 => 150,
