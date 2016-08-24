@@ -24,10 +24,10 @@ class UpdateMixPanel
     /**
      * Handle the event.
      *
-     * @param  OrderDone  $event
+     * @param $event
      * @return void
      */
-    public function handle(OrderDone $event)
+    public function handle($event)
     {
         $user = $event->user;
 
@@ -48,6 +48,8 @@ class UpdateMixPanel
 
         $this->mixpanel->people->set($user->id, $data);
 
-        $this->mixpanel->people->trackCharge($user->id, $event->order->revenue()/100);
+        if($event->order->status=='done') {
+            $this->mixpanel->people->trackCharge($user->id, $event->order->revenue()/100);
+        }
     }
 }

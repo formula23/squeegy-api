@@ -26,6 +26,8 @@ class SyncCampaignMonitor {
 			Log::info("Start sync Campaing monitor");
 			$customer = $event->user;
 
+			if(empty($customer)) $customer = $event->order->customer;
+			
 			$subscriber = CampaignMonitor::subscribers(Config::get('campaignmonitor.master_list_id'));
 
             Log::info($customer);
@@ -44,7 +46,10 @@ class SyncCampaignMonitor {
 			];
 
 			if( ! empty($event->order)) {
-				$subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
+
+                if($event->order->done_at) {
+                    $subscriber_data['CustomFields'][] = ['Key'=>'LastWash', 'Value'=>$event->order->done_at->format('Y/m/d')];
+                }
 
                 if($partner = $event->order->partner) {
                     $subscriber_data['CustomFields'][] = ['Key'=>'PartnerID', 'Value'=>$partner->id];
@@ -58,7 +63,8 @@ class SyncCampaignMonitor {
 
 			if($result->http_status_code != 201) {
 				$err_msg = "Campaign Monitor: ".$result->http_status_code." -- ".( ! empty($result->response) ? $result->response->Message : "");
-				\Bugsnag::notifyException(new \Exception($err_msg));
+//				\Bugsnag::notifyException(new \Exception($err_msg));
+                Log::info($err_msg);
 			}
 
 		} catch(\Exception $e) {

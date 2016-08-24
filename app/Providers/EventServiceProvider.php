@@ -52,6 +52,8 @@ class EventServiceProvider extends ServiceProvider {
 			'App\Handlers\Events\AuthOrder',
 			'App\Handlers\Events\NotifyAdminNewOrder',
 			'App\Handlers\Events\NotifyCustomerSchedule',
+			'App\Handlers\Events\SyncCampaignMonitor',
+            'App\Handlers\Events\UpdateMixPanel',            
 		],
 
 		'App\Events\OrderAssign' => [
