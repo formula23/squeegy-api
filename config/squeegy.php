@@ -8,8 +8,8 @@ return [
         "max_lead_time" => 120,
     ],
     'service_area' => [
-        33.994093,
-        -118.452264
+        33.986046,
+        -118.397779
     ],
     "sms_verification" => "6538",
     "cancellation_fee" => 500,
