@@ -348,6 +348,10 @@ class OrdersController extends Controller {
                 return $this->response->errorWrongArgs(trans('messages.order.same_status', ['status'=>$request_data['status']]));
             }
 
+            if($this->order_seq[$order->status] == 100) {
+                return $this->response->errorWrongArgs('Error! Order is currently cancelled.');
+            }
+
             if($this->order_seq[$request_data['status']]!== 100 &&
                 ++$this->order_seq[$order->status] !== $this->order_seq[$request_data['status']] &&
                 ! $user->can('order.status')) {
@@ -551,6 +555,8 @@ class OrdersController extends Controller {
     {
         if( ! $order->exists) return $this->response->errorNotFound();
 
+        if($this->order_seq[$order->status] > 4) return $this->response->errorMethodNotAllowed('Can\'t change washer! Order is complete or cancelled.');
+        
         $order->worker_id = $request->input('worker_id');
 
         Event::fire(new ChangeWasher($order));

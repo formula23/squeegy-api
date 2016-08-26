@@ -27,7 +27,6 @@ return [
         ],
     ],
     'order_seq' => [
-        'cancel' => 100,
         'test' => 0,
         'request' => 1,
         'confirm' => 2,
@@ -38,6 +37,7 @@ return [
         'enroute' => 4,
         'start' => 5,
         'done' => 6,
+        'cancel' => 100,
     ],
     'use_worker_regions' => env('USE_WORKER_REGIONS', false),
     'worker_default_location' => [
