@@ -237,6 +237,7 @@ class OrdersController extends Controller {
                 if($window_close) {
                     $schedule_data['window_close'] = new Carbon($data['day']." ".$window_close);
                 } else {
+                    $schedule_data['window_close'] = $schedule_data['window_open'];
                     $schedule_data['type'] = 'subscription';
                 }
 
