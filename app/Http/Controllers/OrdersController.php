@@ -195,6 +195,10 @@ class OrdersController extends Controller {
             return $this->response->errorUnauthorized();
         }
 
+        if($data['location']['lat'] == 33.9861737 && $data['location']['lon'] == -118.3977665) {
+            return $this->response->errorWrongArgs(trans('messages.order.confirm_location'));
+        }
+
         //does current user have any washes in progress for the requested vehicle
         if( !$is_schedule && $user->orders()->whereIn('status', ['assign','enroute','start'])->where('vehicle_id', $data['vehicle_id'])->get()->count()) {
             return $this->response->errorWrongArgs(trans('messages.order.exists'));

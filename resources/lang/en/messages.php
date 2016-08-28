@@ -14,6 +14,7 @@ return [
         'phone_verify' => 'Squeegy verification code: :verify_code',
     ],
     'order' => [
+        'confirm_location' => 'We have detected that the location of your vehicle you selected may be incorrect. Please go back and verify your vehicles location.',
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
         'vehicle_invalid' => 'Vehicle id submitted is invalid',
