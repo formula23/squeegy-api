@@ -501,7 +501,7 @@ class Order extends Model {
 //        Log::info("partner:.....");
 //        Log::info($order->partner);
 
-        if($this->isPartner()) {
+        if($this->isPartner() && !$this->partner->allow_promo) {
             return trans('messages.order.discount.partners');
         }
 

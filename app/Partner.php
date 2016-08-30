@@ -5,7 +5,7 @@ use GeometryLibrary\PolyUtil;
 
 class Partner extends Model
 {
-    protected $fillable = ['name', 'location_name', 'location', 'geo_fence', 'is_active'];
+    protected $fillable = ['name', 'location_name', 'location', 'geo_fence', 'allow_promo', 'is_active'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
