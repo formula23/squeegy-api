@@ -9,6 +9,7 @@ class Credit extends Model {
         'order_id',
         'amount',
         'status',
+        'description',
     ];
 
     protected $dates = [
