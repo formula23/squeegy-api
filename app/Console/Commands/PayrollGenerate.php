@@ -1,5 +1,6 @@
 <?php namespace App\Console\Commands;
 
+use App\Credit;
 use App\Order;
 use App\Squeegy\Facades\CampaignMonitor;
 use Carbon\Carbon;
@@ -48,6 +49,8 @@ class PayrollGenerate extends Command {
         10696 => 'Uriel Pedro Medina',
     ];
 
+    protected $week_of=null;
+
     protected $ids_to_process=[];
 
     protected $training = [
@@ -63,12 +66,9 @@ class PayrollGenerate extends Command {
     protected $bonus = [
 //        3198 => 31.58, //david
 //        2882 => 10,
-
     ];
 
-    protected $referral_code = [
-//        10691 => 10,
-    ];
+    protected $referral_code = [];
 
     protected $ignore_ids =[
         6119, //Ops
@@ -140,27 +140,27 @@ class PayrollGenerate extends Command {
 
 	protected $min_day_worker_id = [
         1847 => [ //ricardo
-//            0 => 120,
+            0 => 120,
 //            1 => 120,
 //            2 => 120,
 //            3 => 120,
-            4 => 120,
-            5 => 120,
+//            4 => 120,
+//            5 => 120,
 //            6 => 120,
         ],
         2149 => [ //daniel garcia
-            0 => 150,
-            1 => 150,
-            2 => 150,
-            4 => 150,
-            5 => 150,
+//            0 => 150,
+//            1 => 150,
+//            2 => 150,
+//            4 => 150,
+//            5 => 150,
 //            6 => 150,
         ],
         3198 => [ //david
 //            1=>120,
 //            2=>120,
-//            3=>120,
-            4=>120,
+            3=>120,
+//            4=>120,
             5=>120,
             6=>120,
 		],
@@ -169,25 +169,41 @@ class PayrollGenerate extends Command {
 //            2 => 120,
 //            3 => 120,
 //            4 => 120,
-            5 => 120,
+//            5 => 120,
 //            6 => 120,
         ],
         10018 => [ //david medina
 //            0 => 120,
             1 => 120,
             2 => 120,
-            3 => 120,
+//            3 => 120,
 //            4 => 120,
 //            5 => 120,
         ],
         10267 => [ //sheldon springs
-//            1=>50,
+            1=>120,
 //            2=>120,
 //            5=>120,
 //            6=>120,
         ],
         10350 => [ //michael wallace
+            0=>120,
+            1=>120,
+            2=>120,
+//            3=>120,
+            4=>120,
+//            5=>120,
+            6=>120,
+        ],
+        10620 => [ //Antonio
 //            0=>120,
+//            1=>120,
+//            3=>120,
+//            4=>120,
+            5=>120,
+//            6=>120,
+        ],
+        10691 => [ //Edgar
 //            1=>120,
 //            2=>120,
 //            3=>120,
@@ -195,37 +211,14 @@ class PayrollGenerate extends Command {
 //            5=>120,
 //            6=>120,
         ],
-        10620 => [ //Antonio
-            0=>120,
-//            1=>120,
-//            3=>120,
-//            4=>120,
-//            5=>120,
-//            6=>120,
-        ],
-        10691 => [ //Edgar
-//            1=>120,
-            2=>120,
-//            3=>120,
-//            4=>120,
-            5=>120,
-//            6=>120,
-        ],
-        10696 => [ //Uriel
-            1=>120,
-//            3=>120,
-            4=>120,
-//            5=>120,
-//            6=>120,
-        ]
 	];
 
     protected $onsite =[
         3198 => [ //david
-            1 => 50,
+            1 => 100,
 //            2 => 100,
-//            3 => 83.81,
-            4 => 60,
+            3 => 60,
+            4 => 100,
 //            5 => 60,
         ],
         7146 => [ //leo
@@ -234,41 +227,37 @@ class PayrollGenerate extends Command {
         2149 => [ //daniel
 //            1 => 120,
 //            2 => 60,
-            4 => 100,
+            5 => 80,
         ],
         7527 => [ // Gonzalo hidalgo
-            4 => 120,
-//            5 => 20,
+//            4 => 120,
+            5 => 40,
         ],
         1847 => [ //ricardo
 //            2 => 120,
-            4 => 105,
-            5 => 120,
+            4 => 100,
+//            5 => 120,
         ],
         10018 => [ //David medina
 //            4 => 90,
         ],
         10267 => [ //sheldon
-            1 => 60,
+//            1 => 60,
         ],
         10350 => [ //michael
-//            1 => 100,
-            4 => 60,
+            1 => 40,
+//            4 => 60,
         ],
         10620 => [ //Antonio
-            1 => 45,
-            3 => 45,
-            4 => 75,
+            1 => 100,
+//            3 => 45,
+            4 => 100,
             5 => 50,
         ],
         10691 => [ //Edgar
 //            1 => 100,
-            5 => 45,
+//            5 => 45,
         ],
-        10696 => [ //Uriel
-            1 => 60,
-            4 => 15,
-        ]
     ];
 
     protected $deductions = [
@@ -302,7 +291,7 @@ class PayrollGenerate extends Command {
 //            2 => 120,
 //            3 => 120,
 //            4 => 120,
-//            5 => 120,
+            5 => 35,
 //            6 => 120,
         ],
         10018 => [ //david medina
@@ -330,6 +319,7 @@ class PayrollGenerate extends Command {
         ],
         10620 => [ //Antonio
 //            1=>120,
+            2=>30,
 //            3=>20, //equipment
 //            4=>120,
 //            5=>120,
@@ -354,8 +344,8 @@ class PayrollGenerate extends Command {
 
     protected $washer_training = [
         3198 => [ //david
-            2 => 220, // michael
-            3 => 220, // michael
+//            2 => 220, // michael
+//            3 => 220, // michael
         ],
 //        10350 => [ //michael
 //            2 => 50,
@@ -384,7 +374,6 @@ class PayrollGenerate extends Command {
         $this->get_tips();
 
         $this->mailer = CampaignMonitor::classicSend(config('campaignmonitor.client_id'));
-
 	}
 
 	/**
@@ -394,6 +383,9 @@ class PayrollGenerate extends Command {
 	 */
 	public function fire()
 	{
+        //get referral codes used
+
+        $this->get_refarral_code_amounts();
 
         if($this->option('worker_ids')) {
             $this->ids_to_process = explode(",", $this->option('worker_ids'));
@@ -417,7 +409,7 @@ class PayrollGenerate extends Command {
 
 
         $start_day = Carbon::parse('2 sundays ago');
-        $week_of = $start_day->format("M jS");
+        $this->week_of = $start_day->format("M jS");
 
         $init_days = [];
         for($day_count=0; $day_count<7; $day_count++) {
@@ -577,6 +569,9 @@ class PayrollGenerate extends Command {
         foreach( $orders_by_worker as $worker_id => &$washer_d ) {
             if( $washer_d['referral_code'] > 0 ) {
                 $washer_d['total_pay'] += $washer_d['referral_code'];
+
+                //record referral payout
+                $this->save_referral_payout($worker_id, $washer_d['referral_code']);
             }
 
             @$washer_d['extra_tip'] = $this->washer_tips[$worker_id]['total'] - $washer_d['total_daily_tip'];
@@ -695,7 +690,7 @@ class PayrollGenerate extends Command {
 			$worker['promotional'] = (float)@$cogs_by_washer[$worker_id] + (float)@$worker['minimum'];
 
 			$data=[];
-			$data['week_of'] = $week_of;
+			$data['week_of'] = $this->week_of;
 			$data['washer_info'] = $worker;
 			$data['weekly_min'] = ( ! empty($min_weekly_worker_id[$worker_id]) ? $min_weekly_worker_id[$worker_id] : 0 );
             $data['colspan'] = ($worker['comp_type']=="flat" ? 8 : 11 );
@@ -712,7 +707,7 @@ class PayrollGenerate extends Command {
 			$email_data = [
 				'time_sheet' => $time_sheet,
 				'washer'=>$worker['washer'],
-				'week_of'=>$week_of,
+				'week_of'=>$this->week_of,
 			];
 
             //only send to IDs that are in the array if there is an array
@@ -738,7 +733,7 @@ class PayrollGenerate extends Command {
                 }
 
                 $message['Subject'] = "Squeegy Pay - Week of ".$email_data['week_of'];
-                $message['Html'] = view('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$week_of])->render();
+                $message['Html'] = view('payroll.email', ['washer'=>$worker['washer']['name'], 'week_of'=>$this->week_of])->render();
                 $message['Attachments'] = [
                     ['Name' => $file_name,
                     'Type' => 'text/html',
@@ -834,6 +829,29 @@ class PayrollGenerate extends Command {
         }
 
         return;
+    }
+
+    protected function save_referral_payout($worker_id, $amount) {
+        if(env('APP_ENV') != 'production' || $this->argument('send_email') == 'review') return;
+
+        Credit::create([
+            'user_id'=>$worker_id,
+            'amount'=>-$amount*100,
+            'status'=>'capture',
+            'description'=>'Payroll payout - Week of '.$this->week_of,
+        ]);
+        return;
+    }
+
+    protected function get_refarral_code_amounts()
+    {
+        $referral_codes = DB::select('SELECT users.id, users.name, sum(amount) as ref_amount FROM credits, users WHERE credits.user_id = users.id AND user_id IN (SELECT user_id FROM users, role_user WHERE users.id = role_user.user_id AND role_user.role_id = 2) GROUP BY users.id HAVING sum(amount) > 0');
+
+        if(count($referral_codes)) {
+            foreach($referral_codes as $referral_worker) {
+                $this->referral_code[$referral_worker->id] = (int)$referral_worker->ref_amount/100;
+            }
+        }
     }
 
 	/**
