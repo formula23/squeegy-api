@@ -53,6 +53,7 @@ class NotifyCustomerEnroute extends BaseEventHandler {
         ]);
 
         if($event->order->partner) {
+			return;
             $this->message_key = 'messages.order.push_notice_corp.enroute';
 			$this->message = trans($this->message_key, [
 				'worker_name'=>$event->order->worker->first_name(),

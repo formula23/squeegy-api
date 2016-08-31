@@ -33,6 +33,8 @@ class NotifyCustomerStart extends BaseEventHandler {
 		if($event->order->schedule && $event->order->schedule->type=='subscription') { //surpress notifications for subscribed orders
 			return;
 		}
+		
+		if($event->order->isPartner()) return;
         
         $this->message = trans($this->message_key,[
 			'worker_name'=>$event->order->worker->first_name(),
