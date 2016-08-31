@@ -484,7 +484,9 @@ class OrdersController extends Controller {
 
                     if( $user->is('worker') && $user->id != $order->worker_id) return $this->response->errorUnauthorized('This order is not assigned to you!');
 
-                        if(!$order->worker_id) $order->worker_id = $user->id;
+                    if(!$order->worker_id) $order->worker_id = $user->id;
+
+                    if($order->worker->orders()->whereIn('status', ['enroute','start'])->count())  return $this->response->errorUnauthorized('Please finsih current job, before going to next.');
 
                     Event::fire(new OrderEnroute($order, false));
 
