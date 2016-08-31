@@ -11,6 +11,9 @@ return [
         33.986046,
         -118.397779
     ],
+    's3' => [
+        'bucket' => 'https://s3-us-west-1.amazonaws.com/com.octanela.squeegy',
+    ],
     "sms_verification" => "6538",
     "cancellation_fee" => 500,
     'emails' => [

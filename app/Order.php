@@ -657,11 +657,13 @@ class Order extends Model {
             return [
                 'from'=>$customer,
                 'to'=>$washer,
+                'to_type'=>'washer',
             ];
         } else if($number === $washer->phone) {
             return [
                 'from'=>$washer,
                 'to'=>$customer,
+                'to_type'=>'customer',
             ];
         } else {
             return [];

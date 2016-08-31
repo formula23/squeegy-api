@@ -645,7 +645,7 @@ class OrdersController extends Controller {
         $order_recipients = $order->getContactRecipients($incomingNumber);
 
         if(count($order_recipients)) {
-            return response($this->connectVoiceResponse($order_recipients['to']->phone, $twilioNumber))->header('Content-Type', 'application/xml');
+            return response($this->connectVoiceResponse($order_recipients['to']->phone, $twilioNumber, $order_recipients['to_type']))->header('Content-Type', 'application/xml');
         }
 
         return $this->failedVoiceResponse();
@@ -679,15 +679,18 @@ class OrdersController extends Controller {
         return $this->failedSmsResponse($twilioNumber, $incomingNumber, $messageBody);
     }
 
-    private function connectVoiceResponse($outgoingNumber, $twilioNumber)
+    private function connectVoiceResponse($outgoingNumber, $twilioNumber, $toType)
     {
         $response = new TwilioTwiml();
         try {
+
+            $response->play(config('squeegy.s3.bucket').'/media/phone_calls/'.( $toType=='washer' ? 'CustomerCall' : 'WasherCall' ).'.mp3');
             $response->dial($outgoingNumber, [
                 'callerId' => $twilioNumber,
                 'record'=>true,
             ]);
         } catch(\Exception $e) {
+            \Log::info($e);
             \Bugsnag::notifyException($e);
         }
         return $response;
@@ -710,9 +713,7 @@ class OrdersController extends Controller {
     private function failedVoiceResponse()
     {
         $response = new TwilioTwiml();
-        $response->say(trans('messages.order.communication.invalid_number'), [
-            'voice'=>'alice',
-        ]);
+        $response->play(config('squeegy.s3.bucket').'/media/phone_calls/Invalid.mp3');
         return $response;
     }
 

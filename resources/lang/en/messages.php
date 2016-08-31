@@ -80,7 +80,7 @@ return [
         ],
         'communication'=> [
             'invalid_number' => 'Thanks for calling Squeegy. This number is not valid. Goodbye!',
-            'invalid_number_sms' => 'This number is not valid. - Squeegy',
+            'invalid_number_sms' => 'Thank you for contacting Squeegy. If you need additional support regarding your wash, please call Squeegy Support at 424-247-8069. Thank you!',
             'sms' => [
                 'to_washer'=>":customer_name - Order# :order_id:\n:body",
                 'to_customer'=>":washer_name with Squeegy:\n:body",
