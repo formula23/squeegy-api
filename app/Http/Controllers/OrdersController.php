@@ -486,7 +486,7 @@ class OrdersController extends Controller {
 
                     if(!$order->worker_id) $order->worker_id = $user->id;
 
-                    if($order->worker->orders()->whereIn('status', ['enroute','start'])->count())  return $this->response->errorUnauthorized('Please finsih current job, before going to next.');
+                    if($order->worker->orders()->whereIn('status', ['enroute','start'])->count())  return $this->response->errorUnauthorized('Please finish current job, before going to next...');
 
                     Event::fire(new OrderEnroute($order, false));
 
