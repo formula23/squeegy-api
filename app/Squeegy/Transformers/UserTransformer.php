@@ -17,7 +17,7 @@ use League\Fractal\TransformerAbstract;
 
 class UserTransformer extends TransformerAbstract {
 
-    private $validParams = ['limit', 'order'];
+    private $validParams = ['limit', 'order', 'where'];
 
     protected $availableIncludes = [
         'roles',
@@ -25,6 +25,7 @@ class UserTransformer extends TransformerAbstract {
         'vehicles',
         'activity_logs',
         'latest_activity_log',
+        'activity_log',
         'payment_methods',
         'zones',
         'notes',
@@ -111,6 +112,25 @@ class UserTransformer extends TransformerAbstract {
         $washer_log->log_off = $user->log_off;
 
         return $this->item($washer_log, new WasherActivityLogTransformer());
+    }
+
+    public function includeActivityLog(User $user, ParamBag $params = null)
+    {
+        $activity_log_qry = $user->activity_logs();
+        if($params) {
+            $whereDate = $params->get('whereDate');
+            list($orderCol, $orderBy) = $params->get('order');
+
+            if(count($whereDate)) {
+                $activity_log_qry->whereDate($whereDate[0], $whereDate[1], $whereDate[2]);
+            }
+
+            if($orderCol && $orderBy) {
+                $activity_log_qry->orderBy($orderCol, $orderBy);
+            }
+        }
+
+        return $this->collection($activity_log_qry->get(), new WasherActivityLogTransformer());
     }
 
     public function includeZones(User $user)
