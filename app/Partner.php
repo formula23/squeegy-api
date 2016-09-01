@@ -136,13 +136,13 @@ class Partner extends Model
     {
         $existing_scheduled_orders_q = $this->orders()->whereIn('status', ['schedule','assign','start','done'])
             ->whereHas('schedule', function($q) {
-                $q->whereDate('window_open', '>=', Carbon::today())->orderBy('window_open');
+                $q->whereDate('window_open', '>=', Carbon::today()->toDateString())->orderBy('window_open');
             })->with('schedule');
 
         \Log::info($existing_scheduled_orders_q->toSql());
 
         $existing_scheduled_orders = $existing_scheduled_orders_q->get();
-
+\Log::info($existing_scheduled_orders);
         $current_schedule=[];
         foreach($existing_scheduled_orders as $existing_scheduled_order) {
             $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y H');
