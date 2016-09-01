@@ -213,17 +213,6 @@ class OrdersController extends Controller {
 
         $service = Service::find($data['service_id']);
 
-        if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
-
-            $data['partner_id'] = $partner->id;
-            $service = $partner->service($data['service_id'])->first();
-
-            //snacknation - set cap to 5
-            if($partner->id == 3 && $partner->orders()->where('status', 'schedule')->count() >= config("squeegy.partners.$partner->id.cap")) {
-                return $this->response->errorWrongArgs("Squeegy is fully booked for the day. Unfortunately, we are unable to accept additonal requests.");
-            }
-        }
-
         $eta = Orders::getLeadTime($data['location']['lat'], $data['location']['lon']);
         Log::info('OrdersController@store:117');
         Log::info($eta);
@@ -248,6 +237,17 @@ class OrdersController extends Controller {
 //                $time_window_key = ( ! empty($data['partner_id']) ? 'close' : 'open' );
                 $time_window_key = 'close';
                 if($schedule_data['window_'.$time_window_key]->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
+
+                //** partner stuff */
+                if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+
+                    $data['partner_id'] = $partner->id;
+                    $service = $partner->service($data['service_id'])->first();
+
+                    if(! $partner->accepting_orders($schedule_data['window_open'])) {
+                        return $this->response->errorWrongArgs("Squeegy is fully booked for the day. Unfortunately, we are unable to accept additonal requests.");
+                    }
+                }
 
                 $order_schedule = OrderSchedule::create($schedule_data);
                 $this->order_date = $schedule_data['window_open'];
@@ -348,6 +348,8 @@ class OrdersController extends Controller {
 
         if(isset($request_data['status']))
         {
+//            print $request_data['status'];
+//            dd($order->status);
             if($this->order_seq[$order->status]===$this->order_seq[$request_data['status']]) {
                 return $this->response->errorWrongArgs(trans('messages.order.same_status', ['status'=>$request_data['status']]));
             }
@@ -416,6 +418,12 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
+                    \Log::info($order);
+                    
+                    if($order->partner && ! $order->partner->accepting_orders($order->schedule->window_open)) {
+                        return $this->response->errorWrongArgs("Squeegy is fully booked for the day. Unfortunately, we are unable to accept additonal requests.");
+                    }
+
                     $availability = Orders::availability($order->location['lat'], $order->location['lon']);
 
                     Log::info('RECEIVE', $availability);
@@ -426,7 +434,7 @@ class OrdersController extends Controller {
                     if( $availability['accept'] && $availability['schedule'] && ! $order->schedule ) {
                         return $this->response->errorWrongArgs(trans("messages.service.only_schedule"));
                     }
-
+                    
 //                    if(in_array($availability['postal_code'], ['91316','91356','91335','91406','91436']) && strtolower($order->promo_code) != "ktla") {
 //                        \Bugsnag::notifyException(new \Exception("Order attempt in Encino without promo code. User id: ".$user->id));
 //                        return $this->response->errorWrongArgs("You need a valid promo code to order a Squeegy wash in this area.");
@@ -529,6 +537,8 @@ class OrdersController extends Controller {
             }
         }
 
+        \Log::info($order);
+        
         $order->push();
 
 //        Log::info(\DB::getQueryLog());

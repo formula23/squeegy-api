@@ -160,6 +160,8 @@ class Schedule
     {
         $partner = Partner::find($this->partner_id);
 
+        $this->current_schedule = $partner->current_scheduled_orders();
+
         $container=[];
 //        $cur_hr = $this->now->hour;
 //        $this->now = Carbon::create(2016,5,12,18,1,0);
@@ -177,21 +179,17 @@ class Schedule
             $day_sort_time=[];
             $days = $partner->days()->orderBy('next_date')->get();
 
+
+
             foreach($days as $idx=>$day) {
                 
                 $start_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_start);
                 $end_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_end);
                 $num_hrs = $start_time->diffInHours($end_time);
 
-                if($day->order_cap > 0 &&
-                    isset($this->current_schedule[$start_time->format('m/d/Y H')]) &&
-                    $this->current_schedule[$start_time->format('m/d/Y H')] >= $day->order_cap ) {
-                    continue;
-                }
-
                 $container[$idx]['day'] = $day->next_date->format($this->day_format);
 
-                if($partner->id == 5) {
+                if(in_array($partner->id, [5])) {
 
                     for($h=0;$h<$num_hrs;$h++) {
 
@@ -209,7 +207,17 @@ class Schedule
                     }
 
                 } else {
+
                     $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
+
+//                    if($day->order_cap > 0 &&
+//                        isset($this->current_schedule[$start_time->format('m/d/Y H')]) &&
+//                        $this->current_schedule[$start_time->format('m/d/Y H')] >= $day->order_cap )
+//                    {
+//                        $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]).' (Full)';
+//                    } else {
+//                        $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
+//                    }
                 }
 
             }
