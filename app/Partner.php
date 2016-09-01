@@ -114,13 +114,12 @@ class Partner extends Model
     {
         $day = $this->days()->whereDate('next_date', '=', $requested_date->toDateString())->first();
 
-//        $current_schedule = Order::current_scheduled_orders($this->id);
         $current_schedule = $this->current_scheduled_orders();
 
-        \Log::info($this->id);
-        \Log::info($requested_date);
-        \Log::info('Current schedule.......');
-        \Log::info($current_schedule);
+//        \Log::info($this->id);
+//        \Log::info($requested_date);
+//        \Log::info('Current schedule.......');
+//        \Log::info($current_schedule);
 
         if( $day->order_cap > 0 &&
             isset($current_schedule[$requested_date->format('m/d/Y H')]) &&
@@ -139,10 +138,8 @@ class Partner extends Model
                 $q->whereDate('window_open', '>=', Carbon::today()->toDateString())->orderBy('window_open');
             })->with('schedule');
 
-        \Log::info($existing_scheduled_orders_q->toSql());
-
         $existing_scheduled_orders = $existing_scheduled_orders_q->get();
-\Log::info($existing_scheduled_orders);
+//\Log::info($existing_scheduled_orders);
         $current_schedule=[];
         foreach($existing_scheduled_orders as $existing_scheduled_order) {
             $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y H');
