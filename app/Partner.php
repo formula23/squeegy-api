@@ -114,9 +114,10 @@ class Partner extends Model
     {
         $day = $this->days()->whereDate('next_date', '=', $requested_date->toDateString())->first();
 
-//        $current_schedule = Order::current_scheduled_orders($this->id);
         $current_schedule = $this->current_scheduled_orders();
 
+//        \Log::info($this->id);
+//        \Log::info($requested_date);
 //        \Log::info('Current schedule.......');
 //        \Log::info($current_schedule);
 
@@ -132,22 +133,20 @@ class Partner extends Model
     
     public function current_scheduled_orders()
     {
-        $existing_scheduled_orders = $this->orders()->whereIn('status', ['schedule','assign','start','done'])
+        $existing_scheduled_orders_q = $this->orders()->whereIn('status', ['schedule','assign','start','done'])
             ->whereHas('schedule', function($q) {
-                $q->whereDate('window_open', '>=', Carbon::today())->orderBy('window_open');
-            })->with('schedule')
-        ->get();
+                $q->whereDate('window_open', '>=', Carbon::today()->toDateString())->orderBy('window_open');
+            })->with('schedule');
 
+        $existing_scheduled_orders = $existing_scheduled_orders_q->get();
+//\Log::info($existing_scheduled_orders);
         $current_schedule=[];
         foreach($existing_scheduled_orders as $existing_scheduled_order) {
             $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y H');
             if(empty($current_schedule[$key])) $current_schedule[$key]=0;
             $current_schedule[$key]+=1;
         }
-        return $current_schedule;    
-        
-        
-        
+        return $current_schedule;
     }
     
 
