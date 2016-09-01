@@ -117,8 +117,9 @@ class Partner extends Model
 //        $current_schedule = Order::current_scheduled_orders($this->id);
         $current_schedule = $this->current_scheduled_orders();
 
-//        \Log::info('Current schedule.......');
-//        \Log::info($current_schedule);
+        \Log::info($requested_date);
+        \Log::info('Current schedule.......');
+        \Log::info($current_schedule);
 
         if( $day->order_cap > 0 &&
             isset($current_schedule[$requested_date->format('m/d/Y H')]) &&
