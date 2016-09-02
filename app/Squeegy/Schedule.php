@@ -76,7 +76,7 @@ class Schedule
 
             if(empty($container)) $container=[];
 
-            if($this->now->format('Y-m-d') == '2016-09-05') { //4th july
+            if($this->now->format('Y-m-d') == '2016-09-05') { //labor day
                 $this->days_out+=1;
                 continue;
             }
