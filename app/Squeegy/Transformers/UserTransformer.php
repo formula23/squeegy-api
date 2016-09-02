@@ -118,11 +118,16 @@ class UserTransformer extends TransformerAbstract {
     {
         $activity_log_qry = $user->activity_logs();
         if($params) {
-            $whereDate = $params->get('whereDate');
+            $whereDateFrom = $params->get('whereDateFrom');
+            $whereDateTo = $params->get('whereDateTo');
             list($orderCol, $orderBy) = $params->get('order');
 
-            if(count($whereDate)) {
-                $activity_log_qry->whereDate($whereDate[0], $whereDate[1], $whereDate[2]);
+            if(count($whereDateFrom)) {
+                $activity_log_qry->whereDate($whereDateFrom[0], '>=', $whereDateFrom[1]);
+            }
+
+            if(count($whereDateTo)) {
+                $activity_log_qry->whereDate($whereDateTo[0], '<=', $whereDateTo[1]);
             }
 
             if($orderCol && $orderBy) {
