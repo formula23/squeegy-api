@@ -64,8 +64,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
-//        3198 => 31.58, //david
-//        2882 => 10,
+        2149 => 119.34,
     ];
 
     protected $referral_code = [];
@@ -75,6 +74,7 @@ class PayrollGenerate extends Command {
         1, //dan
         2, //andrew
         2882, //lopez
+        11353, //javier
     ];
 
     protected $payroll_washers = [
@@ -138,31 +138,35 @@ class PayrollGenerate extends Command {
 //        ],
     ];
 
+    protected $referral_program = [
+        7527 => 250, //for David M
+    ];
+
 	protected $min_day_worker_id = [
         1847 => [ //ricardo
             0 => 120,
 //            1 => 120,
 //            2 => 120,
 //            3 => 120,
-//            4 => 120,
-//            5 => 120,
-//            6 => 120,
+            4 => 120,
+            5 => 120,
+            6 => 120,
         ],
         2149 => [ //daniel garcia
 //            0 => 150,
 //            1 => 150,
-//            2 => 150,
-//            4 => 150,
-//            5 => 150,
+            2 => 150,
+            4 => 150,
+            5 => 150,
 //            6 => 150,
         ],
         3198 => [ //david
 //            1=>120,
 //            2=>120,
-            3=>120,
+//            3=>120,
 //            4=>120,
-            5=>120,
-            6=>120,
+//            5=>120,
+//            6=>120,
 		],
         7527 => [ // Gonzalo hidalgo
 //            1 => 120,
@@ -174,8 +178,8 @@ class PayrollGenerate extends Command {
         ],
         10018 => [ //david medina
 //            0 => 120,
-            1 => 120,
-            2 => 120,
+//            1 => 120,
+//            2 => 120,
 //            3 => 120,
 //            4 => 120,
 //            5 => 120,
@@ -187,23 +191,7 @@ class PayrollGenerate extends Command {
 //            6=>120,
         ],
         10350 => [ //michael wallace
-            0=>120,
-            1=>120,
-            2=>120,
-//            3=>120,
-            4=>120,
-//            5=>120,
-            6=>120,
-        ],
-        10620 => [ //Antonio
 //            0=>120,
-//            1=>120,
-//            3=>120,
-//            4=>120,
-            5=>120,
-//            6=>120,
-        ],
-        10691 => [ //Edgar
 //            1=>120,
 //            2=>120,
 //            3=>120,
@@ -211,27 +199,41 @@ class PayrollGenerate extends Command {
 //            5=>120,
 //            6=>120,
         ],
+        10620 => [ //Antonio
+            0=>120,
+//            1=>120,
+            3=>120,
+            4=>120,
+            5=>120,
+            6=>120,
+        ],
+        10691 => [ //Edgar
+            1=>120,
+            2=>120,
+//            3=>120,
+//            4=>120,
+            5=>120,
+            6=>120,
+        ],
 	];
 
     protected $onsite =[
         3198 => [ //david
             1 => 100,
-//            2 => 100,
-            3 => 60,
-            4 => 100,
-//            5 => 60,
-        ],
-        7146 => [ //leo
-//            4 => 120,
+            2 => 100,
+            3 => 90,
+            4 => 70,
+            5 => 100,
         ],
         2149 => [ //daniel
 //            1 => 120,
 //            2 => 60,
-            5 => 80,
+            4 => 100,
+            5 => 60,
         ],
         7527 => [ // Gonzalo hidalgo
 //            4 => 120,
-            5 => 40,
+//            5 => 40,
         ],
         1847 => [ //ricardo
 //            2 => 120,
@@ -245,18 +247,19 @@ class PayrollGenerate extends Command {
 //            1 => 60,
         ],
         10350 => [ //michael
-            1 => 40,
+//            1 => 40,
 //            4 => 60,
         ],
         10620 => [ //Antonio
-            1 => 100,
+            1 => 45,
 //            3 => 45,
             4 => 100,
-            5 => 50,
+            5 => 30,
         ],
         10691 => [ //Edgar
 //            1 => 100,
-//            5 => 45,
+            4 => 100,
+            5 => 20,
         ],
     ];
 
@@ -291,7 +294,7 @@ class PayrollGenerate extends Command {
 //            2 => 120,
 //            3 => 120,
 //            4 => 120,
-            5 => 35,
+//            5 => 35,
 //            6 => 120,
         ],
         10018 => [ //david medina
@@ -319,7 +322,7 @@ class PayrollGenerate extends Command {
         ],
         10620 => [ //Antonio
 //            1=>120,
-            2=>30,
+//            2=>30,
 //            3=>20, //equipment
 //            4=>120,
 //            5=>120,
@@ -332,12 +335,80 @@ class PayrollGenerate extends Command {
 //            4=>120,
 //            5=>120,
 //            6=>120,
+        ]
+    ];
+
+    protected $onsite_tips = [
+        1847 => [ //ricardo
+//            0 => 120,
+//            1 => 120,
+//            2 => 120,
+//            3 => 120,
+            4 => 20,
+//            5 => 120,
+//            6 => 120,
         ],
-        10696 => [ //Uriel
+        2149 => [ //daniel garcia
+//            0 => 19.08,
+//            1 => 150,
+//            2 => 45.98,
+            4 => 14,
+            5 => 4,
+//            6 => 150,
+        ],
+        3198 => [ //david
+            1=>10,
+            2=>10,
+            3=>14,
+//            4=>120,
+            5=>11,
+//            6=>12.50,
+        ],
+        7527 => [ // Gonzalo hidalgo
+//            1 => 120,
+//            2 => 120,
+//            3 => 120,
+//            4 => 120,
+//            5 => 35,
+//            6 => 120,
+        ],
+        10018 => [ //david medina
+//            0 => 120,
+//            1 => 120,
+//            2 => 120,
+//            3 => 20.98,
+//            4 => 120,
+//            5 => 120,
+        ],
+        10267 => [ //sheldon springs
+//            1=>15,
 //            2=>120,
-            3=>9,
+//            5=>120,
+//            6=>120,
+        ],
+        10350 => [ //michael wallace
+//            0=>120,
+//            1=>120,
+//            2=>120,
+//            3=>120,
 //            4=>120,
 //            5=>120,
+//            6=>120,
+        ],
+        10620 => [ //Antonio
+            1=>9,
+//            2=>30,
+//            3=>20,
+            4=>18,
+            5=>6,
+//            6=>120,
+        ],
+        10691 => [ //Edgar
+//            1=>120,
+//            2=>120,
+//            3=>120,
+            4=>11,
+            5=>1,
 //            6=>120,
         ]
     ];
@@ -403,10 +474,10 @@ class PayrollGenerate extends Command {
             ->with('schedule')
 			->where('status', 'done')
 			->whereRaw('WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
+			->whereRaw('DATE_FORMAT(done_at, "%Y") = DATE_FORMAT(now(), "%Y")')
             ->whereNull('partner_id')
 //            ->where('worker_id', 6861)
 			->orderBy('done_at')->get();
-
 
         $start_day = Carbon::parse('2 sundays ago');
         $this->week_of = $start_day->format("M jS");
@@ -428,6 +499,7 @@ class PayrollGenerate extends Command {
             @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $this->washer_names[$order->worker_id], 'email' => $order->worker->email];
             @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : (isset($this->kit_fee[$order->worker->id]) ? $this->kit_fee[$order->worker->id] : $this->default_kit_fee ) );
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
+            @$orders_by_worker[$order->worker->id]['total_onsite_tip'] = 0;
 //            @$orders_by_worker[$order->worker->id]['total_daily_tip'] = 0;
 //            @$orders_by_worker[$order->worker->id]['extra_tip'] = 0;
             @$orders_by_worker[$order->worker->id]['minimum'] = 0;
@@ -447,7 +519,7 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['bonus'] = 0;
             if (isset($this->bonus[$order->worker->id])) {
-                @$orders_by_worker[$order->worker->id]['bonus'] = (int)@$this->bonus[$order->worker->id];
+                @$orders_by_worker[$order->worker->id]['bonus'] = (float)@$this->bonus[$order->worker->id];
             }
 
             @$orders_by_worker[$order->worker->id]['referral_code'] = 0;
@@ -567,6 +639,7 @@ class PayrollGenerate extends Command {
 
 
         foreach( $orders_by_worker as $worker_id => &$washer_d ) {
+            //allocate referral code
             if( $washer_d['referral_code'] > 0 ) {
                 $washer_d['total_pay'] += $washer_d['referral_code'];
 
@@ -574,8 +647,15 @@ class PayrollGenerate extends Command {
                 $this->save_referral_payout($worker_id, $washer_d['referral_code']);
             }
 
+            ///allocate extra tips
             @$washer_d['extra_tip'] = $this->washer_tips[$worker_id]['total'] - $washer_d['total_daily_tip'];
             $orders_by_worker[$worker_id]['total_pay'] += $washer_d['extra_tip'];
+        }
+
+        //referral program
+        foreach($this->referral_program as $worker_id => $ref_pay) {
+            $orders_by_worker[$worker_id]['referral_program'] += $ref_pay;
+            $orders_by_worker[$worker_id]['total_pay'] += $ref_pay;
         }
 
         foreach($this->onsite as $worker_id => $onsite_details) {
@@ -601,6 +681,29 @@ class PayrollGenerate extends Command {
             }
         }
 
+        foreach($this->onsite_tips as $worker_id => $onsite_tip_details) {
+            if (!isset($orders_by_worker[$worker_id])) continue;
+            if(empty($orders_by_worker[$worker_id]['jobs'])) continue;
+
+            foreach($orders_by_worker[$worker_id]['jobs']['days'] as $day_display => &$day_details) {
+
+                if(isset($onsite_tip_details[$day_details['date']->dayOfWeek])) {
+
+//                    if(isset($this->min_day_worker_id[$worker_id]) && isset($this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek])) {
+//                        $this->min_day_worker_id[$worker_id][$day_details['date']->dayOfWeek] = 0;//no min if washer was on-site
+//                    }
+
+                    if( ! isset($day_details['onsite_tip'])) {
+                        $day_details['onsite_tip']=0;
+                    }
+                    $day_details['onsite_tip'] += $onsite_tip_details[$day_details['date']->dayOfWeek];
+                    $orders_by_worker[$worker_id]['total_onsite_tip'] += $day_details['onsite_tip'];
+//                    $orders_by_worker[$worker_id]['jobs']['total'] += $day_details['onsite_tip'];
+                    $orders_by_worker[$worker_id]['total_pay'] += $day_details['onsite_tip'];
+                }
+            }
+        }
+
         foreach($this->min_day_worker_id as $worker_id=>$worker_min_details) {
             if(!isset($orders_by_worker[$worker_id])) continue;
             if(empty($orders_by_worker[$worker_id]['jobs'])) continue;
@@ -609,7 +712,7 @@ class PayrollGenerate extends Command {
 
                 if(isset($worker_min_details[$details['date']->dayOfWeek]) && ($details['pay'] + @(int)$details['onsite']) < $worker_min_details[$details['date']->dayOfWeek]) {
 
-                    @$details['min'] = max(0, $worker_min_details[$details['date']->dayOfWeek] - $details['pay'] - $details['onsite'] - $details['tip']);
+                    @$details['min'] = max(0, $worker_min_details[$details['date']->dayOfWeek] - $details['pay'] - $details['onsite'] - $details['tip'] - $details['onsite_tip']);
 //                    if($details['pay'] === 0) $details['pay'] = $details['min'];
                     $orders_by_worker[$worker_id]['total_pay'] += $details['min'];
                     @$orders_by_worker[$worker_id]['daily_min_pay'] += $details['min'];
@@ -677,7 +780,7 @@ class PayrollGenerate extends Command {
 //        dd($this->washer_tips[3198]);
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[2149]);
+//        dd($orders_by_worker[7527]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
@@ -813,6 +916,7 @@ class PayrollGenerate extends Command {
         $tip_orders = Order::select('id', 'worker_id', 'done_at','tip','tip_at','rating')
             ->whereRaw('WEEK(DATE_FORMAT(tip_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
             ->where('status', 'done')
+            ->whereNull('partner_id')
             ->where('tip', '>', 0)
             ->get();
 
