@@ -64,7 +64,8 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
-        2149 => 119.34,
+        2149 => 119.34, //daniel g
+        3198 => 65.95, //david mon
     ];
 
     protected $referral_code = [];
