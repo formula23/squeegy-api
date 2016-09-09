@@ -722,9 +722,13 @@ class Orders {
     public static function traffic_buffer($travel_time)
     {
         if($travel_time < 20) {
-            return 1.5;
+            return 1.8;
         } else {
-            return 1.3;
+            if(Carbon::now()->hour < 10 || Carbon::now()->hour >=16) {
+                return 1.6;
+            } else {
+                return 1.4;
+            }
         }
 //        if( Carbon::now()->hour >= 16 && false) {
 //            return 1.4;

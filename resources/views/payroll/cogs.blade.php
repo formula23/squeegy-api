@@ -45,7 +45,7 @@
             <td>${{ @number_format($worker['training'], 2) }}</td>
             <td>${{ @number_format($worker['total_washer_training'], 2) }}</td>
             <td>${{ @number_format($worker['bonus'], 2) }}</td>
-            <td>${{ @number_format( ($worker['total_daily_tip'] + $worker['extra_tip']), 2) }}</td>
+            <td>${{ @number_format( ($worker['total_daily_tip'] + $worker['extra_tip'] + $worker['total_onsite_tip']), 2) }}</td>
             <td>$-{{ @number_format($worker['rental'], 2) }}</td>
             <td>${{ @number_format($worker['total_deduction'], 2) }}</td>
             <td>${{ @number_format($worker['total_pay'], 2) }}</td>

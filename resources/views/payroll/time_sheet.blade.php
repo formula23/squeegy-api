@@ -66,6 +66,13 @@
 
         @endforeach
 
+        @if(isset($day['tip']))
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Tips:</strong></td>
+                <td>${{ number_format($day['tip'], 2) }}</td>
+            </tr>
+        @endif
+
         @if(isset($day['onsite']))
             <tr>
                 <td colspan="{{ $colspan }}" class="text-right"><strong>On-site:</strong></td>
@@ -73,10 +80,10 @@
             </tr>
         @endif
 
-        @if(isset($day['tip']))
+        @if(isset($day['onsite_tip']))
             <tr>
-                <td colspan="{{ $colspan }}" class="text-right"><strong>Tips:</strong></td>
-                <td>${{ number_format($day['tip'], 2) }}</td>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>On-site Tips:</strong></td>
+                <td>${{ number_format($day['onsite_tip'], 2) }}</td>
             </tr>
         @endif
 
@@ -103,7 +110,7 @@
 
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'] - @$day['deduction'], 2) }}</td>
+            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'] + @$day['onsite_tip'] - @$day['deduction'], 2) }}</td>
         </tr>
 
         <tr>
@@ -154,6 +161,13 @@
         <tr>
             <td colspan="{{ $colspan }}" class="text-right"><strong>Referral Code:</strong></td>
             <td>${{ number_format($washer_info['referral_code'], 2) }}</td>
+        </tr>
+    @endif
+
+    @if(@$washer_info['referral_program'])
+        <tr>
+            <td colspan="{{ $colspan }}" class="text-right"><strong>Referral Program:</strong></td>
+            <td>${{ number_format($washer_info['referral_program'], 2) }}</td>
         </tr>
     @endif
 
