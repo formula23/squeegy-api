@@ -37,7 +37,8 @@ class SendReceiptEmail {
 				->sendTo($order->customer);
 
         } catch(\Exception $e) {
-            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+            \Log::info($e);
+            \Bugsnag::notifyException($e);
         }
 
 	}

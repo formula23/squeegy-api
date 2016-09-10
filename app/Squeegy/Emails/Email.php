@@ -36,24 +36,30 @@ abstract class Email
      */
     public function sendTo($user)
     {
-        $mailer = $this->newTransaction();
-
-        $data = call_user_func_array(
-            [$this, 'variables'],
-            array_merge(compact('user'), $this->data)
-        );
-
-        $payload = [
-            'To' => $user->email,
-            'Data'=> $data,
-        ];
-
-        if($this->bcc) {
-            $payload['Bcc'] = $this->bcc;
-        }
-
         try {
-            return $mailer->send($payload);
+            $mailer = $this->newTransaction();
+
+            $data = call_user_func_array(
+                [$this, 'variables'],
+                array_merge(compact('user'), $this->data)
+            );
+
+            $payload = [
+                'To' => $user->email,
+                'Data'=> $data,
+            ];
+
+            if($this->bcc) {
+                $payload['Bcc'] = $this->bcc;
+            }
+
+            $send = $mailer->send($payload);;
+
+            \Log::info('** EMAIL SEND RESPONSE ****');
+            \Log::info($send);
+            
+            return $send;
+
         } catch(\Exception $e) {
             \Log::info($e);
             \Bugsnag::notifyException($e);
