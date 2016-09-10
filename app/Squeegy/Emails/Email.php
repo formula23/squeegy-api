@@ -56,8 +56,8 @@ abstract class Email
             $send = $mailer->send($payload);;
 
             \Log::info('** EMAIL SEND RESPONSE ****');
-            \Log::info($send);
-            
+            \Log::info(print_r($send, 1));
+
             return $send;
 
         } catch(\Exception $e) {
