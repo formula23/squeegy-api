@@ -26,6 +26,8 @@ class SendReceiptEmail {
      */
 	public function handle(OrderDone $event)
 	{
+		\Log::info('************* Send Receipt Email ***************');
+        
         $order = $event->order;
 
         try {

@@ -51,8 +51,14 @@ abstract class Email
         if($this->bcc) {
             $payload['Bcc'] = $this->bcc;
         }
-        
-        return $mailer->send($payload);
+
+        try {
+            return $mailer->send($payload);
+        } catch(\Exception $e) {
+            \Log::info($e);
+            \Bugsnag::notifyException($e);
+        }
+
     }
 
     /**
