@@ -536,8 +536,6 @@ class OrdersController extends Controller {
                 $order->{$update_field} = $request_data[$update_field];
             }
         }
-
-        \Log::info($order);
         
         $order->push();
 

@@ -26,6 +26,8 @@ class SendReceiptEmail {
      */
 	public function handle(OrderDone $event)
 	{
+		\Log::info('************* Send Receipt Email ***************');
+        
         $order = $event->order;
 
         try {
@@ -35,7 +37,8 @@ class SendReceiptEmail {
 				->sendTo($order->customer);
 
         } catch(\Exception $e) {
-            \Bugsnag::notifyException(new \Exception($e->getMessage()));
+            \Log::info($e);
+            \Bugsnag::notifyException($e);
         }
 
 	}
