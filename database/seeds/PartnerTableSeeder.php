@@ -18,8 +18,8 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>"One Stop Rancho Dominguez",
-            'location_name'=>"One Stop Rancho Dominguez",
+            'name'=>"Onestop - Rancho Dominguez",
+            'location_name'=>"Onestop - Rancho Dominguez",
             'location'=>[
                 "city"=>"Compton",
                 "lat" => 33.860662,
