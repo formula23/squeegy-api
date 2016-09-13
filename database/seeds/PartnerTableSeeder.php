@@ -36,7 +36,7 @@ class PartnerTableSeeder extends Seeder
             'day'=>'Thursday',
             'day_of_week'=>4,
             'next_date'=>Carbon::createFromDate(2016, 9, 15),
-            'time_start'=>'8:00am',
+            'time_start'=>'9:00am',
             'time_end'=>'5:00pm',
             'order_cut_off_time'=>'1:00pm',
             'frequency'=>'bi-weekly',
