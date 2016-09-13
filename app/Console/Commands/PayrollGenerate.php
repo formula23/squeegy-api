@@ -51,6 +51,12 @@ class PayrollGenerate extends Command {
 
     protected $week_of=null;
 
+    protected $hold_email_from_washer = [
+        7527,
+        10018,
+        10691,
+    ];
+
     protected $ids_to_process=[];
 
     protected $training = [
@@ -781,7 +787,7 @@ class PayrollGenerate extends Command {
         $cogs_by_washer=[];
 
 		foreach($orders_by_worker as $worker_id => &$worker) {
-            
+
 //            if($worker['total_pay'] <= 0) continue;
             
 			$worker['promotional'] = (float)@$cogs_by_washer[$worker_id] + (float)@$worker['minimum'];
@@ -821,7 +827,9 @@ class PayrollGenerate extends Command {
                     $message['To'] = ["Dan Schultz "."<dan@squeegyapp.com>"];
                     $message['CC'] = ["Javier Macias "."<javier@squeegyapp.com>"];
                 } else {
-                    $message['To'] = [$email_data['washer']['name']." <".$email_data['washer']['email'].">"];
+                    if( ! in_array($worker_id, $this->hold_email_from_washer)) {
+                        $message['To'] = [$email_data['washer']['name']." <".$email_data['washer']['email'].">"];
+                    }
                     $message['BCC'] = [
                         "Dan Schultz "."<dan@squeegyapp.com>",
                         "Andrew Davis "."<andrew@squeegyapp.com>",
@@ -843,7 +851,11 @@ class PayrollGenerate extends Command {
                 if( ! $resp->was_successful()) {
                     $this->error($resp->http_status_code." - ".$resp->response->Message);
                 } else {
-                    $this->info("Email sent: ".$email_data['washer']['email']);
+                    if( ! in_array($worker_id, $this->hold_email_from_washer)) {
+                        $this->info("Email sent: ".$email_data['washer']['email']);
+                    } else {
+                        $this->info("Email HOLD: ".$email_data['washer']['email']);
+                    }
                 }
 
             } catch(\Exception $e) {
