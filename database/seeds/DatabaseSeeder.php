@@ -13,13 +13,10 @@ class DatabaseSeeder extends Seeder {
 	{
 //        DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
 
-        $this->call('RolesTableSeeder');
-
-		$this->call('UsersTableSeeder');
-		$this->call('ServicesTableSeeder');
 		$this->call('ServiceCoordsTableSeeder');
-        $this->call('ApiKeysTableSeeder');
-
+		$this->call('ZoneRegionsTableSeeder');
+		$this->call('PartnerTableSeeder');
+		
 //        DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // enable foreign key constraints
 	}
 
