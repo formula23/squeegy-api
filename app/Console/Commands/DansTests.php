@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Partner;
 use App\Squeegy\Orders;
 use App\User;
 use App\Vehicle;
@@ -50,12 +51,12 @@ class DansTests extends Command
     public function handle()
     {
 
-        foreach($this->twilio->account->incoming_phone_numbers->getIterator(0, 50, array("FriendlyName"=>'AirTng')) as $number)
-        {
-            $this->info($number->phone_number);
-            $this->info($number->friendly_name);
-//            dd($number);
-        }
+//        foreach($this->twilio->account->incoming_phone_numbers->getIterator(0, 50, array("FriendlyName"=>'AirTng')) as $number)
+//        {
+//            $this->info($number->phone_number);
+//            $this->info($number->friendly_name);
+////            dd($number);
+//        }
         dd('done');
         
 //        dd(Orders::get_location("33.9752461","-118.4198021"));

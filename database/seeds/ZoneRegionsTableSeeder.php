@@ -99,6 +99,7 @@ class ZoneRegionsTableSeeder extends Seeder
                 ['postal_code'=>'90710'],
                 ['postal_code'=>'90717'],
                 ['postal_code'=>'90274'],
+                ['postal_code'=>'90221'], //onestop - rancho dominguez
             ]
         ];
 
