@@ -25,7 +25,7 @@ class AddOrderCutOffTimeToPartnerDays extends Migration
     public function down()
     {
         Schema::table('partner_days', function (Blueprint $table) {
-            $table->removeColumn('order_cut_off');
+            $table->dropColumn('order_cut_off');
         });
     }
 }

@@ -19,8 +19,15 @@ class AfterMiddleware
     {
         $response = $next($request);
 
-//      $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
-//      $apiLog = $apiLog->find($request->api_log_id);
+      $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
+      $apiLog = $apiLog->find($request->api_log_id);
+        
+        $apiLog->status_code = $response->status();
+        $apiLog->response_body = $response->getContent();
+        $apiLog->save();
+//print $request->api_log_id;
+//        print $response->getContent();
+//        dd($response);
 
         return $response;
     }
