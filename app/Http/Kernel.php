@@ -14,7 +14,7 @@ class Kernel extends HttpKernel {
 		'Illuminate\Cookie\Middleware\EncryptCookies',
 		'Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse',
 //		'App\Http\Middleware\ApiSession',
-		'Illuminate\View\Middleware\ShareErrorsFromSession',
+//		'Illuminate\View\Middleware\ShareErrorsFromSession',
 		'App\Http\Middleware\AfterMiddleware',
 		\App\Http\Middleware\Cors::class,
 	];
