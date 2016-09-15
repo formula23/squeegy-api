@@ -193,13 +193,18 @@ abstract class Controller extends ApiGuardController {
                         $user = JWTAuth::parseToken()->authenticate();
                         $this->apiLog->user_id    = $user->id;
                     } catch(\Exception $e) {}
-//dd($request->getContent());
+
                     $this->apiLog->host      = $request->root();
                     $this->apiLog->path      = $request->path();
                     $this->apiLog->route      = Route::currentRouteAction();
                     $this->apiLog->method     = $request->getMethod();
-                    $this->apiLog->params     = http_build_query($request->query());
-                    $this->apiLog->request_body     = $request->getContent();
+
+                    $this->apiLog->params     = http_build_query(array_except($request->query(), 'password'));
+
+                    $request_body = json_decode($request->getContent(), true);
+                    unset($request_body['password']);
+
+                    $this->apiLog->request_body     = json_encode($request_body);
                     $this->apiLog->ip_address = $request->getClientIp();
                     $this->apiLog->device     = $request->header('X-Device');
                     $this->apiLog->device_os  = $request->header('X-Device-Software-Version');
