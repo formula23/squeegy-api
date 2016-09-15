@@ -204,7 +204,8 @@ abstract class Controller extends ApiGuardController {
                     $request_body = json_decode($request->getContent(), true);
                     unset($request_body['password']);
 
-                    $this->apiLog->request_body     = json_encode($request_body);
+                    $this->apiLog->request_body = (json_encode($request_body)?:'');
+
                     $this->apiLog->ip_address = $request->getClientIp();
                     $this->apiLog->device     = $request->header('X-Device');
                     $this->apiLog->device_os  = $request->header('X-Device-Software-Version');
