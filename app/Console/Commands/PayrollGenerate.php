@@ -299,7 +299,7 @@ class PayrollGenerate extends Command {
         10018 => [ //david medina
 //            0 => 120,
 //            1 => 120,
-            2 => 400,
+//            2 => 400,
 //            3 => 20.98,
 //            4 => 120,
 //            5 => 120,
