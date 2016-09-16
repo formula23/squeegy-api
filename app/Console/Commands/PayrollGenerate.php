@@ -135,7 +135,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $referral_program = [
-        10018 => 250, // David M
+//        10018 => 250, // David M
         10691 => 250, // Edgar
     ];
 
