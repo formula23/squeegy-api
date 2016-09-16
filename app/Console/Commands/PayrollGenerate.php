@@ -70,7 +70,7 @@ class PayrollGenerate extends Command {
     ];
 
     protected $bonus = [
-//        2149 => 119.34, //daniel g
+        10018 => 250, //daniel medina
 //        3198 => 65.95, //david mon
     ];
 
@@ -299,7 +299,7 @@ class PayrollGenerate extends Command {
         10018 => [ //david medina
 //            0 => 120,
 //            1 => 120,
-//            2 => 400,
+            2 => 55.20,
 //            3 => 20.98,
 //            4 => 120,
 //            5 => 120,
