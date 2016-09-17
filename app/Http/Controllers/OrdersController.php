@@ -775,9 +775,9 @@ class OrdersController extends Controller {
     private function return_partner_resp($day)
     {
         if($day->time_slot_cap) {
-            return $this->response->errorWrongArgs('This time slot is full, try another.');
+            return $this->response->errorWrongArgs(trans("messages.order.corp_time_slot_cap"));
         } else {
-            return $this->response->errorWrongArgs(trans("messages.order.not_accepting", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
+            return $this->response->errorWrongArgs(trans("messages.order.corp_order_cap", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
         }
     }
 

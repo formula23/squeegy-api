@@ -44,7 +44,7 @@ class AdvancePartnerDate extends Command
         $partner_days = PartnerDay::whereDate('open', '<=', Carbon::now()->toDateString())->get();
 
         foreach($partner_days as $day) {
-            if(Carbon::parse($day->close)->isPast()) {
+            if( ($day->cutoff && $day->cutoff->isPast()) || $day->close->isPast()) {
 
                 foreach(['open','close','cutoff'] as $col) {
                     if(!$day->{$col}) continue;
