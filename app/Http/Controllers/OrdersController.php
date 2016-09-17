@@ -50,7 +50,7 @@ class OrdersController extends Controller {
 
     protected $order_date;
 
-    protected $blast_list_device_id = [
+    protected $black_list_device_id = [
         '0F6B1F21-15F0-4A43-B75C-C88B8516F2A5', //user id: 866 Steph
         '4C274C2A-3704-43EA-9B2F-736675AA6C51', //user id: 2876 Steve Merker
         '69026923-8D9D-42DF-8DE2-A51E43B77102', //user id: 6858 Jillian E.
@@ -191,7 +191,7 @@ class OrdersController extends Controller {
 
 //        Log::info($request->header('X-Device-Identifier'));
 
-        if(in_array($request->header('X-Device-Identifier'), $this->blast_list_device_id)) {
+        if(in_array($request->header('X-Device-Identifier'), $this->black_list_device_id)) {
             return $this->response->errorUnauthorized();
         }
 
@@ -240,12 +240,13 @@ class OrdersController extends Controller {
 
                 //** partner stuff */
                 if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
-
                     $data['partner_id'] = $partner->id;
                     $service = $partner->service($data['service_id'])->first();
-
-                    if(! $partner->accepting_orders($schedule_data['window_open'])) {
-                        return $this->response->errorWrongArgs("Squeegy is fully booked for the day. Unfortunately, we are unable to accept additonal requests.");
+                    
+                    $day = $partner->get_day_by_date($schedule_data['window_open']);
+                    if(! $day->accept_order($schedule_data['window_open'])) {
+                        return $this->return_partner_resp($day);
+//                        return $this->response->errorWrongArgs(trans("messages.order.not_accepting", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
                     }
                 }
 
@@ -418,10 +419,11 @@ class OrdersController extends Controller {
                         return $this->response->errorUnauthorized();
                     }
 
-                    \Log::info($order);
-                    
-                    if($order->partner && ! $order->partner->accepting_orders($order->schedule->window_open)) {
-                        return $this->response->errorWrongArgs("Squeegy is fully booked for the day. Unfortunately, we are unable to accept additonal requests.");
+                    if($order->partner) {
+                        $day = $order->partner->get_day_by_date($order->schedule->window_open);
+                        if( ! $day->accept_order($order->schedule->window_open)) {
+                            return $this->return_partner_resp($day);
+                        }
                     }
 
                     $availability = Orders::availability($order->location['lat'], $order->location['lon']);
@@ -768,6 +770,15 @@ class OrdersController extends Controller {
             ]);
         }
         return $messageBody;
+    }
+
+    private function return_partner_resp($day)
+    {
+        if($day->time_slot_cap) {
+            return $this->response->errorWrongArgs(trans("messages.order.corp_time_slot_cap"));
+        } else {
+            return $this->response->errorWrongArgs(trans("messages.order.corp_order_cap", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
+        }
     }
 
 }
