@@ -51,30 +51,13 @@ class AdvancePartnerDate extends Command
 
                     switch ($day->frequency) {
                         case "weekly":
-
-                            while(true) {
-                                if($day->{$col}->isToday() || $day->{$col}->isFuture()) {
-                                    break;
-                                }
-                                $day->{$col} = $day->{$col}->addWeek(1);
-                            }
-
+                            $day->{$col} = $day->{$col}->addWeek(1);
                             break;
                         case "bi-weekly":
-                            while(true) {
-                                if ($day->{$col}->isToday() || $day->{$col}->isFuture()) {
-                                    break;
-                                }
-                                $day->{$col} = $day->{$col}->addWeek(2);
-                            }
+                            $day->{$col} = $day->{$col}->addWeek(2);
                             break;
                         case "monthly":
-                            while(true) {
-                                if ($day->{$col}->isToday() || $day->{$col}->isFuture()) {
-                                    break;
-                                }
-                                $day->{$col} = $day->{$col}->addWeek(4);
-                            }
+                            $day->{$col} = $day->{$col}->addWeek(4);
                             break;
                     }
                 }
