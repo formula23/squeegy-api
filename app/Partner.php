@@ -6,7 +6,7 @@ use GeometryLibrary\PolyUtil;
 
 class Partner extends Model
 {
-    protected $fillable = ['name', 'location_name', 'location', 'geo_fence', 'allow_promo', 'is_active'];
+    protected $fillable = ['name', 'location_name', 'location', 'geo_fence', 'allow_promo', 'is_active','code','description'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -110,25 +110,19 @@ class Partner extends Model
         return $polygon;
     }
 
-    public function accepting_orders($requested_date)
+    public function get_day_by_date($requested_date)
     {
-        $day = $this->days()->whereDate('next_date', '=', $requested_date->toDateString())->first();
-
-        $current_schedule = $this->current_scheduled_orders();
-
-//        \Log::info($this->id);
-//        \Log::info($requested_date);
-//        \Log::info('Current schedule.......');
-//        \Log::info($current_schedule);
-
-        if( $day->order_cap > 0 &&
-            isset($current_schedule[$requested_date->format('m/d/Y H')]) &&
-            $current_schedule[$requested_date->format('m/d/Y H')] >= $day->order_cap )
-        {
-            return false;
+        try {
+            $day = $this->days()->whereDate('open', '=', $requested_date->toDateString())->first();
+            return $day;
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
         }
-        
-        return true;
+    }
+
+    public function accepting_orders()
+    {
+        return (bool)$this->is_active;
     }
     
     public function current_scheduled_orders()

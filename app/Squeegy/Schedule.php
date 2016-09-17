@@ -177,23 +177,33 @@ class Schedule
             //get array of available days in sequential order.
             $day_sort=[];
             $day_sort_time=[];
-            $days = $partner->days()->orderBy('next_date')->get();
+            $days = $partner->days()->orderBy('open')->get();
 
-
+//dd($partner->current_scheduled_orders());
 
             foreach($days as $idx=>$day) {
-                
-                $start_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_start);
-                $end_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_end);
+
+//                $start_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_start);
+                $start_time = $day->open;
+//                $end_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_end);
+                $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
 
-                $container[$idx]['day'] = $day->next_date->format($this->day_format);
+                if($day->open->isPast()) {
+                    $container[$idx]['day'] = 'Not Available';
+                    $container[$idx]['time_slots'][] = 'Not Available';
+                    continue;
+                }
+
+                $container[$idx]['day'] = $day->open->format($this->day_format);
 
                 if(in_array($partner->id, [5])) {
 
                     for($h=0;$h<$num_hrs;$h++) {
 
-                        if($start_time->gt($end_time))continue;
+                        if($start_time->gt($end_time)) {
+                            continue;
+                        }
 
                         if(@(int)$this->current_schedule[$start_time->format('m/d/Y H')] >= 2) { ///only allow 2 orders per slot
                             $start_time->addHours(1);
@@ -201,27 +211,21 @@ class Schedule
                         }
                         $strt = $start_time->format('g:ia');
                         $end = $start_time->addHours(1);
-                        if($end->isPast()) continue;
+                        if($end->isPast()) {continue;}
 
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
+                } elseif(in_array($partner->id, [26])) {
+                    $container[$idx]['time_slots'][] = '8:00am - 12:00pm';
+                    $container[$idx]['time_slots'][] = '12:00pm - 5:00pm';
+
                 } else {
-
-                    $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
-
-//                    if($day->order_cap > 0 &&
-//                        isset($this->current_schedule[$start_time->format('m/d/Y H')]) &&
-//                        $this->current_schedule[$start_time->format('m/d/Y H')] >= $day->order_cap )
-//                    {
-//                        $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]).' (Full)';
-//                    } else {
-//                        $container[$idx]['time_slots'][] = implode(" - ", [$day->time_start, $day->time_end]);
-//                    }
+                    $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
                 }
 
             }
-
+//dd($container);
             return array_values($container);
             
 //            Log::info('day sort time:');

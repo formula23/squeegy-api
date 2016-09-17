@@ -14,6 +14,8 @@ return [
         'phone_verify' => 'Squeegy verification code: :verify_code',
     ],
     'order' => [
+        'corp_order_cap' => "We're sorry but Squeegy is fully booked for today. We will be back :next_date.",
+        'corp_time_slot_cap' => "We're sorry but that time slot is fully booked for today. Please try another time slot.",
         'confirm_location' => 'We have detected that the location of your vehicle you selected may be incorrect. Please go back and verify your vehicles location.',
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
