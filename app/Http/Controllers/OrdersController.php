@@ -243,19 +243,21 @@ class OrdersController extends Controller {
                     $data['partner_id'] = $partner->id;
                     $service = $partner->service($data['service_id'])->first();
 
-                    $day = $partner->get_day_by_date($schedule_data['window_open']);
-                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+                    $this->validate_partner_day($partner, $schedule_data['window_open']);
 
-                    try {
-
-                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
-                            return $this->return_partner_resp($accepting_code, $day);
-                        }
-
-                    } catch(\Exception $e) {
-                        \Bugsnag::notifyException($e);
-                        \Log::info($e);
-                    }
+//                    $day = $partner->get_day_by_date($schedule_data['window_open']);
+//                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+//
+//                    try {
+//
+//                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
+//                            return $this->return_partner_resp($accepting_code, $day);
+//                        }
+//
+//                    } catch(\Exception $e) {
+//                        \Bugsnag::notifyException($e);
+//                        \Log::info($e);
+//                    }
 
                 }
 
@@ -429,12 +431,14 @@ class OrdersController extends Controller {
                     }
 
                     if($order->partner) {
-                        $day = $order->partner->get_day_by_date($order->schedule->window_open);
-                        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+                        $this->validate_partner_day($order->partner, $order->schedule->window_open);
 
-                        if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
-                            return $this->return_partner_resp($accepting_code, $day);
-                        }
+//                        $day = $order->partner->get_day_by_date($order->schedule->window_open);
+//                        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+//
+//                        if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
+//                            return $this->return_partner_resp($accepting_code, $day);
+//                        }
                     }
 
                     $availability = Orders::availability($order->location['lat'], $order->location['lon']);
@@ -790,6 +794,25 @@ class OrdersController extends Controller {
         } else {
             return $this->response->errorWrongArgs(trans("messages.order.corp_order_cap", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
         }
+    }
+
+    private function validate_partner_day($partner, $requested_date)
+    {
+        $day = $partner->get_day_by_date($requested_date);
+        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+
+        try {
+
+            if(($accepting_code = $day->accept_order($requested_date)) < 0) {
+                return $this->return_partner_resp($accepting_code, $day);
+            }
+
+        } catch(\Exception $e) {
+            \Bugsnag::notifyException($e);
+            \Log::info($e);
+        }
+
+        return;
     }
 
 }
