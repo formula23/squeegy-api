@@ -246,7 +246,7 @@ class OrdersController extends Controller {
 //                    $this->validate_partner_day($partner, $schedule_data['window_open']);
 
                     $day = $partner->get_day_by_date($schedule_data['window_open']);
-                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
 
                     try {
 
@@ -434,7 +434,7 @@ class OrdersController extends Controller {
 //                        $this->validate_partner_day($order->partner, $order->schedule->window_open);
 
                         $day = $order->partner->get_day_by_date($order->schedule->window_open);
-                        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+                        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
 
                         if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
                             return $this->return_partner_resp($accepting_code, $day);
