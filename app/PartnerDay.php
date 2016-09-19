@@ -29,8 +29,8 @@ class PartnerDay extends Model
 
             $current_schedule = Order::current_scheduled_orders($this->partner_id);
 
-            \Log::info('partner day--- acept orders?');
-            \Log::info(array_sum($current_schedule[$requested_date->format('m/d/Y')]));
+//            \Log::info('partner day--- acept orders?');
+//            \Log::info(array_sum($current_schedule[$requested_date->format('m/d/Y')]));
 
             if( $this->order_cap > 0 &&
                 isset($current_schedule[$requested_date->format('m/d/Y')]) &&
