@@ -244,6 +244,7 @@ class OrdersController extends Controller {
                     $service = $partner->service($data['service_id'])->first();
 
                     $day = $partner->get_day_by_date($schedule_data['window_open']);
+                    if( ! $day) return $this->response->errorWrongArgs('The requested day is not available.');
 
                     try {
 
@@ -429,7 +430,8 @@ class OrdersController extends Controller {
 
                     if($order->partner) {
                         $day = $order->partner->get_day_by_date($order->schedule->window_open);
-
+                        if( ! $day) return $this->response->errorWrongArgs('The requested day is not available.');
+                        
                         if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
                             return $this->return_partner_resp($accepting_code, $day);
                         }
