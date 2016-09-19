@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Request;
 
 class Schedule
 {
-    public $partner_id;
+    public $partner;
     public $now;
     public $open_hr;
     public $close_hr;
@@ -35,9 +35,11 @@ class Schedule
     public function __construct($postal_code=null, $partner_id=0)
     {
         if($postal_code) $this->postal_code = $postal_code;
-        $this->partner_id = $partner_id;
+        if($partner_id) {
+            $this->partner = Partner::find($partner_id);
+        }
 
-        $this->current_schedule();
+        $this->current_schedule = Order::current_scheduled_orders($partner_id);
 
         $this->set_lead_time();
 
@@ -64,10 +66,12 @@ class Schedule
 
     public function availability()
     {
-
-        if($this->partner_id) {
+        if($this->partner) {
             return $this->partner_days();
         }
+
+        \Log::info('on-demand current schedule:');
+        \Log::info($this->current_schedule);
 
         $idx=0;
         for($i=0; $i<=$this->days_out; $i++)
@@ -101,8 +105,6 @@ class Schedule
             $this->close = $this->close_hr;
             $windows=[];
 
-            
-            
             for($this->open; $this->open<=$this->close-1; $this->open++) {
 
                 $start = new Carbon($this->now->format("m/d/y $this->open:00"));
@@ -133,9 +135,10 @@ class Schedule
                 }
 
                 //will not block out windows at this time.
-                $key = $this->now->format('m/d/Y ').$start->format('H');
+                $key = $this->now->format('m/d/Y');
+                $key2 = $start->format('H');
 
-                $is_available = ( ! empty($this->current_schedule[$key]) && ($this->current_schedule[$key] >= $this->cap($start->hour) ) ? false : true );
+                $is_available = ( ! empty($this->current_schedule[$key][$key2]) && ($this->current_schedule[$key][$key2] >= $this->cap($start->hour) ) ? false : true );
                 if( ! $is_available) continue;
 
                 $windows[] = $start->format('g:00a')." - ".$start->addHours($this->time_slot_interval)->format('g:00a');
@@ -150,42 +153,41 @@ class Schedule
         return $container;
     }
 
-    protected function current_schedule()
-    {
-        $this->current_schedule = Order::current_scheduled_orders($this->partner_id);
-//        Log::info($this->current_schedule);
-    }
+//    protected function current_schedule()
+//    {
+//        $this->current_schedule = Order::current_scheduled_orders($this->partner_id);
+////        Log::info($this->current_schedule);
+//    }
 
     protected function partner_days()
     {
-        $partner = Partner::find($this->partner_id);
-
-        $this->current_schedule = $partner->current_scheduled_orders();
+//        $this->current_schedule = $partner->current_scheduled_orders();
 
         $container=[];
 //        $cur_hr = $this->now->hour;
 //        $this->now = Carbon::create(2016,5,12,18,1,0);
-//        Log::info("**********************************");
+        Log::info("**********************************");
 //        Log::info($this->now);
         $cur_hr = $this->now->hour;
 //        $cur_hr = 17;
 //        Log::info('cur hr:'.$cur_hr);
 //        Log::info('day of week:...'.$this->now->dayOfWeek);
-//        Log::info($this->current_schedule);
+        Log::info($this->current_schedule);
+
         try
         {
             //get array of available days in sequential order.
             $day_sort=[];
             $day_sort_time=[];
-            $days = $partner->days()->orderBy('open')->get();
-
-//dd($partner->current_scheduled_orders());
+            $days = $this->partner->days()->orderBy('open')->get();
 
             foreach($days as $idx=>$day) {
 
-//                $start_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_start);
+//                if($day->accept_order($day->open) === -1) { //daily cap has been reached...
+//                    continue;
+//                }
+//
                 $start_time = $day->open;
-//                $end_time = Carbon::parse($day->next_date->toDateString()." ".$day->time_end);
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
 
@@ -197,7 +199,7 @@ class Schedule
 
                 $container[$idx]['day'] = $day->open->format($this->day_format);
 
-                if(in_array($partner->id, [5])) {
+                if(in_array($this->partner->id, [5])) {
 
                     for($h=0;$h<$num_hrs;$h++) {
 
@@ -216,7 +218,7 @@ class Schedule
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
-                } elseif(in_array($partner->id, [26])) {
+                } elseif(in_array($this->partner->id, [26])) {
                     $container[$idx]['time_slots'][] = '8:00am - 12:00pm';
                     $container[$idx]['time_slots'][] = '12:00pm - 5:00pm';
 
@@ -225,100 +227,9 @@ class Schedule
                 }
 
             }
-//dd($container);
+
             return array_values($container);
             
-//            Log::info('day sort time:');
-//            Log::info($day_sort);
-//            Log::info($day_sort_time);
-
-            $days_array = $days->toArray();
-
-            //reorder days
-//            Log::info($cur_hr);
-
-            //only care about time of day if day of week exists in offered days
-            if( ! empty($day_sort_time[$this->now->dayOfWeek]) && $cur_hr < Carbon::parse($day_sort_time[$this->now->dayOfWeek])->hour ) {
-                $day_iterator = $this->now->dayOfWeek;
-            } else {
-                if($this->now->dayOfWeek < 6) {
-                    $day_iterator = $this->now->dayOfWeek + 1;
-                } else {
-                    $day_iterator = 0;
-                }
-            }
-
-//            $day_iterator=( $cur_hr < (@(int)$day_sort_time[$this->now->dayOfWeek] + 12) ? $this->now->dayOfWeek : ($this->now->dayOfWeek < 6 ? $this->now->dayOfWeek + 1 : 0 ) );
-
-//            Log::info('start day iterator:'.$day_iterator);
-//            dd($day_iterator);
-            do {
-//                Log::info('day iterator:'.$day_iterator);
-                $position = array_search($day_iterator, $day_sort);
-//                Log::info('position '.$position);
-//                Log::info( (@(int)$day_sort_time[$this->now->dayOfWeek] + 12) );
-//                Log::info('close time');
-//                Log::info(@(int)$day_sort_time[$this->now->dayOfWeek]);
-
-                if($position !== false)
-                {
-                    $first_part = array_splice($days_array, $position);
-                    $days_array = array_merge($first_part, $days_array);
-                    break;
-                }
-                $day_iterator++;
-
-            } while($day_iterator <= 6);
-
-//            Log::info('days array:');
-//            Log::info($days_array);
-
-            foreach($days_array as $idx=>$day) {
-
-                if($this->now->dayOfWeek == $day['day_of_week'] && $cur_hr < Carbon::parse($day['time_end'])->hour) {
-//                    Log::info('same day within time');
-                    $day_display = $this->now;
-                } else {
-                    if ($this->now->dayOfWeek < $day['day_of_week']) {
-//                        Log::info($this->now->dayOfWeek);
-//                        Log::info($day['day_of_week']);
-//                        Log::info('now < day');
-                        if($this->now->dayOfWeek===0) {
-//                            Log::info('next '.$day['day']);
-//                            $n = $this->now;
-//                            $day_display = $n->addDay($day['day_of_week']);
-                            $day_display = Carbon::now()->addDay($day['day_of_week']);
-
-                        } else {
-//                            Log::info($day['day']);
-//                            $n = $this->now;
-//                            $day_display = $n->addDay($day['day_of_week'] - $this->now->dayOfWeek);
-                            $day_display = Carbon::now()->addDay($day['day_of_week'] - $this->now->dayOfWeek);
-                        }
-
-                    } else {
-//                        $n = $this->now;
-//                        $day_display = $n->next($day['day_of_week']);
-                        $day_display = Carbon::now()->next($day['day_of_week']);
-                    }
-                }
-
-//                Log::info($day_display);
-//                Log::info($day);
-//                Log::info($day_display->format($this->day_format));
-                if($day_display->isToday() && ($cur_hr >= Carbon::parse($day['time_start'])->hour)) {
-                    $day['time_start'] = $day_display->addHour(1)->format('g:00a');
-                    if($cur_hr+1 == Carbon::parse($day['time_end'])->hour) {
-                        $day['time_end'] = $day_display->addHour(1)->format('g:00a');
-                    }
-//                    Log::info($cur_hr);
-//                    Log::info(Carbon::parse($day['time_start'])->hour);
-                }
-
-                $container[$idx]['day'] = $day_display->format($this->day_format);
-                $container[$idx]['time_slots'][] = implode(" - ", [$day['time_start'], $day['time_end']]);
-
-            }
         } catch (\Exception $e) {
             Log::info($e);
             \Bugsnag::notifyException($e);

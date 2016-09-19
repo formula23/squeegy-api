@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Order;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,43 +23,38 @@ class PartnerDay extends Model
     
     public function accept_order($requested_date)
     {
-        try {
+//        try {
 
-            if( ! $this->accpeting_orders) return false;
+            if( ! $this->accpeting_orders) return -1;
 
-            $current_schedule = $this->partner->current_scheduled_orders();
+            $current_schedule = Order::current_scheduled_orders($this->partner_id);
 
-//        \Log::info($this->id);
-//        \Log::info($requested_date);
-//            \Log::info('Current schedule.......');
-//            \Log::info($current_schedule);
-
-//            if( $this->order_cap > 0 &&
-//                isset($current_schedule[$requested_date->format('m/d/Y H')]) &&
-//                $current_schedule[$requested_date->format('m/d/Y H')] >= $this->order_cap )
-
-            if($this->time_slot_cap > 0 &&
-                isset($current_schedule[$requested_date->format('m/d/Y H')]) &&
-                $current_schedule[$requested_date->format('m/d/Y H')] >= $this->time_slot_cap )
-            {
-                return false;
-            }
+            \Log::info('partner day--- acept orders?');
+            \Log::info(array_sum($current_schedule[$requested_date->format('m/d/Y')]));
 
             if( $this->order_cap > 0 &&
-                isset($current_schedule[$requested_date->format('m/d/Y H')]) &&
-                $current_schedule[$requested_date->format('m/d/Y H')] >= $this->order_cap )
+                isset($current_schedule[$requested_date->format('m/d/Y')]) &&
+                array_sum($current_schedule[$requested_date->format('m/d/Y')]) >= $this->order_cap )
             {
-                return false;
+                return -1;
             }
 
-            return true;
-        } catch (\Exception $e) {
-            \Bugsnag::notifyException($e);
-        }
+            if($this->time_slot_cap > 0 &&
+                isset($current_schedule[$requested_date->format('m/d/Y')][$requested_date->format('H')]) &&
+                $current_schedule[$requested_date->format('m/d/Y')][$requested_date->format('H')] >= $this->time_slot_cap )
+            {
+                return -2;
+            }
 
-        return false;
+            return 1;
+//        } catch (\Exception $e) {
+//            \
+//            \Bugsnag::notifyException($e);
+//        }
+
+        return -1;
     }
-    
+
     public function next_date_on_site()
     {
         $next_date="";

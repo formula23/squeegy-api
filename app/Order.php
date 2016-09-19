@@ -341,9 +341,15 @@ class Order extends Model {
 
         $current_schedule=[];
         foreach($existing_scheduled_orders as $existing_scheduled_order) {
-            $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y H');
-            if(empty($current_schedule[$key])) $current_schedule[$key]=0;
-            $current_schedule[$key]+=1;
+
+            $open = $existing_scheduled_order->schedule->window_open;
+            $key = $open->format('m/d/Y');
+            $key2 = $open->format('H');
+
+//            $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y');
+//            $key2 = $existing_scheduled_order->schedule->window_open->format('H');
+            if(empty($current_schedule[$key][$key2])) $current_schedule[$key][$key2]=0;
+            $current_schedule[$key][$key2]+=1;
         }
         return $current_schedule;
     }

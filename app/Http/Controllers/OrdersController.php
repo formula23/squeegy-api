@@ -242,12 +242,19 @@ class OrdersController extends Controller {
                 if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
                     $data['partner_id'] = $partner->id;
                     $service = $partner->service($data['service_id'])->first();
-                    
+
                     $day = $partner->get_day_by_date($schedule_data['window_open']);
-                    if(! $day->accept_order($schedule_data['window_open'])) {
-                        return $this->return_partner_resp($day);
-//                        return $this->response->errorWrongArgs(trans("messages.order.not_accepting", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
+
+                    try {
+
+                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
+                            return $this->return_partner_resp($accepting_code, $day);
+                        }
+
+                    } catch(\Exception $e) {
+                        \Log::info($e);
                     }
+
                 }
 
                 $order_schedule = OrderSchedule::create($schedule_data);
@@ -421,8 +428,9 @@ class OrdersController extends Controller {
 
                     if($order->partner) {
                         $day = $order->partner->get_day_by_date($order->schedule->window_open);
-                        if( ! $day->accept_order($order->schedule->window_open)) {
-                            return $this->return_partner_resp($day);
+
+                        if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
+                            return $this->return_partner_resp($accepting_code, $day);
                         }
                     }
 
@@ -772,9 +780,9 @@ class OrdersController extends Controller {
         return $messageBody;
     }
 
-    private function return_partner_resp($day)
+    private function return_partner_resp($err_code, $day)
     {
-        if($day->time_slot_cap) {
+        if($err_code == -2) {
             return $this->response->errorWrongArgs(trans("messages.order.corp_time_slot_cap"));
         } else {
             return $this->response->errorWrongArgs(trans("messages.order.corp_order_cap", ['next_date'=>$day->next_date_on_site()->format('l, M jS')]));
