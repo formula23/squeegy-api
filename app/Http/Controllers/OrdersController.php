@@ -243,21 +243,21 @@ class OrdersController extends Controller {
                     $data['partner_id'] = $partner->id;
                     $service = $partner->service($data['service_id'])->first();
 
-                    $this->validate_partner_day($partner, $schedule_data['window_open']);
+//                    $this->validate_partner_day($partner, $schedule_data['window_open']);
 
-//                    $day = $partner->get_day_by_date($schedule_data['window_open']);
-//                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
-//
-//                    try {
-//
-//                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
-//                            return $this->return_partner_resp($accepting_code, $day);
-//                        }
-//
-//                    } catch(\Exception $e) {
-//                        \Bugsnag::notifyException($e);
-//                        \Log::info($e);
-//                    }
+                    $day = $partner->get_day_by_date($schedule_data['window_open']);
+                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+
+                    try {
+
+                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
+                            return $this->return_partner_resp($accepting_code, $day);
+                        }
+
+                    } catch(\Exception $e) {
+                        \Bugsnag::notifyException($e);
+                        \Log::info($e);
+                    }
 
                 }
 
@@ -431,14 +431,14 @@ class OrdersController extends Controller {
                     }
 
                     if($order->partner) {
-                        $this->validate_partner_day($order->partner, $order->schedule->window_open);
+//                        $this->validate_partner_day($order->partner, $order->schedule->window_open);
 
-//                        $day = $order->partner->get_day_by_date($order->schedule->window_open);
-//                        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
-//
-//                        if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
-//                            return $this->return_partner_resp($accepting_code, $day);
-//                        }
+                        $day = $order->partner->get_day_by_date($order->schedule->window_open);
+                        if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_avilable'));
+
+                        if(($accepting_code = $day->accept_order($order->schedule->window_open)) < 0) {
+                            return $this->return_partner_resp($accepting_code, $day);
+                        }
                     }
 
                     $availability = Orders::availability($order->location['lat'], $order->location['lon']);
