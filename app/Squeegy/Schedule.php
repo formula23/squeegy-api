@@ -190,12 +190,12 @@ class Schedule
                 $start_time = $day->open;
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
-
-                if($day->open->isPast()) {
-                    $container[$idx]['day'] = 'Not Available';
-                    $container[$idx]['time_slots'][] = 'Not Available';
-                    continue;
-                }
+//
+//                if($day->open->isPast()) {
+//                    $container[$idx]['day'] = 'Not Available';
+//                    $container[$idx]['time_slots'][] = 'Not Available';
+//                    continue;
+//                }
 
                 $container[$idx]['day'] = $day->open->format($this->day_format);
 
