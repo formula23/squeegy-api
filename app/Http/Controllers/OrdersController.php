@@ -252,6 +252,7 @@ class OrdersController extends Controller {
                         }
 
                     } catch(\Exception $e) {
+                        \Bugsnag::notifyException($e);
                         \Log::info($e);
                     }
 
