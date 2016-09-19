@@ -6,6 +6,7 @@ use Aloha\Twilio\Twilio;
 use App\NotificationLog;
 use App\Order;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class WasherTipNotify extends Command
@@ -46,18 +47,18 @@ class WasherTipNotify extends Command
      */
     public function handle()
     {
-        //query all tips for today.
         $users = User::workers()->where('is_active', 1)->get();
 
         foreach($users as $user) {
 
             $washer_tips=[];
 
+            $tip_date = (true ? '2016-09-16' : Carbon::now()->yesterday()->toDateString());
+
             $orders = $user->orders()
                 ->where('tip', '>', 0)
                 ->where('orders.status', 'done')
-                ->whereRaw("date_format(tip_at, '%m-%d-%Y') = '07-17-2016'")
-//                ->whereRaw("date_format(tip_at, '%m-%d-%Y') = date_format(now(), '%m-%d-%Y')")
+                ->whereDate('tip_at', '=', $tip_date)
                 ->get();
 
             foreach($orders as $order) {
@@ -78,17 +79,25 @@ class WasherTipNotify extends Command
 
             $this->info($this->message);
 
-            try {
-                $this->twilio->message($user->phone, $this->message);
-
-            } catch (\Exception $e) {
-                \Bugsnag::notifyException($e);
-                \Log::info($e);
-            }
+//            try {
+//                $this->twilio->message($user->phone, $this->message);
+//
+//            } catch (\Exception $e) {
+//                \Bugsnag::notifyException($e);
+//                \Log::info($e);
+//            }
 
             $this->info('--------');
 
         }
+        $this->info(print_r($washer_tips));
+    }
+
+    private function message($tip_amount) {
+
+//        switch ($tip_amount) {
+//
+//        }
 
     }
 }
