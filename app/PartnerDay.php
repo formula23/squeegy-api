@@ -25,7 +25,7 @@ class PartnerDay extends Model
     {
 //        try {
 
-            if( ! $this->accpeting_orders) return -1;
+            if( ! $this->accepting_orders) return -1;
 
             $current_schedule = Order::current_scheduled_orders($this->partner_id);
 

@@ -166,7 +166,7 @@ class Schedule
         $container=[];
 //        $cur_hr = $this->now->hour;
 //        $this->now = Carbon::create(2016,5,12,18,1,0);
-        Log::info("**********************************");
+        Log::info("************* PARTENR DAYS *********************");
 //        Log::info($this->now);
         $cur_hr = $this->now->hour;
 //        $cur_hr = 17;
@@ -189,12 +189,10 @@ class Schedule
 \Log::info('accepting orders:');
                 \Log::info($day->open);
                 \Log::info($day);
-//\Log::info(var_dump($day->accepting_orders));
-//                if($day->accepting_orders) {
-//
-//
-//                    continue;
-//                }
+
+                if( ! $day->accepting_orders) {
+                    continue;
+                }
 
                 $start_time = $day->open;
                 $end_time = $day->close;
@@ -212,12 +210,15 @@ class Schedule
 
                         if($day->time_slot_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->time_slot_cap) {
                             $start_time->addHours($day->time_slot_frequency);
-                            \Log::info('start time in time slot cap');
-                            \Log::info($start_time);
+//                            \Log::info('start time in time slot cap');
+//                            \Log::info($start_time);
 //                            continue;
                             if($start_time->gte($end_time)) {
 //                                unset($container[$idx]);
-                                $container[$idx]['time_slots'][] = 'No Spots Available';
+                                if( ! isset($container[$idx]['time_slots'])) {
+                                    $container[$idx]['time_slots'][] = 'No Spots Available';
+                                }
+
                                 continue(2);
                             } else {
                                 continue;
