@@ -1,5 +1,6 @@
 <?php namespace App\Providers;
 
+use App\Partner;
 use App\UserNote;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -27,7 +28,8 @@ class RouteServiceProvider extends ServiceProvider {
 	public function boot(Router $router)
 	{
 		parent::boot($router);
-        $router->bind('vehicles', function($id) {
+
+		$router->bind('vehicles', function($id) {
             return \App\Vehicle::find($id);
         });
 
@@ -47,6 +49,11 @@ class RouteServiceProvider extends ServiceProvider {
         });
 
         $router->model('services', 'App\Service');
+
+		$router->bind('partners', function($code) {
+			return Partner::where('code', $code)->first();
+		});
+
 	}
 
 	/**

@@ -60,8 +60,11 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('orders/{orders}/tip', 'OrdersController@tipWasher');
 
 
-    Route::get('partners', 'PartnerController@index');
-    
+//    Route::get('partners', 'PartnerController@index');
+
+    Route::resource('partners', 'PartnerController');
+    Route::get('partners/{partners}/available_times', 'PartnerController@available');
+
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');
 

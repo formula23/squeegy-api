@@ -191,11 +191,11 @@ class Schedule
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
 
-                if($day->open->isPast()) {
-                    $container[$idx]['day'] = 'Not Available';
-                    $container[$idx]['time_slots'][] = 'Not Available';
-                    continue;
-                }
+//                if($day->open->isPast()) {
+//                    $container[$idx]['day'] = 'Not Available';
+//                    $container[$idx]['time_slots'][] = 'Not Available';
+//                    continue;
+//                }
 
                 $container[$idx]['day'] = $day->open->format($this->day_format);
 
@@ -219,8 +219,8 @@ class Schedule
                     }
 
                 } elseif(in_array($this->partner->id, [26])) {
-                    $container[$idx]['time_slots'][] = '8:00am - 12:00pm';
-                    $container[$idx]['time_slots'][] = '12:00pm - 5:00pm';
+                    $container[$idx]['time_slots'][] = '8:00am - 1:00pm';
+                    $container[$idx]['time_slots'][] = '1:00pm - 5:00pm';
 
                 } else {
                     $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
