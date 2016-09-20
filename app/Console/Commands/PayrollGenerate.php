@@ -143,7 +143,7 @@ class PayrollGenerate extends Command {
         1847 => [ //ricardo
             0 => 120,
 //            1 => 120,
-            2 => 120,
+//            2 => 120,
 //            3 => 120,
             4 => 120,
             5 => 120,
@@ -175,8 +175,8 @@ class PayrollGenerate extends Command {
         10350 => [ //michael wallace
             0=>120,
 //            1=>120,
-            2=>120,
-            3=>120,
+//            2=>120,
+//            3=>120,
 //            4=>120,
 //            5=>120,
 //            6=>120,
