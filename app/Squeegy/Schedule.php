@@ -186,20 +186,23 @@ class Schedule
 //                if($day->accept_order($day->open) === -1) { //daily cap has been reached...
 //                    continue;
 //                }
+\Log::info('accepting orders:');
+                \Log::info($day->open);
+                \Log::info($day);
+//\Log::info(var_dump($day->accepting_orders));
+//                if($day->accepting_orders) {
 //
+//
+//                    continue;
+//                }
+
                 $start_time = $day->open;
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
 
-//                if($day->open->isPast()) {
-//                    $container[$idx]['day'] = 'Not Available';
-//                    $container[$idx]['time_slots'][] = 'Not Available';
-//                    continue;
-//                }
-
                 $container[$idx]['day'] = $day->open->format($this->day_format);
 
-                if(in_array($this->partner->id, [5])) {
+                if($day->time_slot_frequency) {
 
                     for($h=0;$h<$num_hrs;$h++) {
 
@@ -207,26 +210,42 @@ class Schedule
                             continue;
                         }
 
-                        if(@(int)$this->current_schedule[$start_time->format('m/d/Y H')] >= 2) { ///only allow 2 orders per slot
-                            $start_time->addHours(1);
-                            continue;
+                        if($day->time_slot_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->time_slot_cap) {
+                            $start_time->addHours($day->time_slot_frequency);
+                            \Log::info('start time in time slot cap');
+                            \Log::info($start_time);
+//                            continue;
+                            if($start_time->gte($end_time)) {
+//                                unset($container[$idx]);
+                                $container[$idx]['time_slots'][] = 'No Spots Available';
+                                continue(2);
+                            } else {
+                                continue;
+                            }
                         }
                         $strt = $start_time->format('g:ia');
-                        $end = $start_time->addHours(1);
+                        $end = $start_time->addHours($day->time_slot_frequency);
                         if($end->isPast()) {continue;}
+
+                        if($end->gte($end_time)) {
+                            $end = $end_time;
+                            if( ! $start_time->diffInHours($end)) {
+                                $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
+                                continue(2);
+                            }
+                        }
 
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
-
-                } elseif(in_array($this->partner->id, [26])) {
-                    $container[$idx]['time_slots'][] = '8:00am - 1:00pm';
-                    $container[$idx]['time_slots'][] = '1:00pm - 5:00pm';
 
                 } else {
                     $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
                 }
 
             }
+
+            \Log::info('********** container ***********');
+            \Log::info($container);
 
             return array_values($container);
             
