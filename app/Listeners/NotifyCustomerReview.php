@@ -44,7 +44,7 @@ class NotifyCustomerReview extends BaseEventHandler
 
         $notification = Notification::where('key', $this->message_key)->first();
 
-        if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
+            if( ! $event->order->notification_logs()->where('notification_id', $notification->id)->count()) {
 
             $arn_endpoint = ($event->order->push_platform=="apns" ? "push_token" : "target_arn_gcm");
 

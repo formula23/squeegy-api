@@ -36,7 +36,8 @@ return [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time.',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time.',
             'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
-            'done' => ":worker_name is done washing your :car. If you would like to review the work, please go outside now. We:card_charged have emailed you a receipt. \nThank you for using Squeegy!",
+//            'done' => ":worker_name is done washing your :car. If you would like to review the work, please go outside now. We:card_charged have emailed you a receipt. \nThank you for using Squeegy!",
+            'done' => "Your car wash is finished!  Open your Squeegy app now to complete your order.",
             'cancel' => 'Your order has been cancelled. Please contact customer service for additional information.',
             'cancel_washer' => 'Customer cancelled order# :order_id - :vehicle',
             'change_washer' => [
@@ -127,6 +128,6 @@ return [
         ],
     ],
     'washer' => [
-        'daily_tip' => 'You earned :daily_tip in tips today!',
+        'daily_tip' => 'You earned :tip_amt in tips today!',
     ]
 ];

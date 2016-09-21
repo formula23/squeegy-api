@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Aloha\Twilio\Twilio;
+use App\Notification;
 use App\NotificationLog;
 use App\Order;
 use App\User;
@@ -14,6 +15,7 @@ class WasherTipNotify extends Command
 
     protected $twilio;
     public $message;
+    public $delivery_method = 'sms';
     public $message_key = 'messages.washer.daily_tip';
     /**
      * The name and signature of the console command.
@@ -58,6 +60,7 @@ class WasherTipNotify extends Command
             $orders = $user->orders()
                 ->where('tip', '>', 0)
                 ->where('orders.status', 'done')
+                ->whereNull('partner_id')
                 ->whereDate('tip_at', '=', $tip_date)
                 ->get();
 
@@ -74,18 +77,29 @@ class WasherTipNotify extends Command
             $user_tip_amt = array_sum($washer_tips);
 
             $this->message = trans($this->message_key, [
-                'daily_tip'=>'$'.number_format($user_tip_amt, 2),
+                'tip_amt'=>'$'.number_format($user_tip_amt, 2),
             ]);
 
             $this->info($this->message);
 
-//            try {
-//                $this->twilio->message($user->phone, $this->message);
-//
-//            } catch (\Exception $e) {
-//                \Bugsnag::notifyException($e);
-//                \Log::info($e);
-//            }
+            $notification = Notification::where('key', $this->message_key)->first();
+
+            if( ! $user->notifications()->where('notification_id', $notification->id)->count()) {
+                try {
+                    $this->twilio->message($user->phone, $this->message);
+
+                    $user->notifications()->create([
+                        'notification_id'=>$notification->id,
+                        'order_id'=>0,
+                        'message'=>$this->message,
+                        'delivery_method'=>$this->delivery_method,
+                    ]);
+
+                } catch (\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                    \Log::info($e);
+                }
+            }
 
             $this->info('--------');
 
