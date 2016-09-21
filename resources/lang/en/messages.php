@@ -128,6 +128,15 @@ return [
         ],
     ],
     'washer' => [
-        'daily_tip' => 'You earned :tip_amt in tips today!',
+        'daily_tip' => [
+            'salutation' => "Good morning :washer_name,\n\n",
+            'body'=>'You received a total of :tip_amt in tips yesterday. ',
+            'motivation' => [
+                '10-25'=>"Keep up the good work!",
+                '25-40'=>"Your hard work and dedication is really showing in your customer satisfaction. Awesome job!!",
+                '40'=>"CONGRATULATIONS! We're happy to see your hard work is really paying off. Keep it up!",
+            ],
+            'sig'=>"\n\nSqueegy",
+        ]
     ]
 ];

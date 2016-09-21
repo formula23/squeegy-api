@@ -55,7 +55,7 @@ class WasherTipNotify extends Command
 
             $washer_tips=[];
 
-            $tip_date = (true ? '2016-09-16' : Carbon::now()->yesterday()->toDateString());
+            $tip_date = (false ? '2016-09-16' : Carbon::now()->yesterday()->toDateString());
 
             $orders = $user->orders()
                 ->where('tip', '>', 0)
@@ -70,17 +70,11 @@ class WasherTipNotify extends Command
 
             if( ! count($washer_tips)) continue;
 
-            //message
-
-            $this->info($user->name);
-
             $user_tip_amt = array_sum($washer_tips);
 
-            $this->message = trans($this->message_key, [
-                'tip_amt'=>'$'.number_format($user_tip_amt, 2),
-            ]);
+            $this->create_message($user, $user_tip_amt);
 
-            $this->info($this->message);
+//            $this->info($this->message);
 
             $notification = Notification::where('key', $this->message_key)->first();
 
@@ -100,18 +94,28 @@ class WasherTipNotify extends Command
                     \Log::info($e);
                 }
             }
-
-            $this->info('--------');
-
+            
         }
-        $this->info(print_r($washer_tips));
     }
 
-    private function message($tip_amount) {
+    private function create_message($user, $tip_amount) {
 
-//        switch ($tip_amount) {
-//
-//        }
+        $this->message = trans($this->message_key.".salutation", ['washer_name'=>$user->name])
+            .trans($this->message_key.".body", ['tip_amt'=>'$'.number_format($tip_amount, 2)]);
 
+        switch ($tip_amount) {
+            case ($tip_amount>10 && $tip_amount<=25):
+                $this->message .= trans($this->message_key.".motivation.10-25");
+                break;
+            case ($tip_amount>25 && $tip_amount<=40):
+                $this->message .= trans($this->message_key.".motivation.25-40");
+                break;
+            case ($tip_amount>40):
+                $this->message .= trans($this->message_key.".motivation.40");
+                break;
+            default:
+        }
+
+        $this->message .= trans($this->message_key.".sig");
     }
 }
