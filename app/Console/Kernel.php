@@ -50,6 +50,7 @@ class Kernel extends ConsoleKernel {
 //		$schedule->command('order:review_wash_notice')->cron('* 8-20 * * *');
 		$schedule->command('order:assign-scheduled')->cron('* 9-19 * * *')->appendOutputTo($this->dir('assign-scheduled'));
 		$schedule->command('squeegy:advance_partner_dates')->cron('0 10-19 * * *');
+		$schedule->command('washer:tip-notify')->cron('0 8 * * *');
 	}
 
     protected function dir($process_name)

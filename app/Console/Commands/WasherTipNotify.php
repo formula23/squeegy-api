@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use Aloha\Twilio\Twilio;
+use App\Notification;
 use App\NotificationLog;
 use App\Order;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class WasherTipNotify extends Command
@@ -13,6 +15,7 @@ class WasherTipNotify extends Command
 
     protected $twilio;
     public $message;
+    public $delivery_method = 'sms';
     public $message_key = 'messages.washer.daily_tip';
     /**
      * The name and signature of the console command.
@@ -46,18 +49,19 @@ class WasherTipNotify extends Command
      */
     public function handle()
     {
-        //query all tips for today.
         $users = User::workers()->where('is_active', 1)->get();
 
         foreach($users as $user) {
 
             $washer_tips=[];
 
+            $tip_date = (false ? '2016-09-16' : Carbon::now()->yesterday()->toDateString());
+
             $orders = $user->orders()
                 ->where('tip', '>', 0)
                 ->where('orders.status', 'done')
-                ->whereRaw("date_format(tip_at, '%m-%d-%Y') = '07-17-2016'")
-//                ->whereRaw("date_format(tip_at, '%m-%d-%Y') = date_format(now(), '%m-%d-%Y')")
+                ->whereNull('partner_id')
+                ->whereDate('tip_at', '=', $tip_date)
                 ->get();
 
             foreach($orders as $order) {
@@ -66,29 +70,52 @@ class WasherTipNotify extends Command
 
             if( ! count($washer_tips)) continue;
 
-            //message
-
-            $this->info($user->name);
-
             $user_tip_amt = array_sum($washer_tips);
 
-            $this->message = trans($this->message_key, [
-                'daily_tip'=>'$'.number_format($user_tip_amt, 2),
-            ]);
+            $this->create_message($user, $user_tip_amt);
 
-            $this->info($this->message);
+//            $this->info($this->message);
 
-            try {
-                $this->twilio->message($user->phone, $this->message);
+            $notification = Notification::where('key', $this->message_key)->first();
 
-            } catch (\Exception $e) {
-                \Bugsnag::notifyException($e);
-                \Log::info($e);
+            if( ! $user->notifications()->where('notification_id', $notification->id)->count()) {
+                try {
+                    $this->twilio->message($user->phone, $this->message);
+
+                    $user->notifications()->create([
+                        'notification_id'=>$notification->id,
+                        'order_id'=>0,
+                        'message'=>$this->message,
+                        'delivery_method'=>$this->delivery_method,
+                    ]);
+
+                } catch (\Exception $e) {
+                    \Bugsnag::notifyException($e);
+                    \Log::info($e);
+                }
             }
+            
+        }
+    }
 
-            $this->info('--------');
+    private function create_message($user, $tip_amount) {
 
+        $this->message = trans($this->message_key.".salutation", ['washer_name'=>$user->name])
+            .trans($this->message_key.".body", ['tip_amt'=>'$'.number_format($tip_amount, 2)]);
+
+        switch ($tip_amount) {
+            case ($tip_amount>10 && $tip_amount<=25):
+                $this->message .= trans($this->message_key.".motivation.10-25");
+                break;
+            case ($tip_amount>25 && $tip_amount<=40):
+                $this->message .= trans($this->message_key.".motivation.25-40");
+                break;
+            case ($tip_amount>40):
+                $this->message .= trans($this->message_key.".motivation.40");
+                break;
+            default:
         }
 
+        $this->message .= trans($this->message_key.".sig");
     }
 }
