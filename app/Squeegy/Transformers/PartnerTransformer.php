@@ -17,12 +17,13 @@ use League\Fractal\TransformerAbstract;
 class PartnerTransformer extends TransformerAbstract
 {
     protected $defaultIncludes = [
-        'days',
-        'services',
         'availability',
+        'services',
     ];
 
-
+    protected $availableIncludes = [
+        'days',
+    ];
 
     public function transform(Partner $partner)
     {
@@ -39,7 +40,7 @@ class PartnerTransformer extends TransformerAbstract
     public function includeAvailability($partner)
     {
         $avail = (new Schedule(null, $partner->id))->availability();
-        dd($avail);
+        return $this->collection($avail, new PartnerDayAvailabilityTransformer());
     }
 
     public function includeDays(Partner $partner)

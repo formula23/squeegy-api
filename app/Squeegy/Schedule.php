@@ -215,10 +215,10 @@ class Schedule
 //                            \Log::info($start_time);
 //                            continue;
                             if($start_time->gte($end_time)) {
-//                                unset($container[$idx]);
-                                if( ! isset($container[$idx]['time_slots'])) {
-                                    $container[$idx]['time_slots'][] = 'No Spots Available';
-                                }
+                                unset($container[$idx]);
+//                                if( ! isset($container[$idx]['time_slots'])) {
+//                                    $container[$idx]['time_slots'][] = 'No Spots Available';
+//                                }
 
                                 continue(2);
                             } else {
@@ -242,6 +242,11 @@ class Schedule
 
 
                 } else {
+                    if($day->order_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->order_cap) {
+                        unset($container[$idx]);
+                        continue;
+                    }
+
                     $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
                 }
 
