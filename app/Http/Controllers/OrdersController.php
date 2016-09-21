@@ -463,19 +463,24 @@ class OrdersController extends Controller {
 
                     unset($order->receive_at);
 
-                    if($order->schedule) {
-                        $order->confirm_at = $order->schedule->window_open;
-                        $order->status = 'schedule';
-                        Event::fire(new OrderScheduled($order));
+                    try {
+                        if($order->schedule) {
+                            $order->confirm_at = $order->schedule->window_open;
+                            $order->status = 'schedule';
+                            Event::fire(new OrderScheduled($order));
 
-                    } else {
+                        } else {
 
-                        $order->status = 'assign';
-                        $order->assign_at = Carbon::now();
-                        $order->eta = $availability['actual_time'];
-                        $order->worker_id = $availability['worker_id'];
+                            $order->status = 'assign';
+                            $order->assign_at = Carbon::now();
+                            $order->eta = $availability['actual_time'];
+                            $order->worker_id = $availability['worker_id'];
 
-                        Event::fire(new OrderConfirmed($order));
+                            Event::fire(new OrderConfirmed($order));
+                        }
+                    } catch (\Exception $e) {
+                        return $this->response->errorWrongArgs($e->getMessage());
+                        \Bugsnag::notifyException($e);
                     }
 
                     break;
