@@ -186,7 +186,8 @@ class Schedule
 //                if($day->accept_order($day->open) === -1) { //daily cap has been reached...
 //                    continue;
 //                }
-\Log::info('accepting orders:');
+
+                \Log::info('accepting orders:');
                 \Log::info($day->open);
                 \Log::info($day);
 
@@ -238,6 +239,7 @@ class Schedule
 
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
+
 
                 } else {
                     $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);

@@ -16,6 +16,7 @@ return [
     'order' => [
         'corp_order_cap' => "We're sorry but Squeegy is fully booked for today. We will be back :next_date.",
         'corp_time_slot_cap' => "We're sorry but that time slot is fully booked for today. Please try another time slot.",
+        'day_not_available' => 'The requested day is not available. Please go back and try again.',
         'confirm_location' => 'We have detected that the location of your vehicle you selected may be incorrect. Please go back and verify your vehicles location.',
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
@@ -36,7 +37,8 @@ return [
             'enroute' => ':worker_name has picked up your order. He will be arriving around :arrival_time.',
             'enroute_manual' => ':worker_name is on the way. He will be arriving around :arrival_time.',
             'start' => ':worker_name started washing your :car. He should be done around :etc_time.',
-            'done' => ":worker_name is done washing your :car. If you would like to review the work, please go outside now. We:card_charged have emailed you a receipt. \nThank you for using Squeegy!",
+//            'done' => ":worker_name is done washing your :car. If you would like to review the work, please go outside now. We:card_charged have emailed you a receipt. \nThank you for using Squeegy!",
+            'done' => "Your car wash is finished!  Open your Squeegy app now to complete your order.",
             'cancel' => 'Your order has been cancelled. Please contact customer service for additional information.',
             'cancel_washer' => 'Customer cancelled order# :order_id - :vehicle',
             'change_washer' => [
@@ -127,6 +129,15 @@ return [
         ],
     ],
     'washer' => [
-        'daily_tip' => 'You earned :daily_tip in tips today!',
+        'daily_tip' => [
+            'salutation' => "Good morning :washer_name,\n\n",
+            'body'=>'You received a total of :tip_amt in tips yesterday. ',
+            'motivation' => [
+                '10-25'=>"Keep up the good work!",
+                '25-40'=>"Your hard work and dedication is really showing in your customer satisfaction. Awesome job!!",
+                '40'=>"CONGRATULATIONS! We're happy to see your hard work is really paying off. Keep it up!",
+            ],
+            'sig'=>"\n\nSqueegy",
+        ]
     ]
 ];
