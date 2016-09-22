@@ -22,11 +22,11 @@ class PartnerTableSeeder extends Seeder
             'code'=>'NANT',
             'location_name'=>"Nantworks",
             'location'=>[
-                "city"=>"Compton",
-                "lat" => 33.860662,
-                "lon" => -118.208065,
-                "street"=>"3040 E Ana St",
-                "zip"=>"90221",
+                "city"=>"Culver City",
+                "lat" => 34.014442,
+                "lon" => -118.387984,
+                "street"=>"9920 Jefferson Blvd",
+                "zip"=>"90230",
                 "state"=>"CA"
             ],
             'geo_fence'=>'[{"lat":34.015033, "lng":-118.388358},{"lat":34.012916, "lng":-118.385464},{"lat":34.012440, "lng":-118.385855},{"lat":34.014014, "lng":-118.388487}]',
