@@ -56,13 +56,15 @@ class WasherTipNotify extends Command
             $washer_tips=[];
 
             $tip_date = (false ? '2016-09-16' : Carbon::now()->yesterday()->toDateString());
-
+$this->info($tip_date);
             $orders = $user->orders()
                 ->where('tip', '>', 0)
                 ->where('orders.status', 'done')
                 ->whereNull('partner_id')
-                ->whereDate('tip_at', '=', $tip_date)
-                ->get();
+                ->whereDate('tip_at', '=', $tip_date)->toSql();
+            $this->info($orders);
+            dd('stop');
+//                ->get();
 
             foreach($orders as $order) {
                 $washer_tips[$order->id] = (round($order->tip * (1 - 0.029)) - 30)/100;
