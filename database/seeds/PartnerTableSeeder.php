@@ -18,32 +18,35 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>"Onestop - Rancho Dominguez",
-            'location_name'=>"Onestop - Rancho Dominguez",
+            'name'=>"Nantworks",
+            'code'=>'NANT',
+            'location_name'=>"Nantworks",
             'location'=>[
-                "city"=>"Compton",
-                "lat" => 33.860662,
-                "lon" => -118.208065,
-                "street"=>"3040 E Ana St",
-                "zip"=>"90221",
+                "city"=>"Culver City",
+                "lat" => 34.014442,
+                "lon" => -118.387984,
+                "street"=>"9920 Jefferson Blvd",
+                "zip"=>"90230",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.861156, "lng":-118.208736},{"lat":33.861504, "lng":-118.207346},{"lat":33.860100, "lng":-118.206664},{"lat":33.859628, "lng":-118.208243}]',
+            'geo_fence'=>'[{"lat":34.015132, "lng":-118.388305},{"lat":34.014092, "lng":-118.386460},{"lat":34.012922, "lng":-118.385390},{"lat":34.011072, "lng":-118.386528},{"lat":34.013548, "lng":-118.387771},{"lat":34.014013, "lng":-118.388603}]',
             'is_active'=>1,
         ]);
 
         $partner->days()->create([
-            'day'=>'Thursday',
-            'day_of_week'=>4,
-            'next_date'=>Carbon::createFromDate(2016, 9, 15),
-            'time_start'=>'9:00am',
-            'time_end'=>'5:00pm',
-            'order_cut_off_time'=>'1:00pm',
-            'frequency'=>'bi-weekly',
+            'open'=>Carbon::create(2016,9,27,8,0,0),
+            'close'=>Carbon::create(2016,9,27,17,0,0),
+            'frequency'=>'weekly',
+            'order_cap'=>'20',
+        ]);
+        $partner->days()->create([
+            'open'=>Carbon::create(2016,9,30,8,0,0),
+            'close'=>Carbon::create(2016,9,30,17,0,0),
+            'frequency'=>'weekly',
             'order_cap'=>'20',
         ]);
 
-        foreach( [1=>1800, 2=>2500] as $service_id=>$price_override) {
+        foreach( [1=>1500, 2=>2000] as $service_id=>$price_override) {
             $service = Service::find($service_id);
             $partner->services()->save($service, ['price'=>$price_override]);
         }
