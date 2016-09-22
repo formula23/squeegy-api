@@ -474,5 +474,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             ->orderBy('confirm_at')
             ->get();
     }
+
+    public function received_tip_notification_for_date($date)
+    {
+        $notification = Notification::where('key', 'messages.washer.daily_tip')->first();
+        return $this->notifications()->where('notification_id', $notification->id)->whereDate('created_at', '=', $date)->count();
+    }
     
 }
