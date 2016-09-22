@@ -55,7 +55,7 @@ class WasherTipNotify extends Command
 
             $washer_tips=[];
 
-            $tip_date = (false ? '2016-09-16' : Carbon::now()->yesterday()->toDateString());
+            $tip_date = (false ? '2016-09-16' : Carbon::yesterday()->toDateString());
 
             $orders = $user->orders()
                 ->where('tip', '>', 0)
@@ -73,8 +73,6 @@ class WasherTipNotify extends Command
             $user_tip_amt = array_sum($washer_tips);
 
             $this->create_message($user, $user_tip_amt);
-
-//            $this->info($this->message);
 
             $notification = Notification::where('key', $this->message_key)->first();
 
