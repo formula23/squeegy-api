@@ -22,6 +22,7 @@ use Stripe\Card;
 class OrderTransformer extends TransformerAbstract {
 
     protected $defaultIncludes = [
+        'order_details',
         'vehicle',
         'service',
         'worker',
@@ -111,6 +112,11 @@ class OrderTransformer extends TransformerAbstract {
 
         return $resp;
 
+    }
+    
+    public function includeOrderDetails(Order $order)
+    {
+        return $this->collection($order->order_details, new OrderDetailTransformer());
     }
 
     public function includeSchedule(Order $order)
