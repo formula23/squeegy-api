@@ -18,8 +18,9 @@ class PartnerTableSeeder extends Seeder
 //        Partner::truncate();
 
         $partner = Partner::create([
-            'name'=>"Onestop - Rancho Dominguez",
-            'location_name'=>"Onestop - Rancho Dominguez",
+            'name'=>"Nantworks",
+            'code'=>'NANT',
+            'location_name'=>"Nantworks",
             'location'=>[
                 "city"=>"Compton",
                 "lat" => 33.860662,
@@ -28,22 +29,24 @@ class PartnerTableSeeder extends Seeder
                 "zip"=>"90221",
                 "state"=>"CA"
             ],
-            'geo_fence'=>'[{"lat":33.861156, "lng":-118.208736},{"lat":33.861504, "lng":-118.207346},{"lat":33.860100, "lng":-118.206664},{"lat":33.859628, "lng":-118.208243}]',
+            'geo_fence'=>'[{"lat":34.015033, "lng":-118.388358},{"lat":34.012916, "lng":-118.385464},{"lat":34.012440, "lng":-118.385855},{"lat":34.014014, "lng":-118.388487}]',
             'is_active'=>1,
         ]);
 
         $partner->days()->create([
-            'day'=>'Thursday',
-            'day_of_week'=>4,
-            'next_date'=>Carbon::createFromDate(2016, 9, 15),
-            'time_start'=>'9:00am',
-            'time_end'=>'5:00pm',
-            'order_cut_off_time'=>'1:00pm',
-            'frequency'=>'bi-weekly',
+            'open'=>Carbon::create(2016,9,27,8,0,0),
+            'close'=>Carbon::create(2016,9,27,17,0,0),
+            'frequency'=>'weekly',
+            'order_cap'=>'20',
+        ]);
+        $partner->days()->create([
+            'open'=>Carbon::create(2016,9,30,8,0,0),
+            'close'=>Carbon::create(2016,9,30,17,0,0),
+            'frequency'=>'weekly',
             'order_cap'=>'20',
         ]);
 
-        foreach( [1=>1800, 2=>2500] as $service_id=>$price_override) {
+        foreach( [1=>1500, 2=>2000] as $service_id=>$price_override) {
             $service = Service::find($service_id);
             $partner->services()->save($service, ['price'=>$price_override]);
         }
