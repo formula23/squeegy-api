@@ -24,6 +24,9 @@ class Partner extends Model
         return $this->belongsToMany('App\Service')->withPivot('price');
     }
 
+    /**
+     * @return mixed
+     */
     public function users()
     {
         return $this->belongsToMany('App\User', 'orders')->where('orders.status', 'done');
@@ -63,11 +66,18 @@ class Partner extends Model
         $this->attributes['location'] = json_encode($value);
     }
 
+    /**
+     * @param $value
+     * @return mixed
+     */
     public function getGeoFenceAttribute($value)
     {
         return json_decode($value);
     }
 
+    /**
+     * @return string
+     */
     public function location_display()
     {
         return $this->location_name." ".$this->location['street'];
@@ -99,6 +109,10 @@ class Partner extends Model
     }
 
 
+    /**
+     * @param $geo_fence
+     * @return array
+     */
     public static function format_coords($geo_fence)
     {
         $polygon=[];
@@ -110,6 +124,10 @@ class Partner extends Model
         return $polygon;
     }
 
+    /**
+     * @param $requested_date
+     * @return mixed
+     */
     public function get_day_by_date($requested_date)
     {
         try {
@@ -120,35 +138,20 @@ class Partner extends Model
         }
     }
 
+    /**
+     * @return bool
+     */
     public function accepting_orders()
     {
         return (bool)$this->is_active;
     }
-    
-//    public function current_scheduled_orders()
-//    {
-//        $existing_scheduled_orders_q = $this->orders()->whereIn('status', ['schedule','assign','start','done'])
-//            ->whereHas('schedule', function($q) {
-//                $q->whereDate('window_open', '>=', Carbon::today()->toDateString())->orderBy('window_open');
-//            })->with('schedule');
-//
-//        $existing_scheduled_orders = $existing_scheduled_orders_q->get();
-////\Log::info($existing_scheduled_orders);
-//        $current_schedule=[];
-//        foreach($existing_scheduled_orders as $existing_scheduled_order) {
-////            $key = $existing_scheduled_order->schedule->window_open->format('m/d/Y H');
-//
-//            $open = $existing_scheduled_order->schedule->window_open;
-//            $key = $open->format('m/d/Y');
-//            $key2 = $open->format('H');
-//            if(empty($current_schedule[$key][$key2])) $current_schedule[$key][$key2]=0;
-//            $current_schedule[$key][$key2]+=1;
-//
-////            if(empty($current_schedule[$key])) $current_schedule[$key]=0;
-////            $current_schedule[$key]+=1;
-//        }
-//        return $current_schedule;
-//    }
-//    
+
+    /**
+     * @return mixed
+     */
+    public function upcoming_date()
+    {
+        return $this->days()->orderBy('open')->first()->next_date_on_site();
+    }
 
 }

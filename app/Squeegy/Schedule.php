@@ -164,9 +164,12 @@ class Schedule
 //        $this->current_schedule = $partner->current_scheduled_orders();
 
         $container=[];
+        $container['next_day']='';
+        $container['available_days']=[];
+
 //        $cur_hr = $this->now->hour;
 //        $this->now = Carbon::create(2016,5,12,18,1,0);
-        Log::info("************* PARTENR DAYS *********************");
+        Log::info("************* PARTNER DAYS *********************");
 //        Log::info($this->now);
         $cur_hr = $this->now->hour;
 //        $cur_hr = 17;
@@ -177,19 +180,13 @@ class Schedule
         try
         {
             //get array of available days in sequential order.
-            $day_sort=[];
-            $day_sort_time=[];
             $days = $this->partner->days()->orderBy('open')->get();
 
             foreach($days as $idx=>$day) {
 
-//                if($day->accept_order($day->open) === -1) { //daily cap has been reached...
-//                    continue;
-//                }
-
-                \Log::info('accepting orders:');
-                \Log::info($day->open);
-                \Log::info($day);
+//                \Log::info('accepting orders:');
+//                \Log::info($day->open);
+//                \Log::info($day);
 
                 if( ! $day->accepting_orders) {
                     continue;
@@ -199,7 +196,7 @@ class Schedule
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
 
-                $container[$idx]['day'] = $day->open->format($this->day_format);
+                $container['available_days'][$idx]['day'] = $day->open->format('D, M d');
 
                 if($day->time_slot_frequency) {
 
@@ -215,11 +212,7 @@ class Schedule
 //                            \Log::info($start_time);
 //                            continue;
                             if($start_time->gte($end_time)) {
-                                unset($container[$idx]);
-//                                if( ! isset($container[$idx]['time_slots'])) {
-//                                    $container[$idx]['time_slots'][] = 'No Spots Available';
-//                                }
-
+                                unset($container['available_days'][$idx]);
                                 continue(2);
                             } else {
                                 continue;
@@ -232,30 +225,35 @@ class Schedule
                         if($end->gte($end_time)) {
                             $end = $end_time;
                             if( ! $start_time->diffInHours($end)) {
-                                $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
+                                $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                                 continue(2);
                             }
                         }
 
-                        $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
+                        $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
 
                 } else {
                     if($day->order_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->order_cap) {
-                        unset($container[$idx]);
+                        unset($container['available_days'][$idx]);
                         continue;
                     }
 
-                    $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
+                    $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
                 }
 
             }
 
             \Log::info('********** container ***********');
             \Log::info($container);
+//            \Log::info(array_values($container));
 
-            return array_values($container);
+            if( ! count($container['available_days'])) {
+                $container['next_day'] = $this->partner->upcoming_date();
+            }
+
+            return $container;
             
         } catch (\Exception $e) {
             Log::info($e);

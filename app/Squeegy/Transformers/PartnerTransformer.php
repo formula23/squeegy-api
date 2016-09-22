@@ -40,7 +40,8 @@ class PartnerTransformer extends TransformerAbstract
     public function includeAvailability($partner)
     {
         $avail = (new Schedule(null, $partner->id))->availability();
-        return $this->collection($avail, new PartnerDayAvailabilityTransformer());
+
+        return $this->item($avail, new PartnerAvailabilityTransformer());
     }
 
     public function includeDays(Partner $partner)

@@ -33,7 +33,8 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
             'service_area' => $data['service_area'],
         ];
 
-        $resp['available_schedule'] = (new Schedule($data['postal_code'], $data['partner_id']))->availability();
+        $availability = (new Schedule($data['postal_code'], $data['partner_id']))->availability();
+        $resp['available_schedule'] = (isset($availability['available_days']) ? $availability['available_days'] : $availability);
 
         return $resp;
     }
