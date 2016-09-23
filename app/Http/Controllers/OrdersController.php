@@ -242,7 +242,7 @@ class OrdersController extends Controller {
                 //** partner stuff *//
                 if(isset($data['partner_id'])) {
                     $partner = Partner::find($data['partner_id']);
-                    if( ! $partner) return $this->response->errorNotFound(trans('message.order.corp_not_found'));
+                    if( ! $partner) return $this->response->errorNotFound(trans('messages.order.corp_not_found'));
                     $data['location'] = $partner->location;
 
                 } else {
