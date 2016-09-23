@@ -6,7 +6,7 @@
  * Time: 20:32
  */
 
-namespace app\Squeegy\Transformers;
+namespace App\Squeegy\Transformers;
 
 
 use App\Instruction;
@@ -15,10 +15,15 @@ use League\Fractal\TransformerAbstract;
 class InstructionTransformer extends TransformerAbstract
 {
 
+    protected $defaultIncludes = [
+        'options'
+    ];
+
     public function transform(Instruction $instruction)
     {
         return [
             'id'=>$instruction->id,
+            'key'=>$instruction->key,
             'label'=>($instruction->pivot->label?:$instruction->label),
             'hint'=>($instruction->pivot->hint?:$instruction->hint),
             'type'=>$instruction->type,
@@ -31,5 +36,10 @@ class InstructionTransformer extends TransformerAbstract
             'validation_error_msg'=>($instruction->pivot->validation_error_msg?:$instruction->validation_error_msg),
         ];
     }
-    
+
+    public function includeOptions(Instruction $instruction)
+    {
+        return $this->collection($instruction->options, new InstructionOptionTransformer());
+    }
+
 }

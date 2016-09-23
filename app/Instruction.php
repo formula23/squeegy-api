@@ -12,5 +12,9 @@ class Instruction extends Model
     {
         return $this->belongsToMany('App\Partner');
     }
-    
+
+    public function options()
+    {
+        return $this->hasMany('App\InstructionOption')->orderBy('sequence');
+    }
 }

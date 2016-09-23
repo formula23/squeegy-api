@@ -50,6 +50,18 @@ class DansTests extends Command
      */
     public function handle()
     {
+        $arr = [
+            "key_box" => [
+                "label"=>"KeyBox#",
+                "value"=>"255",
+            ],
+            "parking_lot" => [
+                "label"=>"Parkign Lot",
+                "value"=>"A",
+            ]
+        ];
+
+        dd(json_encode($arr));
 
 //        foreach($this->twilio->account->incoming_phone_numbers->getIterator(0, 50, array("FriendlyName"=>'AirTng')) as $number)
 //        {
