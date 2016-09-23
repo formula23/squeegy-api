@@ -23,11 +23,11 @@ class InstructionTransformer extends TransformerAbstract
             'hint'=>($instruction->pivot->hint?:$instruction->hint),
             'type'=>$instruction->type,
             'input_type'=>$instruction->input_type,
-            'prepopulate'=>($instruction->pivot->prepopulate?:$instruction->prepopulate),
-            'required'=>($instruction->pivot->required?:$instruction->required),
+            'prepopulate'=>( ! is_null($instruction->pivot->prepopulate) ? $instruction->pivot->prepopulate : $instruction->prepopulate),
+            'required'=>( ! is_null($instruction->pivot->required) ? $instruction->pivot->required : $instruction->required),
             'min_length'=>($instruction->pivot->min_length?:$instruction->min_length),
             'max_length'=>($instruction->pivot->max_length?:$instruction->max_length),
-            'validation'=>($instruction->pivot->validation?:$instruction->validation),
+            'validation'=>( ! is_null($instruction->pivot->validation) ? $instruction->pivot->validation : $instruction->validation),
             'validation_error_msg'=>($instruction->pivot->validation_error_msg?:$instruction->validation_error_msg),
         ];
     }
