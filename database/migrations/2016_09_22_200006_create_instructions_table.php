@@ -14,7 +14,6 @@ class CreateInstructionsTable extends Migration
     {
         Schema::create('instructions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('key');
             $table->string('label');
             $table->string('hint')->nullable();
             $table->enum('type', ['string','integer'])->default('string');

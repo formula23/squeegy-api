@@ -88,7 +88,7 @@ class Partner extends Model
      */
     public function instructions($sequence=false)
     {
-        $qry = $this->belongsToMany('App\Instruction')->withPivot(['label','hint','prepopulate','required','min_length','max_length','validation']);
+        $qry = $this->belongsToMany('App\Instruction')->withPivot(['label','hint','prepopulate','required','min_length','max_length','validation','validation_error_msg']);
         if($sequence) {
             $qry->orderBy('sequence');
         }

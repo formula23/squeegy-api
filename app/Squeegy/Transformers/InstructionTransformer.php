@@ -17,9 +17,8 @@ class InstructionTransformer extends TransformerAbstract
 
     public function transform(Instruction $instruction)
     {
-//        dd($instruction->toArray());
         return [
-            'key'=>$instruction->key,
+            'id'=>$instruction->id,
             'label'=>($instruction->pivot->label?:$instruction->label),
             'hint'=>($instruction->pivot->hint?:$instruction->hint),
             'type'=>$instruction->type,
