@@ -25,12 +25,16 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('user/phone-verify', 'UserController@phoneVerify');
     Route::get('user/authenticated', 'UserController@authenticated');
 
+    Route::get('user/latest-order', 'UserController@latestOrder');
+
     Route::get('user/{id}', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
     Route::put('user/{id?}', 'UserController@update');
 
     Route::post('user/duty', 'UserController@duty');
     Route::post('user/location', 'UserController@location');
+
+
 
     Route::controllers([
         'password' => 'Auth\PasswordController',

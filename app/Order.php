@@ -70,6 +70,19 @@ class Order extends Model {
 
 //    public $hasSurcharge = false;
 
+    public function getInstructionsAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    /**
+     * @param $value
+     */
+    public function setInstructionsAttribute($value)
+    {
+        $this->attributes['instructions'] = json_encode($value);
+    }
+
     /**
      * @param $value
      * @return mixed

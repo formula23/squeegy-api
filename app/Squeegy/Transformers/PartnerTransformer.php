@@ -19,6 +19,7 @@ class PartnerTransformer extends TransformerAbstract
     protected $defaultIncludes = [
         'availability',
         'services',
+        'instructions',
     ];
 
     protected $availableIncludes = [
@@ -64,5 +65,11 @@ class PartnerTransformer extends TransformerAbstract
 
         return $this->collection($services->get(), new ServiceTransformer());
     }
-    
+
+    public function includeInstructions(Partner $partner)
+    {
+        $instructions = $partner->instructions(true)->get();
+        return $this->collection($instructions, new InstructionTransformer());
+    }
+
 }

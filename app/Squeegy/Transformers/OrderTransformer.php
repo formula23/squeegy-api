@@ -142,11 +142,17 @@ class OrderTransformer extends TransformerAbstract {
 
     public function includeService(Order $order)
     {
-        $order->service->name = $order->service->getOriginal('name');
-        if(($order_surcharge = $order->hasSurCharge()) && !request()->user()->is('worker')) {
-            $order->service->name = $order->service->getOriginal('name')." + $".number_format($order_surcharge/100)."(".$order->vehicle->type.")";
+        if($order->isPartner()) {
+            $service = $order->partner->service($order->service_id)->first();
+            $order->service->price = ($service->pivot->price?:$service->price);
+
+        } else {
+            $order->service->name = $order->service->getOriginal('name');
+            if(($order_surcharge = $order->hasSurCharge()) && !request()->user()->is('worker')) {
+                $order->service->name = $order->service->getOriginal('name')." + $".number_format($order_surcharge/100)."(".$order->vehicle->type.")";
+            }
         }
-        
+
         return $this->item($order->service, new ServiceTransformer);
     }
 

@@ -4,6 +4,7 @@ use Aloha\Twilio\Twilio;
 use App\Events\UserUpdated;
 use App\Http\Requests;
 use App\PaymentMethod;
+use App\Squeegy\Transformers\OrderTransformer;
 use App\Squeegy\Transformers\UserTransformer;
 use App\User;
 use App\WasherActivityLog;
@@ -292,4 +293,26 @@ class UserController extends Controller {
         return $this->response->withArray($data);
     }
 
+    public function latestOrder(Request $request)
+    {
+        if( ! $request->user()->is('customer')) {
+            return $this->response->errorForbidden('Unauthorized.');
+        }
+
+        $latestOrder=null;
+
+        if($partner_id = $request->input('partner_id')) {
+            $latestOrder = $request->user()->pastOrders()->where('partner_id', $partner_id)->first();
+        }
+
+        if( ! $latestOrder) $latestOrder = $request->user()->pastOrders()->whereNull('partner_id')->first();
+
+        if(is_null($latestOrder)) {
+            return $this->response->errorNotFound('No previous orders.');
+        }
+
+        return $this->response->withItem($latestOrder, new OrderTransformer());
+    }
+        
+    
 }

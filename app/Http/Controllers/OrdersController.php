@@ -238,9 +238,18 @@ class OrdersController extends Controller {
                 $time_window_key = 'close';
                 if($schedule_data['window_'.$time_window_key]->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
-                //** partner stuff */
-                if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+
+                //** partner stuff *//
+                if(isset($data['partner_id'])) {
+                    $partner = Partner::find($data['partner_id']);
+                    $data['location'] = $partner->location;
+
+                } else {
+                    $partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon']);
                     $data['partner_id'] = $partner->id;
+                }
+                
+                if($partner) {
                     $service = $partner->service($data['service_id'])->first();
 
 //                    $this->validate_partner_day($partner, $schedule_data['window_open']);
@@ -249,7 +258,6 @@ class OrdersController extends Controller {
                     if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
 
                     try {
-
                         if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
                             return $this->return_partner_resp($accepting_code, $day);
                         }
@@ -258,8 +266,30 @@ class OrdersController extends Controller {
                         \Bugsnag::notifyException($e);
                         \Log::info($e);
                     }
-
                 }
+
+
+//                if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+//
+//                    $service = $partner->service($data['service_id'])->first();
+//
+////                    $this->validate_partner_day($partner, $schedule_data['window_open']);
+//
+//                    $day = $partner->get_day_by_date($schedule_data['window_open']);
+//                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
+//
+//                    try {
+//
+//                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
+//                            return $this->return_partner_resp($accepting_code, $day);
+//                        }
+//
+//                    } catch(\Exception $e) {
+//                        \Bugsnag::notifyException($e);
+//                        \Log::info($e);
+//                    }
+//
+//                }
 
                 $order_schedule = OrderSchedule::create($schedule_data);
                 $this->order_date = $schedule_data['window_open'];

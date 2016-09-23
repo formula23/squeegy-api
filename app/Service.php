@@ -39,7 +39,7 @@ class Service extends Model {
     {
         return json_decode($value, true);
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

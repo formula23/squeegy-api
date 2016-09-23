@@ -274,17 +274,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @param $query
      * @return mixed
      */
-    public function scopePastOrders($query)
-    {
-        return $query->whereHas('orders', function($q) {
-            $q->where('status', 'done');
-        });
-    }
-
-    /**
-     * @param $query
-     * @return mixed
-     */
     public function scopeWorkers($query)
     {
         return $query->whereHas('roles', function ($q) {
@@ -362,6 +351,21 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $prev_orders = $this->orders()->whereNotIn('orders.status', ['cancel','request'])->get();
         if($prev_orders->count()) return false;
         else return true;
+    }
+
+    public function lastOrder($vehicle_id=null, $partner_id=null)
+    {
+        $qry = $this->orders()->where('status','done')->orderBy('done_at','desc');
+
+        if($vehicle_id) $qry->where('vehicle_id', $vehicle_id);
+        if($partner_id) $qry->where('partner_id', $partner_id);
+
+        return $qry;
+    }
+
+    public function pastOrders()
+    {
+        return $this->orders()->where('status','done')->orderBy('done_at','desc');
     }
 
     /**

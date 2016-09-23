@@ -84,6 +84,18 @@ class Partner extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function instructions($sequence=false)
+    {
+        $qry = $this->belongsToMany('App\Instruction')->withPivot(['label','hint','prepopulate','required','min_length','max_length','validation']);
+        if($sequence) {
+            $qry->orderBy('sequence');
+        }
+        return $qry;
+    }
+
+    /**
      * @param $lat
      * @param $lng
      * @return \___PHPSTORM_HELPERS\static|mixed|null
