@@ -242,17 +242,16 @@ class OrdersController extends Controller {
                 //** partner stuff *//
                 if(isset($data['partner_id'])) {
                     $partner = Partner::find($data['partner_id']);
+                    if( ! $partner) return $this->response->errorNotFound(trans('message.order.corp_not_found'));
                     $data['location'] = $partner->location;
 
                 } else {
                     $partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon']);
                     $data['partner_id'] = $partner->id;
                 }
-                
+
                 if($partner) {
                     $service = $partner->service($data['service_id'])->first();
-
-//                    $this->validate_partner_day($partner, $schedule_data['window_open']);
 
                     $day = $partner->get_day_by_date($schedule_data['window_open']);
                     if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
