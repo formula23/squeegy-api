@@ -337,9 +337,9 @@ class Orders {
                     self::$complete_times_by_worker[$active_worker->id]['q']['remaining_route'.$idx] = $travel_time;
                     $complete_times_by_worker_debug[$active_worker->id]['q']['remaining route time---'.$job->id] = $worker_origin." --> ".$destination." (trvl time:$travel_time)";
 
-                    self::$complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->service->time;
-                    $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->service->time;
-
+                    self::$complete_times_by_worker[$active_worker->id]['q']['job time'.$idx] = (int)$job->etc;
+                    $complete_times_by_worker_debug[$active_worker->id]['q']['job time'.$job->id] = (int)$job->etc;
+                    
 //                    dd($travel_time);
 
                 } else if($job->status == "enroute" || $job->status == "assign") { //v1.4
