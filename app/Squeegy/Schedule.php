@@ -180,6 +180,7 @@ class Schedule
         try
         {
             //get array of available days in sequential order.
+            $days_list=[];
             $days = $this->partner->days()->orderBy('open')->get();
 
             foreach($days as $idx=>$day) {
@@ -196,7 +197,14 @@ class Schedule
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
 
-                $container['available_days'][$idx]['day'] = $day->open->format('D, M d');
+                $day_formatted = $day->open->format('D, M d');
+
+                if(in_array($day_formatted, $days_list)) {
+                    $idx = array_search($day_formatted, $days_list);
+                }
+
+                $container['available_days'][$idx]['day'] = $day_formatted;
+                $days_list[$idx]=$day_formatted;
 
                 if($day->time_slot_frequency) {
 
@@ -208,9 +216,6 @@ class Schedule
 
                         if($day->time_slot_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->time_slot_cap) {
                             $start_time->addHours($day->time_slot_frequency);
-//                            \Log::info('start time in time slot cap');
-//                            \Log::info($start_time);
-//                            continue;
                             if($start_time->gte($end_time)) {
                                 unset($container['available_days'][$idx]);
                                 continue(2);
@@ -245,9 +250,10 @@ class Schedule
 
             }
 
-            \Log::info('********** container ***********');
-            \Log::info($container);
-//            \Log::info(array_values($container));
+            $container['available_days'] = array_values($container['available_days']);
+
+//            \Log::info('********** container ***********');
+//            \Log::info($container);
 
             if( ! count($container['available_days'])) {
                 $container['next_day'] = $this->partner->upcoming_date();
