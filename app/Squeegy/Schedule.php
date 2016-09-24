@@ -175,6 +175,7 @@ class Schedule
 //        $cur_hr = 17;
 //        Log::info('cur hr:'.$cur_hr);
 //        Log::info('day of week:...'.$this->now->dayOfWeek);
+        Log::info('Current Schedule:');
         Log::info($this->current_schedule);
 
         try
@@ -192,6 +193,7 @@ class Schedule
                 if( ! $day->accepting_orders) {
                     continue;
                 }
+                Log::info($day);
 
                 $start_time = $day->open;
                 $end_time = $day->close;
@@ -211,9 +213,10 @@ class Schedule
                     for($h=0;$h<$num_hrs;$h++) {
 
                         if($start_time->gt($end_time)) {
+                            Log::info('continue');
                             continue;
                         }
-
+Log::info($start_time->format('H'));
                         if($day->time_slot_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->time_slot_cap) {
                             $start_time->addHours($day->time_slot_frequency);
                             if($start_time->gte($end_time)) {
@@ -250,15 +253,15 @@ class Schedule
 
             }
 
-            $container['available_days'] = array_values($container['available_days']);
-
-//            \Log::info('********** container ***********');
-//            \Log::info($container);
-
             if( ! count($container['available_days'])) {
                 $container['next_day'] = $this->partner->upcoming_date();
             }
 
+            $container['available_days'] = array_values($container['available_days']);
+
+            \Log::info('********** container ***********');
+            \Log::info($container);
+            
             return $container;
             
         } catch (\Exception $e) {
