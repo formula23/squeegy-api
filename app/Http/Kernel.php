@@ -16,7 +16,7 @@ class Kernel extends HttpKernel {
 //		'App\Http\Middleware\ApiSession',
 //		'Illuminate\View\Middleware\ShareErrorsFromSession',
 		\App\Http\Middleware\LogResponse::class,
-		\App\Http\Middleware\Cors::class,
+//		\App\Http\Middleware\Cors::class,
 	];
 
 	/**
