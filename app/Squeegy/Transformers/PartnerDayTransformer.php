@@ -18,10 +18,14 @@ class PartnerDayTransformer extends TransformerAbstract
     public function transform(PartnerDay $partnerDay)
     {
         return [
-            'day'=>$partnerDay->day,
-            'day_of_week'=>$partnerDay->day_of_week,
-            'time_start'=>$partnerDay->time_start,
-            'time_end'=>$partnerDay->time_end,
+            'open'=>$partnerDay->open,
+            'close'=>$partnerDay->close,
+            'cutoff'=>$partnerDay->cutoff,
+            'frequency'=>$partnerDay->frequency,
+            'order_cap'=>$partnerDay->order_cap,
+            'time_slot_frequency'=>$partnerDay->time_slot_frequency,
+            'time_slot_cap'=>$partnerDay->time_slot_cap,
+            'accepting_orders'=>$partnerDay->accepting_orders,
         ];
     }
 }
