@@ -24,6 +24,10 @@ class LogResponse
         
         $apiLog->status_code = $response->status();
         $apiLog->response_body = $response->getContent();
+
+        $apiLog->execution_end = microtime(true);
+        $apiLog->execution_time = ($apiLog->execution_end - $apiLog->execution_start);
+
         $apiLog->save();
 
         return $response;
