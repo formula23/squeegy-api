@@ -59,6 +59,66 @@ abstract class Controller extends ApiGuardController {
             }
 
             $method = last($routeArray);
+            
+            // End of cheking limits
+            if (Config::get('apiguard.logging', true)) {
+                // Default to log requests from this action
+                $logged = true;
+
+                if (isset($apiMethods[$method]['logged']) && $apiMethods[$method]['logged'] === false) {
+                    $logged = false;
+                }
+
+                if ($logged) {
+                    // Log this API request
+                    $this->apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
+
+                    if (isset($this->apiKey)) {
+                        $this->apiLog->api_key_id = $this->apiKey->id;
+                    }
+
+                    try {
+                        $user = JWTAuth::parseToken()->authenticate();
+                        $this->apiLog->user_id    = $user->id;
+                    } catch(\Exception $e) {}
+
+                    $this->apiLog->host      = $request->root();
+                    $this->apiLog->path      = $request->path();
+                    $this->apiLog->route      = Route::currentRouteAction();
+                    $this->apiLog->method     = $request->getMethod();
+                    $this->apiLog->params     = http_build_query(array_except($request->query(), 'password'));
+
+                    if($request_body = json_decode($request->getContent(), true)) {
+                        unset($request_body['password']);
+                        $this->apiLog->request_body = (json_encode($request_body)?:'');
+                    }
+
+                    $this->apiLog->ip_address = $request->getClientIp();
+                    $this->apiLog->device     = $request->header('X-Device');
+                    $this->apiLog->device_os  = $request->header('X-Device-Software-Version');
+                    $this->apiLog->device_carrier = $request->header('X-Device-Carrier');
+                    $this->apiLog->device_identifier = $request->header('X-Device-Identifier');
+                    $this->apiLog->network_type = $request->header('X-Network-Type');
+                    $this->apiLog->app_type = $request->header('X-Application-Type');
+                    $this->apiLog->app_version = $request->header('X-Application-Version');
+
+                    $this->apiLog->execution_start = LARAVEL_START;
+                    
+                    Log::info(LARAVEL_START);
+                    
+                    $this->apiLog->save();
+
+                    try {
+                        if($this->apiLog->app_version != Auth::user()->app_version) {
+                            Auth::user()->app_version = $this->apiLog->app_version;
+                            Auth::user()->save();
+                        }
+                    } catch (\Exception $e) {}
+
+
+                    $request->api_log_id = $this->apiLog->id;
+                }
+            }
 
 
             if (Config::get('apiguard.logging', true)) {
@@ -231,61 +291,7 @@ abstract class Controller extends ApiGuardController {
                     }
                 }
             }
-
-            // End of cheking limits
-//            if (Config::get('apiguard.logging', true)) {
-//                // Default to log requests from this action
-//                $logged = true;
-//
-//                if (isset($apiMethods[$method]['logged']) && $apiMethods[$method]['logged'] === false) {
-//                    $logged = false;
-//                }
-//
-//                if ($logged) {
-//                    // Log this API request
-//                    $this->apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
-//
-//                    if (isset($this->apiKey)) {
-//                        $this->apiLog->api_key_id = $this->apiKey->id;
-//                    }
-//
-//                    try {
-//                        $user = JWTAuth::parseToken()->authenticate();
-//                        $this->apiLog->user_id    = $user->id;
-//                    } catch(\Exception $e) {}
-//
-//                    $this->apiLog->host      = $request->root();
-//                    $this->apiLog->path      = $request->path();
-//                    $this->apiLog->route      = Route::currentRouteAction();
-//                    $this->apiLog->method     = $request->getMethod();
-//                    $this->apiLog->params     = http_build_query(array_except($request->query(), 'password'));
-//
-//                    if($request_body = json_decode($request->getContent(), true)) {
-//                        unset($request_body['password']);
-//                        $this->apiLog->request_body = (json_encode($request_body)?:'');
-//                    }
-//
-//                    $this->apiLog->ip_address = $request->getClientIp();
-//                    $this->apiLog->device     = $request->header('X-Device');
-//                    $this->apiLog->device_os  = $request->header('X-Device-Software-Version');
-//                    $this->apiLog->device_carrier = $request->header('X-Device-Carrier');
-//                    $this->apiLog->device_identifier = $request->header('X-Device-Identifier');
-//                    $this->apiLog->network_type = $request->header('X-Network-Type');
-//                    $this->apiLog->app_type = $request->header('X-Application-Type');
-//                    $this->apiLog->app_version = $request->header('X-Application-Version');
-//                    $this->apiLog->save();
-//
-//                    try {
-//                        if($this->apiLog->app_version != Auth::user()->app_version) {
-//                            Auth::user()->app_version = $this->apiLog->app_version;
-//                            Auth::user()->save();
-//                        }
-//                    } catch (\Exception $e) {}
-//
-//
-//                    $request->api_log_id = $this->apiLog->id;
-//                }
-//            }
+            
             $this->initialize();
 
         }, ['apiMethods' => $this->apiMethods]);
