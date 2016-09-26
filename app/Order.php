@@ -365,7 +365,8 @@ class Order extends Model {
         if(Request::header('X-Device-Identifier')) {
             $q = self::join('users', 'orders.user_id' , '=', 'users.id')
                 ->where('users.device_id', Request::header('X-Device-Identifier'))
-                ->whereNotIn('orders.status', ['cancel','request']);
+                ->whereNotIn('orders.status', ['cancel','request'])
+                ->whereNull('orders.partner_id');
             if($col && $val) {
                 $q->where($col, $val);
             }

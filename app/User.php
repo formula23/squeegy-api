@@ -359,7 +359,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $this->device_orders = Order::device_orders();
         if($this->device_orders->count()) return false;
 
-        $prev_orders = $this->orders()->whereNotIn('orders.status', ['cancel','request'])->get();
+        $prev_orders = $this->orders()->whereNotIn('orders.status', ['cancel','request'])->whereNull('partner_id')->get();
         if($prev_orders->count()) return false;
         else return true;
     }
