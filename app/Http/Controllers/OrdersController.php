@@ -548,6 +548,7 @@ class OrdersController extends Controller {
 
         //update other fields
         $update_fields = [
+            'eta',
             'start_at',
             'done_at',
             'worker_id',

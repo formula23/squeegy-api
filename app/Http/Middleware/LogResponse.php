@@ -19,16 +19,18 @@ class LogResponse
     {
         $response = $next($request);
 
-        $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
-        $apiLog = $apiLog->find($request->api_log_id);
-        
-        $apiLog->status_code = $response->status();
-        $apiLog->response_body = $response->getContent();
+        if($request->api_log_id) {
+            $apiLog = App::make(Config::get('apiguard.apiLogModel', 'Chrisbjr\ApiGuard\Models\ApiLog'));
+            $apiLog = $apiLog->find($request->api_log_id);
 
-        $apiLog->execution_end = microtime(true);
-        $apiLog->execution_time = ($apiLog->execution_end - $apiLog->execution_start);
+            $apiLog->status_code = $response->status();
+            $apiLog->response_body = $response->getContent();
 
-        $apiLog->save();
+            $apiLog->execution_end = microtime(true);
+            $apiLog->execution_time = ($apiLog->execution_end - $apiLog->execution_start);
+
+            $apiLog->save();
+        }
 
         return $response;
     }
