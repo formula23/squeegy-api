@@ -59,7 +59,7 @@ abstract class Controller extends ApiGuardController {
             }
 
             $method = last($routeArray);
-            
+
             // End of cheking limits
             if (Config::get('apiguard.logging', true)) {
                 // Default to log requests from this action
@@ -102,7 +102,6 @@ abstract class Controller extends ApiGuardController {
                     $this->apiLog->app_type = $request->header('X-Application-Type');
                     $this->apiLog->app_version = $request->header('X-Application-Version');
                     $this->apiLog->execution_start = LARAVEL_START;
-                    
                     $this->apiLog->save();
 
                     try {
@@ -111,8 +110,7 @@ abstract class Controller extends ApiGuardController {
                             Auth::user()->save();
                         }
                     } catch (\Exception $e) {}
-
-
+                    
                     $request->api_log_id = $this->apiLog->id;
                 }
             }

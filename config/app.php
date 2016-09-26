@@ -157,6 +157,7 @@ return [
 		App\Providers\MixpanelServiceProvider::class,
 		SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
 		App\Providers\TwilioRestClientProvider::class,
+		Barryvdh\Cors\ServiceProvider::class,
 	],
 
 	/*

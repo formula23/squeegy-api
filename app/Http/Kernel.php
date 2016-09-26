@@ -13,6 +13,7 @@ class Kernel extends HttpKernel {
 		'Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode',
 		'Illuminate\Cookie\Middleware\EncryptCookies',
 		'Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse',
+		'Barryvdh\Cors\HandleCors',
 //		'App\Http\Middleware\ApiSession',
 //		'Illuminate\View\Middleware\ShareErrorsFromSession',
 		\App\Http\Middleware\LogResponse::class,
