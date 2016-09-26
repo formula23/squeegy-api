@@ -15,10 +15,14 @@ use League\Fractal\TransformerAbstract;
 class PartnerTransformer extends TransformerAbstract
 {
     protected $defaultIncludes = [
+
+    ];
+
+    protected $availableIncludes = [
         'days',
         'services',
     ];
-
+    
     public function transform(Partner $partner)
     {
         return [
