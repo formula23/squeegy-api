@@ -256,7 +256,7 @@ class PayrollGenerate extends Command {
         10267 => [ //sheldon springs
 //            1=>15,
 //            2=>120,
-//            5=>120,
+            4=>238.71,
 //            6=>120,
         ],
         10350 => [ //michael wallace
@@ -392,8 +392,8 @@ class PayrollGenerate extends Command {
 			->whereRaw('WEEK(DATE_FORMAT(done_at, "%Y-%m-%d"), 2) = (WEEK(NOW(), 2) - 1)')
 			->whereRaw('DATE_FORMAT(done_at, "%Y") = DATE_FORMAT(now(), "%Y")')
             ->whereNull('partner_id')
-//            ->where('worker_id', 6861)
-			->orderBy('done_at')->get();
+			->orderBy('done_at')
+            ->get();
 
         $start_day = Carbon::parse('2 sundays ago');
         $this->week_of = $start_day->format("M jS");

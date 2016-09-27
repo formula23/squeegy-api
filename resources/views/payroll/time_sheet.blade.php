@@ -36,7 +36,7 @@
 @if(isset($washer_info['jobs']))
     @foreach($washer_info['jobs']['days'] as $date=>$day)
 
-        @if( (isset($day['pay']) && $day['pay'] > 0) || (isset($day['min']) && $day['min'] > 0) || (isset($day['onsite']) && $day['onsite'] > 0) )
+{{--        @if( (isset($day['pay']) && $day['pay'] > 0) || (isset($day['min']) && $day['min'] > 0) || (isset($day['onsite']) && $day['onsite'] > 0) )--}}
 
         <tr>
             <td colspan="{{ $colspan + 1 }}"><strong>{{ $date }}</strong></td>
