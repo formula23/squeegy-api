@@ -108,16 +108,16 @@
             </tr>
         @endif
 
-        <tr>
-            <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
-            <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'] + @$day['onsite_tip'] - @$day['deduction'], 2) }}</td>
-        </tr>
+            <tr>
+                <td colspan="{{ $colspan }}" class="text-right"><strong>Subtotal:</strong></td>
+                <td>${{ number_format($day['pay'] + @$day['min'] + @$day['onsite'] + @$day['bonus'] + @$day['tip'] + @$day['onsite_tip'] - @$day['deduction'], 2) }}</td>
+            </tr>
 
-        <tr>
-            <td colspan="{{ $colspan + 1 }}">&nbsp;</td>
-        </tr>
+            <tr>
+                <td colspan="{{ $colspan + 1 }}">&nbsp;</td>
+            </tr>
 
-        @endif
+        {{--@endif--}}
 
     @endforeach
 @endif
