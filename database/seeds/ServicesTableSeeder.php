@@ -9,8 +9,7 @@ class ServicesTableSeeder extends Seeder {
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0'); // disable foreign key constraints
-
-//        Service::truncate();
+        
         ServiceAttrib::truncate();
 
         $types = ['Car','Truck','SUV','Van','Minivan'];
@@ -23,7 +22,11 @@ class ServicesTableSeeder extends Seeder {
                         'surcharge'=>'0',
                     ],
                     '2' => [
-                        'etc'=>'45',
+                        'etc'=>'50',
+                        'surcharge'=>'0',
+                    ],
+                    '4' => [
+                        'etc'=>'70',
                         'surcharge'=>'0',
                     ],
                 ],
@@ -36,14 +39,22 @@ class ServicesTableSeeder extends Seeder {
                         'etc'=>'60',
                         'surcharge'=>'0',
                     ],
+                    '4' => [
+                        'etc'=>'80',
+                        'surcharge'=>'0',
+                    ],
                 ],
                 'Large' => [
                     '1' => [
-                        'etc'=>'45',
+                        'etc'=>'50',
                         'surcharge'=>'0',
                     ],
                     '2' => [
                         'etc'=>'75',
+                        'surcharge'=>'0',
+                    ],
+                    '4' => [
+                        'etc'=>'90',
                         'surcharge'=>'0',
                     ],
                 ],
@@ -51,21 +62,29 @@ class ServicesTableSeeder extends Seeder {
             'Truck' => [
                 'Compact' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'45',
                         'surcharge'=>'800',
                     ],
                     '2' => [
                         'etc'=>'60',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'80',
                         'surcharge'=>'800',
                     ],
                 ],
                 'Midsize' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'45',
                         'surcharge'=>'800',
                     ],
                     '2' => [
-                        'etc'=>'60',
+                        'etc'=>'70',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'110',
                         'surcharge'=>'800',
                     ],
                 ],
@@ -75,7 +94,11 @@ class ServicesTableSeeder extends Seeder {
                         'surcharge'=>'800',
                     ],
                     '2' => [
-                        'etc'=>'75',
+                        'etc'=>'90',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'110',
                         'surcharge'=>'800',
                     ],
                 ],
@@ -87,17 +110,25 @@ class ServicesTableSeeder extends Seeder {
                         'surcharge'=>'500',
                     ],
                     '2' => [
-                        'etc'=>'50',
+                        'etc'=>'60',
+                        'surcharge'=>'500',
+                    ],
+                    '4' => [
+                        'etc'=>'80',
                         'surcharge'=>'500',
                     ],
                 ],
                 'Midsize' => [
                     '1' => [
-                        'etc'=>'45',
+                        'etc'=>'50',
                         'surcharge'=>'500',
                     ],
                     '2' => [
                         'etc'=>'70',
+                        'surcharge'=>'500',
+                    ],
+                    '4' => [
+                        'etc'=>'90',
                         'surcharge'=>'500',
                     ],
                 ],
@@ -108,6 +139,10 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'90',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'110',
                         'surcharge'=>'800',
                     ],
                 ],
@@ -122,6 +157,10 @@ class ServicesTableSeeder extends Seeder {
                         'etc'=>'75',
                         'surcharge'=>'4000',
                     ],
+                    '4' => [
+                        'etc'=>'95',
+                        'surcharge'=>'4000',
+                    ],
                 ],
                 'Midsize' => [
                     '1' => [
@@ -130,6 +169,10 @@ class ServicesTableSeeder extends Seeder {
                     ],
                     '2' => [
                         'etc'=>'75',
+                        'surcharge'=>'4000',
+                    ],
+                    '4' => [
+                        'etc'=>'95',
                         'surcharge'=>'4000',
                     ],
                 ],
@@ -142,70 +185,60 @@ class ServicesTableSeeder extends Seeder {
                         'etc'=>'90',
                         'surcharge'=>'4000',
                     ],
+                    '4' => [
+                        'etc'=>'110',
+                        'surcharge'=>'4000',
+                    ],
                 ],
             ],
             'Minivan' => [
                 'Compact' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'45',
                         'surcharge'=>'800',
                     ],
                     '2' => [
-                        'etc'=>'75',
+                        'etc'=>'80',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'110',
                         'surcharge'=>'800',
                     ],
                 ],
                 'Midsize' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'45',
                         'surcharge'=>'800',
                     ],
                     '2' => [
-                        'etc'=>'75',
+                        'etc'=>'80',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'110',
                         'surcharge'=>'800',
                     ],
                 ],
                 'Large' => [
                     '1' => [
-                        'etc'=>'40',
+                        'etc'=>'45',
                         'surcharge'=>'800',
                     ],
                     '2' => [
-                        'etc'=>'75',
+                        'etc'=>'80',
+                        'surcharge'=>'800',
+                    ],
+                    '4' => [
+                        'etc'=>'110',
                         'surcharge'=>'800',
                     ],
                 ],
             ],
         ];
 
-        ////// ***** EXPRESS ***** ///////
 
-//        $express = Service::create([
-//            'name' => 'Express',
-//            'price' => '2500',
-//            'details' => '["- Exterior Wash & Wax", "- Clean Exterior Windows", "- Light Wheel Wipe Down", "- Clean & Dress Tires"]',
-//            'time' => '30',
-//            'time_label' => '30 - 45 Minutes (Depending on Vehicle)',
-//            'sequence' => 2,
-//            'is_active' => 1,
-//        ]);
-
-
-        ////// ***** CLASSIC ***** ///////
-
-//        $classic = Service::create([
-//            'name' => 'Classic',
-//            'price' => '3900',
-//            'details' => '["- Express Wash +", "- Floor & Seat Vacuum", "- Dash & Panel Wipe Down", "- Clean Interior Windows"]',
-//            'time' => '60',
-//            'time_label' => '45 - 75 Minutes (Depending on Vehicle)',
-//            'sequence' => 3,
-//            'is_active' => 1,
-//        ]);
-
-
-
-        foreach([1,2] as $service_id) {
+        foreach([1,2,4] as $service_id) {
 
             $service = Service::find($service_id);
 
@@ -221,39 +254,6 @@ class ServicesTableSeeder extends Seeder {
             }
 
         }
-
-        ////// ***** SQUEEGY ***** ///////
-
-//        $squeegy = Service::create([
-//            'name' => 'Squeegy',
-//            'price' => '1500',
-//            'details' => '["- Exterior Wash"]',
-//            'time' => '20',
-//            'time_label' => '20 - 30 Minutes (Depending on Vehicle)',
-//            'sequence' => 1,
-//            'is_active' => 1,
-//        ]);
-//
-//        $squeegy->attribs()->create([
-//            'vehicle_type' => 'Car',
-//            'vehicle_size' => 'Midsize',
-//            'etc' => 20,
-//            'surcharge' => 0,
-//        ]);
-//
-//        $squeegy->attribs()->create([
-//            'vehicle_type' => 'Non-Car',
-//            'vehicle_size' => 'Midsize',
-//            'etc' => 30,
-//            'surcharge' => 200,
-//        ]);
-//
-//        $squeegy->attribs()->create([
-//            'vehicle_type' => 'Non-Car',
-//            'vehicle_size' => 'Large',
-//            'etc' => 40,
-//            'surcharge' => 200,
-//        ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // enable foreign key constraints
     }
