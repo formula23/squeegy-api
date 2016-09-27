@@ -256,7 +256,7 @@ class PayrollGenerate extends Command {
         10267 => [ //sheldon springs
 //            1=>15,
 //            2=>120,
-            4=>238.71,
+            4=>119.36,
 //            6=>120,
         ],
         10350 => [ //michael wallace
