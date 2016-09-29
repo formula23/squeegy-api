@@ -57,7 +57,7 @@ class DbBackup extends Command {
             "-u".$db_creds['username'],
             "-p'".$db_creds['password']."'",
             $db_creds['database'],
-            "--ignore-table=".$db_creds['database'].".cache",
+            "--ignore-table=".$db_creds['database'].".cache --ignore-table=".$db_creds['database'].".api_logs --ignore-table=".$db_creds['database'].".eta_logs",
 			" > ",
             $this->dir."/".$db_creds['database'].".".Carbon::now()->format("H").".sql",
         ];
