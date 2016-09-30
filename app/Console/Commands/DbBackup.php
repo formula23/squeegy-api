@@ -59,7 +59,7 @@ class DbBackup extends Command {
             "-u".$db_creds['username'],
             "-p'".$db_creds['password']."'",
             $db_creds['database'],
-			( ! $this->option('full_db') ? "--ignore-table=".$db_creds['database'].".cache --ignore-table=".$db_creds['database'].".api_logs --ignore-table=".$db_creds['database'].".eta_logs" : ""),
+			"--ignore-table=".$db_creds['database'].".cache --ignore-table=".$db_creds['database'].".eta_logs".( ! $this->option('full_db') ? " --ignore-table=".$db_creds['database'].".api_logs" : ""),
 			" > ",
             $this->dir."/".$file_name,
         ];
