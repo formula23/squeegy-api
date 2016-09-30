@@ -32,7 +32,7 @@ class DbBackup extends Command {
 	{
 		parent::__construct();
 
-        $this->dir = storage_path().'/database/auto_backup/'.Carbon::now()->format("D");
+        $this->dir = storage_path().'/database/auto_backup/';
 
         try {
             if ( ! File::exists($this->dir)) {
