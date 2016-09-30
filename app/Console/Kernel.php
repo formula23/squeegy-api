@@ -46,11 +46,13 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-        $schedule->command('db:backup')->cron('* */6 * * *');
+		$schedule->command('db:backup --full_db')->daily()->withoutOverlapping();
+		$schedule->command('db:backup')->cron('* */6 * * *');
+		
 //		$schedule->command('order:review_wash_notice')->cron('* 8-20 * * *');
 		$schedule->command('order:assign-scheduled')->cron('* 9-19 * * *')->appendOutputTo($this->dir('assign-scheduled'));
-		$schedule->command('squeegy:advance_partner_dates')->cron('0 10-19 * * *');
-		$schedule->command('washer:tip-notify')->cron('0 8 * * *');
+		$schedule->command('squeegy:advance_partner_dates')->hourly()->between('10:00', '19:00');
+		$schedule->command('washer:tip-notify')->dailyAt('8:00');
 	}
 
     protected function dir($process_name)

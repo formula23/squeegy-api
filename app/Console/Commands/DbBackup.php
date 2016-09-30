@@ -12,7 +12,7 @@ class DbBackup extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'db:backup';
+	protected $signature = 'db:backup {--full_db : Dump entire DB or ignore certain tables}';
 
 	/**
 	 * The console command description.
@@ -32,7 +32,7 @@ class DbBackup extends Command {
 	{
 		parent::__construct();
 
-        $this->dir = storage_path().'/database/auto_backup/';
+        $this->dir = storage_path().'/database/auto_backup';
 
         try {
             if ( ! File::exists($this->dir)) {
@@ -52,14 +52,16 @@ class DbBackup extends Command {
 	{
         $db_creds = \Config::get("database.connections.".\Config::get('database.default'));
 
+		$file_name = $db_creds['database'].( ! $this->option('full_db') ? ".".Carbon::now()->format("H") : '').".sql";
+
         $cmd_parts = [
             env('MYSQL_BIN')."/mysqldump",
             "-u".$db_creds['username'],
             "-p'".$db_creds['password']."'",
             $db_creds['database'],
-            "--ignore-table=".$db_creds['database'].".cache --ignore-table=".$db_creds['database'].".api_logs --ignore-table=".$db_creds['database'].".eta_logs",
+			( ! $this->option('full_db') ? "--ignore-table=".$db_creds['database'].".cache --ignore-table=".$db_creds['database'].".api_logs --ignore-table=".$db_creds['database'].".eta_logs" : ""),
 			" > ",
-            $this->dir."/".$db_creds['database'].".".Carbon::now()->format("H").".sql",
+            $this->dir."/".$file_name,
         ];
 
         $process = new Process(implode(" ", $cmd_parts));
