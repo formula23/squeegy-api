@@ -23,20 +23,7 @@ class PartnerController extends Controller
         if( ! $partner->exists || ! $partner->is_active) {
             return $this->response->errorWrongArgs('Invalid Code. Try Again.');
         }
-
         return $this->response->withItem($partner, new PartnerTransformer());
 
-    }
-
-    public function available(Request $request, Partner $partner=null)
-    {
-        if( ! $partner->exists) {
-            return $this->response->errorWrongArgs('Invalid Code. Try Again.');
-        }
-
-        $a = (new Schedule(null, $partner->id))->availability();
-
-
-        dd($a);
     }
 }

@@ -169,7 +169,7 @@ class Schedule
 
 //        $cur_hr = $this->now->hour;
 //        $this->now = Carbon::create(2016,5,12,18,1,0);
-        Log::info("************* PARTNER DAYS *********************");
+        Log::info("***************** PARTNER DAYS *********************");
 //        Log::info($this->now);
         $cur_hr = $this->now->hour;
 //        $cur_hr = 17;
@@ -190,7 +190,7 @@ class Schedule
 //                \Log::info($day->open);
 //                \Log::info($day);
 
-                if( ! $day->accepting_orders) {
+                if( ! $day->accepting_orders || $day->open->isPast()) {
                     continue;
                 }
                 Log::info($day);
@@ -261,7 +261,7 @@ Log::info($start_time->format('H'));
 
             \Log::info('********** container ***********');
             \Log::info($container);
-            
+//            dd('done');
             return $container;
             
         } catch (\Exception $e) {
