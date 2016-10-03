@@ -461,8 +461,11 @@ class PayrollGenerate extends Command {
                 }
             }
 //$order->price / 100
+            
+            $squeegy_comm = ($order->worker_id == 15638 ? 0.45 : $this->commission_pct['squeegy'] ); //Jorge @ 55% comm
+            
             $job['price'] = (round($order->price * (1 - 0.029)) - 30)/100;
-            $job['squeegy'] = ($job['price'] * $this->commission_pct['squeegy']);
+            $job['squeegy'] = ($job['price'] * $squeegy_comm);
             $job['txn'] = ($order->price * $this->commission_pct['txn']) / 100;
 
             $job['rev'] = $order->charged;
