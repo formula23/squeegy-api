@@ -98,6 +98,11 @@ class PayrollGenerate extends Command {
 
     protected $default_kit_fee = 25;
 
+    protected $washer_kit_fee = [
+        6861 => 5,
+        15638 => 15,
+    ];
+
     protected $kit_fee = [
 //        7269 => 50, // salvador
 //        7527 => 50, //gonzalo
@@ -403,9 +408,11 @@ class PayrollGenerate extends Command {
         {
             if (in_array($order->worker->id, $this->ignore_ids)) continue;
 
+            $default_kit_fee = (isset($this->washer_kit_fee[$order->worker_id]) ? $this->washer_kit_fee[$order->worker_id] : $this->default_kit_fee );
+
             @$orders_by_worker[$order->worker->id]['job_count']++;
             @$orders_by_worker[$order->worker->id]['washer'] = ['name' => $this->washer_names[$order->worker_id], 'email' => $order->worker->email];
-            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : (isset($this->kit_fee[$order->worker->id]) ? $this->kit_fee[$order->worker->id] : $this->default_kit_fee ) );
+            @$orders_by_worker[$order->worker->id]['rental'] = (in_array($order->worker->id, $this->no_kit_rental) ? 0 : (isset($this->kit_fee[$order->worker->id]) ? $this->kit_fee[$order->worker->id] : $default_kit_fee ) );
             @$orders_by_worker[$order->worker->id]['total_pay'] = 0;
             @$orders_by_worker[$order->worker->id]['total_onsite_tip'] = 0;
 //            @$orders_by_worker[$order->worker->id]['total_daily_tip'] = 0;
