@@ -182,7 +182,14 @@ class PayrollGenerate extends Command {
 //            4=>120,
 //            5=>120,
 //            6=>120,
-        ]
+        ],
+        15638 => [ //Jorge
+//            1 => 87,
+//            2 => 99,
+            3 => 120,
+            4 => 120,
+            5 => 120,
+        ],
 	];
 
     protected $onsite =[
@@ -218,6 +225,12 @@ class PayrollGenerate extends Command {
 //            1 => 87,
 //            3 => 60,
             4 => 108,
+//            5 => 30,
+        ],
+        15638 => [ //Jorge
+//            1 => 87,
+//            3 => 60,
+            2 => 99,
 //            5 => 30,
         ],
     ];
@@ -323,7 +336,13 @@ class PayrollGenerate extends Command {
             4=>12.56,
 //            5=>6,
 //            6=>120,
-        ]
+        ],
+        15638 => [ //Jorge
+//            1 => 87,
+//            3 => 60,
+            2 => 20.67,
+//            5 => 30,
+        ],
     ];
 
     protected $washer_training = [
