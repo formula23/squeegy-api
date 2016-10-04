@@ -51,7 +51,7 @@ class ManhattanTowerCodes extends Command
         $discount->services()->attach(1);
 
         for($i=1;$i<=50;$i++) {
-            $code = DiscountCode::generateReferralCode('25');
+            $code = DiscountCode::generateReferralCode('EX');
             $discount->discount_code()->create([
                 'code'=>$code,
                 'is_active'=>'1',
@@ -73,7 +73,7 @@ class ManhattanTowerCodes extends Command
         $discount->services()->attach(2);
 
         for($i=1;$i<=50;$i++) {
-            $code = DiscountCode::generateReferralCode('50');
+            $code = DiscountCode::generateReferralCode('CL');
             $discount->discount_code()->create([
                 'code'=>$code,
                 'is_active'=>'1',
