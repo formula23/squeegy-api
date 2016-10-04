@@ -36,6 +36,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\AdvancePartnerDate',
         'App\Console\Commands\EmailCustomerReceipt',
         'App\Console\Commands\WasherTipNotify',
+        'App\Console\Commands\ManhattanTowerCodes',
 	];
 
 	/**
