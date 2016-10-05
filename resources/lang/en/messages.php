@@ -76,7 +76,7 @@ return [
             'out_of_region' => 'Promotion not available in your area',
             'invalid_service' => 'Promotion not available for the :service_name wash',
             'referral_code_new_customer' => 'Referral codes can only be used by new customers.',
-            'partners' => 'Additional discounts not available for this location.',
+            'referral_code_partner' => 'Referral codes not available at corporate locations.',
         ],
         'tip' => [
             'order_not_complete'=>'Wash must be completed to tip.',

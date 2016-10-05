@@ -88,6 +88,23 @@ class Order extends Model {
     }
 
     /**
+     * @param $value
+     * @return mixed
+     */
+    public function getInstructionsAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    /**
+     * @param $value
+     */
+    public function setInstructionsAttribute($value)
+    {
+        $this->attributes['instructions'] = json_encode($value);
+    }
+
+    /**
      * @return int
      */
     public function subTotal()
@@ -506,16 +523,11 @@ class Order extends Model {
 
         if (empty($promo_code)) return "";
 
-//        Log::info("partner:.....");
-//        Log::info($order->partner);
-
-        if($this->isPartner() && !$this->partner->allow_promo) {
-            return trans('messages.order.discount.partners');
-        }
-
         //check if promo code is a referral code
         if($referrer = User::where('referral_code', $promo_code)->where('id', '!=', $this->user_id)->first())
         {
+            if($this->isPartner()) return trans('messages.order.discount.referral_code_partner');
+            
             //referrer program only valid for new customers
             if( ! $this->customer->firstOrder()) return trans('messages.order.discount.referral_code_new_customer');
 
@@ -526,6 +538,8 @@ class Order extends Model {
         else
         {
             $discount = Discount::validate_code($promo_code, $this);
+
+            if($this->isPartner() && ! in_array($this->partner_id, $discount->partners->lists('id')->all())) return trans('messages.order.discount.unavailable');
 
             if($discount === null) return trans('messages.order.discount.unavailable');
 

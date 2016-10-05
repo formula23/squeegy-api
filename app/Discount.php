@@ -116,6 +116,11 @@ class Discount extends Model {
         return $this->hasOne('App\DiscountCode')->where('code', $code)->first();
     }
 
+    public function partners()
+    {
+        return $this->belongsToMany('App\Partner');
+    }
+    
     /**
      * @param $id
      * @return mixed

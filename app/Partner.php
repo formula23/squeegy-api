@@ -24,6 +24,9 @@ class Partner extends Model
         return $this->belongsToMany('App\Service')->withPivot('price');
     }
 
+    /**
+     * @return mixed
+     */
     public function users()
     {
         return $this->belongsToMany('App\User', 'orders')->where('orders.status', 'done');
@@ -46,6 +49,11 @@ class Partner extends Model
         return $this->hasMany('App\PartnerDay');
     }
 
+    public function discounts()
+    {
+        return $this->belongsToMany('App\Discount');
+    }
+    
     /**
      * @param $value
      * @return mixed
@@ -63,11 +71,18 @@ class Partner extends Model
         $this->attributes['location'] = json_encode($value);
     }
 
+    /**
+     * @param $value
+     * @return mixed
+     */
     public function getGeoFenceAttribute($value)
     {
         return json_decode($value);
     }
 
+    /**
+     * @return string
+     */
     public function location_display()
     {
         return $this->location_name." ".$this->location['street'];
