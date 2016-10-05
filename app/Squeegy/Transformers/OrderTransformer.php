@@ -144,9 +144,9 @@ class OrderTransformer extends TransformerAbstract {
     {
         if($order->isPartner()) {
             $service = $order->partner->service($order->service_id)->first();
-            \Log::info('service:...');
-            \Log::info(var_dump($service));
-            $order->service->price = ( ! empty($service) && $service->pivot->price ? $service->pivot->price : $service->price);
+            if($service) {
+                $order->service->price = ($service->pivot->price?:$service->price);
+            }
         } else {
             $order->service->name = $order->service->getOriginal('name');
             if(($order_surcharge = $order->hasSurCharge()) && !request()->user()->is('worker')) {
