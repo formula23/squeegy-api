@@ -142,6 +142,7 @@ class OrderTransformer extends TransformerAbstract {
 
     public function includeService(Order $order)
     {
+        \Log::info($order);
         if($order->isPartner()) {
             $service = $order->partner->service($order->service_id)->first();
             $order->service->price = ($service->pivot->price?:$service->price);
