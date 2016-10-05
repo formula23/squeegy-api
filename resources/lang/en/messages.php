@@ -18,6 +18,7 @@ return [
         'corp_time_slot_cap' => "We're sorry but that time slot is fully booked for today. Please try another time slot.",
         'day_not_available' => 'The requested day is not available. Please go back and try again.',
         'not_accepting_next_day' => "We aren't accepting any more orders at this time.\n\nWe will be back here:\n:date",
+        'corp_no_description' => "No additional details at this time.",
         'corp_not_found'=>'Invalid Corporate Partner',
         'confirm_location' => 'We have detected that the location of your vehicle you selected may be incorrect. Please go back and verify your vehicles location.',
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',

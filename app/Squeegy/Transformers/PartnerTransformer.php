@@ -34,7 +34,7 @@ class PartnerTransformer extends TransformerAbstract
             'name'=>$partner->name,
             'location_name'=>$partner->name,
             'location'=>$partner->location,
-            'description'=>$partner->description,
+            'description'=>($partner->description?:trans('messages.order.corp_no_description')),
         ];
     }
 
