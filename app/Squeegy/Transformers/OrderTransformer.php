@@ -39,7 +39,7 @@ class OrderTransformer extends TransformerAbstract {
 
     public function transform(Order $order)
     {
-        
+
         $resp = [
             'id' => (string)$order->id,
             'job_number' => $order->job_number,
@@ -144,6 +144,8 @@ class OrderTransformer extends TransformerAbstract {
     {
         if($order->isPartner()) {
             $service = $order->partner->service($order->service_id)->first();
+            \Log::info('service:...');
+            \Log::info($service);
             $order->service->price = ( ! empty($service) && $service->pivot->price ? $service->pivot->price : $service->price);
         } else {
             $order->service->name = $order->service->getOriginal('name');
