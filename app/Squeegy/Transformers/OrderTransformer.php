@@ -39,7 +39,7 @@ class OrderTransformer extends TransformerAbstract {
 
     public function transform(Order $order)
     {
-
+        \Log::info('transform: '.$order->id);
         $resp = [
             'id' => (string)$order->id,
             'job_number' => $order->job_number,
