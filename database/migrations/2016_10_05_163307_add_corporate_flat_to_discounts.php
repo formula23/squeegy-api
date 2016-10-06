@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFieldsToPartnerDays extends Migration
+class AddCorporateFlatToDiscounts extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,8 @@ class AddFieldsToPartnerDays extends Migration
      */
     public function up()
     {
-        Schema::table('partner_days', function (Blueprint $table) {
-            $table->smallInteger('accepting_orders')->unsigned()->after('order_cap')->default(1);
+        Schema::table('discounts', function (Blueprint $table) {
+            $table->tinyInteger('corporate_only')->default(0)->after('single_use_code');
         });
     }
 
@@ -24,8 +24,8 @@ class AddFieldsToPartnerDays extends Migration
      */
     public function down()
     {
-        Schema::table('partner_days', function (Blueprint $table) {
-            $table->drop('accepting_orders');
+        Schema::table('discounts', function (Blueprint $table) {
+            $table->dropColumn('corporate_only');
         });
     }
 }

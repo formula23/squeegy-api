@@ -23,6 +23,7 @@ class Discount extends Model {
         'new_customer',
         'scope',
         'frequency_rate',
+        'corporate_only',
         'is_active',
     ];
 
@@ -141,7 +142,7 @@ class Discount extends Model {
         $order_date = ( $order->isSchedule() ? $order->schedule->window_open : Carbon::now() );
 
 //        $discount_qry = self::leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')->active();
-        $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'discounts.frequency_rate', 'single_use_code')
+        $discount_qry = self::select('discounts.id', 'discounts.user_id', 'discounts.discount_type', 'discounts.amount', 'new_customer', 'scope', 'discounts.frequency_rate', 'single_use_code', 'discounts.corporate_only')
             ->leftJoin('discount_codes', 'discounts.id', '=', 'discount_codes.discount_id')
             ->leftJoin('discount_user', 'discounts.id', '=', 'discount_user.discount_id')
             ->active()
