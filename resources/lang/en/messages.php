@@ -130,6 +130,11 @@ return [
             'header' => 'Create a Password',
             'body' => 'We\'ve added many new features to this version of Squeegy. To continue, please add a password to your account.',
         ],
+        'additional_instructions' => [
+            'header'=>'Help us find your vehicle',
+            'label'=>'Other Instructions',
+            'body'=>"Any relevant information to help us locate and access your vehicle.\nE.g. Building name, specific location, gate code, etc.",
+        ]
     ],
     'washer' => [
         'daily_tip' => [
