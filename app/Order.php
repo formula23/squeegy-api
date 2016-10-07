@@ -543,6 +543,8 @@ class Order extends Model {
 
             if($this->isPartner() && ! in_array($this->partner_id, $discount->partners->lists('id')->all())) return trans('messages.order.discount.unavailable');
 
+            if($discount->corporate_only && !$this->isPartner()) return trans('messages.order.discount.unavailable');
+
             if($discount->new_customer && ! $this->customer->firstOrder()) return trans('messages.order.discount.new_customer');
 
             if($discount->user_id && ($this->user_id != $discount->user_id)) return trans('messages.order.discount.unavailable');
@@ -550,8 +552,6 @@ class Order extends Model {
             if(Discount::has_regions($discount->id) && ! $discount->regions->count()) return trans('messages.order.discount.out_of_region');
 
             if($discount->services->count() && ! in_array($this->service_id, $discount->services->lists('id')->all())) return trans('messages.order.discount.invalid_service', ['service_name' => $this->service->name]);
-
-            if($discount->corporate_only && !$this->isPartner()) return trans('messages.order.discount.unavailable');
 
             $scope_discount = true;
             $frequency_rate = 0;
