@@ -285,7 +285,7 @@ class PayrollGenerate extends Command {
             2 => 4.47,
             3 => 9.81,
             4 => 11.43,
-            5 => 5.51,
+            5 => 13.18,
 //            6 => 20,
         ],
         2149 => [ //daniel garcia
@@ -326,7 +326,7 @@ class PayrollGenerate extends Command {
 //            2=>30,
 //            3=>6.2,
             4=>9.48,
-//            5=>6,
+            5=>18.87,
 //            6=>120,
         ],
         15638 => [ //Jorge
