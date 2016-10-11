@@ -135,6 +135,12 @@ return [
             'label'=>'Other Instructions',
             'body'=>"Any relevant information to help us locate and access your vehicle.\nE.g. Building name, specific location, gate code, etc.",
         ]
+        ,
+        'partnership_landing' => [
+            'header'=>'Welcome :first_name, Squeegy partnerships are mobile car washes at your work or residential building.',
+            'label'=>'Enter Partnership Code',
+            'body'=>"Interested in having Squeegy come to your\nwork or residential building?\nTap here to contact us.",
+        ]
     ],
     'washer' => [
         'daily_tip' => [
