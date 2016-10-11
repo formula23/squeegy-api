@@ -538,12 +538,13 @@ class Order extends Model {
         else
         {
             $discount = Discount::validate_code($promo_code, $this);
-            
+            \Log::info($discount);
+
             if($discount === null) return trans('messages.order.discount.unavailable');
 
-            if($this->isPartner() && ! in_array($this->partner_id, $discount->partners->lists('id')->all())) return trans('messages.order.discount.unavailable');
-
             if($discount->corporate_only && !$this->isPartner()) return trans('messages.order.discount.unavailable');
+
+            if($discount->partners->count() && ! in_array($this->partner_id, $discount->partners->lists('id')->all())) return trans('messages.order.discount.unavailable');
 
             if($discount->new_customer && ! $this->customer->firstOrder()) return trans('messages.order.discount.new_customer');
 
