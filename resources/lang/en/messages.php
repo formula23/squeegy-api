@@ -137,7 +137,7 @@ return [
         ]
         ,
         'partnership_landing' => [
-            'header'=>'Welcome :first_name, Squeegy partnerships are mobile car washes at your work or residential building.',
+            'header'=>'Squeegy partnerships are mobile car washes at your work or residential building.',
             'label'=>'Enter Partnership Code',
             'body'=>"Interested in having Squeegy come to your\nwork or residential building?\nTap here to contact us.",
         ]
