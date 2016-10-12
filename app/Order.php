@@ -544,6 +544,8 @@ class Order extends Model {
 
             if($discount->corporate_only && !$this->isPartner()) return trans('messages.order.discount.unavailable');
 
+            if($this->isPartner() && !$discount->corporate_only) return trans('messages.order.discount.unavailable');
+
             if($discount->partners->count() && ! in_array($this->partner_id, $discount->partners->lists('id')->all())) return trans('messages.order.discount.unavailable');
 
             if($discount->new_customer && ! $this->customer->firstOrder()) return trans('messages.order.discount.new_customer');
