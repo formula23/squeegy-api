@@ -220,19 +220,19 @@ class Schedule
 
                 } elseif(in_array($this->partner->id, [16])) {
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['08'] < $day->time_slot_cap &&
-                        Carbon::now()->hour < 10) {
+                        (Carbon::now()->hour < 10 && $start_time->isToday())) {
                         $container[$idx]['time_slots'][] = '8:00am - 10:00am';
                     }
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['10'] < $day->time_slot_cap &&
-                        Carbon::now()->hour < 12) {
+                        Carbon::now()->hour < 12 && $start_time->isToday()) {
                         $container[$idx]['time_slots'][] = '10:00am - 12:00pm';
                     }
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['12'] < $day->time_slot_cap &&
-                        Carbon::now()->hour < 14) {
+                        Carbon::now()->hour < 14 && $start_time->isToday()) {
                         $container[$idx]['time_slots'][] = '12:00pm - 2:00pm';
                     }
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['14'] < $day->time_slot_cap &&
-                        Carbon::now()->hour < 16) {
+                        Carbon::now()->hour < 16 && $start_time->isToday()) {
                         $container[$idx]['time_slots'][] = '2:00pm - 4:00pm';
                     }
                     if(@ ! count($container[$idx]['time_slots'])) {
