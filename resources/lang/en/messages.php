@@ -131,15 +131,15 @@ return [
             'body' => 'We\'ve added many new features to this version of Squeegy. To continue, please add a password to your account.',
         ],
         'additional_instructions' => [
-            'header'=>'Help us find your vehicle',
-            'label'=>'Other Instructions',
-            'body'=>"Any relevant information to help us locate and access your vehicle.\nE.g. Building name, specific location, gate code, etc.",
+            'header'=>'Help us find your vehicle...!',
+            'label'=>'Other Instructions....',
+            'body'=>"Any relevant information to help us locate and access your vehicle.\nE.g. Building name, specific location, gate code, etc...!",
         ]
         ,
         'partnership_landing' => [
-            'header'=>'Squeegy partnerships are mobile car washes at your work or residential building.',
-            'label'=>'Enter Partnership Code',
-            'body'=>"Interested in having Squeegy come to your\nwork or residential building?\nTap here to contact us.",
+            'header'=>'Squeegy partnerships are mobile car washes at your work or residential building.!!!!',
+            'label'=>'Enter Partnership Code!!!',
+            'body'=>"Interested in having Squeegy come to your\nwork or residential building?\nTap here to contact us.!!!!",
         ]
     ],
     'washer' => [
