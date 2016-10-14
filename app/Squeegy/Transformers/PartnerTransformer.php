@@ -64,10 +64,16 @@ class PartnerTransformer extends TransformerAbstract
         return $this->collection($services->get(), new ServiceTransformer());
     }
 
-    public function includeInstructions(Partner $partner)
+    public function includeInstructions(Partner $partner, ParamBag $paramBag = null)
     {
-        $instructions = $partner->instructions(true)->get();
-        return $this->collection($instructions, new InstructionTransformer());
+        $instructions_builder = $partner->instructions(true);
+
+        if($paramBag) {
+            list($is_active,) = $paramBag->get('is_active');
+            if( ! is_null($is_active)) $instructions_builder->wherePivot('is_active', $is_active);
+        }
+
+        return $this->collection($instructions_builder->get(), new InstructionTransformer());
     }
 
 }
