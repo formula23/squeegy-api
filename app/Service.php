@@ -64,6 +64,11 @@ class Service extends Model {
         return $this->belongsToMany('App\Partner')->withPivot('price');
     }
 
+    public function addons()
+    {
+        return $this->belongsToMany('App\Addon')->withPivot('price');
+    }
+
     /**
      * @param Carbon $date
      * @return mixed

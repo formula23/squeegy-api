@@ -13,6 +13,10 @@ use League\Fractal\TransformerAbstract;
 
 class ServiceTransformer extends TransformerAbstract {
 
+    protected $availableIncludes = [
+        'addons'
+    ];
+
     public function transform(Service $service)
     {
         return [
@@ -31,4 +35,14 @@ class ServiceTransformer extends TransformerAbstract {
             ],
         ];
     }
+
+    protected function includeAddons(Service $service) {
+
+        return $this->collection($service
+            ->addons()
+            ->wherePivot('is_active', 1)
+            ->orderBy('sequence')->get(), new AddonsTransformer());
+
+    }
+
 }

@@ -19,7 +19,7 @@ class CreateAddonServicePivotTable extends Migration
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
             $table->integer('price')->nullable();
             $table->integer('sequence')->index()->unsigned();
-            $table->tinyInteger('is_active')->index()->unsigned();
+            $table->tinyInteger('is_active')->index()->unsigned()->default(1);
             $table->primary(['addon_id', 'service_id']);
         });
     }
