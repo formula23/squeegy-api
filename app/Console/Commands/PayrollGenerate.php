@@ -35,6 +35,7 @@ class PayrollGenerate extends Command {
         10620 => 'Antonio Uribe',
         15638 => 'Jorge Villalobos',
         15785 => 'Victor Valdez',
+        16217 => 'Luis Lopez',
     ];
 
     protected $week_of=null;
@@ -189,6 +190,12 @@ class PayrollGenerate extends Command {
 //            4 => 120,
 //            5 => 120,
         ],
+        16217 => [ //Luis Lopez
+//            1 => 87,
+//            3 => 60,
+//            2 => 99,
+//            5 => 30,
+        ],
 	];
 
     protected $onsite =[
@@ -239,6 +246,13 @@ class PayrollGenerate extends Command {
             3 => 63.25,
             4 => 68.75,
             5 => 35.75,
+        ],
+        16217 => [ //Luis Lopez
+//            1 => 87,
+            2 => 110.5,
+            3 => 91,
+            4 => 88.25,
+            5 => 110.75,
         ],
     ];
 
@@ -305,6 +319,12 @@ class PayrollGenerate extends Command {
 //            4 => 120,
 //            5 => 120,
         ],
+        16217 => [ //Luis Lopez
+//            1 => 87,
+//            3 => 60,
+//            2 => 99,
+//            5 => 30,
+        ],
     ];
 
     protected $onsite_tips = [
@@ -370,6 +390,13 @@ class PayrollGenerate extends Command {
             3 => 3.35,
             4 => 9.66,
             5 => 4.45,
+        ],
+        16217 => [ //Luis Lopez
+//            1 => 87,
+            2 => 10.22,
+            3 => 11.53,
+            4 => 8.94,
+            5 => 5.7,
         ],
     ];
 
