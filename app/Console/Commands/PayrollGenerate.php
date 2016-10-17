@@ -101,8 +101,8 @@ class PayrollGenerate extends Command {
     protected $default_kit_fee = 25;
 
     protected $washer_kit_fee = [
-//        6861 => 5,
-//        15638 => 15,
+        15785 => 5,
+        16217 => 5,
     ];
 
     protected $kit_fee = [
@@ -243,7 +243,7 @@ class PayrollGenerate extends Command {
         15785 => [ //Victor valdez
             1 => 22,
             2 => 107.25,
-            3 => 63.25,
+            3 => 71.5,
             4 => 68.75,
             5 => 35.75,
         ],
