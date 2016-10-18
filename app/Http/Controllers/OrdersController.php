@@ -341,7 +341,7 @@ class OrdersController extends Controller {
                 Log::info($addon->name);
                 Log::info($addon->price);
 
-                dd(new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]));
+//                dd(new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]));
 
                 $order_details[] = new \App\OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
 
