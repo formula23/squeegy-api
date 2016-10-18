@@ -229,19 +229,19 @@ class Schedule
                         }
                     }
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['10'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour > 10 && Carbon::now()->hour < 12))) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 12))) {
                             $container[$idx]['time_slots'][] = '10:00am - 12:00pm';
                             $display_timeslot=false;
                         }
                     }
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['12'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour > 12 && Carbon::now()->hour < 14))) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 14))) {
                             $container[$idx]['time_slots'][] = '12:00pm - 2:00pm';
                             $display_timeslot=false;
                         }
                     }
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['14'] < $day->time_slot_cap && Carbon::now()->hour < 16) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour > 14 && Carbon::now()->hour < 16))) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 16))) {
                             $container[$idx]['time_slots'][] = '2:00pm - 4:00pm';
                         }
                     }
