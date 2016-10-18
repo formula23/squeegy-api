@@ -340,7 +340,11 @@ class OrdersController extends Controller {
             $addons->map(function($addon) use ($order_details, $order) {
                 Log::info($addon->name);
                 Log::info($addon->price);
+
+                dd(new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]));
+
                 $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
+
                 $order->price += $addon->price;
                 $order->total = $order->price;
             });
