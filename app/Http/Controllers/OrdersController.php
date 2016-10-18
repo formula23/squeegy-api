@@ -334,29 +334,14 @@ class OrdersController extends Controller {
         }
 
         if($addon_ids = $request->input('addons')) {
-            Log::info($addon_ids);
             $addons = Addon::whereIn('id', $addon_ids)->get();
-            Log::info($addons);
-
             foreach($addons as $addon) {
                 $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
                 $order->price += $addon->price;
                 $order->total = $order->price;
             }
-
-//            $addons->map(function($addon) use ($order_details, $order) {
-//                Log::info($addon->name);
-//                Log::info($addon->price);
-//
-//                dd(new \App\OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]));
-//
-//                $order_details[] = new \App\OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
-//
-//                $order->price += $addon->price;
-//                $order->total = $order->price;
-//            });
         }
-Log::info(count($order_details));
+
         $order->order_details()->saveMany($order_details);
 
         if( ! empty($order_schedule)) {
