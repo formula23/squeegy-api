@@ -218,7 +218,7 @@ class Schedule
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
-                } elseif(in_array($this->partner->id, [16])) {
+                } elseif(in_array($this->partner->id, [16,22])) {
 
                     if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['08'] < $day->time_slot_cap) {
                         if($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 10)) {
