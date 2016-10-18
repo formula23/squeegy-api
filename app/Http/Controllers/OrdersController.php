@@ -345,7 +345,7 @@ class OrdersController extends Controller {
                 $order->total = $order->price;
             });
         }
-//Log::info($order_details);
+Log::info(count($order_details));
         $order->order_details()->saveMany($order_details);
 
         if( ! empty($order_schedule)) {
