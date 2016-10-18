@@ -339,11 +339,10 @@ class OrdersController extends Controller {
             Log::info($addons);
             $addons->map(function($addon) use ($order_details) {
                 Log::info($addon);
-                Log::info($order_details);
                 $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
             });
         }
-
+Log::info($order_details);
         $order->order_details()->saveMany($order_details);
 
         if( ! empty($order_schedule)) {
