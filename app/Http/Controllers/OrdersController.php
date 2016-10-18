@@ -343,7 +343,7 @@ class OrdersController extends Controller {
 
                 dd(new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]));
 
-                $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
+                $order_details[] = new \App\OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
 
                 $order->price += $addon->price;
                 $order->total = $order->price;
