@@ -218,7 +218,7 @@ class Schedule
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
-                } elseif(in_array($this->partner->id, [16,22])) {
+                } elseif(in_array($this->partner->id, [14,16,22])) {
 
                     $display_timeslot=true;
 
