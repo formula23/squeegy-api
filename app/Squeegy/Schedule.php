@@ -216,7 +216,7 @@ class Schedule
                             Log::info('continue');
                             continue;
                         }
-Log::info($start_time->format('H'));
+
                         if($day->time_slot_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->time_slot_cap) {
                             $start_time->addHours($day->time_slot_frequency);
                             if($start_time->gte($end_time)) {

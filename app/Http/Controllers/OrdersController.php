@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Addon;
 use App\Discount;
 use App\Events\BadRating;
 use App\Events\ChangeWasher;
@@ -330,6 +331,13 @@ class OrdersController extends Controller {
             $order->price += $surcharge;
             $order->total = $order->price;
             $order_details[] = new OrderDetail(['name'=>$order->vehicle->type.' Surcharge', 'amount'=>$surcharge]);
+        }
+
+        if($addon_ids = $request->input('addons')) {
+            $addons = Addon::whereIn('id', $addon_ids)->get();
+            $addons->map(function($addon) use ($order_details) {
+                $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
+            });
         }
 
         $order->order_details()->saveMany($order_details);
