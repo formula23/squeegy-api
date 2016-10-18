@@ -338,6 +338,8 @@ class OrdersController extends Controller {
             $addons = Addon::whereIn('id', $addon_ids)->get();
             Log::info($addons);
             $addons->map(function($addon) use ($order_details) {
+                Log::info($addon);
+                Log::info($order_details);
                 $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
             });
         }
