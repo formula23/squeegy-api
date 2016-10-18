@@ -218,7 +218,7 @@ class Schedule
                         $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
-                } elseif(in_array($this->partner->id, [14,16,22])) {
+                } elseif(in_array($this->partner->id, [16])) { //Skechers
 
                     $display_timeslot=true;
 
@@ -246,6 +246,37 @@ class Schedule
                         }
                     }
                     
+                    if(@ ! count($container[$idx]['time_slots'])) {
+                        $container[$idx]['time_slots'][] = 'Unavailable';
+                    }
+                } elseif(in_array($this->partner->id, [22])) { //FUHU
+
+                    $display_timeslot=true;
+
+                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['09'] < $day->time_slot_cap) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 11))) {
+                            $container[$idx]['time_slots'][] = '9:00am - 11:00am';
+                            $display_timeslot=false;
+                        }
+                    }
+                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['11'] < $day->time_slot_cap) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 13))) {
+                            $container[$idx]['time_slots'][] = '11:00am - 1:00pm';
+                            $display_timeslot=false;
+                        }
+                    }
+                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['13'] < $day->time_slot_cap) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 15))) {
+                            $container[$idx]['time_slots'][] = '1:00pm - 3:00pm';
+                            $display_timeslot=false;
+                        }
+                    }
+                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['15'] < $day->time_slot_cap && Carbon::now()->hour < 17) {
+                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 17))) {
+                            $container[$idx]['time_slots'][] = '3:00pm - 5:00pm';
+                        }
+                    }
+
                     if(@ ! count($container[$idx]['time_slots'])) {
                         $container[$idx]['time_slots'][] = 'Unavailable';
                     }
