@@ -1,6 +1,7 @@
 <?php
 
 use App\Addon;
+use App\Service;
 use Illuminate\Database\Seeder;
 
 // composer require laracasts/testdummy
