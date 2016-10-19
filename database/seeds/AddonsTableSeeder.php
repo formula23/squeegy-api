@@ -17,41 +17,176 @@ class AddonsTableSeeder extends Seeder
 
         Addon::create([
             'name'=>'Carbauba Hand Wax',
-            'description'=>'',
+            'description'=>'Carbauba Was makes your car shine and protects your paint. Hand-applied.',
             'price'=>'2500',
         ]);
 
         Addon::create([
             'name'=>'Leather Conditioning',
-            'description'=>'',
+            'description'=>'Restore and protect your leather. Give your interior a new car smell.',
             'price'=>'1500',
         ]);
 
         Addon::create([
             'name'=>'Exterior Plastic Dressing',
-            'description'=>'',
+            'description'=>'Protect, nourish and keep a fine touch to all exterior plastic. Prevent UV damage.',
             'price'=>'1500',
         ]);
 
         Addon::create([
             'name'=>'Tree Sap Removal',
-            'description'=>'',
+            'description'=>'We will remove tree sap from your vehicle.',
             'price'=>'2000',
         ]);
 
         Addon::create([
-            'name'=>'Air Freshener',
+            'name'=>'Scent - New Car',
+            'description'=>'',
+            'price'=>'400',
+        ]);
+
+        Addon::create([
+            'name'=>'Scent - Vanilla',
+            'description'=>'',
+            'price'=>'400',
+        ]);
+
+        Addon::create([
+            'name'=>'Scent - Cherry',
+            'description'=>'',
+            'price'=>'400',
+        ]);
+
+        Addon::create([
+            'name'=>'Scent - Black Ice',
             'description'=>'',
             'price'=>'400',
         ]);
 
         Addon::create([
             'name'=>'Pet Hair Removal',
-            'description'=>'',
+            'description'=>'Remove all pet hair from vehicle.',
             'price'=>'2000',
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS = 1'); // disable foreign key constraints
+
+        //Express
+
+        $express = Service::findOrFail(1);
+
+        $express->addons()->sync([
+            1=>[
+                'sequence'=>1,
+                'is_active'=>1,
+            ],
+            2=>[
+                'sequence'=>2,
+                'is_active'=>1,
+            ],
+            3=>[
+                'sequence'=>3,
+                'is_active'=>1,
+            ],
+            4=>[
+                'sequence'=>4,
+                'is_active'=>1,
+            ],
+            5=>[
+                'sequence'=>5,
+                'is_active'=>1,
+            ],
+            6=>[
+                'sequence'=>6,
+                'is_active'=>1,
+            ],
+            7=>[
+                'sequence'=>7,
+                'is_active'=>1,
+            ],
+            8=>[
+                'sequence'=>8,
+                'is_active'=>1,
+            ],
+            9=>[
+                'sequence'=>9,
+                'is_active'=>1,
+            ],
+        ]);
+
+        $classic = Service::findOrFail(2);
+
+        $classic->addons()->sync([
+            1=>[
+                'sequence'=>1,
+                'is_active'=>1,
+            ],
+            2=>[
+                'sequence'=>2,
+                'is_active'=>1,
+            ],
+            3=>[
+                'sequence'=>3,
+                'is_active'=>1,
+            ],
+            4=>[
+                'sequence'=>4,
+                'is_active'=>1,
+            ],
+            5=>[
+                'sequence'=>5,
+                'is_active'=>1,
+            ],
+            6=>[
+                'sequence'=>6,
+                'is_active'=>1,
+            ],
+            7=>[
+                'sequence'=>7,
+                'is_active'=>1,
+            ],
+            8=>[
+                'sequence'=>8,
+                'is_active'=>1,
+            ],
+            9=>[
+                'sequence'=>9,
+                'is_active'=>1,
+            ],
+        ]);
+
+        $exec = Service::findOrFail(4);
+
+        $exec->addons()->sync([
+            2=>[
+                'sequence'=>2,
+                'is_active'=>1,
+            ],
+            4=>[
+                'sequence'=>4,
+                'is_active'=>1,
+            ],
+            5=>[
+                'sequence'=>5,
+                'is_active'=>1,
+            ],
+            6=>[
+                'sequence'=>6,
+                'is_active'=>1,
+            ],
+            7=>[
+                'sequence'=>7,
+                'is_active'=>1,
+            ],
+            8=>[
+                'sequence'=>8,
+                'is_active'=>1,
+            ],
+            9=>[
+                'sequence'=>9,
+                'is_active'=>1,
+            ],
+        ]);
 
     }
 }
