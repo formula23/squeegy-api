@@ -21,6 +21,7 @@ class AddonsTransformer
             'name'=>$addon->name,
             'description'=>$addon->description,
             'price'=>$addon->price,
+            'sequence'=>$addon->pivot->sequence,
         ];
 
     }
