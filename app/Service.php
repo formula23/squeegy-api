@@ -66,7 +66,7 @@ class Service extends Model {
 
     public function addons()
     {
-        return $this->belongsToMany('App\Addon')->withPivot('price');
+        return $this->belongsToMany('App\Addon')->withPivot(['price','sequence']);
     }
 
     /**
