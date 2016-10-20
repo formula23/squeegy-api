@@ -18,7 +18,7 @@ class AddonsTableSeeder extends Seeder
 
         Addon::create([
             'name'=>'Carbauba Hand Wax',
-            'description'=>'Carbauba Was makes your car shine and protects your paint. Hand-applied.',
+            'description'=>'Carbauba Was makes your car shine and protects your paint.',
             'price'=>'2500',
         ]);
 
@@ -36,7 +36,7 @@ class AddonsTableSeeder extends Seeder
 
         Addon::create([
             'name'=>'Tree Sap Removal',
-            'description'=>'We will remove tree sap from your vehicle.',
+            'description'=>'We will remove tree sap from your vehicle\'s body and windows',
             'price'=>'2000',
         ]);
 
