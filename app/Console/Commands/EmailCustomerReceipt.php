@@ -6,6 +6,7 @@ use App\Order;
 use App\Squeegy\Emails\Receipt;
 use App\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 
 class EmailCustomerReceipt extends Command
 {
@@ -14,7 +15,7 @@ class EmailCustomerReceipt extends Command
      *
      * @var string
      */
-    protected $signature = 'user:send_receipt {order}';
+    protected $signature = 'user:send_receipt {order_ids}';
 
     /**
      * The console command description.
@@ -40,8 +41,20 @@ class EmailCustomerReceipt extends Command
      */
     public function handle()
     {
-        $order = Order::find($this->argument('order'));
-        
+        if( ! $this->argument('order_ids')) {
+            $this->error('Order Id(s) required');
+            return;
+        }
+
+        $orders = Order::whereIn('id', explode(",", $this->argument('order_ids')))->get();
+
+        $orders->map(function ($order) {
+            $this->send_email($order);
+        });
+    }
+
+    protected function send_email($order) {
+
         try {
             (new Receipt)
                 ->withBCC(config('squeegy.emails.bcc'))
@@ -50,6 +63,6 @@ class EmailCustomerReceipt extends Command
         } catch(\Exception $e) {
             \Bugsnag::notifyException($e);
         }
-
     }
+
 }
