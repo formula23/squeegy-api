@@ -154,7 +154,7 @@ class PayrollGenerate extends Command {
         3198 => [ //david
 //            1=>120,
             2=>120,
-//            3=>120,
+            3=>120,
             4=>120,
             5=>120,
 //            6=>120,
