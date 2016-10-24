@@ -249,7 +249,7 @@ class PayrollGenerate extends Command {
         16217 => [ //Luis Lopez
 //            1 => 87,
             2 => 81.25,
-            3 => 81,25,
+            3 => 81.25,
 //            4 => 88.25,
             5 => (32.5 + 55.25),
         ],
