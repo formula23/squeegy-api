@@ -36,6 +36,7 @@ class PayrollGenerate extends Command {
         15638 => 'Jorge Villalobos',
         15785 => 'Victor Valdez',
         16217 => 'Luis Lopez',
+        16111 => 'Scott Parkhurst',
     ];
 
     protected $week_of=null;
@@ -99,8 +100,8 @@ class PayrollGenerate extends Command {
     protected $default_kit_fee = 25;
 
     protected $washer_kit_fee = [
-        15785 => 5,
-        16217 => 5,
+        11353 => 5,
+//        16217 => 5,
     ];
 
     protected $kit_fee = [
@@ -253,6 +254,11 @@ class PayrollGenerate extends Command {
 //            4 => 88.25,
             5 => 87.75,
         ],
+        16111 => [ //Scott Parkhurst
+            2 => 66,
+            3 => 38.5,
+            4 => 99,
+        ]
     ];
 
     protected $deductions = [
@@ -397,6 +403,11 @@ class PayrollGenerate extends Command {
 //            4 => 8.94,
             5 => 6.64,
         ],
+        16111 => [ //Scott Parkhurst
+            2 => 0,
+            3 => 2.25,
+            4 => 12.09,
+        ]
     ];
 
     protected $washer_training = [
