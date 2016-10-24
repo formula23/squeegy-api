@@ -251,7 +251,7 @@ class PayrollGenerate extends Command {
             2 => 81.25,
             3 => 81.25,
 //            4 => 88.25,
-            5 => (32.5 + 55.25),
+            5 => 87.75,
         ],
     ];
 
