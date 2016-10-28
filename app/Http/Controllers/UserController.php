@@ -299,13 +299,13 @@ class UserController extends Controller {
             return $this->response->errorForbidden('Unauthorized.');
         }
 
-        $latestOrder=null;
+        $latestOrder=$request->user()->latestOrder($request->input('partner_id'));
 
-        if($partner_id = $request->input('partner_id')) {
-            $latestOrder = $request->user()->pastOrders()->where('partner_id', $partner_id)->first();
-        }
-
-        if( ! $latestOrder) $latestOrder = $request->user()->pastOrders()->whereNull('partner_id')->first();
+//        if($partner_id = $request->input('partner_id')) {
+//            $latestOrder = $request->user()->latestOrder($partner_id)->where('partner_id', $partner_id)->first();
+//        }
+//
+//        if( ! $latestOrder) $latestOrder = $request->user()->pastOrders()->whereNull('partner_id')->first();
 
         if(is_null($latestOrder)) {
             return $this->response->errorNotFound('No previous orders.');

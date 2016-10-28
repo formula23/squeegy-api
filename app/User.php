@@ -367,6 +367,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return $this->orders()->where('status','done')->orderBy('done_at','desc');
     }
+    
+    public function latestOrder($partner_id=null)
+    {
+        if($partner_id) {
+            $latestOrder = $this->orders()->where('partner_id', $partner_id)->orderBy('created_at','desc')->first();    
+        }
+
+        if( ! $latestOrder) $latestOrder = $this->orders()->whereNull('partner_id')->orderBy('created_at','desc')->first();
+        
+        return $latestOrder;
+    }
 
     /**
      * @param $col
