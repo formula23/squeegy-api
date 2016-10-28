@@ -370,6 +370,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     
     public function latestOrder($partner_id=null)
     {
+        $latestOrder=null;
         if($partner_id) {
             $latestOrder = $this->orders()->where('partner_id', $partner_id)->orderBy('created_at','desc')->first();    
         }

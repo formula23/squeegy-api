@@ -299,7 +299,7 @@ class UserController extends Controller {
             return $this->response->errorForbidden('Unauthorized.');
         }
 
-        $latestOrder=$request->user()->latestOrder($request->input('partner_id'));
+        $latestOrder = $request->user()->latestOrder($request->input('partner_id'));
 
 //        if($partner_id = $request->input('partner_id')) {
 //            $latestOrder = $request->user()->latestOrder($partner_id)->where('partner_id', $partner_id)->first();
