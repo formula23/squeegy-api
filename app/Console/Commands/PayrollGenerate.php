@@ -95,12 +95,13 @@ class PayrollGenerate extends Command {
         5482, //juan lara
         7506, //Rafael
         7269, //salvador
+        16217, //Luis
     ];
 
     protected $default_kit_fee = 25;
 
     protected $washer_kit_fee = [
-        11353 => 5,
+//        11353 => 5,
 //        16217 => 5,
     ];
 
@@ -117,13 +118,13 @@ class PayrollGenerate extends Command {
 
     protected $daily_bonus_worker_id = [
         3198 => [ //david
-            2=>15,
+//            2=>15,
         ],
         15785 => [ //victor valdez
-            3=>8,
+//            3=>8,
         ],
-        2149 => [ //daniel garcia
-//            3=>10,
+        16217 => [ //luis
+            6=>25,
         ],
     ];
 
@@ -136,11 +137,11 @@ class PayrollGenerate extends Command {
         1847 => [ //ricardo
 //            0 => 120,
 //            1 => 120,
-//            2 => 120,
-//            3 => 120,
-//            4 => 120,
+            2 => 120,
+            3 => 120,
+            4 => 120,
 //            5 => 120,
-//            6 => 120,
+            6 => 120,
         ],
         2149 => [ //daniel garcia
 //            0 => 120,
@@ -152,12 +153,12 @@ class PayrollGenerate extends Command {
 //            6 => 150,
         ],
         3198 => [ //david
-//            1=>120,
-//            2=>120,
-//            3=>120,
-//            4=>120,
+            1=>120,
+            2=>120,
+            3=>120,
+            4=>120,
 //            5=>120,
-//            6=>120,
+            6=>120,
 		],
         10267 => [ //sheldon springs
 //            1=>120,
