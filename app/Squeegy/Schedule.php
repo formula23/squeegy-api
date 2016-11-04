@@ -251,7 +251,7 @@ class Schedule
                 }
 
             }
-
+\Log::info($container);
             if( ! count($container['available_days'])) {
                 $container['next_day'] = $this->partner->upcoming_date();
             }
