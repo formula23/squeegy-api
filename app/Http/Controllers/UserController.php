@@ -177,6 +177,7 @@ class UserController extends Controller {
                 $customer_card = $customer->sources->create(["source" => $data['stripe_token']]);
                 $customer->default_source = $customer_card->id;
             } catch(\Exception $e) {
+                return $this->response->errorWrongArgs($e->getMessage());
                 \Bugsnag::notifyException($e);
             }
         }
