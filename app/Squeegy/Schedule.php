@@ -190,7 +190,7 @@ class Schedule
                 \Log::info($day->open);
                 \Log::info($day);
 
-                if( ! $day->accepting_orders || $day->open->isPast()) {
+                if( ! $day->accepting_orders || $day->close->isPast()) {
                     continue;
                 }
                 Log::info($day);
