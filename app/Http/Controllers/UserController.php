@@ -178,9 +178,9 @@ class UserController extends Controller {
                 $customer->default_source = $customer_card->id;
             } catch(\Exception $e) {
                 \Bugsnag::notifyException($e);
-                \Log::info('instance of');
-                \Log::info($e instanceof \Stripe\Error\InvalidRequest);
-                return $this->response->errorWrongArgs('Credit Card Error: '.$e->getMessage());
+                if( ! ($e instanceof \Stripe\Error\InvalidRequest) && ! str_contains($e->getMessage(), 'Stripe token more than once')) {
+                    return $this->response->errorWrongArgs('Credit Card Error: '.$e->getMessage());
+                }
             }
         }
 
