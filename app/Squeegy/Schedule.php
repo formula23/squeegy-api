@@ -186,9 +186,9 @@ class Schedule
 
             foreach($days as $idx=>$day) {
 
-//                \Log::info('accepting orders:');
-//                \Log::info($day->open);
-//                \Log::info($day);
+                \Log::info('accepting orders:');
+                \Log::info($day->open);
+                \Log::info($day);
 
                 if( ! $day->accepting_orders || $day->open->isPast()) {
                     continue;
