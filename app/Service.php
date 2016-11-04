@@ -39,7 +39,7 @@ class Service extends Model {
     {
         return json_decode($value, true);
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -62,6 +62,11 @@ class Service extends Model {
     public function partners()
     {
         return $this->belongsToMany('App\Partner')->withPivot('price');
+    }
+
+    public function addons()
+    {
+        return $this->belongsToMany('App\Addon')->withPivot(['price','sequence']);
     }
 
     /**

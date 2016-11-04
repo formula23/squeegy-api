@@ -32,9 +32,11 @@ class NotifyWorkerNewOrder {
 
             //get assigned worker and andrew & dan
 			$additional_usersids = [6119];
-			if(env('APP_ENV')!='production') $additional_usersids=[1];
-
-			if($event->order->isPartner()) $additional_usersids[] = 2;//Only send Andrew partner orders.
+			if(env('APP_ENV')!='production') {
+				$additional_usersids=[1];
+			} else {
+				if($event->order->isPartner()) $additional_usersids[] = 2;//Only send Andrew partner orders.
+			}
 
 			$workers = User::workers()
                 ->where('id', $event->order->worker_id)

@@ -27,6 +27,7 @@ abstract class Controller extends ApiGuardController {
     {
         $this->beforeFilter(function () {
 
+
             // Let's instantiate the response class first
             $this->manager = new Manager;
 
@@ -226,8 +227,7 @@ abstract class Controller extends ApiGuardController {
                     }
                 }
             }
-
-
+            
             $this->initialize();
 
         }, ['apiMethods' => $this->apiMethods]);

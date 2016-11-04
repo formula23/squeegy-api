@@ -63,12 +63,12 @@ class WasherTipNotify extends Command
                 ->whereNull('partner_id')
                 ->whereDate('tip_at', '=', $tip_date)
                 ->get();
-
+            
+            if( ! $orders->count()) continue;
+            
             foreach($orders as $order) {
                 $washer_tips[$order->id] = (round($order->tip * (1 - 0.029)) - 30)/100;
             }
-
-            if( ! count($washer_tips)) continue;
 
             $user_tip_amt = array_sum($washer_tips);
 

@@ -164,143 +164,104 @@ class Schedule
 //        $this->current_schedule = $partner->current_scheduled_orders();
 
         $container=[];
+        $container['next_day']='';
+        $container['available_days']=[];
+
 //        $cur_hr = $this->now->hour;
 //        $this->now = Carbon::create(2016,5,12,18,1,0);
-        Log::info("**********************************");
+        Log::info("***************** PARTNER DAYS *********************");
 //        Log::info($this->now);
         $cur_hr = $this->now->hour;
 //        $cur_hr = 17;
 //        Log::info('cur hr:'.$cur_hr);
 //        Log::info('day of week:...'.$this->now->dayOfWeek);
+        Log::info('Current Schedule:');
         Log::info($this->current_schedule);
 
         try
         {
             //get array of available days in sequential order.
-            $day_sort=[];
-            $day_sort_time=[];
+            $days_list=[];
             $days = $this->partner->days()->orderBy('open')->get();
 
             foreach($days as $idx=>$day) {
 
-//                if($day->accept_order($day->open) === -1) { //daily cap has been reached...
-//                    continue;
-//                }
-//
+//                \Log::info('accepting orders:');
+//                \Log::info($day->open);
+//                \Log::info($day);
+
+                if( ! $day->accepting_orders || $day->open->isPast()) {
+                    continue;
+                }
+                Log::info($day);
+
                 $start_time = $day->open;
                 $end_time = $day->close;
                 $num_hrs = $start_time->diffInHours($end_time);
-//
-//                if($day->open->isPast()) {
-//                    $container[$idx]['day'] = 'Not Available';
-//                    $container[$idx]['time_slots'][] = 'Not Available';
-//                    continue;
-//                }
 
-                $container[$idx]['day'] = $day->open->format($this->day_format);
+                $day_formatted = $day->open->format('D, M d');
 
-                if(in_array($this->partner->id, [5])) {
+                if(in_array($day_formatted, $days_list)) {
+                    $idx = array_search($day_formatted, $days_list);
+                }
+
+                $container['available_days'][$idx]['day'] = $day_formatted;
+                $days_list[$idx]=$day_formatted;
+
+                if($day->time_slot_frequency) {
 
                     for($h=0;$h<$num_hrs;$h++) {
 
                         if($start_time->gt($end_time)) {
+                            Log::info('continue');
                             continue;
                         }
 
-                        if(@(int)$this->current_schedule[$start_time->format('m/d/Y H')] >= 2) { ///only allow 2 orders per slot
-                            $start_time->addHours(1);
-                            continue;
+                        if($day->time_slot_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->time_slot_cap) {
+                            $start_time->addHours($day->time_slot_frequency);
+                            if($start_time->gte($end_time)) {
+                                unset($container['available_days'][$idx]);
+                                continue(2);
+                            } else {
+                                continue;
+                            }
                         }
                         $strt = $start_time->format('g:ia');
-                        $end = $start_time->addHours(1);
+                        $end = $start_time->addHours($day->time_slot_frequency);
                         if($end->isPast()) {continue;}
 
-                        $container[$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
-                    }
-
-                } elseif(in_array($this->partner->id, [16])) { //Skechers
-
-                    $display_timeslot=true;
-
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['08'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 10))) {
-                            $container[$idx]['time_slots'][] = '8:00am - 10:00am';
-                            $display_timeslot=false;
+                        if($end->gte($end_time)) {
+                            $end = $end_time;
+                            if( ! $start_time->diffInHours($end)) {
+                                $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
+                                continue(2);
+                            }
                         }
-                    }
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['10'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 12))) {
-                            $container[$idx]['time_slots'][] = '10:00am - 12:00pm';
-                            $display_timeslot=false;
-                        }
-                    }
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['12'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 14))) {
-                            $container[$idx]['time_slots'][] = '12:00pm - 2:00pm';
-                            $display_timeslot=false;
-                        }
-                    }
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['14'] < $day->time_slot_cap && Carbon::now()->hour < 16) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 16))) {
-                            $container[$idx]['time_slots'][] = '2:00pm - 4:00pm';
-                        }
-                    }
-                    
-                    if(@ ! count($container[$idx]['time_slots'])) {
-                        $container[$idx]['time_slots'][] = 'Unavailable';
-                    }
-                } elseif(in_array($this->partner->id, [22])) { //FUHU
 
-                    $display_timeslot=true;
-
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['09'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 11))) {
-                            $container[$idx]['time_slots'][] = '9:00am - 11:00am';
-                            $display_timeslot=false;
-                        }
-                    }
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['11'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 13))) {
-                            $container[$idx]['time_slots'][] = '11:00am - 1:00pm';
-                            $display_timeslot=false;
-                        }
-                    }
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['13'] < $day->time_slot_cap) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 15))) {
-                            $container[$idx]['time_slots'][] = '1:00pm - 3:00pm';
-                            $display_timeslot=false;
-                        }
-                    }
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['15'] < $day->time_slot_cap && Carbon::now()->hour < 17) {
-                        if($display_timeslot && ($start_time->isFuture() || ($start_time->isToday() && Carbon::now()->hour < 17))) {
-                            $container[$idx]['time_slots'][] = '3:00pm - 5:00pm';
-                        }
-                    }
-
-                    if(@ ! count($container[$idx]['time_slots'])) {
-                        $container[$idx]['time_slots'][] = 'Unavailable';
-                    }
-
-                } elseif(in_array($this->partner->id, [26])) {
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['08'] < $day->time_slot_cap) {
-                        $container[$idx]['time_slots'][] = '8:00am - 1:00pm';
-                    }
-
-                    if(@(int)$this->current_schedule[$start_time->format('m/d/Y')]['13'] < $day->time_slot_cap) {
-                        $container[$idx]['time_slots'][] = '1:00pm - 5:00pm';
-                    }
-
-                    if(@ ! count($container[$idx]['time_slots'])) {
-                        $container[$idx]['time_slots'][] = 'Unavailable';
+                        $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$strt, $end->format('g:ia')]);
                     }
 
                 } else {
-                    $container[$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
+                    if($day->order_cap && @(int)$this->current_schedule[$start_time->format('m/d/Y')][$start_time->format('H')] >= $day->order_cap) {
+                        unset($container['available_days'][$idx]);
+                        continue;
+                    }
+
+                    $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
                 }
 
             }
 
-            return array_values($container);
+            if( ! count($container['available_days'])) {
+                $container['next_day'] = $this->partner->upcoming_date();
+            }
+
+            $container['available_days'] = array_values($container['available_days']);
+
+            \Log::info('********** container ***********');
+            \Log::info($container);
+//            dd('done');
+            return $container;
             
         } catch (\Exception $e) {
             Log::info($e);

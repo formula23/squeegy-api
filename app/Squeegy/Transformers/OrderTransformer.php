@@ -22,6 +22,7 @@ use Stripe\Card;
 class OrderTransformer extends TransformerAbstract {
 
     protected $defaultIncludes = [
+        'order_details',
         'vehicle',
         'service',
         'worker',
@@ -112,6 +113,11 @@ class OrderTransformer extends TransformerAbstract {
         return $resp;
 
     }
+    
+    public function includeOrderDetails(Order $order)
+    {
+        return $this->collection($order->order_details, new OrderDetailTransformer());
+    }
 
     public function includeSchedule(Order $order)
     {
@@ -136,11 +142,15 @@ class OrderTransformer extends TransformerAbstract {
 
     public function includeService(Order $order)
     {
+        if($order->isPartner()) {
+            $service = $order->partner->service($order->service_id)->first();
+            if($service) $order->service->price = ($service->pivot->price?:$service->price);
+        }
+
         $order->service->name = $order->service->getOriginal('name');
         if(($order_surcharge = $order->hasSurCharge()) && !request()->user()->is('worker')) {
             $order->service->name = $order->service->getOriginal('name')." + $".number_format($order_surcharge/100)."(".$order->vehicle->type.")";
         }
-        
         return $this->item($order->service, new ServiceTransformer);
     }
 

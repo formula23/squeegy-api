@@ -17,6 +17,9 @@ return [
         'corp_order_cap' => "We're sorry but Squeegy is fully booked for today. We will be back :next_date.",
         'corp_time_slot_cap' => "We're sorry but that time slot is fully booked for today. Please try another time slot.",
         'day_not_available' => 'The requested day is not available. Please go back and try again.',
+        'not_accepting_next_day' => "We aren't accepting any more orders at this time.\n\nWe will be back here:\n:date",
+        'corp_no_description' => "No additional details at this time.",
+        'corp_not_found'=>'Invalid Corporate Partner',
         'confirm_location' => 'We have detected that the location of your vehicle you selected may be incorrect. Please go back and verify your vehicles location.',
         'status_change_not_allowed' => 'Unable to change status. Requested Status: :request_status - Current Status: :current_status',
         'exists' => 'This vehicle already has an open order. Please select or add a different vehicle.',
@@ -127,6 +130,17 @@ return [
             'header' => 'Create a Password',
             'body' => 'We\'ve added many new features to this version of Squeegy. To continue, please add a password to your account.',
         ],
+        'additional_instructions' => [
+            'header'=>'Help us find your vehicle',
+            'label'=>'Other Instructions',
+            'body'=>"Any relevant information to help us locate and access your vehicle.\nE.g. Building name, specific location, gate code, etc.",
+        ]
+        ,
+        'partnership_landing' => [
+            'header'=>'Squeegy partnerships are mobile car washes at your work or residential building.',
+            'label'=>'Enter Partnership Code',
+            'body'=>"Interested in having Squeegy come to your\nwork or residential building?\nTap here to contact us.",
+        ]
     ],
     'washer' => [
         'daily_tip' => [

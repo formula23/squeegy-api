@@ -25,12 +25,16 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('user/phone-verify', 'UserController@phoneVerify');
     Route::get('user/authenticated', 'UserController@authenticated');
 
+    Route::get('user/latest-order', 'UserController@latestOrder');
+
     Route::get('user/{id}', 'UserController@show');
     Route::post('user', 'Auth\AuthController@postRegister');
     Route::put('user/{id?}', 'UserController@update');
 
     Route::post('user/duty', 'UserController@duty');
     Route::post('user/location', 'UserController@location');
+
+
 
     Route::controllers([
         'password' => 'Auth\PasswordController',
@@ -60,8 +64,10 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('orders/{orders}/tip', 'OrdersController@tipWasher');
 
 
-    Route::get('partners', 'PartnerController@index');
-    
+//    Route::get('partners', 'PartnerController@index');
+
+    Route::resource('partners', 'PartnerController');
+
     Route::get('washers/locations', 'WashersController@locations');
     Route::get('washers/duty-status', 'WashersController@dutyStatus');
 

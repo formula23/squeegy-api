@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use App\Addon;
 use App\Discount;
 use App\Events\BadRating;
 use App\Events\ChangeWasher;
@@ -238,18 +239,25 @@ class OrdersController extends Controller {
                 $time_window_key = 'close';
                 if($schedule_data['window_'.$time_window_key]->isPast()) return $this->response->errorWrongArgs(trans('messages.service.schedule_in_past'));
 
-                //** partner stuff */
-                if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+
+                //** partner stuff *//
+                if( ! empty($data['partner_id'])) {
+                    $partner = Partner::find($data['partner_id']);
+                    if( ! $partner) return $this->response->errorWrongArgs(trans('messages.order.corp_not_found'));
+                    $data['location'] = $partner->location;
+
+                } else {
+                    $partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon']);
+                }
+
+                if($partner) {
                     $data['partner_id'] = $partner->id;
                     $service = $partner->service($data['service_id'])->first();
-
-//                    $this->validate_partner_day($partner, $schedule_data['window_open']);
 
                     $day = $partner->get_day_by_date($schedule_data['window_open']);
                     if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
 
                     try {
-
                         if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
                             return $this->return_partner_resp($accepting_code, $day);
                         }
@@ -258,8 +266,30 @@ class OrdersController extends Controller {
                         \Bugsnag::notifyException($e);
                         \Log::info($e);
                     }
-
                 }
+
+
+//                if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
+//
+//                    $service = $partner->service($data['service_id'])->first();
+//
+////                    $this->validate_partner_day($partner, $schedule_data['window_open']);
+//
+//                    $day = $partner->get_day_by_date($schedule_data['window_open']);
+//                    if( ! $day) return $this->response->errorWrongArgs(trans('messages.order.day_not_available'));
+//
+//                    try {
+//
+//                        if(($accepting_code = $day->accept_order($schedule_data['window_open'])) < 0) {
+//                            return $this->return_partner_resp($accepting_code, $day);
+//                        }
+//
+//                    } catch(\Exception $e) {
+//                        \Bugsnag::notifyException($e);
+//                        \Log::info($e);
+//                    }
+//
+//                }
 
                 $order_schedule = OrderSchedule::create($schedule_data);
                 $this->order_date = $schedule_data['window_open'];
@@ -301,6 +331,15 @@ class OrdersController extends Controller {
             $order->price += $surcharge;
             $order->total = $order->price;
             $order_details[] = new OrderDetail(['name'=>$order->vehicle->type.' Surcharge', 'amount'=>$surcharge]);
+        }
+
+        if($addon_ids = $request->input('addons')) {
+            $addons = Addon::whereIn('id', $addon_ids)->get();
+            foreach($addons as $addon) {
+                $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
+                $order->price += $addon->price;
+                $order->total = $order->price;
+            }
         }
 
         $order->order_details()->saveMany($order_details);

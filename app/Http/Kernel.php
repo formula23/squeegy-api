@@ -18,7 +18,6 @@ class Kernel extends HttpKernel {
 //		'Illuminate\View\Middleware\ShareErrorsFromSession',
 		\App\Http\Middleware\LogResponse::class,
 //		\App\Http\Middleware\Cors::class,
-
 	];
 
 	/**
