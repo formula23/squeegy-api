@@ -47,7 +47,7 @@ class ServiceAvailabilityTransformer extends TransformerAbstract {
             $services = $partner->services;
         }
        
-        return $this->collection($services, new ServiceTransformer());
+        return $this->collection($services, new ServiceTransformer('ondemand'));
     }
 
 }

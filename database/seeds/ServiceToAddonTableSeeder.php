@@ -18,28 +18,42 @@ class ServiceToAddonTableSeeder extends Seeder
             1=>[
                 'sequence'=>1,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             2=>[
                 'sequence'=>2,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             3=>[
                 'sequence'=>3,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             4=>[
                 'sequence'=>4,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             5=>[
                 'sequence'=>5,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             6=>[
                 'sequence'=>6,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
         ]);
+
+        $express->addons()->attach([
+                1=>[
+                    'sequence'=>1,
+                    'is_active'=>1,
+                    'is_corp'=>0,
+                ]]
+        );
 
         $classic = Service::findOrFail(2);
 
@@ -47,28 +61,42 @@ class ServiceToAddonTableSeeder extends Seeder
             1=>[
                 'sequence'=>1,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             2=>[
                 'sequence'=>2,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             3=>[
                 'sequence'=>3,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             4=>[
                 'sequence'=>4,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             5=>[
                 'sequence'=>5,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             6=>[
                 'sequence'=>6,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
         ]);
+
+        $classic->addons()->attach([
+                1=>[
+                    'sequence'=>1,
+                    'is_active'=>1,
+                    'is_corp'=>0,
+                ]]
+        );
 
         $exec = Service::findOrFail(4);
 
@@ -76,18 +104,22 @@ class ServiceToAddonTableSeeder extends Seeder
             2=>[
                 'sequence'=>2,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             4=>[
                 'sequence'=>4,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             5=>[
                 'sequence'=>5,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
             6=>[
                 'sequence'=>6,
                 'is_active'=>1,
+                'is_corp'=>1,
             ],
         ]);
     }

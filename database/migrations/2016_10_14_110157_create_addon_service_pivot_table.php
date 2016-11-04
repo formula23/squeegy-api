@@ -13,6 +13,7 @@ class CreateAddonServicePivotTable extends Migration
     public function up()
     {
         Schema::create('addon_service', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('addon_id')->unsigned()->index();
             $table->foreign('addon_id')->references('id')->on('addons')->onDelete('cascade');
             $table->integer('service_id')->unsigned()->index();
@@ -20,7 +21,8 @@ class CreateAddonServicePivotTable extends Migration
             $table->integer('price')->nullable();
             $table->integer('sequence')->index()->unsigned();
             $table->tinyInteger('is_active')->index()->unsigned()->default(1);
-            $table->primary(['addon_id', 'service_id']);
+            $table->tinyInteger('is_corp')->index()->unsigned()->default(0);
+//            $table->primary(['addon_id', 'service_id']);
         });
     }
 

@@ -17,6 +17,13 @@ class ServiceTransformer extends TransformerAbstract {
         'addons'
     ];
 
+    protected $scope;
+
+    public function __construct($scope=null)
+    {
+        $this->scope = $scope;
+    }
+
     public function transform(Service $service)
     {
         return [
@@ -36,12 +43,14 @@ class ServiceTransformer extends TransformerAbstract {
         ];
     }
 
-    protected function includeAddons(Service $service) {
-
+    protected function includeAddons(Service $service)
+    {
         return $this->collection($service
             ->addons()
             ->wherePivot('is_active', 1)
-            ->orderBy('sequence')->get(), new AddonsTransformer());
+            ->orderBy('sequence')
+            ->wherePivot('is_corp', (($this->scope=='corp')?:0))
+            ->get(), new AddonsTransformer());
 
     }
 

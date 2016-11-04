@@ -61,7 +61,7 @@ class PartnerTransformer extends TransformerAbstract
             }
         }
 
-        return $this->collection($services->get(), new ServiceTransformer());
+        return $this->collection($services->get(), new ServiceTransformer('corp'));
     }
 
     public function includeInstructions(Partner $partner, ParamBag $paramBag = null)
