@@ -268,6 +268,7 @@ class OrdersController extends Controller {
                     }
                 }
 
+                if(isset($data['partner_id']) && empty($data['partner_id'])) unset($data['partner_id']);
 
 //                if($partner = Partner::where_coords_in($data['location']['lat'], $data['location']['lon'])) {
 //
