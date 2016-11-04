@@ -178,7 +178,7 @@ class UserController extends Controller {
                 $customer->default_source = $customer_card->id;
             } catch(\Exception $e) {
                 \Bugsnag::notifyException($e);
-                return $this->response->errorWrongArgs($e->getMessage());
+                return $this->response->errorWrongArgs('Credit Card Error:\n'.$e->getMessage());
             }
         }
 
