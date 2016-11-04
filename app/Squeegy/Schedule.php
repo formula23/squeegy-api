@@ -247,6 +247,8 @@ class Schedule
                         continue;
                     }
 
+                    Log::info($day);
+
                     $container['available_days'][$idx]['time_slots'][] = implode(" - ", [$day->open->format('g:ia'), $day->close->format('g:ia')]);
                 }
 
