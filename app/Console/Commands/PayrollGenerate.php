@@ -137,7 +137,7 @@ class PayrollGenerate extends Command {
         1847 => [ //ricardo
 //            0 => 120,
 //            1 => 120,
-//            2 => 120,
+            2 => 120,
 //            3 => 120,
 //            4 => 120,
 //            5 => 120,
@@ -154,7 +154,7 @@ class PayrollGenerate extends Command {
         ],
         3198 => [ //david
 //            1=>120,
-//            2=>120,
+            2=>120,
 //            3=>120,
 //            4=>120,
 //            5=>120,
@@ -554,7 +554,7 @@ class PayrollGenerate extends Command {
             }
 //$order->price / 100
             
-            $squeegy_comm = (in_array($order->worker_id, [15638,15785,16217]) ? 0.45 : $this->commission_pct['squeegy'] ); //Jorge & Victor & Luis @ 55% comm
+            $squeegy_comm = (in_array($order->worker_id, [15638,15785]) ? 0.45 : $this->commission_pct['squeegy'] ); //Jorge & Victor & Luis @ 55% comm
             
             $job['price'] = (round($order->price * (1 - 0.029)) - 30)/100;
             $job['squeegy'] = ($job['price'] * $squeegy_comm);
