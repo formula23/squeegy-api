@@ -337,7 +337,7 @@ class OrdersController extends Controller {
         if($addon_ids = $request->input('addons')) {
             $addons = Addon::whereIn('id', $addon_ids)->get();
             foreach($addons as $addon) {
-                $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price]);
+                $order_details[] = new OrderDetail(['name'=>$addon->name, 'amount'=>$addon->price, 'addon_id'=>$addon->id]);
                 $order->price += $addon->price;
                 $order->total = $order->price;
             }

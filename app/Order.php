@@ -415,7 +415,15 @@ class Order extends Model {
     public function get_etc()
     {
         $service_attrib = $this->service->attribDetails($this->vehicle->type, $this->vehicle->size)->first();
-        return ( $service_attrib ? $service_attrib->etc : $this->service->time );
+        $base_time = ( $service_attrib ? $service_attrib->etc : $this->service->time );
+
+        foreach($this->order_details as $order_detail) {
+            if($addon = $order_detail->addon) {
+                $base_time += $addon->etc;
+            }
+        }
+
+        return $base_time;
     }
 
     public function charges()
