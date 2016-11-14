@@ -52,8 +52,8 @@
                 <td>{{ $job['vehicle']['make']  }}</td>
                 <td>{{ $job['vehicle']['model']  }}</td>
                 <td>{{ $job['wash_type']  }}</td>
-                <td>{{ $job['wash_time']  }}</td>
-                <td>{{ $job['etc']  }}</td>
+                {{--<td>{{ $job['wash_time']  }}</td>--}}
+                {{--<td>{{ $job['etc']  }}</td>--}}
                 <td>{{ $job['rating']  }}</td>
 
                 @if(@$washer_info['comp_type']=='comm')

@@ -804,7 +804,7 @@ class PayrollGenerate extends Command {
 			$data['week_of'] = $this->week_of;
 			$data['washer_info'] = $worker;
 			$data['weekly_min'] = ( ! empty($min_weekly_worker_id[$worker_id]) ? $min_weekly_worker_id[$worker_id] : 0 );
-            $data['colspan'] = ($worker['comp_type']=="flat" ? 9 : 12 );
+            $data['colspan'] = ($worker['comp_type']=="flat" ? 7 : 10 );
 
 			$view = view('payroll.time_sheet', $data);
 
