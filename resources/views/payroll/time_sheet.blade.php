@@ -22,13 +22,14 @@
         <th>Make</th>
         <th>Model</th>
         <th>Wash Type</th>
-        <th>Wash Time</th>
-        <th>ETC</th>
+        {{--<th>Wash Time</th>--}}
+        {{--<th>ETC</th>--}}
         <th>Rating</th>
         @if(@$washer_info['comp_type']=='comm')
             <th>Net Receipt</th>
             <th>Commission</th>
             <th>Txn Fee</th>
+            <th>Addons</th>
         @endif
         <th>Net Pay</th>
     </tr>
@@ -59,6 +60,7 @@
                     <td>${{ number_format($job['price'], 2)  }}</td>
                     <td>${{ number_format($job['price'] - $job['squeegy'], 2)  }}</td>
                     <td>(${{ number_format($job['txn'], 2)  }})</td>
+                    <td>${{ number_format($job['addons'], 2)  }}</td>
                 @endif
 
                 <td>${{ number_format($job['pay'], 2)  }}</td>

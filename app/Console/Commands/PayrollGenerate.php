@@ -138,10 +138,10 @@ class PayrollGenerate extends Command {
 //            0 => 120,
 //            1 => 120,
             2 => 120,
-//            3 => 120,
-//            4 => 120,
-//            5 => 120,
-//            6 => 120,
+            3 => 120,
+            4 => 120,
+            5 => 120,
+            6 => 120,
         ],
         2149 => [ //daniel garcia
 //            0 => 120,
@@ -154,7 +154,7 @@ class PayrollGenerate extends Command {
         ],
         3198 => [ //david
 //            1=>120,
-            2=>120,
+//            2=>120,
 //            3=>120,
 //            4=>120,
 //            5=>120,
@@ -203,7 +203,7 @@ class PayrollGenerate extends Command {
         3198 => [ //david
 //            1 => 56,
 //            2 => 133,
-//            3 => 52,
+            3 => 100.75,
 //            4 => 52,
 //            5 => 100,
         ],
@@ -215,9 +215,9 @@ class PayrollGenerate extends Command {
         ],
         1847 => [ //ricardo
 //            2 => 104,
-            3 => 97.5,
-            4 => 117,
-            5 => 110.5,
+            3 => 100.75,
+            4 => 126.75,
+//            5 => 110.5,
         ],
         10267 => [ //sheldon
 //            2 => 63.25,
@@ -232,7 +232,7 @@ class PayrollGenerate extends Command {
         10620 => [ //Antonio
 //            1 => 87,
 //            3 => 60,
-            4 => 91,
+            4 => 87.75,
 //            5 => 96,
         ],
         15638 => [ //Jorge
@@ -250,10 +250,10 @@ class PayrollGenerate extends Command {
         ],
         16217 => [ //Luis Lopez
 //            1 => 87,
-            2 => 40.95,
-            3 => 100.75,
-            4 => 91,
-//            5 => 87.75,
+            2 => 117,
+            3 => 22.75,
+            4 => 78,
+            5 => 117,
         ],
         16111 => [ //Scott Parkhurst
 //            2 => 66,
@@ -338,9 +338,9 @@ class PayrollGenerate extends Command {
 //            0 => 120,
 //            1 => 120,
 //            2 => 6.39,
-            3 => 8.73,
-            4 => 11.95,
-            5 => 23.68,
+            3 => 5.65,
+            4 => 20.26,
+//            5 => 23.68,
 //            6 => 20,
         ],
         2149 => [ //daniel garcia
@@ -354,7 +354,7 @@ class PayrollGenerate extends Command {
         3198 => [ //david
 //            1=>1.17,
 //            2=>23.21,
-//            3=>4.56,
+            3=>13.08,
 //            4=>4.52,
 //            5=>11,
 //            6=>12.50,
@@ -380,7 +380,7 @@ class PayrollGenerate extends Command {
 //            1=>3.34,
 //            2=>30,
 //            3=>6.2,
-            4 => 6.7,
+            4 => 8.98,
 //            5=>18.87,
 //            6=>120,
         ],
@@ -399,10 +399,10 @@ class PayrollGenerate extends Command {
         ],
         16217 => [ //Luis Lopez
 //            1 => 87,
-            2 => 0,
-            3 => 10.96,
-            4 => 6.7,
-//            5 => 6.64,
+            2 => 16.47,
+            3 => 0,
+            4 => 9.8,
+            5 => 7.9,
         ],
         16111 => [ //Scott Parkhurst
 //            2 => 0,
@@ -527,6 +527,7 @@ class PayrollGenerate extends Command {
                 @$orders_by_worker[$order->worker->id]['referral_code'] = (int)@$this->referral_code[$order->worker->id];
             }
 
+
             if (in_array($order->worker->id, $this->payroll_washers)) continue;
 
             //did order have surcharge
@@ -548,10 +549,13 @@ class PayrollGenerate extends Command {
             $job['rating'] = $order->rating;
 
             if( ! in_array($order->worker_id, $this->ignore_midweek_special)) {
-                if ($order->price < $this->service_price[$order->service_id]) {
+                if ($order->price != $this->service_price[$order->service_id]) {
                     $order->price = $this->service_price[$order->service_id] + $surcharge_amt;
                 }
             }
+//            if($order->id==15302) {
+//                dd($order);
+//            }
 //$order->price / 100
             
             $squeegy_comm = (in_array($order->worker_id, [15638,15785]) ? 0.45 : $this->commission_pct['squeegy'] ); //Jorge & Victor & Luis @ 55% comm
@@ -559,7 +563,7 @@ class PayrollGenerate extends Command {
             $job['price'] = (round($order->price * (1 - 0.029)) - 30)/100;
             $job['squeegy'] = ($job['price'] * $squeegy_comm);
             $job['txn'] = ($order->price * $this->commission_pct['txn']) / 100;
-
+            $job['addons'] = $this->get_addon_payout($order);
             $job['rev'] = $order->charged;
 
             if (in_array($order->discount_id, array_keys($promo_costs = Config::get('squeegy.groupon_gilt_promotions')))) { //groupon & gilt
@@ -580,7 +584,7 @@ class PayrollGenerate extends Command {
 
             @$orders_by_worker[$order->worker->id]['comp_type'] = 'comm';
 
-            $job_pay = (float)number_format(($job['price'] - $job['squeegy'] - $job['txn']), 2);
+            $job_pay = (float)number_format(($job['price'] - $job['squeegy'] - $job['txn'] + $job['addons']), 2);
 
             if( $order->rating >= 3 || $order->rating === null ) {
                 $job['pay'] = $job_pay;
@@ -783,7 +787,8 @@ class PayrollGenerate extends Command {
 //        dd($this->washer_tips[3198]);
 //        dd("adsf");
 //        dd($orders_by_worker);
-//        dd($orders_by_worker[10267]);
+
+        dd($orders_by_worker[1847]);
 
 		$disk = Storage::disk('local');
 		$dir_path = ['payroll', date('Y'), $orders->first()->done_at->startOfWeek()->format("m-d")];
@@ -965,6 +970,14 @@ class PayrollGenerate extends Command {
                 $this->referral_code[$referral_worker->id] = (int)$referral_worker->ref_amount/100;
             }
         }
+    }
+
+    protected function get_addon_payout(Order $order)
+    {
+        if($addons = $order->order_details()->whereNotNull('addon_id')->get()) {
+            return (($addons->sum('amount') * 0.25) / 100);
+        }
+        return 0;
     }
 
 	/**
