@@ -50,7 +50,7 @@ class ServiceTransformer extends TransformerAbstract {
             ->wherePivot('is_active', 1)
             ->orderBy('sequence')
             ->wherePivot('is_corp', (($this->scope=='corp')?:0))
-            ->get(), new AddonsTransformer());
+            ->get(), new AddonTransformer());
 
     }
 

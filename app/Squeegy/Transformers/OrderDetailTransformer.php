@@ -6,9 +6,10 @@
  * Time: 23:56
  */
 
-namespace app\Squeegy\Transformers;
+namespace App\Squeegy\Transformers;
 
 
+use App\Addon;
 use App\OrderDetail;
 use League\Fractal\TransformerAbstract;
 

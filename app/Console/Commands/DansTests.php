@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Order;
 use App\Partner;
 use App\Squeegy\Orders;
+use App\Squeegy\Transformers\AddonTransformer;
 use App\User;
 use App\Vehicle;
 use Carbon\Carbon;
@@ -50,6 +52,16 @@ class DansTests extends Command
      */
     public function handle()
     {
+
+        $addon = new AddonTransformer();
+        dd($addon);
+
+        $order = Order::find(12714);
+
+        dd($order->order_details);
+
+
+
         $arr = [
             "key_box" => [
                 "label"=>"KeyBox#",

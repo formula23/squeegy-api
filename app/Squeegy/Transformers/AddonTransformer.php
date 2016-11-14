@@ -6,22 +6,23 @@
  * Time: 16:44
  */
 
-namespace app\Squeegy\Transformers;
+namespace App\Squeegy\Transformers;
 
 
 use App\Addon;
 
-class AddonsTransformer
+class AddonTransformer
 {
 
     public function transform(Addon $addon) {
 
+        if( ! $addon->exists) return [];
         return [
             'id'=>$addon->id,
             'name'=>$addon->name,
             'description'=>$addon->description,
             'price'=>$addon->price,
-            'sequence'=>($addon->pivot->sequence?:0),
+            'sequence'=>(!empty($addon->pivot->sequence)?$addon->pivot->sequence:0),
         ];
 
     }

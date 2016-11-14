@@ -151,7 +151,7 @@ class Order extends Model {
     {
         return $this->hasMany('App\OrderDetail');
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
