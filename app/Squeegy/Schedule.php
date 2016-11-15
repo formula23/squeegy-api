@@ -100,8 +100,8 @@ class Schedule
 
             $container[$idx] = ['day'=>$day];
 
-//            $this->open = $this->open_hr;
-            $this->open = 9;
+            $this->open = $this->open_hr;
+//            $this->open = 9;
             $this->close = $this->close_hr;
             $windows=[];
 
