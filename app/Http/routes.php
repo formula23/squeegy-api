@@ -34,8 +34,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('user/duty', 'UserController@duty');
     Route::post('user/location', 'UserController@location');
 
-
-
+    
     Route::controllers([
         'password' => 'Auth\PasswordController',
     ]);
