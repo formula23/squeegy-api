@@ -80,7 +80,7 @@ class Schedule
 
             if(empty($container)) $container=[];
 
-            if($this->now->format('Y-m-d') == '2016-09-05') { //labor day
+            if($this->now->format('Y-m-d') == '2016-11-24') { //thanksgiving
                 $this->days_out+=1;
                 continue;
             }
