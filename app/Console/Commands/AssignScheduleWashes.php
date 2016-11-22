@@ -78,6 +78,7 @@ class AssignScheduleWashes extends Command
                 $avail['schedule'] &&
                 empty($avail['actual_time']))
             {
+                $this->cancel_order($order);
                 \Event::fire(new OrderWillCancel($order));
                 continue;
             }

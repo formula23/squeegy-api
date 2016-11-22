@@ -53,7 +53,7 @@ return [
             'arriving_soon' => 'Your washer is arriving soon...',
         ],
         'push_notice_schedule' => [
-            'will_cancel' => 'No washers available for Order# :order_id',
+            'will_cancel' => 'No washers available. Order# :order_id cancelled.',
             'cancel' => 'We\'re very sorry but there are no washers currently available to perform your wash. We had to cancel your order. A full refund has been issued. Please contact customer service at support@squeegyapp.com for additional information.',
         ],
         'push_notice_corp' => [
