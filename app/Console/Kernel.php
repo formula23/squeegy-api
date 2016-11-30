@@ -53,7 +53,7 @@ class Kernel extends ConsoleKernel {
 		$schedule->command('squeegy:advance_partner_dates')->cron('0 10-19 * * *');
 		$schedule->command('washer:tip-notify')->dailyAt('8:00');
 
-		$schedule->command('db:backup --full_db')->daily()->withoutOverlapping();
+//		$schedule->command('db:backup --full_db')->daily()->withoutOverlapping();
 	}
 
     protected function dir($process_name)
