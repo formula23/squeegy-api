@@ -59,11 +59,6 @@ class PayrollGenerate extends Command {
         7527, //gonzalo
     ];
 
-    protected $bonus = [
-//        10018 => 250, //daniel medina
-//        3198 => 65.95, //david mon
-    ];
-
     protected $referral_code = [];
 
     protected $ignore_ids =[
@@ -116,6 +111,13 @@ class PayrollGenerate extends Command {
         //3198 => 600,
     ];
 
+
+    protected $bonus = [
+//        10018 => 250, //daniel medina
+//        3198 => 65.95, //david mon
+        1847 =>188.08 //ricardo - back pay for mins
+    ];
+
     protected $daily_bonus_worker_id = [
         3198 => [ //david
 //            2=>15,
@@ -125,7 +127,7 @@ class PayrollGenerate extends Command {
         ],
         16217 => [ //luis
 //            6=>25,
-        ],
+        ]
     ];
 
     protected $referral_program = [
@@ -139,7 +141,7 @@ class PayrollGenerate extends Command {
 //            1 => 120,
 //            2 => 120,
 //            3 => 120,
-//            4 => 120,
+            4 => 120,
 //            5 => 120,
 //            6 => 120,
         ],
@@ -214,8 +216,8 @@ class PayrollGenerate extends Command {
 //            5 => 105,
         ],
         1847 => [ //ricardo
-//            2 => 104,
-//            3 => 82.5,
+            2 => 146.25,
+            3 => 50,
 //            4 => 120,
 //            5 => 75,
         ],
@@ -337,7 +339,7 @@ class PayrollGenerate extends Command {
         1847 => [ //ricardo
 //            0 => 120,
 //            1 => 120,
-//            2 => 6.39,
+            2 => 27.5,
 //            3 => 3.82,
 //            4 => 6.34,
 //            5 => 3.81,
