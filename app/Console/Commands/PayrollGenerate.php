@@ -115,7 +115,7 @@ class PayrollGenerate extends Command {
     protected $bonus = [
 //        10018 => 250, //daniel medina
 //        3198 => 65.95, //david mon
-        1847 =>188.08 //ricardo - back pay for mins
+//        1847 =>188.08 //ricardo - back pay for mins
     ];
 
     protected $daily_bonus_worker_id = [
@@ -141,7 +141,7 @@ class PayrollGenerate extends Command {
 //            1 => 120,
 //            2 => 120,
 //            3 => 120,
-            4 => 120,
+//            4 => 120,
 //            5 => 120,
 //            6 => 120,
         ],
@@ -216,10 +216,10 @@ class PayrollGenerate extends Command {
 //            5 => 105,
         ],
         1847 => [ //ricardo
-            2 => 146.25,
-            3 => 50,
-//            4 => 120,
-//            5 => 75,
+//            2 => 146.25,
+            3 => 135,
+            4 => 142.5,
+            5 => 135,
         ],
         10267 => [ //sheldon
 //            2 => 63.25,
@@ -234,7 +234,7 @@ class PayrollGenerate extends Command {
         10620 => [ //Antonio
 //            1 => 87,
 //            3 => 71.5,
-//            4 => 91,
+            4 => 96,
 //            5 => 75,
         ],
         15638 => [ //Jorge
@@ -339,10 +339,10 @@ class PayrollGenerate extends Command {
         1847 => [ //ricardo
 //            0 => 120,
 //            1 => 120,
-            2 => 27.5,
-//            3 => 3.82,
-//            4 => 6.34,
-//            5 => 3.81,
+//            2 => 27.5,
+            3 => 13.38,
+            4 => 30.01,
+            5 => 8.35,
 //            6 => 20,
         ],
         2149 => [ //daniel garcia
@@ -382,7 +382,7 @@ class PayrollGenerate extends Command {
 //            1=>3.34,
 //            2=>30,
 //            3=>29.2,
-//            4 => 10.57,
+            4 => 19,
 //            5=>18.87,
 //            6=>120,
         ],
