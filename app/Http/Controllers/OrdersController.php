@@ -180,6 +180,9 @@ class OrdersController extends Controller {
 	 */
 	public function store(CreateOrderRequest $request)
 	{
+
+        return $this->response->errorWrongArgs('Server Error');
+
         $data = $request->all();
 
         $is_schedule = ( !empty($data['day']) && !empty($data['time_slot']) ? true : false );
