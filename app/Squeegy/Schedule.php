@@ -25,7 +25,7 @@ class Schedule
     public $close_hr;
 //    public $available=[];
     public $lead_hrs=0;
-    public $days_out=4;
+    public $days_out=7;
     public $time_slot_interval=1;
     public $current_schedule;
     public $postal_code;
@@ -97,6 +97,10 @@ class Schedule
 //            } else {
                 $day = $this->now->format($this->day_format);
 //            }
+
+            if($day->gte(Carbon::create(2016,12,17,16,45,00))) {
+                continue;
+            }
 
             $container[$idx] = ['day'=>$day];
 
