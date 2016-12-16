@@ -80,11 +80,6 @@ class Schedule
 
             if(empty($container)) $container=[];
 
-            if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
-                $this->days_out+=1;
-                continue;
-            }
-            
             if($this->now->format('Y-m-d') == '2016-11-24') { //thanksgiving
                 $this->days_out+=1;
                 continue;
@@ -113,6 +108,10 @@ class Schedule
             for($this->open; $this->open<=$this->close-1; $this->open++) {
 
                 $start = new Carbon($this->now->format("m/d/y $this->open:00"));
+
+                if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
+                    continue(2);
+                }
 
                 if($this->now->isToday()) {
 
