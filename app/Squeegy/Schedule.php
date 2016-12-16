@@ -98,7 +98,7 @@ class Schedule
                 $day = $this->now->format($this->day_format);
 //            }
 
-            if($day->gte(Carbon::create(2016,12,17,16,45,00))) {
+            if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
                 continue;
             }
 
