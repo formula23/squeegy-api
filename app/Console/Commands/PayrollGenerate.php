@@ -217,9 +217,9 @@ class PayrollGenerate extends Command {
         ],
         1847 => [ //ricardo
 //            2 => 146.25,
-            3 => 135,
-            4 => 142.5,
-            5 => 135,
+            3 => 105,
+            4 => 105,
+            5 => 75,
         ],
         10267 => [ //sheldon
 //            2 => 63.25,
@@ -234,7 +234,7 @@ class PayrollGenerate extends Command {
         10620 => [ //Antonio
 //            1 => 87,
 //            3 => 71.5,
-            4 => 96,
+//            4 => 96,
 //            5 => 75,
         ],
         15638 => [ //Jorge
@@ -252,7 +252,7 @@ class PayrollGenerate extends Command {
         ],
         16217 => [ //Luis Lopez
 //            1 => 87,
-//            2 => 84.5,
+            2 => 123.5,
 //            3 => 110.5,
 //            4 => 78,
 //            5 => 117,
@@ -340,9 +340,9 @@ class PayrollGenerate extends Command {
 //            0 => 120,
 //            1 => 120,
 //            2 => 27.5,
-            3 => 13.38,
-            4 => 30.01,
-            5 => 8.35,
+            3 => 5.72,
+            4 => 17.06,
+            5 => 1.64,
 //            6 => 20,
         ],
         2149 => [ //daniel garcia
@@ -382,7 +382,7 @@ class PayrollGenerate extends Command {
 //            1=>3.34,
 //            2=>30,
 //            3=>29.2,
-            4 => 19,
+//            4 => 19,
 //            5=>18.87,
 //            6=>120,
         ],
@@ -401,7 +401,7 @@ class PayrollGenerate extends Command {
         ],
         16217 => [ //Luis Lopez
 //            1 => 87,
-//            2 => 8.58,
+            2 => 11.38,
 //            3 => 13.71,
 //            4 => 9.8,
 //            5 => 7.9,

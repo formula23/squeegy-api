@@ -181,7 +181,7 @@ class OrdersController extends Controller {
 	public function store(CreateOrderRequest $request)
 	{
 
-//        return $this->response->errorWrongArgs('No Washers Available.');
+        return $this->response->errorWrongArgs('No Washers Available.');
 
         $data = $request->all();
 
