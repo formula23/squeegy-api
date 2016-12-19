@@ -66,6 +66,11 @@ class Schedule
 
     public function availability()
     {
+        $container=[];
+        $container[0]['day'] = 'Not Available';
+        $container[0]['time_slots'] = ['Not Available'];
+        return $container;
+
         if($this->partner) {
             return $this->partner_days();
         }
