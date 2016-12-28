@@ -66,10 +66,10 @@ class Schedule
 
     public function availability()
     {
-        $container=[];
-        $container[0]['day'] = 'Not Available';
-        $container[0]['time_slots'] = ['Not Available'];
-        return $container;
+//        $container=[];
+//        $container[0]['day'] = 'Not Available';
+//        $container[0]['time_slots'] = ['Not Available'];
+//        return $container;
 
         if($this->partner) {
             return $this->partner_days();
@@ -103,9 +103,9 @@ class Schedule
                 $day = $this->now->format($this->day_format);
 //            }
 
-            if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
-                continue;
-            }
+//            if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
+//                continue;
+//            }
 
             $container[$idx] = ['day'=>$day];
 
