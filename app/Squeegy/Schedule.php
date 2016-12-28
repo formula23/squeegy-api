@@ -118,9 +118,9 @@ class Schedule
 
                 $start = new Carbon($this->now->format("m/d/y $this->open:00"));
 
-                if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
-                    continue(2);
-                }
+//                if($this->now->gte(Carbon::create(2016,12,17,16,45,00))) {
+//                    continue(2);
+//                }
 
                 if($this->now->isToday()) {
 
