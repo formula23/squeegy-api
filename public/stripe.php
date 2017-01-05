@@ -11,6 +11,7 @@ try {
     \Stripe\Charge::all();
     echo "TLS 1.2 supported, no action required.";
 } catch (\Stripe\Error\ApiConnection $e) {
+    dd($e);
     echo "TLS 1.2 is not supported. You will need to upgrade your integration.";
 }
 ?>
