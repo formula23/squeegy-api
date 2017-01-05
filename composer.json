@@ -9,7 +9,7 @@
 		"doctrine/dbal": "~2.5",
         "chrisbjr/api-guard": "~2.0",
 		"aloha/twilio": "2.0.0-RC2",
-        "stripe/stripe-php": "2.*",
+        "stripe/stripe-php": "4.*",
         "aws/aws-sdk-php-laravel": "~3.0",
 		"bican/roles": "2.1.*",
 		"bugsnag/bugsnag-laravel": "1.*",
