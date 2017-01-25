@@ -180,11 +180,6 @@ class OrdersController extends Controller {
 	 */
 	public function store(CreateOrderRequest $request)
 	{
-
-        if($request->user()->id != 4412) {
-            return $this->response->errorWrongArgs('No Washers Available.');
-        }
-        
         $data = $request->all();
 
         $is_schedule = ( !empty($data['day']) && !empty($data['time_slot']) ? true : false );
@@ -271,7 +266,13 @@ class OrdersController extends Controller {
                         \Bugsnag::notifyException($e);
                         \Log::info($e);
                     }
-                }
+
+                } else {
+
+                     if($request->user()->id != 4412) {
+                         return $this->response->errorWrongArgs('No Washers Available.');
+                     }
+                 }
 
                 if(isset($data['partner_id']) && empty($data['partner_id'])) unset($data['partner_id']);
 
@@ -301,6 +302,11 @@ class OrdersController extends Controller {
                 $this->order_date = $schedule_data['window_open'];
 
             } else { //on-demand
+
+                if($request->user()->id != 4412) {
+                    return $this->response->errorWrongArgs('No Washers Available.');
+                }
+
                 $this->order_date = Carbon::now();
                 if(!empty($eta['time'])) {
                     $data['eta'] = $eta['time'];
